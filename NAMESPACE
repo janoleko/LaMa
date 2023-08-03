@@ -1,0 +1,5 @@
+useDynLib(Lcpp, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
+
+export(mllk_random)

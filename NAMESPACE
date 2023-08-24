@@ -3,4 +3,4 @@ importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
 
 export(mllk_random)
-export(forward_CPP)
+export(forward)

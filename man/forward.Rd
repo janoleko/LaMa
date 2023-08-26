@@ -4,7 +4,7 @@
 \alias{forward}
 \title{R-Wrapper function for forward algorithm in CPP for periodic variation}
 \usage{
-forward(delta, allprobs, Gamma1, Gamma2, startDD, X)
+forward(delta, allprobs, Gamma1, Gamma2, startDD, tod)
 }
 \arguments{
 \item{delta}{Initial distribution}

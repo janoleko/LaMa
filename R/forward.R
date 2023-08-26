@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-forward = function(delta, allprobs, Gamma1, Gamma2, startDD, X){
-  l = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], startDD, X_k$tod-1)
+forward = function(delta, allprobs, Gamma1, Gamma2, startDD, tod){
+  l = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], startDD, tod-1)
   return(l)
 }

@@ -5,7 +5,7 @@
 #' @param Gamma1 Gamma matrix in LD condition (array)
 #' @param Gamma2 Gamma matrix in DD condition (array)
 #' @param startDD startindex of DD condition
-#' @param X data
+#' @param tod data
 #'
 #' @return
 #' @export

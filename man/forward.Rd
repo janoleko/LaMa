@@ -17,7 +17,7 @@ forward(delta, allprobs, Gamma1, Gamma2, startDD, tod)
 
 \item{startDD}{startindex of DD condition}
 
-\item{X}{data}
+\item{tod}{data}
 }
 \description{
 R-Wrapper function for forward algorithm in CPP for periodic variation

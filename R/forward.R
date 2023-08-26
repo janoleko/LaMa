@@ -2,16 +2,16 @@
 #'
 #' @param delta Initial distribution
 #' @param allprobs allprobs matrix
-#' @param Gamma1 Gamma matrix in LD condition (array)
-#' @param Gamma2 Gamma matrix in DD condition (array)
+#' @param Gamma1 Gamma array in LD condition (dim = c(N, N, L))
+#' @param Gamma2 Gamma array in DD condition (dim = c(N, N, L))
 #' @param startDD startindex of DD condition
-#' @param tod data
+#' @param tod time of day variable
 #'
-#' @return
+#' @return log likelihood
 #' @export
 #'
 #' @examples
-forward = function(delta, allprobs, Gamma1, Gamma2, startDD, tod){
-  l = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], startDD, tod-1)
+forward = function(delta, allprobs, Gamma1, Gamma2, DD, tod){
+  l = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], DD, (tod-1))
   return(l)
 }

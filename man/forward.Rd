@@ -4,18 +4,18 @@
 \alias{forward}
 \title{R-Wrapper function for forward algorithm in CPP for periodic variation}
 \usage{
-forward(delta, allprobs, Gamma1, Gamma2, DD, tod)
+forward(delta, allprobs, Gamma, DD, tod)
 }
 \arguments{
 \item{delta}{Initial distribution}
 
 \item{allprobs}{allprobs matrix}
 
+\item{tod}{time of day variable}
+
 \item{Gamma1}{Gamma array in LD condition (dim = c(N, N, L))}
 
 \item{Gamma2}{Gamma array in DD condition (dim = c(N, N, L))}
-
-\item{tod}{time of day variable}
 
 \item{startDD}{startindex of DD condition}
 }

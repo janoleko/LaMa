@@ -27,6 +27,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// forward_cpp_g
+double forward_cpp_g(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma);
+RcppExport SEXP _Lcpp_forward_cpp_g(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::cube >::type Gamma(GammaSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_cpp_g(allprobs, delta, Gamma));
+    return rcpp_result_gen;
+END_RCPP
+}
 // forward_cpp_h
 double forward_cpp_h(arma::mat allprobs, arma::rowvec delta, arma::mat Gamma);
 RcppExport SEXP _Lcpp_forward_cpp_h(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
@@ -43,6 +56,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp", (DL_FUNC) &_Lcpp_forward_cpp, 6},
+    {"_Lcpp_forward_cpp_g", (DL_FUNC) &_Lcpp_forward_cpp_g, 3},
     {"_Lcpp_forward_cpp_h", (DL_FUNC) &_Lcpp_forward_cpp_h, 3},
     {NULL, NULL, 0}
 };

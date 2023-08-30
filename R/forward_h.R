@@ -2,7 +2,7 @@
 #'
 #' @param delta initial distribution
 #' @param allprobs allprobs matrix
-#' @param Gamma1 Gamma matrix
+#' @param Gamma Gamma matrix
 #'
 #' @return log likelihood
 #' @export

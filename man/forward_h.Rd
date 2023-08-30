@@ -11,7 +11,7 @@ forward_h(delta, allprobs, Gamma)
 
 \item{allprobs}{allprobs matrix}
 
-\item{Gamma1}{Gamma matrix}
+\item{Gamma}{Gamma matrix}
 }
 \value{
 log likelihood

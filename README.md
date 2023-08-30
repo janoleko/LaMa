@@ -4,7 +4,8 @@
 This package contains convenient R-wrapper functions of the forward
 algorithm used to estimate hidden Markov models (HMMs) via direct
 numerical maximum likelihood estimation. The algorithm calculates the
-likelihood recursively as a matrix product (see [Zucchini et
+negative log-likelihood recursively as a matrix product (see [Zucchini
+et
 al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)).
 Thus, implementation in C++ offers 10-20 times faster evaluation times.
 Several versions are contained, including homogeneous HMMs and a general

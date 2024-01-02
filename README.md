@@ -1,7 +1,7 @@
 
 # {Lcpp}: Convenient forward algorithm in C++
 
-This package contains convenient R-wrapper functions of the forward
+This package contains convenient R-wrapper functions for the forward
 algorithm used to estimate hidden Markov models (HMMs) via direct
 numerical maximum likelihood estimation. The algorithm calculates the
 negative log-likelihood recursively as a matrix product (see [Zucchini

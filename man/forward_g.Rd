@@ -2,20 +2,20 @@
 % Please edit documentation in R/forward_g.R
 \name{forward_g}
 \alias{forward_g}
-\title{R-Wrapper function for general forward algorithm with t.p.m. as an array of dim c(N,N,T)}
+\title{General forward algorithm with time-varying transition probability matrix}
 \usage{
 forward_g(delta, allprobs, Gamma)
 }
 \arguments{
-\item{delta}{initial distribution}
+\item{delta}{initial or periodically stationary distribution}
 
-\item{allprobs}{allprobs matrix}
+\item{allprobs}{allprobs matrix (of dimension c(n, N))}
 
-\item{Gamma}{array of Gamma matrices of dim c(N,N,T)}
+\item{Gamma}{array of Gamma matrices (of dimension c(N,N,n))}
 }
 \value{
 log likelihood
 }
 \description{
-R-Wrapper function for general forward algorithm with t.p.m. as an array of dim c(N,N,T)
+General forward algorithm with time-varying transition probability matrix
 }

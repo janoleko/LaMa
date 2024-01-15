@@ -1,17 +1,13 @@
-#' R-Wrapper function for forward algorithm in CPP for periodic variation
+#' Forward algorithm with homogeneous transition probability matrix
 #'
-#' @param delta Initial distribution
-#' @param allprobs allprobs matrix
-#' @param Gamma1 Gamma array in LD condition (dim = c(N, N, L))
-#' @param Gamma2 Gamma array in DD condition (dim = c(N, N, L))
-#' @param startDD startindex of DD condition
-#' @param tod time of day variable
+#' @param delta initial or stationary distribution
+#' @param allprobs allprobs matrix (of dimension c(n, N))
+#' @param Gamma Gamma matrix (of dimension c(N,N))
 #'
 #' @return log likelihood
 #' @export
 #'
 #' @examples
-forward = function(delta, allprobs, Gamma, DD, tod){
-  l = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], DD, (tod-1))
-  return(l)
+forward = function(delta, allprobs, Gamma){
+  forward_cpp_h(allprobs, delta, Gamma)
 }

@@ -2,16 +2,16 @@
 % Please edit documentation in R/mllk1.R
 \name{mllk_random}
 \alias{mllk_random}
-\title{Negative log Likelihood for the fly data RE model}
+\title{Negative log Likelihood for the fruit fly random effects model}
 \usage{
 mllk_random(theta.star, X, L = 48, K, M, low, up)
 }
 \arguments{
-\item{theta.star}{unconstraint working parameter vector}
+\item{theta.star}{unconstraint parameter vector}
 
-\item{X}{data}
+\item{X}{data matrix}
 
-\item{L}{number of time points in a cycle}
+\item{L}{period length}
 
 \item{K}{degree of trigonometric link}
 
@@ -22,8 +22,8 @@ mllk_random(theta.star, X, L = 48, K, M, low, up)
 \item{up}{upper integral boundaries}
 }
 \value{
-returns the negative log likelihood of the data given the paramter vector
+negative log likelihood
 }
 \description{
-Negative log Likelihood for the fly data RE model
+Negative log Likelihood for the fruit fly random effects model
 }

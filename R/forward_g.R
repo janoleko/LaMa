@@ -1,8 +1,8 @@
-#' R-Wrapper function for general forward algorithm with t.p.m. as an array of dim c(N,N,T)
+#' General forward algorithm with time-varying transition probability matrix
 #'
-#' @param delta initial distribution
-#' @param allprobs allprobs matrix
-#' @param Gamma array of Gamma matrices of dim c(N,N,T)
+#' @param delta initial or periodically stationary distribution
+#' @param allprobs allprobs matrix (of dimension c(n, N))
+#' @param Gamma array of Gamma matrices (of dimension c(N,N,n))
 #'
 #' @return log likelihood
 #' @export

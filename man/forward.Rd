@@ -2,26 +2,20 @@
 % Please edit documentation in R/forward.R
 \name{forward}
 \alias{forward}
-\title{R-Wrapper function for forward algorithm in CPP for periodic variation}
+\title{Forward algorithm with homogeneous transition probability matrix}
 \usage{
-forward(delta, allprobs, Gamma, DD, tod)
+forward(delta, allprobs, Gamma)
 }
 \arguments{
-\item{delta}{Initial distribution}
+\item{delta}{initial or stationary distribution}
 
-\item{allprobs}{allprobs matrix}
+\item{allprobs}{allprobs matrix (of dimension c(n, N))}
 
-\item{tod}{time of day variable}
-
-\item{Gamma1}{Gamma array in LD condition (dim = c(N, N, L))}
-
-\item{Gamma2}{Gamma array in DD condition (dim = c(N, N, L))}
-
-\item{startDD}{startindex of DD condition}
+\item{Gamma}{Gamma matrix (of dimension c(N,N))}
 }
 \value{
 log likelihood
 }
 \description{
-R-Wrapper function for forward algorithm in CPP for periodic variation
+Forward algorithm with homogeneous transition probability matrix
 }

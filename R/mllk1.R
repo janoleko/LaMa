@@ -1,14 +1,14 @@
-#' Negative log Likelihood for the fly data RE model
+#' Negative log Likelihood for the fruit fly random effects model
 #'
-#' @param theta.star unconstraint working parameter vector
-#' @param X data
-#' @param L number of time points in a cycle
+#' @param theta.star unconstraint parameter vector
+#' @param X data matrix
+#' @param L period length
 #' @param K degree of trigonometric link
 #' @param M numer of intervals for numerical approximation of the integral
 #' @param low lower integral boundaries
 #' @param up upper integral boundaries
 #'
-#' @return returns the negative log likelihood of the data given the paramter vector
+#' @return negative log likelihood
 #' @export
 #'
 #' @examples
@@ -65,7 +65,7 @@ mllk_random = function(theta.star, X, L = 48, K, M, low, up){
         for (j in 1:N){ 
           eta = c(am[j1,1], am[j2,2])
           allprobs[ind,j] = stats::dnbinom(X_k$activity[ind], size = size[j], mu = eta[j]) }
-        llk = forward_cpp(allprobs, delta, Gamma[,,,1], Gamma[,,,2], startDD, X_k$tod-1)
+        llk = forward_cpp_flies(allprobs, delta, Gamma[,,,1], Gamma[,,,2], startDD, X_k$tod-1)
         r = (j1-1)*(M-1)+1+(j2-1)
         one.animal[r] = llk
       }}   

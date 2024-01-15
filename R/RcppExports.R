@@ -13,3 +13,7 @@ forward_cpp_h <- function(allprobs, delta, Gamma) {
     .Call(`_Lcpp_forward_cpp_h`, allprobs, delta, Gamma)
 }
 
+forward_cpp_p <- function(allprobs, delta, Gamma, tod) {
+    .Call(`_Lcpp_forward_cpp_p`, allprobs, delta, Gamma, tod)
+}
+

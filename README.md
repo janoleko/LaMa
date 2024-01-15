@@ -35,7 +35,7 @@ devtools::install_github("janoleko/Lcpp")
 # parameters
 mu = c(0, 6)
 sigma = c(2, 4)
-Gamma = matrix(c(0.5, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
+Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
 delta = c(0.5, 0.5)
 
 # simulation

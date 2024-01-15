@@ -12,6 +12,9 @@ forward_p(delta, Gamma, allprobs, tod)
 \item{Gamma}{Pre-calculated array of periodic Gamma matrices (of dimension c(N,N,L))}
 
 \item{allprobs}{allprobs matrix (of dimension c(n, N))}
+
+\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day. 
+For half-hourly data L = 48. It could however also be day of year when L = 365.}
 }
 \value{
 Log-likelihood for given data and parameters

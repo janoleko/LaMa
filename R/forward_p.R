@@ -15,5 +15,8 @@
 #'
 #' @examples
 forward_p = function(delta, Gamma, allprobs, tod){
+  if(min(tod)==1){
+    tod = tod-1
+  } 
   forward_cpp_p(allprobs, delta, Gamma, tod)
 }

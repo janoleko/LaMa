@@ -25,7 +25,7 @@ Thus it is much more efficient to only calculate these L matrices and index them
 This function allows for exactly this, by only expecting a Gamma matrix for each time point in a day, and an integer valued (1, ..., L) time of day variable that maps the data index to the according time of day.
 }
 \examples{
-#' ## generating data from periodic 2-state HMM
+## generating data from periodic 2-state HMM
 mu = c(0, 6)
 sigma = c(2, 4)
 beta = matrix(c(-2,-2,1,-1, 1, -1),nrow=2)

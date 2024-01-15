@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' #' ## generating data from periodic 2-state HMM
+#' ## generating data from periodic 2-state HMM
 #' mu = c(0, 6)
 #' sigma = c(2, 4)
 #' beta = matrix(c(-2,-2,1,-1, 1, -1),nrow=2)

@@ -20,7 +20,7 @@ forward_flies(delta, allprobs, Gamma, DD, tod)
 \item{startDD}{startindex of DD condition}
 }
 \value{
-log likelihood
+Log-likelihood for given data and parameters
 }
 \description{
 Forward algorithm for fruit fly application

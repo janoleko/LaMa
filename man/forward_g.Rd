@@ -4,17 +4,17 @@
 \alias{forward_g}
 \title{General forward algorithm with time-varying transition probability matrix}
 \usage{
-forward_g(delta, allprobs, Gamma)
+forward_g(delta, Gamma, allprobs)
 }
 \arguments{
-\item{delta}{initial or periodically stationary distribution}
+\item{delta}{Initial or periodically stationary distribution (of length N)}
+
+\item{Gamma}{Pre-calculated array of Gamma matrices (of dimension c(N,N,n))}
 
 \item{allprobs}{allprobs matrix (of dimension c(n, N))}
-
-\item{Gamma}{array of Gamma matrices (of dimension c(N,N,n))}
 }
 \value{
-log likelihood
+Log-likelihood for given data and parameters
 }
 \description{
 General forward algorithm with time-varying transition probability matrix

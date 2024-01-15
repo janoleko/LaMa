@@ -1,13 +1,15 @@
 Package: Lcpp
 Type: Package
-Title: Faster numerical maximum likelihood estimation for HMMs
+Title: Faster numerical maximum likelihood estimation for HMMs and SMMs
 Version: 1.0
 Date: 2023-08-03
 Author: person("Jan-Ole", "Koslik", , "jan-ole.koslik@uni-bielefeld.de", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Maintainer: <jan-ole.koslik@uni-bielefeld.de>
-Description: Forward algorithms for projects in C++ to speed up estimation.
+Description: Forward algorithm in C++ to speed up estimation of HMMs and SSMs.
 License: GPL-3
-Imports: Rcpp (>= 1.0.11), stats, iHSMM
+Imports: Rcpp (>= 1.0.11), 
+          stats, 
+          iHSMM
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.2.3

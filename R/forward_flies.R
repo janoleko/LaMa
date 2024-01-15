@@ -7,7 +7,7 @@
 #' @param startDD startindex of DD condition
 #' @param tod time of day variable
 #'
-#' @return log likelihood
+#' @return Log-likelihood for given data and parameters
 #' @export
 #'
 #' @examples

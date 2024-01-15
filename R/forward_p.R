@@ -7,7 +7,7 @@
 #' @param delta Initial or periodically stationary distribution (of length N)
 #' @param Gamma Pre-calculated array of periodic Gamma matrices (of dimension c(N,N,L))
 #' @param allprobs allprobs matrix (of dimension c(n, N))
-#' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day. 
+#' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
 #' For half-hourly data L = 48. It could however also be day of year when L = 365.
 #'
 #' @return Log-likelihood for given data and parameters

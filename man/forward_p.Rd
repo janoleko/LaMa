@@ -13,7 +13,7 @@ forward_p(delta, Gamma, allprobs, tod)
 
 \item{allprobs}{allprobs matrix (of dimension c(n, N))}
 
-\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day. 
+\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
 For half-hourly data L = 48. It could however also be day of year when L = 365.}
 }
 \value{

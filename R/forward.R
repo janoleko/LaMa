@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' ## generating data
+#' ## generating data from homogeneous 2-state HMM
 #' mu = c(0, 6)
 #' sigma = c(2, 4)
 #' Gamma = matrix(c(0.5, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
@@ -24,18 +24,18 @@
 #' 
 #' ## negative log likelihood function
 #' mllk = function(theta.star, x){
-#' # parameter transformations for unconstraint optimization
-#' Gamma = diag(2)
-#' Gamma[!Gamma] = exp(theta.star[1:2])
-#' Gamma = Gamma / rowSums(Gamma)
-#' delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
-#' mu = theta.star[3:4]
-#' sigma = exp(theta.star[5:6])
-#' # calculate all state-dependent probabilities
-#' allprobs = matrix(1, length(x), 2)
-#' for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
-#' # return negative for minimization
-#' -Lcpp::forward(delta, Gamma, allprobs)
+#'   # parameter transformations for unconstraint optimization
+#'   Gamma = diag(2)
+#'   Gamma[!Gamma] = exp(theta.star[1:2])
+#'   Gamma = Gamma / rowSums(Gamma)
+#'   delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
+#'   mu = theta.star[3:4]
+#'   sigma = exp(theta.star[5:6])
+#'   # calculate all state-dependent probabilities
+#'   allprobs = matrix(1, length(x), 2)
+#'   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+#'   # return negative for minimization
+#'   -Lcpp::forward(delta, Gamma, allprobs)
 #' }
 #' 
 #' ## fitting an HMM to the data

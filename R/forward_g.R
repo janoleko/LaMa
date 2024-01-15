@@ -8,6 +8,51 @@
 #' @export
 #'
 #' @examples
+#' ## generating data from inhomogeneous 2-state HMM
+#' mu = c(0, 6)
+#' sigma = c(2, 4)
+#' beta = matrix(c(-2,-2,0.5,-0.5),nrow=2)
+#' delta = c(0.5, 0.5)
+#' # simulation
+#' n = 2000
+#' s = x = rep(NA, n)
+#' z = rnorm(n, 0, 2)
+#' s[1] = sample(1:2, 1, prob = delta)
+#' x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+#' for(t in 2:n){
+#'   Gamma = diag(2)
+#'   Gamma[!Gamma] = exp(beta[,1]+beta[,2]*z[t])
+#'   Gamma = Gamma / rowSums(Gamma)
+#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
+#'   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+#' }
+#' 
+#' ## negative log likelihood function
+#' mllk = function(theta.star, x, z){
+#'   # parameter transformations for unconstraint optimization
+#'   beta = matrix(theta.star[1:4], 2, 2)
+#'   Eta = cbind(1, z)%*%t(beta)
+#'   n = length(x)
+#'   Gamma = array(dim=c(2,2,n))
+#'   for(t in 2:n){
+#'     G = diag(2)
+#'     G[!G] = exp(Eta[t,])
+#'     Gamma[,,t] = G / rowSums(G)
+#'   }
+#'   delta = c(plogis(theta.star[5]), 1-plogis(theta.star[5]))
+#'   mu = theta.star[6:7]
+#'   sigma = exp(theta.star[8:9])
+#'   # calculate all state-dependent probabilities
+#'   allprobs = matrix(1, length(x), 2)
+#'   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+#'   # return negative for minimization
+#'   -Lcpp::forward_g(delta, Gamma, allprobs)
+#' }
+#' 
+#' ## fitting an HMM to the data
+#' theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
+#' mod = stats::nlm(mllk, theta.star, x = x, z = z)
+#'
 forward_g = function(delta, Gamma, allprobs){
   forward_cpp_g(allprobs, delta, Gamma)
 }

@@ -68,7 +68,9 @@ mllk = function(theta.star, x){
 #### Fitting an HMM to the data
 ```{r, warning=FALSE}
 theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
+s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
+Sys.time()-s
 ```
 
 #### Visualizing results

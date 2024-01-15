@@ -76,7 +76,10 @@ mllk = function(theta.star, x){
 
 ``` r
 theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
+s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
+Sys.time()-s
+#> Time difference of 0.07452703 secs
 ```
 
 #### Visualizing results

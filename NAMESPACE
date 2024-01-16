@@ -2,8 +2,6 @@ useDynLib(Lcpp, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")
 
-# export(mllk_random)
-# export(forward_flies)
 export(forward)
 export(forward_g)
 export(forward_p)

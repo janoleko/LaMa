@@ -9,7 +9,6 @@ Maintainer: <jan-ole.koslik@uni-bielefeld.de>
 Description: Forward algorithm in C++ to speed up estimation of HMMs and SSMs.
 License: GPL-3
 Imports: Rcpp (>= 1.0.11), 
-          stats, 
-          iHSMM
+          stats
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.2.3

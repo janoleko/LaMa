@@ -9,10 +9,11 @@ forward_g(delta, Gamma, allprobs)
 \arguments{
 \item{delta}{Initial distribution of length N}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,n). \cr
+\item{Gamma}{Array of transition probability matrices of dimension c(N,N,n). \cr \cr
 Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
 such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
-Therefore, the first element of the array is not used in the likelihood calculation.}
+Therefore, the first element of the array is not used in the likelihood calculation. \cr \cr
+This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 }

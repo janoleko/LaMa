@@ -5,7 +5,7 @@
 #' This function allows for that, by only expecting a transition probability matrix for each time point in a period, and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
 #'
 #' @param delta Initial or periodically stationary distribution of length N
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L). \cr
+#' @param Gamma Array of transition probability matrices of dimension c(N,N,L). \cr \cr
 #' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
 #' such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)

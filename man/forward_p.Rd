@@ -9,7 +9,7 @@ forward_p(delta, Gamma, allprobs, tod)
 \arguments{
 \item{delta}{Initial or periodically stationary distribution of length N}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L). \cr
+\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L). \cr \cr
 Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
 such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
 

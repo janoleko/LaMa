@@ -54,6 +54,7 @@ plot(x[1:400], bty = "n", pch = 20, ylab = "x",
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" />
 
 #### Writing the negative log-likelihood function
+Here we use the package functionality in the last line.
 
 ``` r
 mllk = function(theta.star, x){

@@ -26,6 +26,7 @@ Further algorithm variations will be added as needed. Have fun!
 ## Installation
 
 ``` r
+# install.packages("devtools")
 devtools::install_github("janoleko/Lcpp")
 ```
 

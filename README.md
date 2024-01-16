@@ -14,7 +14,7 @@ thus substantially speeding up estimation by e.g. `nlm()` or `optim()`.
 Current implementations include
 
 * `forward()` for models with **homogeneous** transition probabilities,
-* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including hidden **semi**-Markov models (HSMMs)), and
+* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs), and
 * `forward_p()` which is more efficient than the general implementation, when transition probabilities only vary periodically.
 
 The functions are built to be included in the negative log-likelihood function, after

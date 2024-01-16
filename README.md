@@ -27,9 +27,9 @@ Further algorithm variations will be added as needed. Have fun!
 devtools::install_github("janoleko/Lcpp")
 ```
 
-## Example: Homogeneous HMM
+## Example
 
-### Generating data from a 2-state HMM
+#### Generating data from a 2-state HMM
 
 ``` r
 # parameters
@@ -47,14 +47,12 @@ for(t in 2:2000){
   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
-plot(x[1:400], bty = "n", pch = 20, ylab = "x",
-     col = c("orange", "deepskyblue")[s[1:400]])
+plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:400]])
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" />
 
-### Writing the negative log-likelihood function
-Here we use the package functionality in the last line.
+#### Writing the negative log-likelihood function
 
 ``` r
 mllk = function(theta.star, x){
@@ -73,18 +71,17 @@ mllk = function(theta.star, x){
 }
 ```
 
-### Fitting an HMM to the data
+#### Fitting an HMM to the data
 
 ``` r
 theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07452703 secs
+#> Time difference of 0.07602596 secs
 ```
-Really fast!
 
-### Visualizing results
+#### Visualizing results
 
 ``` r
 # transform parameters to working
@@ -96,10 +93,10 @@ mu = mod$estimate[3:4]
 sigma = exp(mod$estimate[5:6])
 
 hist(x, prob = TRUE, bor = "white", breaks = 40, main = "")
-curve(delta[1]*dnorm(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange")
-curve(delta[2]*dnorm(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = "deepskyblue")
+curve(delta[1]*dnorm(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)
+curve(delta[2]*dnorm(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = "deepskyblue", n=500)
 curve(delta[1]*dnorm(x, mu[1], sigma[1])+delta[2]*dnorm(x, mu[2], sigma[2]),
-      add = TRUE, lwd = 2, lty = "dashed")
+      add = TRUE, lwd = 2, lty = "dashed", n=500)
 legend("topright", col = c("orange", "deepskyblue", "black"), lwd = 2, bty = "n",
        lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
 ```

@@ -50,7 +50,7 @@ for(t in 2:2000){
 plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:400]])
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-data-1.png" width="75%" style="display: block; margin: auto;" />
 
 #### Writing the negative log-likelihood function
 
@@ -78,7 +78,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07602596 secs
+#> Time difference of 0.07614398 secs
 ```
 
 #### Visualizing results
@@ -101,4 +101,4 @@ legend("topright", col = c("orange", "deepskyblue", "black"), lwd = 2, bty = "n"
        lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-visualization-1.png" width="75%" style="display: block; margin: auto;" />

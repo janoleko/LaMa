@@ -20,14 +20,14 @@ Further algorithm variations will be added as needed. Have fun!
 
 ## Installation
 
-```{r, eval = FALSE, warning=FALSE, message = FALSE}
+```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
 devtools::install_github("janoleko/Lcpp")
 ```
 
 ## Example
 
 #### Generating data from a 2-state HMM
-```{r}
+```{r data}
 # parameters
 mu = c(0, 6)
 sigma = c(2, 4)
@@ -47,7 +47,7 @@ plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")
 ```
 
 #### Writing the negative log-likelihood function
-```{r}
+```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
   Gamma = diag(2)
@@ -65,7 +65,7 @@ mllk = function(theta.star, x){
 ```
 
 #### Fitting an HMM to the data
-```{r, warning=FALSE}
+```{r model, warning=FALSE}
 theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
@@ -73,7 +73,7 @@ Sys.time()-s
 ```
 
 #### Visualizing results
-```{r}
+```{r visualization}
 # transform parameters to working
 Gamma = diag(2)
 Gamma[!Gamma] = exp(mod$estimate[1:2])

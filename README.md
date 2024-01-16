@@ -1,7 +1,7 @@
 
-# {Lcpp}: Forward algorithm in C++
+# {Lcpp}: Forward algorithm in C++ <img src="figures/Lcpp_logo.png" align="right" height=140>
 
-This package contains convenient **R** wrapper functions for the **forward
+This package contains convenient R-wrapper functions for the **forward
 algorithm** used to fit **hidden Markov models** (HMMs), **hidden
 semi-Markov models** (HSMMs) and **state space models** (SSMs) via
 **direct numerical maximum likelihood estimation**. The algorithm
@@ -11,13 +11,11 @@ et
 al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)).
 Implementation in **C++** offers 10-20 times faster evaluation times,
 thus substantially speeding up estimation by e.g. `nlm()` or `optim()`.
-Currently, the main implementations are 
-
-* `forward()` which should be used for **homogeneous** transition probabilities,
-* `forward_g()` which should be used when **covariates** are affecting the state-process dynamics, and
-* `forward_p()` which should be used when the transition probabilities only vary **periodically**.
-
-The functions are built to be included in the negative log-likelihood function, after
+The two main implementations are `forward()` which should be used when
+fitting models with **homogeneous** transition probability matrices and
+`forward_g()` which should we used when fitting models with
+**covariates** affecting the state-process dynamics. The functions are
+built to be included in the negative log-likelihood function, after
 parameters have been transformed and the allprobs matrix (containing all
 state-dependent probabilities) has been calculated.
 
@@ -80,7 +78,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07909417 secs
+#> Time difference of 0.07213688 secs
 ```
 
 #### Visualizing results

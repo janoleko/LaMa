@@ -1,8 +1,8 @@
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with (only) periodically varying transition probability matrix
 #'
 #' When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
-#' Thus it is much more efficient to only calculate these \eqn{L} matrices and index them by time of day instead of calculating such a matrix for each index in the data set.
-#' This function allows for exactly this, by only expecting a transition probability matrix for each time point in a day, and an integer valued (\eqn{1, \dots, L}) time of day variable that maps the data index to the according time of day.
+#' Thus, it is much more efficient to only calculate these \eqn{L} matrices and index them by a time variable (e.g. time of day or day of year) instead of calculating such a matrix for each index in the data set (which would be redundant).
+#' This function allows for that, by only expecting a transition probability matrix for each time point in a period, and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
 #'
 #' @param delta Initial or periodically stationary distribution of length N
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,L). \cr

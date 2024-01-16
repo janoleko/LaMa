@@ -27,7 +27,7 @@ Further algorithm variations will be added as needed. Have fun!
 devtools::install_github("janoleko/Lcpp")
 ```
 
-## Example
+## Example: Homogeneous HMM
 
 ### Generating data from a 2-state HMM
 

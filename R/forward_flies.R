@@ -1,10 +1,9 @@
 #' Forward algorithm for fruit fly application
 #'
-#' @param delta initial distribution
-#' @param allprobs allprobs matrix (of dimension c(n, N))
-#' @param Gamma1 Gamma array in LD condition (dim = c(N, N, L))
-#' @param Gamma2 Gamma array in DD condition (dim = c(N, N, L))
-#' @param startDD startindex of DD condition
+#' @param delta Initial or periodically stationary distribution of length N
+#' @param Gamma Array of transition probability matrices of dimension c(N,N,L,2).
+#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param DD Index where DD condition starts
 #' @param tod time of day variable
 #'
 #' @return Log-likelihood for given data and parameters

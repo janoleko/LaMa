@@ -1,7 +1,7 @@
 
 # {Lcpp}: Forward algorithm in C++ <img src="figures/Lcpp_logo.png" align="right" height=140>
 
-This package contains convenient R-wrapper functions for the **forward
+This package contains convenient **R** wrapper functions for the **forward
 algorithm** used to fit **hidden Markov models** (HMMs), **hidden
 semi-Markov models** (HSMMs) and **state space models** (SSMs) via
 **direct numerical maximum likelihood estimation**. The algorithm
@@ -29,7 +29,7 @@ devtools::install_github("janoleko/Lcpp")
 
 ## Example: Homogeneous HMM
 
-#### Generating data from a 2-state HMM
+### Generating data from a 2-state HMM
 
 ``` r
 # parameters
@@ -52,7 +52,8 @@ plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")
 
 <img src="man/figures/README-data-1.png" width="75%" style="display: block; margin: auto;" />
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
+Here we use the package functionality in the last line
 
 ``` r
 mllk = function(theta.star, x){
@@ -71,7 +72,7 @@ mllk = function(theta.star, x){
 }
 ```
 
-#### Fitting an HMM to the data
+### Fitting an HMM to the data
 
 ``` r
 theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
@@ -80,8 +81,9 @@ mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
 #> Time difference of 0.07316089 secs
 ```
+Really fast!
 
-#### Visualizing results
+### Visualizing results
 
 ``` r
 # transform parameters to working

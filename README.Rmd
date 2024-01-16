@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo.png" align="right" height=140>
+# {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo1.png" align="right" height=160>
 
 This package contains convenient **R** wrapper functions for the **forward algorithm** used to fit **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow (for details see [Zucchini et al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)). Implementation in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by e.g. `nlm()` or `optim()`. Current implementations include
 

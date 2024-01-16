@@ -1,7 +1,7 @@
 
 # {Lcpp}: Forward algorithm in C++
 
-This package contains convenient R-wrapper functions for the **forward
+This package contains convenient R wrapper functions for the **forward
 algorithm** used to fit **hidden Markov models** (HMMs), **hidden
 semi-Markov models** (HSMMs) and **state space models** (SSMs) via
 **direct numerical maximum likelihood estimation**. The algorithm

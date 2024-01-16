@@ -82,6 +82,7 @@ mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
 #> Time difference of 0.07452703 secs
 ```
+Really fast!
 
 ### Visualizing results
 

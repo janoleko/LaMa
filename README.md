@@ -11,11 +11,13 @@ et
 al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)).
 Implementation in **C++** offers 10-20 times faster evaluation times,
 thus substantially speeding up estimation by e.g. `nlm()` or `optim()`.
-The two main implementations are `forward()` which should be used when
-fitting models with **homogeneous** transition probability matrices and
-`forward_g()` which should we used when fitting models with
-**covariates** affecting the state-process dynamics. The functions are
-built to be included in the negative log-likelihood function, after
+Currently, the main implementations are 
+
+* `forward()` which should be used for **homogeneous** transition probabilities,
+* `forward_g()` which should be used when **covariates** are affecting the state-process dynamics, and
+* `forward_p()` which should be used when the transition probabilities only vary **periodically**.
+
+The functions are built to be included in the negative log-likelihood function, after
 parameters have been transformed and the allprobs matrix (containing all
 state-dependent probabilities) has been calculated.
 

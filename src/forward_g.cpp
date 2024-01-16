@@ -5,7 +5,6 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 double forward_cpp_g(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma)
 {
-  
   int N = allprobs.n_cols;
   int nObs = allprobs.n_rows;
   arma::rowvec foo(N);

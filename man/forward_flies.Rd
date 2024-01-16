@@ -7,17 +7,15 @@
 forward_flies(delta, allprobs, Gamma, DD, tod)
 }
 \arguments{
-\item{delta}{initial distribution}
+\item{delta}{Initial or periodically stationary distribution of length N}
 
-\item{allprobs}{allprobs matrix (of dimension c(n, N))}
+\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L,2).}
+
+\item{DD}{Index where DD condition starts}
 
 \item{tod}{time of day variable}
-
-\item{Gamma1}{Gamma array in LD condition (dim = c(N, N, L))}
-
-\item{Gamma2}{Gamma array in DD condition (dim = c(N, N, L))}
-
-\item{startDD}{startindex of DD condition}
 }
 \value{
 Log-likelihood for given data and parameters

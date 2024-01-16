@@ -27,7 +27,7 @@ Further algorithm variations will be added as needed. Have fun!
 devtools::install_github("janoleko/Lcpp")
 ```
 
-## Example
+## Example: Homogeneous HMM
 
 #### Generating data from a 2-state HMM
 
@@ -78,7 +78,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07381606 secs
+#> Time difference of 0.07909417 secs
 ```
 
 #### Visualizing results

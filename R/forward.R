@@ -1,8 +1,8 @@
-#' Forward algorithm with homogeneous transition probability matrix
+#' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix
 #'
-#' @param delta Initial or stationary distribution (of length N)
-#' @param Gamma Gamma matrix (of dimension c(N,N))
-#' @param allprobs allprobs matrix (of dimension c(n, N))
+#' @param delta Initial or stationary distribution of length N
+#' @param Gamma Transition probability matrix of dimension c(N,N)
+#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export

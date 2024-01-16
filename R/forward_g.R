@@ -1,8 +1,11 @@
-#' General forward algorithm with time-varying transition probability matrix
+#' General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
 #'
-#' @param delta Initial or periodically stationary distribution (of length N)
-#' @param Gamma Pre-calculated array of Gamma matrices (of dimension c(N,N,n))
-#' @param allprobs allprobs matrix (of dimension c(n, N))
+#' @param delta Initial distribution of length N
+#' @param Gamma Array of transition probability matrices of dimension c(N,N,n). \cr
+#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
+#' such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
+#' Therefore, the first element of the array is not used in the likelihood calculation.
+#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export

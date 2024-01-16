@@ -2,22 +2,22 @@
 % Please edit documentation in R/forward.R
 \name{forward}
 \alias{forward}
-\title{Forward algorithm with homogeneous transition probability matrix}
+\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix}
 \usage{
 forward(delta, Gamma, allprobs)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution (of length N)}
+\item{delta}{Initial or stationary distribution of length N}
 
-\item{Gamma}{Gamma matrix (of dimension c(N,N))}
+\item{Gamma}{Transition probability matrix of dimension c(N,N)}
 
-\item{allprobs}{allprobs matrix (of dimension c(n, N))}
+\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 }
 \value{
 Log-likelihood for given data and parameters
 }
 \description{
-Forward algorithm with homogeneous transition probability matrix
+\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix
 }
 \examples{
 ## generating data from homogeneous 2-state HMM

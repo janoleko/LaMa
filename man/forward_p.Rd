@@ -2,16 +2,18 @@
 % Please edit documentation in R/forward_p.R
 \name{forward_p}
 \alias{forward_p}
-\title{Forward algorithm with (only) periodically varying transition probability matrix}
+\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with (only) periodically varying transition probability matrix}
 \usage{
 forward_p(delta, Gamma, allprobs, tod)
 }
 \arguments{
-\item{delta}{Initial or periodically stationary distribution (of length N)}
+\item{delta}{Initial or periodically stationary distribution of length N}
 
-\item{Gamma}{Pre-calculated array of periodic Gamma matrices (of dimension c(N,N,L))}
+\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L). \cr
+Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
+such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
 
-\item{allprobs}{allprobs matrix (of dimension c(n, N))}
+\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
 \item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
 For half-hourly data L = 48. It could however also be day of year when L = 365.}
@@ -20,9 +22,9 @@ For half-hourly data L = 48. It could however also be day of year when L = 365.}
 Log-likelihood for given data and parameters
 }
 \description{
-When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only L unique matrices if L is the period length (e.g. L = 24 for hourly data and time-of-day variation).
-Thus it is much more efficient to only calculate these L matrices and index them by time of day instead of calculating such a matrix for each index in the data set.
-This function allows for exactly this, by only expecting a Gamma matrix for each time point in a day, and an integer valued (1, ..., L) time of day variable that maps the data index to the according time of day.
+When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
+Thus it is much more efficient to only calculate these \eqn{L} matrices and index them by time of day instead of calculating such a matrix for each index in the data set.
+This function allows for exactly this, by only expecting a transition probability matrix for each time point in a day, and an integer valued (\eqn{1, \dots, L}) time of day variable that maps the data index to the according time of day.
 }
 \examples{
 ## generating data from periodic 2-state HMM

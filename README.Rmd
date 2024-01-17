@@ -20,7 +20,9 @@ This package contains convenient **R** wrapper functions for the **forward algor
 * `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs), and
 * `forward_p()` which is more efficient than the general implementation, when transition probabilities only vary **periodically**.
 
-The functions are built to be included in the negative log-likelihood function, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated.
+The functions are built to be included in the negative log-likelihood function, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
+
+The package also contains additional functions like `trigBasisExp()` for efficient computation of trigonometric link functions and `semigroup()` for fast calculation of transition matrices of continuous-time HMMs.
 
 Further algorithm variations will be added as needed. Have fun!
 

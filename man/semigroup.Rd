@@ -21,3 +21,15 @@ When observing data at time points \eqn{t_1, \dots, t_n} the transition probabil
 where \eqn{\exp()} is the matrix exponential. The mapping \eqn{\Gamma(\Delta t)} is also called the Markov semigroup.
 This function calculated all transition matrices based on a given generator and time differences.
 }
+\examples{
+# building a Q matrix for a 3-state cont.-time Markov chain
+Q = diag(3)
+Q[!Q] = rexp(6)
+diag(Q) = 0
+diag(Q) = - rowSums(Q)
+
+# draw time differences
+times = rexp(1000, 10)
+
+Gamma = semigroup(Q, times)
+}

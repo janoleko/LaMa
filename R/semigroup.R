@@ -13,6 +13,16 @@
 #' @export
 #'
 #' @examples
+#' # building a Q matrix for a 3-state cont.-time Markov chain
+#' Q = diag(3)
+#' Q[!Q] = rexp(6)
+#' diag(Q) = 0
+#' diag(Q) = - rowSums(Q)
+#'
+#' # draw time differences
+#' times = rexp(1000, 10)
+#'
+#' Gamma = semigroup(Q, times)
 semigroup = function(Q, times){
   semigroup_cpp(Q, times)
 }

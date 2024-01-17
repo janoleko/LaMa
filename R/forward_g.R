@@ -1,11 +1,14 @@
 #' General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
 #'
 #' @param delta Initial distribution of length N
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,n). \cr \cr
-#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-#' such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
-#' Therefore, the first element of the array is not used in the likelihood calculation. \cr \cr
+#' @param Gamma Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
+#' Can also be of dimension c(N,N,n) when the first or last slice only contains NAs. \cr
+#' 
+#' Using the first parametrization, transition probabilities from t to t+1 are an element of \eqn{\Gamma^{(t)}}.
+#' However, if \eqn{\Gamma^{(t)}} depends on covariate values at t or t+1 is your choice in the calculation of the array, prior to using this function. \cr
+#' 
 #' This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator of the continuous-time Markov chain.
+#' 
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #'
 #' @return Log-likelihood for given data and parameters
@@ -58,5 +61,13 @@
 #' mod = stats::nlm(mllk, theta.star, x = x, z = z)
 #'
 forward_g = function(delta, Gamma, allprobs){
+  n = nrow(allprobs)
+  if(dim(Gamma)[3]==n){
+    if(is.na(Gamma[1,1,1])){
+      Gamma = Gamma[,,-1]
+    } else if(is.na(Gamma[1,1,n])){
+      Gamma = Gamma[,,-n]
+    }
+  }
   forward_cpp_g(allprobs, delta, Gamma)
 }

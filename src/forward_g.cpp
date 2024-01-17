@@ -13,7 +13,7 @@ double forward_cpp_g(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma)
   double mllk_scale = log(sum(foo));
   arma::rowvec phi = foo/sum(foo);
   for (unsigned int i=1; i<nObs; i++){
-    foo = (phi*Gamma.slice(i)) % allprobs.row(i);
+    foo = (phi*Gamma.slice(i-1)) % allprobs.row(i);
     mllk_scale = mllk_scale + log(sum(foo));
     phi = foo/sum(foo);
   }

@@ -17,3 +17,7 @@ forward_cpp_p <- function(allprobs, delta, Gamma, tod) {
     .Call(`_Lcpp_forward_cpp_p`, allprobs, delta, Gamma, tod)
 }
 
+semigroup_cpp <- function(Q, times) {
+    .Call(`_Lcpp_semigroup_cpp`, Q, times)
+}
+

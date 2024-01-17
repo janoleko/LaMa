@@ -25,7 +25,7 @@ matrix (containing all state-dependent probabilities) has been
 calculated.
 
 The package also contains additional functions like `trigBasisExp()` for
-efficient computation of trigonometric link functions and `semigroup()`
+efficient computation of trigonometric link functions and `cont_tpm()`
 for fast calculation of transition matrices of continuous-time HMMs.
 
 Further algorithm variations will be added as needed. Have fun!
@@ -90,7 +90,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07219005 secs
+#> Time difference of 0.07300401 secs
 ```
 
 Really fast!

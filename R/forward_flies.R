@@ -7,9 +7,6 @@
 #' @param tod time of day variable
 #'
 #' @return Log-likelihood for given data and parameters
-#' @export
-#'
-#' @examples
 forward_flies = function(delta, allprobs, Gamma, DD, tod){
   l = forward_cpp_flies(allprobs, delta, Gamma[,,,1], Gamma[,,,2], DD, (tod-1))
   return(l)

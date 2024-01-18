@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-double forward_cpp_flies(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma1, arma::cube Gamma2,
+double forward_cpp_flies(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma1, arma::cube& Gamma2,
                    int startDD, std::vector<int> tod)
 {
   

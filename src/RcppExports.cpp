@@ -12,15 +12,15 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // forward_cpp_flies
-double forward_cpp_flies(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma1, arma::cube Gamma2, int startDD, std::vector<int> tod);
+double forward_cpp_flies(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma1, arma::cube& Gamma2, int startDD, std::vector<int> tod);
 RcppExport SEXP _Lcpp_forward_cpp_flies(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP Gamma1SEXP, SEXP Gamma2SEXP, SEXP startDDSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type Gamma1(Gamma1SEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type Gamma2(Gamma2SEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Gamma1(Gamma1SEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Gamma2(Gamma2SEXP);
     Rcpp::traits::input_parameter< int >::type startDD(startDDSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type tod(todSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_flies(allprobs, delta, Gamma1, Gamma2, startDD, tod));
@@ -28,40 +28,40 @@ BEGIN_RCPP
 END_RCPP
 }
 // forward_cpp_g
-double forward_cpp_g(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma);
+double forward_cpp_g(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma);
 RcppExport SEXP _Lcpp_forward_cpp_g(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Gamma(GammaSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_g(allprobs, delta, Gamma));
     return rcpp_result_gen;
 END_RCPP
 }
 // forward_cpp_h
-double forward_cpp_h(arma::mat allprobs, arma::rowvec delta, arma::mat Gamma);
+double forward_cpp_h(arma::mat& allprobs, arma::rowvec& delta, arma::mat& Gamma);
 RcppExport SEXP _Lcpp_forward_cpp_h(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Gamma(GammaSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_h(allprobs, delta, Gamma));
     return rcpp_result_gen;
 END_RCPP
 }
 // forward_cpp_p
-double forward_cpp_p(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma, std::vector<int> tod);
+double forward_cpp_p(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma, std::vector<int> tod);
 RcppExport SEXP _Lcpp_forward_cpp_p(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::cube >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< arma::cube& >::type Gamma(GammaSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type tod(todSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_p(allprobs, delta, Gamma, tod));
     return rcpp_result_gen;

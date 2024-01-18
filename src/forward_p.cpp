@@ -3,7 +3,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-double forward_cpp_p(arma::mat allprobs, arma::rowvec delta, arma::cube Gamma, std::vector<int> tod)
+double forward_cpp_p(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma, std::vector<int> tod)
 {
   int N = allprobs.n_cols;
   int nObs = allprobs.n_rows;

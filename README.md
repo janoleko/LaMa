@@ -99,11 +99,12 @@ mllk = function(theta.star, x){
 #### Fitting an HMM to the data
 
 ``` r
-theta.star = c(-1,-1,1,4,log(1),log(3)) # initial transformed parameters: not chosen too well
+theta.star = c(-1,-1,1,4,log(1),log(3)) 
+# initial transformed parameters: not chosen too well
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.133817 secs
+#> Time difference of 0.158226 secs
 ```
 
 Really fast for 10.000 data points!

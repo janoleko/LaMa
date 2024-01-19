@@ -48,7 +48,7 @@ devtools::install_github("janoleko/Lcpp")
 mu = c(0, 6)
 sigma = c(2, 4)
 Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-delta = c(0.5, 0.5)
+delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
 
 # simulation
 set.seed(123)
@@ -64,13 +64,11 @@ plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")
 ```
 
 #### Writing the negative log-likelihood function
-Here we use the package functionality in the last line
+Here we build the t.p.m. using the `tpm()` function and calculate the log-likelihood using `forward()` in the last line.
 ```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = diag(2)
-  Gamma[!Gamma] = exp(theta.star[1:2])
-  Gamma = Gamma / rowSums(Gamma)
+  Gamma = Lcpp::tpm(theta.star[1:2], 2)
   delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])

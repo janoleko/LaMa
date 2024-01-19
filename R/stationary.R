@@ -14,7 +14,7 @@
 #' @export
 #'
 #' @examples
-#' Gamma = tpm(c(rep(-2,3), rep(-3,3)), 3)
+#' Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 #' delta = stationary(Gamma)
 stationary = function(Gamma, tol = .Machine$double.eps){
   N = dim(Gamma)[1]

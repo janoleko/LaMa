@@ -95,7 +95,7 @@ calculate the log-likelihood using `forward()` in the last line.
 ``` r
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = tpm(theta.star[1:2], 2)
+  Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
@@ -115,7 +115,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1031802 secs
+#> Time difference of 0.104208 secs
 ```
 
 Really fast for 10.000 data points!
@@ -127,7 +127,7 @@ parameters to working parameters.
 
 ``` r
 # transform parameters to working
-Gamma = tpm(mod$estimate[1:2], 2)
+Gamma = tpm(mod$estimate[1:2])
 delta = stationary(Gamma) # stationary HMM
 mu = mod$estimate[3:4]
 sigma = exp(mod$estimate[5:6])

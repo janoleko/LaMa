@@ -22,6 +22,6 @@ where \eqn{\Gamma} is the transition probability matrix.
 This function solves the linear system of equations above.
 }
 \examples{
-Gamma = tpm(c(rep(-2,3), rep(-3,3)), 3)
+Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 delta = stationary(Gamma)
 }

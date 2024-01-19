@@ -76,7 +76,7 @@ Here, we build the transition probability matrix using the `tpm()` function, com
 ```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = tpm(theta.star[1:2], 2)
+  Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
@@ -102,7 +102,7 @@ Really fast for 10.000 data points!
 Again, we use `tpm()` and `stationary()` to tranform the unconstraint parameters to working parameters.
 ```{r visualization}
 # transform parameters to working
-Gamma = tpm(mod$estimate[1:2], 2)
+Gamma = tpm(mod$estimate[1:2])
 delta = stationary(Gamma) # stationary HMM
 mu = mod$estimate[3:4]
 sigma = exp(mod$estimate[5:6])

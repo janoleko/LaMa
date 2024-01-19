@@ -21,7 +21,7 @@
 #' # building all 24 t.p.m.s
 #' Gamma = array(dim = c(2,2,24))
 #' for(t in 1:24){
-#'   Gamma[,,t] = tpm(Eta[t,], 2)
+#'   Gamma[,,t] = tpm(Eta[t,])
 #' }
 #' # calculating 
 #' tpm_thinned(Gamma, 4)

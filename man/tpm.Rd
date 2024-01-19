@@ -4,12 +4,10 @@
 \alias{tpm}
 \title{Build the transition probability matrix from unconstraint parameter vector}
 \usage{
-tpm(param, N)
+tpm(param)
 }
 \arguments{
-\item{param}{Unconstraint parameter vector of length N*(N-1)}
-
-\item{N}{Number of hidden states}
+\item{param}{Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
 }
 \value{
 Transition probability matrix of dimension c(N,N)
@@ -20,5 +18,5 @@ For each row of the matrix, the inverse multinomial logistic link is applied.
 }
 \examples{
 param = rep(-2,6)
-Gamma = tpm(param, 3)
+Gamma = tpm(param)
 }

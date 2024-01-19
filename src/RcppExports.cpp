@@ -28,42 +28,54 @@ BEGIN_RCPP
 END_RCPP
 }
 // forward_cpp_g
-double forward_cpp_g(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma);
+double forward_cpp_g(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma);
 RcppExport SEXP _Lcpp_forward_cpp_g(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_g(allprobs, delta, Gamma));
     return rcpp_result_gen;
 END_RCPP
 }
 // forward_cpp_h
-double forward_cpp_h(arma::mat& allprobs, arma::rowvec& delta, arma::mat& Gamma);
+double forward_cpp_h(const arma::mat& allprobs, const arma::rowvec& delta, const arma::mat& Gamma);
 RcppExport SEXP _Lcpp_forward_cpp_h(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Gamma(GammaSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_h(allprobs, delta, Gamma));
     return rcpp_result_gen;
 END_RCPP
 }
 // forward_cpp_p
-double forward_cpp_p(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma, std::vector<int> tod);
+double forward_cpp_p(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const std::vector<int> tod);
 RcppExport SEXP _Lcpp_forward_cpp_p(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat& >::type allprobs(allprobsSEXP);
-    Rcpp::traits::input_parameter< arma::rowvec& >::type delta(deltaSEXP);
-    Rcpp::traits::input_parameter< arma::cube& >::type Gamma(GammaSEXP);
-    Rcpp::traits::input_parameter< std::vector<int> >::type tod(todSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const std::vector<int> >::type tod(todSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_p(allprobs, delta, Gamma, tod));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rep_times_cpp
+arma::sp_mat rep_times_cpp(const arma::rowvec& x, const arma::ivec& times);
+RcppExport SEXP _Lcpp_rep_times_cpp(SEXP xSEXP, SEXP timesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::ivec& >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rep_times_cpp(x, times));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -85,6 +97,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_g", (DL_FUNC) &_Lcpp_forward_cpp_g, 3},
     {"_Lcpp_forward_cpp_h", (DL_FUNC) &_Lcpp_forward_cpp_h, 3},
     {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
+    {"_Lcpp_rep_times_cpp", (DL_FUNC) &_Lcpp_rep_times_cpp, 2},
     {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
     {NULL, NULL, 0}
 };

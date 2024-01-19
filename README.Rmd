@@ -34,6 +34,7 @@ Further functionalities will be added as needed. Have fun!
 
 ## Installation
 
+For installation, use:
 ```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
 # install.packages("devtools")
 devtools::install_github("janoleko/Lcpp")

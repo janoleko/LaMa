@@ -38,13 +38,13 @@ for(t in 1:100){
 }
 
 ## negative log likelihood function
-mllk = function(theta.star, x, sizes){
+mllk = function(theta.star, x, sizes, tol = 1e-30){
   # parameter transformations for unconstraint optimization
   omega = matrix(c(0,1,1,0), nrow = 2, byrow = TRUE) # omega fixed (2-states)
   lambda = exp(theta.star[1:2]) # dwell time means
   dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
   Gamma = hsmm2hmm(omega, dm)
-  delta = solve(t(diag(nrow(Gamma))-Gamma+1), rep(1,nrow(Gamma)), tol = 1e-20) # stationary
+  delta = solve(t(diag(nrow(Gamma))-Gamma+1), rep(1,nrow(Gamma)), tol = tol) # stationary
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities
@@ -54,7 +54,7 @@ mllk = function(theta.star, x, sizes){
   -Lcpp::forward_s(delta, Gamma, allprobs, sizes)
 }
 
-## fitting an HMM to the data
+## fitting an HSMM to the data
 theta.star = c(log(5), log(10), 1, 4, log(2), log(2))
 mod = stats::nlm(mllk, theta.star, x = x, sizes = c(20, 30))
 }

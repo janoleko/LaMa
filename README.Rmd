@@ -42,13 +42,19 @@ devtools::install_github("janoleko/Lcpp")
 
 ## Example: Homogeneous HMM
 
+#### Loading the package
+```{r package}
+library(Lcpp)
+```
+
 #### Generating data from a 2-state HMM
+Here we can use `stationary()` to compute the stationary distribution.
 ```{r data}
 # parameters
 mu = c(0, 6)
 sigma = c(2, 4)
 Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
+delta = stationary(Gamma) # stationary HMM
 
 # simulation
 n = 10000 # rather large
@@ -66,19 +72,19 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
 ```
 
 #### Writing the negative log-likelihood function
-Here we build the t.p.m. using the `tpm()` function and calculate the log-likelihood using `forward()` in the last line.
+Here, we build the transition probability matrix using the `tpm()` function, compute the stationary distribution using `stationary()` and calculate the log-likelihood using `forward()` in the last line.
 ```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = Lcpp::tpm(theta.star[1:2], 2)
-  delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
+  Gamma = tpm(theta.star[1:2], 2)
+  delta = stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
-  -Lcpp::forward(delta, Gamma, allprobs)
+  -forward(delta, Gamma, allprobs)
 }
 ```
 
@@ -93,12 +99,11 @@ Sys.time()-s
 Really fast for 10.000 data points!
 
 #### Visualizing results
+Again, we use `tpm()` and `stationary()` to tranform the unconstraint parameters to working parameters.
 ```{r visualization}
 # transform parameters to working
-Gamma = diag(2)
-Gamma[!Gamma] = exp(mod$estimate[1:2])
-Gamma = Gamma / rowSums(Gamma)
-delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
+Gamma = tpm(mod$estimate[1:2], 2)
+delta = stationary(Gamma) # stationary HMM
 mu = mod$estimate[3:4]
 sigma = exp(mod$estimate[5:6])
 

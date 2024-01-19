@@ -15,20 +15,30 @@ Current implementations include
 
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
-  transition probabilities (including **continuous-time** HMMs), and
+  transition probabilities (including **continuous-time** HMMs),
 - `forward_p()` which is more efficient than the general implementation,
-  when transition probabilities only vary **periodically**.
+  when transition probabilities only vary **periodically**, and
+- `forward_s()` for fitting **HSMMs**.
 
-The functions are built to be included in the negative log-likelihood
-function, after parameters have been transformed and the *allprobs*
+The functions are built to be included in the **negative log-likelihood
+function**, after parameters have been transformed and the *allprobs*
 matrix (containing all state-dependent probabilities) has been
 calculated.
 
-The package also contains additional functions like `trigBasisExp()` for
-efficient computation of trigonometric link functions and `cont_tpm()`
-for fast calculation of transition matrices of continuous-time HMMs.
+In addition to providing fast and easy to use versions of the **forward
+algorithm**, this package is supposed to be a toolbox for flexible and
+fast model building. Thus, it contains more helpful functions for
+building HMM-like models. Currently these include
 
-Further algorithm variations will be added as needed. Have fun!
+- `trigBasisExp()`: Efficient computation of trigonometric link
+  functions
+- `cont_tpm()`: Fast calculation of transition matrices of
+  continuous-time HMMs
+- `hmm2hsmm()`: Building the transition matrix for fitting HSMMs
+- `phmm2phsmm()`: Building the transition matrix for fitting
+  periodically inhomogeneous HSMMs
+
+Further functionalities will be added as needed. Have fun!
 
 ## Installation
 
@@ -90,7 +100,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07662797 secs
+#> Time difference of 0.07248807 secs
 ```
 
 Really fast!

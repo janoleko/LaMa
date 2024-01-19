@@ -17,14 +17,20 @@ knitr::opts_chunk$set(
 This package contains convenient **R** wrapper functions for the **forward algorithm** used to fit **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow (for details see [Zucchini et al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)). Implementation in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by e.g. `nlm()` or `optim()`. Current implementations include
 
 * `forward()` for models with **homogeneous** transition probabilities,
-* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs), and
-* `forward_p()` which is more efficient than the general implementation, when transition probabilities only vary **periodically**.
+* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs),
+* `forward_p()` which is more efficient than the general implementation, when transition probabilities only vary **periodically**, and
+* `forward_s()` for fitting **HSMMs**.
 
-The functions are built to be included in the negative log-likelihood function, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
+The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
 
-The package also contains additional functions like `trigBasisExp()` for efficient computation of trigonometric link functions and `cont_tpm()` for fast calculation of transition matrices of continuous-time HMMs.
+In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains more helpful functions for building HMM-like models. Currently these include
 
-Further algorithm variations will be added as needed. Have fun!
+* `trigBasisExp()`: Efficient computation of trigonometric link functions
+* `cont_tpm()`: Fast calculation of transition matrices of continuous-time HMMs
+* `hmm2hsmm()`: Building the transition matrix for fitting HSMMs
+* `phmm2phsmm()`: Building the transition matrix for fitting periodically inhomogeneous  HSMMs
+
+Further functionalities will be added as needed. Have fun!
 
 ## Installation
 

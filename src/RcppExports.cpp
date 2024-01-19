@@ -91,6 +91,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// tpm_thinned_t_cpp
+arma::mat tpm_thinned_t_cpp(const arma::cube& Gamma, const int t);
+RcppExport SEXP _Lcpp_tpm_thinned_t_cpp(SEXP GammaSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const int >::type t(tSEXP);
+    rcpp_result_gen = Rcpp::wrap(tpm_thinned_t_cpp(Gamma, t));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_flies", (DL_FUNC) &_Lcpp_forward_cpp_flies, 6},
@@ -99,6 +111,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
     {"_Lcpp_rep_times_cpp", (DL_FUNC) &_Lcpp_rep_times_cpp, 2},
     {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
+    {"_Lcpp_tpm_thinned_t_cpp", (DL_FUNC) &_Lcpp_tpm_thinned_t_cpp, 2},
     {NULL, NULL, 0}
 };
 

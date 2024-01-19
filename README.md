@@ -61,16 +61,17 @@ Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
 delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
 
 # simulation
+n = 10000 # rather large
 set.seed(123)
-s = x = rep(NA, 2000)
+s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
 x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
-for(t in 2:2000){
+for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
-plot(x[1:400], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:400]])
+plot(x[1:200], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:200]])
 ```
 
 <img src="man/figures/README-data-1.png" width="75%" style="display: block; margin: auto;" />
@@ -98,14 +99,14 @@ mllk = function(theta.star, x){
 #### Fitting an HMM to the data
 
 ``` r
-theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
+theta.star = c(-1,-1,1,4,log(1),log(3)) # initial transformed parameters: not chosen too well
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07205105 secs
+#> Time difference of 0.133817 secs
 ```
 
-Really fast!
+Really fast for 10.000 data points!
 
 #### Visualizing results
 

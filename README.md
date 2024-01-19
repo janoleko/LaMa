@@ -71,7 +71,8 @@ for(t in 2:n){
   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
-plot(x[1:200], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:200]])
+plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
+     col = c("orange","deepskyblue")[s[1:200]])
 ```
 
 <img src="man/figures/README-data-1.png" width="75%" style="display: block; margin: auto;" />
@@ -104,7 +105,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.158226 secs
+#> Time difference of 0.1404879 secs
 ```
 
 Really fast for 10.000 data points!

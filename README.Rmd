@@ -61,7 +61,8 @@ for(t in 2:n){
   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
-plot(x[1:200], bty = "n", pch = 20, ylab = "x", col = c("orange", "deepskyblue")[s[1:200]])
+plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
+     col = c("orange","deepskyblue")[s[1:200]])
 ```
 
 #### Writing the negative log-likelihood function

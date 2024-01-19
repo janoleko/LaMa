@@ -1,7 +1,7 @@
 
 # {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
 
-This package contains convenient **R** wrapper functions for the
+This package provides convenient **R** wrapper functions for the
 **forward algorithm** used to fit **hidden Markov models** (HMMs),
 **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs)
 via **direct numerical maximum likelihood estimation**. The algorithm
@@ -102,7 +102,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.070225 secs
+#> Time difference of 0.07205105 secs
 ```
 
 Really fast!

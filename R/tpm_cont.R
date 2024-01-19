@@ -22,7 +22,7 @@
 #' # draw time differences
 #' times = rexp(1000, 10)
 #'
-#' Gamma = cont_tpm(Q, times)
-cont_tpm = function(Q, times){
+#' Gamma = tpm_cont(Q, times)
+tpm_cont = function(Q, times){
   semigroup_cpp(Q, times)
 }

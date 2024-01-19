@@ -34,8 +34,8 @@ building HMM-like models. Currently these include
   functions
 - `cont_tpm()`: Fast calculation of transition matrices of
   continuous-time HMMs
-- `hmm2hsmm()`: Building the transition matrix for fitting HSMMs
-- `phmm2phsmm()`: Building the transition matrix for fitting
+- `hsmm2hmm()`: Building the transition matrix for fitting HSMMs
+- `phsmm2phmm()`: Building the transition matrix for fitting
   periodically inhomogeneous HSMMs
 
 Further functionalities will be added as needed. Have fun!
@@ -61,6 +61,7 @@ Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
 delta = c(0.5, 0.5)
 
 # simulation
+set.seed(123)
 s = x = rep(NA, 2000)
 s[1] = sample(1:2, 1, prob = delta)
 x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
@@ -102,7 +103,7 @@ theta.star = c(-2,-2,0,5,log(2),log(3)) # initial transformed parameters
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.07683015 secs
+#> Time difference of 0.07272601 secs
 ```
 
 Really fast!

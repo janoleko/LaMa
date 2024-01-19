@@ -27,8 +27,8 @@ In addition to providing fast and easy to use versions of the **forward algorith
 
 * `trigBasisExp()`: Efficient computation of trigonometric link functions
 * `cont_tpm()`: Fast calculation of transition matrices of continuous-time HMMs
-* `hmm2hsmm()`: Building the transition matrix for fitting HSMMs
-* `phmm2phsmm()`: Building the transition matrix for fitting periodically inhomogeneous  HSMMs
+* `hsmm2hmm()`: Building the transition matrix for fitting HSMMs
+* `phsmm2phmm()`: Building the transition matrix for fitting periodically inhomogeneous  HSMMs
 
 Further functionalities will be added as needed. Have fun!
 
@@ -51,6 +51,7 @@ Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
 delta = c(0.5, 0.5)
 
 # simulation
+set.seed(123)
 s = x = rep(NA, 2000)
 s[1] = sample(1:2, 1, prob = delta)
 x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])

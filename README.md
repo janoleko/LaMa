@@ -30,13 +30,14 @@ algorithm**, this package is supposed to be a toolbox for flexible and
 fast model building. Thus, it contains more helpful functions for
 building HMM-like models. Currently these include
 
-- `trigBasisExp()`: Efficient computation of trigonometric link
-  functions
-- `cont_tpm()`: Fast calculation of transition matrices of
-  continuous-time HMMs
-- `hsmm2hmm()`: Building the transition matrix for fitting HSMMs
-- `phsmm2phmm()`: Building the transition matrix for fitting
-  periodically inhomogeneous HSMMs
+- `trigBasisExp()` for efficient computation of trigonometric link
+  functions,
+- `hsmm2hmm()` and `phsmm2phmm()` for building the transition
+  probability matrices of HSMMs,
+- the `tpm()` family for computing various kinds of transition
+  probability matrices, and
+- the `stationary()` family to compute stationary and periodically
+  stationary distributions.
 
 Further functionalities will be added as needed. Have fun!
 
@@ -114,7 +115,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.103075 secs
+#> Time difference of 0.1031802 secs
 ```
 
 Really fast for 10.000 data points!

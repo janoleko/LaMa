@@ -25,6 +25,10 @@ semigroup_cpp <- function(Q, times) {
     .Call(`_Lcpp_semigroup_cpp`, Q, times)
 }
 
+tpm_g_cpp <- function(Z, beta, N) {
+    .Call(`_Lcpp_tpm_g_cpp`, Z, beta, N)
+}
+
 tpm_thinned_t_cpp <- function(Gamma, t) {
     .Call(`_Lcpp_tpm_thinned_t_cpp`, Gamma, t)
 }

@@ -26,7 +26,12 @@ In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty te
 Array of transition probability matrices of dimension c(N,N,length(tod))
 }
 \description{
-Build all transition probability matrices of a periodically inhomogeneous HMM
+Given a periodically varying variable such as time of day or day of year and the associated cycle length, 
+this function calculates the transition probability matrices by applying the inverse multinomial logistic link to linear predictors of the form \cr \cr
+\eqn{ 
+ \eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L}) \bigr) } \cr \cr
+for the off-diagonal elements (\eqn{i \neq j}).
+This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing \eqn{K}).
 }
 \examples{
 # hourly data 

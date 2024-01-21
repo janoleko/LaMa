@@ -1,4 +1,4 @@
-#' Calculation of the extended-state-space transiton probability matrix for periodically inhomogeneous hidden semi-Markov models
+#' Build all transition probability matrices of an periodic-HSMM-approximating HMM
 #'
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
@@ -33,7 +33,7 @@
 #' omega = matrix(c(0,0.5,0.5,0.2,0,0.8,0.7,0.3,0), nrow = N, byrow = TRUE)
 #' 
 #' # calculating extended-state-space t.p.m.s
-#' Gamma = phsmm2phmm(omega, dm)
+#' Gamma = tpm_phsmm(omega, dm)
 #' 
 #' ## inhomogeneous conditional transition probabilites
 #' # omega can be an array
@@ -41,8 +41,8 @@
 #' omega[1,,4] = c(0, 0.2, 0.8) # small change for inhomogeneity
 #' 
 #' # calculating extended-state-space t.p.m.s
-#' Gamma = phsmm2phmm(omega, dm)
-phsmm2phmm = function(omega, dm, eps = 1e-10){
+#' Gamma = tpm_phsmm(omega, dm)
+tpm_phsmm = function(omega, dm, eps = 1e-10){
   # dm list over states: entries matrices of dim c(L, N_i)
   L = nrow(dm[[1]]) # length of one cycle
   N = length(dm) # number of states

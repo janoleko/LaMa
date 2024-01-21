@@ -1,4 +1,4 @@
-#' Calculation of the extended-state-space transiton probability matrix for hidden semi-Markov models
+#' Build the transition probability matrix of an HSMM-approximating HMM
 #'
 #' @description
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 
@@ -21,8 +21,8 @@
 #' lambda = c(5, 11)
 #' dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
 #' # calculating extended-state-space t.p.m.
-#' Gamma = hsmm2hmm(omega, dm)
-hsmm2hmm = function(omega,dm,eps=1e-10){
+#' Gamma = tpm_hsmm(omega, dm)
+tpm_hsmm = function(omega,dm,eps=1e-10){
   mv = sapply(dm,length)
   m = length(mv)
   G = matrix(0,0,sum(mv))

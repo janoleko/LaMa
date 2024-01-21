@@ -25,8 +25,8 @@ The functions are built to be included in the **negative log-likelihood function
 
 In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains more helpful functions for building HMM-like models. Currently these include:
 
-* The `tpm`family with
-  + `tpm()` for calculating a homogeneous transition probability matrix via the     multinomial logistic link, 
+* The `tpm` family with
+  + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link, 
   + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices, 
   + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs,
   + `tpm_cont()` for calculating the transition probabilites of a continuous-time     Markov chain,

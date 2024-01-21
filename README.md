@@ -42,7 +42,7 @@ building HMM-like models. Currently these include:
     continuous-time Markov chain,
   - `tpm_hsmm()` for calculating the transition matrix of an
     HSMM-approximating HMM, and
-  - `tpm_phsmm()` for calculating the transition matrix of a
+  - `tpm_phsmm()` for calculating transition matrices of a
     periodic-HSMM-approximating HMM.
 
 - The `stationary()` family to compute stationary and periodically
@@ -127,7 +127,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1043282 secs
+#> Time difference of 0.105618 secs
 ```
 
 Really fast for 10.000 data points!

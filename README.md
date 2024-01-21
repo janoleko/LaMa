@@ -48,8 +48,8 @@ building HMM-like models. Currently these include:
 - The `stationary()` family to compute stationary and periodically
   stationary distributions.
 
-- `trigBasisExp()` for efficient computation of trigonometric link
-  functions.
+- `trigBasisExp()` for efficient computation of a trigonometric basis
+  expansion.
 
 Further functionalities will be added as needed. Have fun!
 
@@ -127,7 +127,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.105618 secs
+#> Time difference of 0.103992 secs
 ```
 
 Really fast for 10.000 data points!

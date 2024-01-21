@@ -35,7 +35,7 @@ In addition to providing fast and easy to use versions of the **forward algorith
 
 * The `stationary()` family to compute stationary and periodically stationary distributions.
 
-* `trigBasisExp()` for efficient computation of trigonometric link functions.
+* `trigBasisExp()` for efficient computation of a trigonometric basis expansion.
 
 Further functionalities will be added as needed. Have fun!
 

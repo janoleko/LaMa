@@ -1,4 +1,4 @@
-#' Calculate all transition probability matrices
+#' Build all transition probability matrices of an inhomogeneous HMM
 #' 
 #' In an HMM, we can model the influence of covariates on the state process, by linking them to the transition probabiltiy matrix. 
 #' Most commonly, this is done by specifying a linear predictor \cr \cr
@@ -7,7 +7,7 @@
 #' This function efficiently calculates all transition probabilty matrices for a given design matrix \eqn{Z} and parameter matrix.
 #'
 #' @param Z Covariate design matrix (excluding intercept column) of dimension c(n, p)
-#' @param beta matrix of coefficients for the off-diagonal elements of the transition probability matrix.
+#' @param beta Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 #' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,n)

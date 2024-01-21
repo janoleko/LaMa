@@ -2,14 +2,14 @@
 % Please edit documentation in R/tpm_g.R
 \name{tpm_g}
 \alias{tpm_g}
-\title{Calculate all transition probability matrices}
+\title{Build all transition probability matrices of an inhomogeneous HMM}
 \usage{
 tpm_g(Z, beta)
 }
 \arguments{
 \item{Z}{Covariate design matrix (excluding intercept column) of dimension c(n, p)}
 
-\item{beta}{matrix of coefficients for the off-diagonal elements of the transition probability matrix.
+\item{beta}{Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.}
 }
 \value{

@@ -4,9 +4,9 @@
 \name{Lcpp-package}
 \alias{Lcpp}
 \alias{Lcpp-package}
-\title{Lcpp: Faster numerical maximum likelihood estimation for HMMs and SMMs}
+\title{Lcpp: Faster numerical maximum likelihood estimation of HMMs, HSMMs and SMMs}
 \description{
-Forward algorithm in C++ to speed up estimation of HMMs and SSMs.
+Forward algorithm in C++ to speed up estimation of HMMs, HSMMs and SSMs.
 }
 \author{
 \strong{Maintainer}: Jan-Ole Koslik \email{jan-ole.koslik@uni-bielefeld.de}

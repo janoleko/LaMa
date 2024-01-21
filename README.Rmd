@@ -23,12 +23,19 @@ This package provides convenient **R** wrapper functions for the **forward algor
 
 The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
 
-In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains more helpful functions for building HMM-like models. Currently these include
+In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains more helpful functions for building HMM-like models. Currently these include:
 
-* `trigBasisExp()` for efficient computation of trigonometric link functions,
-* `hsmm2hmm()` and `phsmm2phmm()` for building the transition probability matrices of HSMMs,
-* the `tpm()` family for computing various kinds of transition probability matrices, and 
-* the `stationary()` family to compute stationary and periodically stationary distributions.
+* The `tpm`family with
+  + `tpm()` for calculating a homogeneous transition probability matrix via the     multinomial logistic link, 
+  + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices, 
+  + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs,
+  + `tpm_cont()` for calculating the transition probabilites of a continuous-time     Markov chain,
+  + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, and
+  + `tpm_phsmm()` for calculating the transition matrix of a             periodic-HSMM-approximating HMM.
+
+* The `stationary()` family to compute stationary and periodically stationary distributions.
+
+* `trigBasisExp()` for efficient computation of trigonometric link functions.
 
 Further functionalities will be added as needed. Have fun!
 

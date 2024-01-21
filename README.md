@@ -28,16 +28,28 @@ calculated.
 In addition to providing fast and easy to use versions of the **forward
 algorithm**, this package is supposed to be a toolbox for flexible and
 fast model building. Thus, it contains more helpful functions for
-building HMM-like models. Currently these include
+building HMM-like models. Currently these include:
+
+- The `tpm`family with
+
+  - `tpm()` for calculating a homogeneous transition probability matrix
+    via the multinomial logistic link,
+  - `tpm_g()` for calculating general inhomogeneous transition
+    probabilty matrices,
+  - `tpm_p()` for calculating transition matrices of periodically
+    inhomogeneous HMMs,
+  - `tpm_cont()` for calculating the transition probabilites of a
+    continuous-time Markov chain,
+  - `tpm_hsmm()` for calculating the transition matrix of an
+    HSMM-approximating HMM, and
+  - `tpm_phsmm()` for calculating the transition matrix of a
+    periodic-HSMM-approximating HMM.
+
+- The `stationary()` family to compute stationary and periodically
+  stationary distributions.
 
 - `trigBasisExp()` for efficient computation of trigonometric link
-  functions,
-- `hsmm2hmm()` and `phsmm2phmm()` for building the transition
-  probability matrices of HSMMs,
-- the `tpm()` family for computing various kinds of transition
-  probability matrices, and
-- the `stationary()` family to compute stationary and periodically
-  stationary distributions.
+  functions.
 
 Further functionalities will be added as needed. Have fun!
 
@@ -115,7 +127,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.104208 secs
+#> Time difference of 0.1043282 secs
 ```
 
 Really fast for 10.000 data points!

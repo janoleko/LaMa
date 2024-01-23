@@ -27,8 +27,8 @@ calculated.
 
 In addition to providing fast and easy to use versions of the **forward
 algorithm**, this package is supposed to be a toolbox for flexible and
-fast model building. Thus, it contains more helpful functions for
-building HMM-like models. Currently these include:
+fast model building. Thus, it contains auxiliary functions for building
+HMM-like models. Currently these include:
 
 - The `tpm` family with
 
@@ -127,7 +127,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1100841 secs
+#> Time difference of 0.2218881 secs
 ```
 
 Really fast for 10.000 data points!

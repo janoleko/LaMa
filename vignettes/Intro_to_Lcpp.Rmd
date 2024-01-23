@@ -1,20 +1,28 @@
 ---
-output: github_document
+title: "Introduction to Lcpp"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Lcpp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: ref.bib
+link-citations: yes
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "75%",
-  fig.align = "center"
+  fig.path = "img/",
+  fig.align = "center",
+  fig.dim = c(8, 6),
+  out.width = "75%"
 )
+library("Lcpp")
 ```
 
-# {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
 
-This package provides convenient **R** wrapper functions for the **forward algorithm** used to fit **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow (for details see [Zucchini et al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)). Implementation in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by e.g. `nlm()` or `optim()`. Current implementations include
+`Lcpp` provides convenient **R** wrapper functions for the **forward algorithm** used to fit **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow (for details see [Zucchini et al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)). Implementation in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by e.g. `nlm()` or `optim()`. Current implementations include
 
 * `forward()` for models with **homogeneous** transition probabilities,
 * `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs),
@@ -23,7 +31,7 @@ This package provides convenient **R** wrapper functions for the **forward algor
 
 The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
 
-In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains auxiliary functions for building HMM-like models. Currently these include:
+In addition to providing fast and easy to use versions of the **forward algorithm**, this package is supposed to be a toolbox for flexible and fast model building. Thus, it contains more helpful functions for building HMM-like models. Currently these include:
 
 * The `tpm` family with
   + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link, 
@@ -39,20 +47,8 @@ In addition to providing fast and easy to use versions of the **forward algorith
 
 Further functionalities will be added as needed. Have fun!
 
-## Installation
 
-For installation, use:
-```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
-# install.packages("devtools")
-devtools::install_github("janoleko/Lcpp")
-```
-
-## Example: Homogeneous HMM
-
-#### Loading the package
-```{r package}
-library(Lcpp)
-```
+## Introductory example: Homogeneous HMM
 
 #### Generating data from a 2-state HMM
 Here we can use `stationary()` to compute the stationary distribution.
@@ -64,7 +60,7 @@ Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
 delta = stationary(Gamma) # stationary HMM
 
 # simulation
-n = 10000 # rather large
+n = 1000
 set.seed(123)
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
@@ -103,7 +99,7 @@ s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
 ```
-Really fast for 10.000 data points!
+Really fast!
 
 #### Visualizing results
 Again, we use `tpm()` and `stationary()` to tranform the unconstraint parameters to working parameters.

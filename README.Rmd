@@ -44,7 +44,7 @@ Further functionalities will be added as needed. Have fun!
 For installation, use:
 ```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
 # install.packages("devtools")
-devtools::install_github("janoleko/Lcpp")
+devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
 ```
 
 ## Example: Homogeneous HMM

@@ -4,5 +4,6 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom mgcv cSplineDes
 ## usethis namespace: end
 NULL

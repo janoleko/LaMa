@@ -59,7 +59,7 @@ For installation, use:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("janoleko/Lcpp")
+devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
 ```
 
 ## Example: Homogeneous HMM
@@ -127,7 +127,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.2218881 secs
+#> Time difference of 0.1103449 secs
 ```
 
 Really fast for 10.000 data points!

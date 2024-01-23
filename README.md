@@ -62,6 +62,14 @@ For installation, use:
 devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
 ```
 
+Feel free to use
+
+``` r
+browseVignettes("Lcpp")
+```
+
+for detailed examples on how to use the package.
+
 ## Example: Homogeneous HMM
 
 #### Loading the package
@@ -127,7 +135,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1103449 secs
+#> Time difference of 0.1065302 secs
 ```
 
 Really fast for 10.000 data points!

@@ -47,12 +47,21 @@ For installation, use:
 devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
 ```
 
+Feel free to use
+
+```{r vignettes, eval = FALSE, warning=FALSE, message = FALSE}
+browseVignettes("Lcpp")
+```
+
+for detailed examples on how to use the package.
+
 ## Example: Homogeneous HMM
 
 #### Loading the package
 ```{r package}
 library(Lcpp)
 ```
+
 
 #### Generating data from a 2-state HMM
 Here we can use `stationary()` to compute the stationary distribution.

@@ -56,7 +56,7 @@ points(Delta[,1], pch = 19, col = color[1])
 
 ```{r data}
 # simulation
-z = rep(1:48, 200) # time of day variable
+z = rep(1:48, 100) # time of day variable, 100 days
 n = length(z)
 set.seed(123)
 s = x = rep(NA, n)
@@ -143,7 +143,7 @@ points(Delta_hat[,1], pch = 19, col = color[1])
 #### Building the cyclic spline design matrix
 
 ```{r cSpline}
-nk = 15 # number of basis functions
+nk = 12 # number of basis functions
 tod = 1:48
 L = 48
 k = L * 0:nk / nk # equidistant knots

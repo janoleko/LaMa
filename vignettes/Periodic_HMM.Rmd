@@ -37,7 +37,6 @@ We choose a bimodal activity pattern here. We can conveniently calculate the tra
 mu = c(4, 14)
 sigma = c(3, 5)
 
-z = rep(1:48, 100)
 L = 48 # half-hourly data: 48 observations per day
 beta = matrix(c(-1, 1, -1, -1, 1,
                 -2, -1, 2, 2, -2), nrow = 2, byrow = TRUE)
@@ -56,7 +55,7 @@ points(Delta[,1], pch = 19, col = color[1])
 
 ```{r data}
 # simulation
-z = rep(1:48, 100) # time of day variable, 100 days
+z = rep(1:48, 50) # time of day variable, 50 days
 n = length(z)
 set.seed(123)
 s = x = rep(NA, n)
@@ -143,11 +142,18 @@ points(Delta_hat[,1], pch = 19, col = color[1])
 #### Building the cyclic spline design matrix
 
 ```{r cSpline}
-nk = 12 # number of basis functions
+nk = 8 # number of basis functions
 tod = 1:48
 L = 48
 k = L * 0:nk / nk # equidistant knots
 Z = mgcv::cSplineDes(tod, k) ## cyclic spline design matrix
+
+# plotting the B-Spline basis functions
+plot(Z[,1], type = "l", lwd = 2, col = 1, bty = "n",
+     xlab = "time of day", ylab = "basis functions", ylim = c(0,0.8))
+for(i in 2:nk){
+  lines(Z[,i], lwd = 2, col = i)
+} 
 ```
 
 #### Writing the negative log-likelihood function

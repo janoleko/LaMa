@@ -72,7 +72,7 @@ for(t in 2:n){
 }
 
 plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
-     col = c(color[1], color[2])[s[1:400]])
+     col = c(color[1], color[2])[s[1:200]])
 ```
 
 ### Parametric modeling of the transition probabilities

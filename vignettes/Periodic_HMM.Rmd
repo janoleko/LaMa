@@ -210,4 +210,4 @@ lines(Delta_hat[,1], lwd = 3, col = color[1])
 ```
 
 
-#### Citations
+#### References

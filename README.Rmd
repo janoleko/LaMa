@@ -41,7 +41,7 @@ Further functionalities will be added as needed. Have fun!
 
 ## Installation
 
-For installation, use:
+To install and use the package, you need to have a functional C++ compiler. For details click [here](https://teuder.github.io/rcpp4everyone_en/020_install.html). Then you can use:
 ```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
 # install.packages("devtools")
 devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)

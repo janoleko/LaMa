@@ -55,7 +55,10 @@ Further functionalities will be added as needed. Have fun!
 
 ## Installation
 
-For installation, use:
+To install and use the package, you need to have a functional C++
+compiler. For details click
+[here](https://teuder.github.io/rcpp4everyone_en/020_install.html). Then
+you can use:
 
 ``` r
 # install.packages("devtools")
@@ -135,7 +138,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1065302 secs
+#> Time difference of 0.1084609 secs
 ```
 
 Really fast for 10.000 data points!

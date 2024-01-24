@@ -38,12 +38,12 @@ $$
 #### Simulating data from the stochastic volatility model
 
 ```{r data}
-beta = 5 # baseline standard deviation
+beta = 2 # baseline standard deviation
 phi = 0.95 # AR parameter
 sigma = 0.5 # variability of the AR process
 
-n = 500
-set.seed(123)
+n = 1000
+set.seed(5)
 g = y = rep(NA, n)
 g[1] = rnorm(1, 0, sigma / sqrt(1-phi^2)) # stationary distribution of AR process
 y[1] = stats::rnorm(1, 0, beta*exp(g[1]/2)) 
@@ -55,10 +55,13 @@ for(t in 2:n){
 }
 
 # share returns
-plot(y, type = "l", bty = "n", ylim = c(-100,40))
-# true underlying volatility
-abline(h = -70)
-lines(g*4-70, col = "orange", lwd = 2)
+par(mar = c(5,4,3,4.5)+0.1)
+plot(y, type = "l", bty = "n", ylim = c(-40,20), yaxt = "n")
+# true underlying standard deviation
+lines(beta*exp(g)/7 - 40, col = "deepskyblue", lwd = 2)
+axis(side=2, at = seq(-20,20,by=5), labels = seq(-20,20,by=5))
+axis(side=4, at = seq(0,150,by=75)/7-40, labels = seq(0,150,by=75))
+mtext("g", side=4, line=3, at = -30)
 ```
 
 #### Writing the negative log-likelihood function
@@ -68,13 +71,14 @@ mllk = function(theta.star, y, bm, m){
   phi = plogis(theta.star[1])
   sigma = exp(theta.star[2])
   beta = exp(theta.star[3])
-  b = seq(-bm, bm, length = m+1)
-  h = b[2]-b[1]
-  bstar = (b[-1] + b[-(m+1)])/2
+  b = seq(-bm, bm, length = m+1) # intervals for midpoint quadrature
+  h = b[2]-b[1] # interval width
+  bstar = (b[-1] + b[-(m+1)])/2 # interval midpoints
+  # approximation resulting from midpoint quadrature
   Gamma = sapply(bstar, dnorm, mean = phi*bstar, sd = sigma) * h
   Gamma = Gamma / rowSums(Gamma) # normalizing out approximation errors
   delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
-  # calculating state dependent density
+  # approximating state-dependent density based on midpoints
   allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar)))
   # return negative for minimization
   -forward(delta, Gamma, allprobs)
@@ -84,9 +88,9 @@ mllk = function(theta.star, y, bm, m){
 #### Fitting an SSM to the data
 
 ```{r model, warning=FALSE}
-theta.star = c(qlogis(0.8), log(0.5), log(4))
+theta.star = c(qlogis(0.95), log(0.3), log(1))
 bm = 5 # relevant range of underlying volatility (-5,5)
-m = 100 # number of approximating states
+m = 50 # number of approximating states
 
 t1 = Sys.time()
 mod = stats::nlm(mllk, theta.star, y = y, bm = bm, m = m)

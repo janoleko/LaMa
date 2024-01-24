@@ -6,12 +6,11 @@ This package provides convenient **R** wrapper functions for the
 **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs)
 via **direct numerical maximum likelihood estimation**. The algorithm
 calculates the log-likelihood recursively as a matrix product and uses a
-scaling strategy to avoid numerical underflow (for details see [Zucchini
-et
-al. 2016](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)).
-Implementation in **C++** offers 10-20 times faster evaluation times,
-thus substantially speeding up estimation by e.g. `nlm()` or `optim()`.
-Current implementations include
+scaling strategy to avoid numerical underflow (for details see
+<a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
+et al. 2016</a>). Implementation in **C++** offers 10-20 times faster
+evaluation times, thus substantially speeding up estimation by
+e.g. `nlm()` or `optim()`. Current implementations include
 
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
@@ -57,8 +56,8 @@ Further functionalities will be added as needed. Have fun!
 
 To install and use the package, you need to have a functional C++
 compiler. For details click
-[here](https://teuder.github.io/rcpp4everyone_en/020_install.html). Then
-you can use:
+<a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">here</a>.
+Then you can use:
 
 ``` r
 # install.packages("devtools")
@@ -138,7 +137,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1084609 secs
+#> Time difference of 0.1085601 secs
 ```
 
 Really fast for 10.000 data points!

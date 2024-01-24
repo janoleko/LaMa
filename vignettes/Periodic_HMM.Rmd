@@ -137,7 +137,7 @@ points(Delta_hat[,1], pch = 19, col = color[1])
 
 ## Non-parametric modeling of the transition probalities
 
-`Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`.
+`Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`.
 
 #### Building the cyclic spline design matrix
 
@@ -208,3 +208,6 @@ plot(Delta_hat_np[,1], type = "l", lwd = 3, col = "purple", bty = "n",
 lines(Delta_hat[,1], lwd = 3, col = color[1])
 
 ```
+
+
+#### Citations

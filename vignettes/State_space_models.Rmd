@@ -63,7 +63,7 @@ plot(y, type = "l", bty = "n", ylim = c(-40,20), yaxt = "n")
 lines(beta*exp(g)/7 - 40, col = "deepskyblue", lwd = 2)
 axis(side=2, at = seq(-20,20,by=5), labels = seq(-20,20,by=5))
 axis(side=4, at = seq(0,150,by=75)/7-40, labels = seq(0,150,by=75))
-mtext("g", side=4, line=3, at = -30)
+mtext("standard deviation", side=4, line=3, at = -30)
 ```
 
 #### Writing the negative log-likelihood function

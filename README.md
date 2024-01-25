@@ -9,8 +9,8 @@ calculates the log-likelihood recursively as a matrix product and uses a
 scaling strategy to avoid numerical underflow (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
 et al. 2016</a>). Implementation in **C++** offers 10-20 times faster
-evaluation times, thus substantially speeding up estimation by
-e.g. `nlm()` or `optim()`. Current implementations include
+evaluation times, thus substantially speeding up estimation by numerical
+optimizers like `nlm()` or `optim()`. Current implementations include
 
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
@@ -137,7 +137,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1085601 secs
+#> Time difference of 0.1041481 secs
 ```
 
 Really fast for 10.000 data points!

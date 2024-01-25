@@ -26,16 +26,18 @@ This vignette shows how to fit state space models which can be interpreted as ge
 $$
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
 $$
-with autoregression parameter $\phi < 1$. We could then model share returns $y_t$ as
+with autoregression parameter $\phi < 1$ an dispersion parameter $\sigma$. We could then model share returns $y_t$ as
 $$
 y_t = \beta \epsilon_t \exp(g_t / 2),
 $$
-where $\beta > 0$ is the baseline standard deviation of the returns (when $g_t$ is in equilibrium). This implies
+where $\epsilon_t \sim N(0,1)$ and $\beta > 0$ is the baseline standard deviation of the returns (when $g_t$ is in equilibrium), which implies
 $$
 y_t \mid g_t \sim N(0, (\beta e^{g_t / 2})^2).
 $$
 
 #### Simulating data from the stochastic volatility model
+
+We start by simulating data from the above specified model:
 
 ```{r data}
 beta = 2 # baseline standard deviation
@@ -65,6 +67,8 @@ mtext("g", side=4, line=3, at = -30)
 ```
 
 #### Writing the negative log-likelihood function
+
+This likelihood formulation corresponds to a fine discretization of the continuous state space into the intervals `b` with width `h` and midpoints `bstar`.
 
 ```{r mllk}
 mllk = function(theta.star, y, bm, m){

@@ -50,9 +50,12 @@ devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
 ```
 
 Feel free to use
-
 ```{r vignettes, eval = FALSE, warning=FALSE, message = FALSE}
 browseVignettes("Lcpp")
+```
+or
+```{r help, eval = FALSE, warning=FALSE, message = FALSE}
+help(package = "Lcpp")
 ```
 
 for detailed examples on how to use the package.

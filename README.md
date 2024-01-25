@@ -70,6 +70,12 @@ Feel free to use
 browseVignettes("Lcpp")
 ```
 
+or
+
+``` r
+help(package = "Lcpp")
+```
+
 for detailed examples on how to use the package.
 
 ## Example: Homogeneous HMM
@@ -137,7 +143,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1041481 secs
+#> Time difference of 0.1048 secs
 ```
 
 Really fast for 10.000 data points!

@@ -45,7 +45,7 @@ phi = 0.95 # AR parameter
 sigma = 0.5 # variability of the AR process
 
 n = 1000
-set.seed(5)
+set.seed(123)
 g = y = rep(NA, n)
 g[1] = rnorm(1, 0, sigma / sqrt(1-phi^2)) # stationary distribution of AR process
 y[1] = stats::rnorm(1, 0, beta*exp(g[1]/2)) 
@@ -83,7 +83,7 @@ mllk = function(theta.star, y, bm, m){
   Gamma = Gamma / rowSums(Gamma) # normalizing out approximation errors
   delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
   # approximating state-dependent density based on midpoints
-  allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar)))
+  allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
   # return negative for minimization
   -forward(delta, Gamma, allprobs)
 }

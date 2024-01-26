@@ -10,10 +10,10 @@ forward_g(delta, Gamma, allprobs)
 \item{delta}{Initial distribution of length N}
 
 \item{Gamma}{Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
-Can also be of dimension c(N,N,n) when the first or last slice only contains NAs. \cr
+If you provide an array of dimension c(N,N,n), the first slice will be ignored. \cr
 
-Using the first parametrization, transition probabilities from t to t+1 are an element of \eqn{\Gamma^{(t)}}.
-However, if \eqn{\Gamma^{(t)}} depends on covariate values at t or t+1 is your choice in the calculation of the array, prior to using this function. \cr
+If the elements of \eqn{\Gamma^{(t)}} depend on covariate values at t or covariates t+1 is your choice in the calculation of the array, prior to using this function.
+When conducting the calculation by using tpm_g(), the choice comes down to including the covariate matrix Z[-1,] oder Z[-n,]. \cr
 
 This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator of the continuous-time Markov chain.}
 

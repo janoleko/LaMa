@@ -103,9 +103,38 @@ Sys.time()-t1
 
 #### Results
 ```{r results}
+# parameter estimates
 (phi = plogis(mod$estimate[1]))
 (sigma = exp(mod$estimate[2]))
 (beta = exp(mod$estimate[3]))
+
+# decoding states
+b = seq(-bm, bm, length = m+1) # intervals for midpoint quadrature
+h = b[2]-b[1] # interval width
+bstar = (b[-1] + b[-(m+1)])/2 # interval midpoints
+Gamma = sapply(bstar, dnorm, mean = phi*bstar, sd = sigma) * h
+Gamma = Gamma / rowSums(Gamma) # normalizing out approximation errors
+delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
+# approximating state-dependent density based on midpoints
+allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
+
+probs = stateprobs(delta, Gamma, allprobs)
+states = viterbi(delta, Gamma, allprobs)
+
+par(mar = c(5,4,3,4.5)+0.1)
+plot(y, type = "l", bty = "n", ylim = c(-50,20), yaxt = "n")
+# when there are so many states it is not too sensable to only plot the most probable state,
+# as its probability might still be very small. Generally, we are approximating continuous 
+# distributions, thus it makes sense to plot the entire conditional distribution.
+for(t in 1:1000){
+  points(rep(t, m), bstar*4-35, col = scales::alpha("orange", alpha = probs[t,]/2), pch = 20)
+}
+# we can add the viterbi decoded volatility levels as a "mean"
+lines(bstar[states]*4-35)
+
+axis(side=2, at = seq(-20,20,by=5), labels = seq(-20,20,by=5))
+axis(side=4, at = seq(-5,5, by = 5)*4-35, labels = seq(-5,5, by = 5))
+mtext("g", side=4, line=3, at = -30)
 ```
 
 

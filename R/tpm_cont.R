@@ -7,7 +7,7 @@
 #' This function calculates all transition matrices based on a given generator and time differences.
 #'
 #' @param Q Infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)
-#' @param times Time differences between observations of length n-1 when based on n observations
+#' @param timediff Time differences between observations of length n-1 when based on n observations
 #'
 #' @return An array of transition matrices of dimension c(N,N,n-1)
 #' @export
@@ -20,9 +20,9 @@
 #' diag(Q) = - rowSums(Q)
 #'
 #' # draw time differences
-#' times = rexp(1000, 10)
+#' timediff = rexp(1000, 10)
 #'
-#' Gamma = tpm_cont(Q, times)
-tpm_cont = function(Q, times){
-  semigroup_cpp(Q, times)
+#' Gamma = tpm_cont(Q, timediff)
+tpm_cont = function(Q, timediff){
+  semigroup_cpp(Q, timediff)
 }

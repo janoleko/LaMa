@@ -4,12 +4,12 @@
 \alias{tpm_cont}
 \title{Calculation of continuous time transition probabilities}
 \usage{
-tpm_cont(Q, times)
+tpm_cont(Q, timediff)
 }
 \arguments{
 \item{Q}{Infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)}
 
-\item{times}{Time differences between observations of length n-1 when based on n observations}
+\item{timediff}{Time differences between observations of length n-1 when based on n observations}
 }
 \value{
 An array of transition matrices of dimension c(N,N,n-1)
@@ -29,7 +29,7 @@ diag(Q) = 0
 diag(Q) = - rowSums(Q)
 
 # draw time differences
-times = rexp(1000, 10)
+timediff = rexp(1000, 10)
 
-Gamma = tpm_cont(Q, times)
+Gamma = tpm_cont(Q, timediff)
 }

@@ -21,8 +21,8 @@ stateprobs = function(delta, Gamma, allprobs){
   N = ncol(allprobs)
   Gammanew = array(Gamma, dim = c(N,N,n-1))
   
-  lalpha = Lcpp:::logalpha(delta, Gammanew, allprobs)
-  lbeta = Lcpp:::logbeta(Gammanew, allprobs)
+  lalpha = logalpha(delta, Gammanew, allprobs)
+  lbeta = logbeta(Gammanew, allprobs)
 
   c = max(lalpha[n,])
   llk = c + log(sum(exp(lalpha[n,]-c)))

@@ -91,6 +91,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// semigroup_sym_cpp
+arma::cube semigroup_sym_cpp(const arma::mat& Q, const std::vector<double>& times);
+RcppExport SEXP _Lcpp_semigroup_sym_cpp(SEXP QSEXP, SEXP timesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type Q(QSEXP);
+    Rcpp::traits::input_parameter< const std::vector<double>& >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(semigroup_sym_cpp(Q, times));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tpm_g_cpp
 arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta, const arma::uword N);
 RcppExport SEXP _Lcpp_tpm_g_cpp(SEXP ZSEXP, SEXP betaSEXP, SEXP NSEXP) {
@@ -124,6 +136,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
     {"_Lcpp_rep_times_cpp", (DL_FUNC) &_Lcpp_rep_times_cpp, 2},
     {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
+    {"_Lcpp_semigroup_sym_cpp", (DL_FUNC) &_Lcpp_semigroup_sym_cpp, 2},
     {"_Lcpp_tpm_g_cpp", (DL_FUNC) &_Lcpp_tpm_g_cpp, 3},
     {"_Lcpp_tpm_thinned_t_cpp", (DL_FUNC) &_Lcpp_tpm_thinned_t_cpp, 2},
     {NULL, NULL, 0}

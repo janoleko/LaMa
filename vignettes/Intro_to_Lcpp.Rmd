@@ -1,6 +1,8 @@
 ---
 title: "Introduction to Lcpp"
-output: rmarkdown::html_vignette
+author: "Jan-Ole Koslik"
+# output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Introduction to Lcpp}
   %\VignetteEngine{knitr::rmarkdown}

@@ -1,16 +1,21 @@
 
 # {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
 
-This package provides convenient **R** wrapper functions for the
-**forward algorithm** used to fit **hidden Markov models** (HMMs),
-**hidden semi-Markov models** (HSMMs) and **state space models** (SSMs)
-via **direct numerical maximum likelihood estimation**. The algorithm
-calculates the log-likelihood recursively as a matrix product and uses a
-scaling strategy to avoid numerical underflow (for details see
+A plethora of latent Markov models, including **hidden Markov models**
+(HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
+(SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**,
+**Markov-modulated (marked) Poisson processes** (MMMPPs) and **Cox
+processes** can be formulated and estimated within the same framework
+via directly maximizing the (approximate) likelihood. The log-likelihood
+can be calcuated recursively as a matrix product by the so-called
+**forward algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
-et al. 2016</a>). Implementation in **C++** offers 10-20 times faster
-evaluation times, thus substantially speeding up estimation by numerical
-optimizers like `nlm()` or `optim()`. Current implementations include
+et al. 2016</a>). Implementation of the algorithm in **C++** offers
+10-20 times faster evaluation times, thus substantially speeding up
+estimation by numerical optimizers like `nlm()` or `optim()`. This **R**
+package provides a toolbox for flexible and convenient model building
+and fast likelihood evaluation. Current implemenations of the forward
+algorithm are:
 
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
@@ -24,10 +29,8 @@ function**, after parameters have been transformed and the *allprobs*
 matrix (containing all state-dependent probabilities) has been
 calculated.
 
-In addition to providing fast and easy to use versions of the **forward
-algorithm**, this package is supposed to be a toolbox for flexible and
-fast model building. Thus, it contains auxiliary functions for building
-HMM-like models. Currently these include:
+To serve as a toolbox, this package also includes many auxiliary
+functions like
 
 - The `tpm` family with
 
@@ -51,6 +54,20 @@ HMM-like models. Currently these include:
   expansion.
 
 Further functionalities will be added as needed. Have fun!
+
+## Package documentation
+
+Package functionalities for many different model classes are described
+in several vignettes:
+
+- [Introduction to
+  Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/Intro_to_Lcpp.pdf)
+- [Inhomogeneous
+  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Inhomogeneous_HMM.pdf)
+- [Periodic
+  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Periodic_HMM.pdf)
+- [State space
+  models](https://github.com/janoleko/Lcpp/tree/main/vignettes/State_space_models.pdf)
 
 ## Installation
 
@@ -143,7 +160,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1048 secs
+#> Time difference of 0.1028121 secs
 ```
 
 Really fast for 10.000 data points!

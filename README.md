@@ -1,5 +1,5 @@
 
-# {Lcpp}: Forward algorithm in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
+# {Lcpp}: Likelihood evaluation in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
 
 A plethora of latent Markov models, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
@@ -160,7 +160,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1028121 secs
+#> Time difference of 0.1015029 secs
 ```
 
 Really fast for 10.000 data points!

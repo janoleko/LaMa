@@ -1,8 +1,8 @@
 ---
 title: "Introduction to Lcpp"
 author: "Jan-Ole Koslik"
-# output: rmarkdown::html_vignette
-output: pdf_document
+output: rmarkdown::html_vignette
+# output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Introduction to Lcpp}
   %\VignetteEngine{knitr::rmarkdown}

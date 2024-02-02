@@ -1,6 +1,8 @@
 ---
 title: "State space models"
+author: "Jan-Ole Koslik"
 output: rmarkdown::html_vignette
+# output: pdf_document
 vignette: >
   %\VignetteIndexEntry{State space models}
   %\VignetteEngine{knitr::rmarkdown}

@@ -7,7 +7,7 @@ A plethora of latent Markov models, including **hidden Markov models**
 **Markov-modulated (marked) Poisson processes** (MMMPPs) and **Cox
 processes** can be formulated and estimated within the same framework
 via directly maximizing the (approximate) likelihood. The log-likelihood
-can be calcuated recursively as a matrix product by the so-called
+can be calculated recursively as a matrix product by the so-called
 **forward algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
 et al. 2016</a>). Implementation of the algorithm in **C++** offers
@@ -160,7 +160,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1015029 secs
+#> Time difference of 0.105433 secs
 ```
 
 Really fast for 10.000 data points!

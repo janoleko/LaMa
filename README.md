@@ -61,7 +61,8 @@ Further functionalities will be added as needed. Have fun!
 Package functionalities for many different model classes are described
 in several vignettes:
 
-- [Introduction to Lcpp](../vignettes/Intro_to_Lcpp.pdf)
+- [Introduction to
+  Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/Intro_to_Lcpp.pdf)
 - [Inhomogeneous
   HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Inhomogeneous_HMM.pdf)
 - [Periodic
@@ -160,7 +161,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.103672 secs
+#> Time difference of 0.109833 secs
 ```
 
 Really fast for 10.000 data points!

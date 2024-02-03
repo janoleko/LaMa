@@ -45,7 +45,7 @@ Further functionalities will be added as needed. Have fun!
 
 Package functionalities for many different model classes are described in several vignettes:
 
-* [Introduction to Lcpp](../vignettes/Intro_to_Lcpp.pdf)
+* [Introduction to Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/Intro_to_Lcpp.pdf)
 * [Inhomogeneous HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Inhomogeneous_HMM.pdf)
 * [Periodic HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Periodic_HMM.pdf)
 * [State space models](https://github.com/janoleko/Lcpp/tree/main/vignettes/State_space_models.pdf)

@@ -19,7 +19,7 @@ algorithm are:
 
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
-  transition probabilities (including **continuous-time** HMMs),
+  transition probabilities (including **continuous-time** HMMs and point processes),
 - `forward_p()` which is more efficient than the general implementation,
   when transition probabilities only vary **periodically**, and
 - `forward_s()` for fitting **HSMMs**.

@@ -19,7 +19,7 @@ A plethora of latent Markov models, including **hidden Markov models** (HMMs), *
 Implementation of the algorithm in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by numerical optimizers like `nlm()` or `optim()`. This **R** package provides a toolbox for flexible and convenient model building and fast likelihood evaluation. Current implemenations of the forward algorithm are:
 
 * `forward()` for models with **homogeneous** transition probabilities,
-* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs),
+* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs and points processes),
 * `forward_p()` which is more efficient than the general implementation, when transition probabilities only vary **periodically**, and
 * `forward_s()` for fitting **HSMMs**.
 
@@ -45,7 +45,7 @@ Further functionalities will be added as needed. Have fun!
 
 Package functionalities for many different model classes are described in several vignettes:
 
-* [Introduction to Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/Intro_to_Lcpp.pdf)
+* [Introduction to Lcpp](../vignettes/Intro_to_Lcpp.pdf)
 * [Inhomogeneous HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Inhomogeneous_HMM.pdf)
 * [Periodic HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Periodic_HMM.pdf)
 * [State space models](https://github.com/janoleko/Lcpp/tree/main/vignettes/State_space_models.pdf)

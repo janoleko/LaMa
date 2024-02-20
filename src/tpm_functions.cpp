@@ -28,3 +28,36 @@ arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta, const arma::uwor
   }
   return Gamma;
 }
+
+// [[Rcpp::export]]
+arma::cube semigroup_cpp(const arma::mat& Q, const std::vector<double>& times) {
+  int N = Q.n_cols;
+  int n = times.size();
+  
+  arma::cube Gamma(N, N, n);
+  
+  for (unsigned int i = 0; i < n; i++) {
+    Gamma.slice(i) = arma::expmat(Q * times.at(i));
+  }
+  
+  return Gamma;
+}
+
+// [[Rcpp::export]]
+arma::mat tpm_thinned_t_cpp(const arma::cube& Gamma, const int t)
+{
+  arma::uword L = Gamma.n_slices;
+  arma::uword N = Gamma.n_rows;
+  
+  arma::mat GammaT(N,N); 
+  // first half of the product form t to L
+  GammaT = Gamma.slice(t-1);
+  for(arma::uword i=t; i<L; i++) {
+    GammaT = GammaT * Gamma.slice(i);
+  }
+  // second half of the product from 1 to t-1
+  for(arma::uword i=0; i<t-1; i++) {
+    GammaT = GammaT * Gamma.slice(i);
+  }
+  return GammaT;
+}

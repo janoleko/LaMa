@@ -4,10 +4,13 @@
 \alias{tpm}
 \title{Build the transition probability matrix from unconstraint parameter vector}
 \usage{
-tpm(param)
+tpm(param, byrow = FALSE)
 }
 \arguments{
 \item{param}{Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
+
+\item{byrow}{Logical that indicates if the transition probability matrix should be filled by row. 
+Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
 }
 \value{
 Transition probability matrix of dimension c(N,N)

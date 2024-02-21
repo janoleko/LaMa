@@ -68,15 +68,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // tpm_g_cpp
-arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta, const arma::uword N);
-RcppExport SEXP _Lcpp_tpm_g_cpp(SEXP ZSEXP, SEXP betaSEXP, SEXP NSEXP) {
+arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta, const arma::uword N, const bool byrow);
+RcppExport SEXP _Lcpp_tpm_g_cpp(SEXP ZSEXP, SEXP betaSEXP, SEXP NSEXP, SEXP byrowSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type Z(ZSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type N(NSEXP);
-    rcpp_result_gen = Rcpp::wrap(tpm_g_cpp(Z, beta, N));
+    Rcpp::traits::input_parameter< const bool >::type byrow(byrowSEXP);
+    rcpp_result_gen = Rcpp::wrap(tpm_g_cpp(Z, beta, N, byrow));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -110,7 +111,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_g", (DL_FUNC) &_Lcpp_forward_cpp_g, 3},
     {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
     {"_Lcpp_forward_cpp_flies", (DL_FUNC) &_Lcpp_forward_cpp_flies, 6},
-    {"_Lcpp_tpm_g_cpp", (DL_FUNC) &_Lcpp_tpm_g_cpp, 3},
+    {"_Lcpp_tpm_g_cpp", (DL_FUNC) &_Lcpp_tpm_g_cpp, 4},
     {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
     {"_Lcpp_tpm_thinned_t_cpp", (DL_FUNC) &_Lcpp_tpm_thinned_t_cpp, 2},
     {NULL, NULL, 0}

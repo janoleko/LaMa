@@ -17,8 +17,8 @@ forward_cpp_flies <- function(allprobs, delta, Gamma1, Gamma2, startDD, tod) {
     .Call(`_Lcpp_forward_cpp_flies`, allprobs, delta, Gamma1, Gamma2, startDD, tod)
 }
 
-tpm_g_cpp <- function(Z, beta, N) {
-    .Call(`_Lcpp_tpm_g_cpp`, Z, beta, N)
+tpm_g_cpp <- function(Z, beta, N, byrow) {
+    .Call(`_Lcpp_tpm_g_cpp`, Z, beta, N, byrow)
 }
 
 semigroup_cpp <- function(Q, times) {

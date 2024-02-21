@@ -4,13 +4,16 @@
 \alias{tpm_g}
 \title{Build all transition probability matrices of an inhomogeneous HMM}
 \usage{
-tpm_g(Z, beta)
+tpm_g(Z, beta, byrow = FALSE)
 }
 \arguments{
 \item{Z}{Covariate design matrix (excluding intercept column) of dimension c(n, p)}
 
 \item{beta}{Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.}
+
+\item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
+Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
 }
 \value{
 Array of transition probability matrices of dimension c(N,N,n)

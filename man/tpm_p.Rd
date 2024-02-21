@@ -4,7 +4,7 @@
 \alias{tpm_p}
 \title{Build all transition probability matrices of a periodically inhomogeneous HMM}
 \usage{
-tpm_p(tod = 1:24, L = 24, beta, degree = 1, Z = NULL)
+tpm_p(tod = 1:24, L = 24, beta, degree = 1, Z = NULL, byrow = FALSE)
 }
 \arguments{
 \item{tod}{Equidistant (generalized) time of day sequence, denoting the time point in a cycle.
@@ -21,6 +21,9 @@ Needs to be of dimension c(N*(N-1), 2*degree+1), where the first column contains
 From an efficiency perspective, this option should be used within the likelhood function, as the basis expansion should not be redundantly calculated. \cr \cr
 Furthermore, Z can also be a pre-calculated design matrix (with p columns), when one wants to use e.g. cyclic P-splines.
 In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.}
+
+\item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
+Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
 }
 \value{
 Array of transition probability matrices of dimension c(N,N,length(tod))

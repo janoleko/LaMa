@@ -9,6 +9,8 @@
 #' @param Z Covariate design matrix (excluding intercept column) of dimension c(n, p)
 #' @param beta Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 #' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
+#' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,n)
 #' @export
@@ -18,12 +20,12 @@
 #' Z = matrix(runif(n*2), ncol = 2)
 #' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_g(Z, beta)
-tpm_g = function(Z, beta){
+tpm_g = function(Z, beta, byrow = FALSE){
   Z = cbind(1, Z) # adding intercept column
   K = nrow(beta)
   # for N > 1: N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25+K), 0)
-  tpm_g_cpp(Z, beta, N)
+  tpm_g_cpp(Z, beta, N, byrow)
 }
 
 

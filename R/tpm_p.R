@@ -17,6 +17,8 @@
 #' From an efficiency perspective, this option should be used within the likelhood function, as the basis expansion should not be redundantly calculated. \cr \cr
 #' Furthermore, Z can also be a pre-calculated design matrix (with p columns), when one wants to use e.g. cyclic P-splines.
 #' In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.
+#' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,length(tod))
 #' @export
@@ -53,7 +55,7 @@
 #' beta = matrix(c(-1, runif(8, -2, 2), # 9 parameters per off-diagonal element
 #'                  -2, runif(8, -2, 2)), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_p(tod, L, beta, Z = Z)
-tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL){
+tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE){
   K = nrow(beta)
   # for N > 1: N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25+K), 0)
@@ -64,5 +66,5 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL){
     Z = cbind(1, Z)
   }
   
-  tpm_g_cpp(Z, beta, N)
+  tpm_g_cpp(Z, beta, N, byrow)
 }

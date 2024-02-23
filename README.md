@@ -46,13 +46,16 @@ functions like
   - `tpm_hsmm()` for calculating the transition matrix of an
     HSMM-approximating HMM, and
   - `tpm_phsmm()` for calculating transition matrices of a
-    periodic-HSMM-approximating HMM.
+    periodic-HSMM-approximating HMM,
 
-- The `stationary()` family to compute stationary and periodically
-  stationary distributions.
+- the `stationary` family to compute stationary and periodically
+  stationary distributions,
 
-- `trigBasisExp()` for efficient computation of a trigonometric basis
-  expansion.
+- functions of the `stateprobs` family for local decoding and of the
+  `viterbi` family for global decoding,
+
+- and `trigBasisExp()` for efficient computation of a trigonometric
+  basis expansion.
 
 Further functionalities will be added as needed. Have fun!
 
@@ -163,7 +166,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.107595 secs
+#> Time difference of 0.1041548 secs
 ```
 
 Really fast for 10.000 data points!

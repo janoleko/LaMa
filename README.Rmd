@@ -33,11 +33,13 @@ To serve as a toolbox, this package also includes many auxiliary functions like
   + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs,
   + `tpm_cont()` for calculating the transition probabilites of a continuous-time     Markov chain,
   + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, and
-  + `tpm_phsmm()` for calculating transition matrices of a             periodic-HSMM-approximating HMM.
+  + `tpm_phsmm()` for calculating transition matrices of a periodic-HSMM-approximating HMM,
 
-* The `stationary()` family to compute stationary and periodically stationary distributions.
+* the `stationary` family to compute stationary and periodically stationary distributions,
 
-* `trigBasisExp()` for efficient computation of a trigonometric basis expansion.
+* functions of the `stateprobs` family for local decoding and of the `viterbi` family for global decoding,
+
+* and `trigBasisExp()` for efficient computation of a trigonometric basis expansion.
 
 Further functionalities will be added as needed. Have fun!
 

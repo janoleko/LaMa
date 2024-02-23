@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{State space models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: ref.bib
+bibliography: refs.bib
 link-citations: yes
 ---
 
@@ -142,5 +142,4 @@ axis(side=4, at = seq(-5,5, by = 5)*4-35, labels = seq(-5,5, by = 5))
 mtext("g", side=4, line=3, at = -30)
 ```
 
-
-#### References
+## References

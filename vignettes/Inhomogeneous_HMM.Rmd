@@ -7,7 +7,7 @@ vignette: >
   %\VignetteIndexEntry{Inhomogeneous HMMs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: ref.bib
+bibliography: refs.bib
 link-citations: yes
 ---
 
@@ -383,3 +383,5 @@ for(j in 1:2){
 lines(zseq, xhat[,1], lwd = 4, col = color[1])
 lines(zseq, xhat[,2], lwd = 4, col = color[2])
 ```
+
+## References

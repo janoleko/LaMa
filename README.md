@@ -62,15 +62,15 @@ Package functionalities for many different model classes are described
 in several vignettes:
 
 - [Introduction to
-  Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/Intro_to_Lcpp.pdf)
+  Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Intro_to_Lcpp.pdf)
 - [Inhomogeneous
-  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Inhomogeneous_HMM.pdf)
+  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Inhomogeneous_HMM.pdf)
 - [Periodic
-  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Periodic_HMM.pdf)
+  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
 - [State space
-  models](https://github.com/janoleko/Lcpp/tree/main/vignettes/State_space_models.pdf)
+  models](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/State_space_models.pdf)
 - [Markov-modulated (marked) Poisson
-  processes](https://github.com/janoleko/Lcpp/tree/main/vignettes/MMMPPs.pdf)
+  processes](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/MMMPPs.pdf)
 
 ## Installation
 
@@ -163,7 +163,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1053021 secs
+#> Time difference of 0.107595 secs
 ```
 
 Really fast for 10.000 data points!

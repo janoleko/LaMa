@@ -4,7 +4,7 @@ author: "Jan-Ole Koslik"
 output: rmarkdown::html_vignette
 # output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{HSMMs}
+  %\VignetteIndexEntry{Hidden semi-Markov models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: refs.bib

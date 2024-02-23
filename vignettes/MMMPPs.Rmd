@@ -1,8 +1,8 @@
 ---
 title: "Markov-modulated (marked) Poisson processes"
 author: "Jan-Ole Koslik"
-# output: rmarkdown::html_vignette
-output: pdf_document
+output: rmarkdown::html_vignette
+# output: pdf_document
 vignette: >
   %\VignetteIndexEntry{MMMPPs}
   %\VignetteEngine{knitr::rmarkdown}

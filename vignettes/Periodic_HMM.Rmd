@@ -1,8 +1,8 @@
 ---
 title: "Periodic HMMs"
 author: "Jan-Ole Koslik"
-output: rmarkdown::html_vignette
-# output: pdf_document
+# output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Periodic HMMs}
   %\VignetteEngine{knitr::rmarkdown}

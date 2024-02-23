@@ -69,6 +69,8 @@ in several vignettes:
   HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/Periodic_HMM.pdf)
 - [State space
   models](https://github.com/janoleko/Lcpp/tree/main/vignettes/State_space_models.pdf)
+- [Markov-modulated (marked) Poisson
+  processes](https://github.com/janoleko/Lcpp/tree/main/vignettes/MMMPPs.pdf)
 
 ## Installation
 
@@ -161,7 +163,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.109833 secs
+#> Time difference of 0.1053021 secs
 ```
 
 Really fast for 10.000 data points!

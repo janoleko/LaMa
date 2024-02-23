@@ -32,7 +32,7 @@ The functionalities of `Lcpp` can also be called to fit so-called Markov-modulat
 
 We choose to have a considerably higher rate and shorter stays of the underlying Markov chain in state 2, i.e. state 2 is **bursty**.
 
-```{r parameters}
+```{r, parameters}
 # state-dependent rates
 lambda = c(2, 15)
 # generator matrix of the underlying Markov chain
@@ -40,7 +40,7 @@ Q = matrix(c(-0.5,0.5,2,-2), nrow = 2, byrow = TRUE)
 ```
 
 #### Simulating an MMPP
-```{r simulation}
+```{r, simulation}
 set.seed(123)
 
 k = 200 # number of state switches
@@ -67,7 +67,7 @@ arrival_times = sort(arrival_times)
 
 Let's visualize the simulated MMPP
 
-```{r vis_MMPP}
+```{r, vis_MMPP}
 n = length(arrival_times)
 color = c("orange", "deepskyblue")
 plot(arrival_times[1:100], rep(0.5,100), type = "h", bty = "n", ylim = c(0,1), 
@@ -86,7 +86,7 @@ L(\theta) = \delta \bigl(\prod_{i=1}^n \exp((Q-\Lambda)x_i)\Lambda\bigr)1,
 $$
 where $Q$ is the generator matrix of the continuous-time Markov chain, $\Lambda$ is a diagonal matrix of state-dependent Poisson intensities, $\delta$ is the stationary distribution of the continuous-time Markov chain, and $1$ is a column vector of ones. We can easily calculate the log of the above expression using the standard implementation of the general forward algorithm `forward_g()` when choosing the first matrix of state-dependent densities to be the identity (i.e.) the first row of the `allprobs` matrix to be one and all other matrices of state-dependent density matrices to be $\Lambda$.
 
-```{r mllk}
+```{r, mllk}
 mllk = function(theta.star, timediff, N=2){
   lambda = exp(theta.star[1:N]) # state specific rates
   Q = diag(N) # generator matrix
@@ -102,7 +102,7 @@ mllk = function(theta.star, timediff, N=2){
 ```
 
 #### Fitting an MMPP to the data
-```{r model, warning=FALSE}
+```{r, model, warning=FALSE}
 theta.star = log(c(2, 15, # lambda
                    2, 0.5)) # off-diagonals of Q
 
@@ -115,7 +115,7 @@ Sys.time()-t1
 
 #### Results
 
-```{r results}
+```{r, results}
 exp(mod$estimate)
 ```
 
@@ -123,7 +123,7 @@ exp(mod$estimate)
 
 Such processes can also carry additional information, so called **marks**, at every arrival time when we also observe the realization of a different random variable that only depends on the underlying states of the continuous-time Markov chain. For example for patient arrivals in the hospital we could observe a biomarker at every arrival time. Information on the underlying health status is then present in both, the arrival times (because sick patients visit more often) and the biomarkers.
 
-```{r parameters2}
+```{r, parameters2}
 # state-dependent rates
 lambda = c(1, 5, 20)
 # generator matrix of the underlying Markov chain
@@ -146,7 +146,7 @@ curve(dnorm(x, 5, 2), add = TRUE, lwd = 2, col = color[3], n = 200)
 
 We now show how to simulate an MMMPP and additionally how to generalize to more than two hidden states.
 
-```{r simulation2}
+```{r, simulation2}
 set.seed(123)
 k = 200 # number of state switches
 trans_times = s = rep(NA, k) # time points where the chain transitions
@@ -180,7 +180,7 @@ arrival_times = sort(arrival_times)
 
 Let's visualize the simulated MM**M**PP
 
-```{r vis_MMMPP}
+```{r, vis_MMMPP}
 n = length(arrival_times)
 plot(arrival_times[1:100], marks[1:100], pch = 16, bty = "n", 
      ylim = c(-9,9), xlab = "arrival times", ylab = "marks")
@@ -198,7 +198,7 @@ L(\theta) = \delta P(y_0) \bigl(\prod_{i=1}^n \exp((Q-\Lambda)y_i)\Lambda P(y_i)
 $$
 where $Q$, $\Lambda$ and $\delta$ are as above and $P(y_i)$ is a diagonal matrix with state-dependent densites for the observation at time $t_i$. We can again easily calculate the log of the above expression using the standard implementation of the general forward algorithm `forward_g()` when first calculating the `allprobs` matrix with state-dependent densities for the marks (as usual for HMMs) and then multiplying each row except the first one element-wise with the state-dependent rates.
 
-```{r mllk2}
+```{r, mllk2}
 mllk = function(theta.star, y, timediff, N){
   lambda = exp(theta.star[1:N]) # state specific rates
   mu = theta.star[N+1:N]
@@ -219,7 +219,7 @@ mllk = function(theta.star, y, timediff, N){
 ```
 
 #### Fitting an MMPP to the data
-```{r model2, warning=FALSE}
+```{r, model2, warning=FALSE}
 theta.star = c(log(c(1, 5, 20)), # lambda
                    -5, 0, 5, # mu
                log(c(2, 1, 2)), # sigma
@@ -231,7 +231,7 @@ Sys.time()-t1
 ```
 
 #### Results
-```{r results2}
+```{r, results2}
 N = 3
 (lambda = exp(mod2$estimate[1:N]))
 (mu = mod2$estimate[N+1:N])

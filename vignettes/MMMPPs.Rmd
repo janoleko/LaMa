@@ -1,8 +1,8 @@
 ---
 title: "Markov-modulated (marked) Poisson processes"
 author: "Jan-Ole Koslik"
-output: rmarkdown::html_vignette
-# output: pdf_document
+# output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{MMMPPs}
   %\VignetteEngine{knitr::rmarkdown}
@@ -28,7 +28,7 @@ The functionalities of `Lcpp` can also be called to fit so-called Markov-modulat
 
 ## Example 1: Markov-modulated Poisson processes
 
-#### Setting parameters 
+### Setting parameters 
 
 We choose to have a considerably higher rate and shorter stays of the underlying Markov chain in state 2, i.e. state 2 is **bursty**.
 
@@ -39,7 +39,7 @@ lambda = c(2, 15)
 Q = matrix(c(-0.5,0.5,2,-2), nrow = 2, byrow = TRUE)
 ```
 
-#### Simulating an MMPP
+### Simulating an MMPP
 ```{r, simulation}
 set.seed(123)
 
@@ -78,7 +78,7 @@ legend("top", lwd = 2, col = color, legend = c("state 1", "state 2"), box.lwd = 
 ```
 What makes the MMPP special compared to a regular Poisson point process is its **burstiness** when the Markov chain is in the second state.
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 The likelihood of a stationary MMPP for waiting times $x_1, \dots, x_n$ is (@meier1987fitting, @langrock2013markov)
 $$
@@ -101,7 +101,7 @@ mllk = function(theta.star, timediff, N=2){
 }
 ```
 
-#### Fitting an MMPP to the data
+### Fitting an MMPP to the data
 ```{r, model, warning=FALSE}
 theta.star = log(c(2, 15, # lambda
                    2, 0.5)) # off-diagonals of Q
@@ -113,7 +113,7 @@ mod = stats::nlm(mllk, theta.star, timediff=timediff, stepmax = 10)
 Sys.time()-t1
 ```
 
-#### Results
+### Results
 
 ```{r, results}
 exp(mod$estimate)
@@ -142,7 +142,7 @@ curve(dnorm(x, -5, 2), add = TRUE, lwd = 2, col = color[1], n = 200)
 curve(dnorm(x, 5, 2), add = TRUE, lwd = 2, col = color[3], n = 200)
 ```
 
-#### Simulating an MMMPP
+### Simulating an MMMPP
 
 We now show how to simulate an MMMPP and additionally how to generalize to more than two hidden states.
 
@@ -190,7 +190,7 @@ legend("topright", lwd = 2, col = color,
        legend = c("state 1", "state 2", "state 3"), box.lwd = 0)
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 The likelihood of a stationary MM**M**PP for waiting times $x_1, \dots, x_n$ and marks $y_0, y_1, \dotsc, y_n$ only changes slightly from the MMPP likelihood, as we include the matrix of state-specific densities (@lu2012markov, @mews2023markov):
 $$
@@ -218,7 +218,8 @@ mllk = function(theta.star, y, timediff, N){
 }
 ```
 
-#### Fitting an MMPP to the data
+### Fitting an MMPP to the data
+
 ```{r, model2, warning=FALSE}
 theta.star = c(log(c(1, 5, 20)), # lambda
                    -5, 0, 5, # mu
@@ -230,7 +231,8 @@ mod2 = stats::nlm(mllk, theta.star, y = marks, timediff=timediff, N=3, stepmax =
 Sys.time()-t1
 ```
 
-#### Results
+### Results
+
 ```{r, results2}
 N = 3
 (lambda = exp(mod2$estimate[1:N]))

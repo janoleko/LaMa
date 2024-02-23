@@ -30,8 +30,10 @@ The three main families of functions are `forward`, `tpm` and `stationary` and w
 
 ## Introductory example: Homogeneous HMM
 
-#### Generating data from a 2-state HMM
+### Generating data from a 2-state HMM
+
 Here we can use `stationary()` to compute the stationary distribution.
+
 ```{r data}
 # parameters
 mu = c(0, 6)
@@ -54,8 +56,10 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
      col = c("orange","deepskyblue")[s[1:200]])
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
+
 Within the negative log-likelihood function we build the transition probability matrix using the `tpm()` function, compute the stationary distribution using `stationary()` and calculate the log-likelihood using `forward()` in the last line.
+
 ```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
@@ -71,7 +75,7 @@ mllk = function(theta.star, x){
 }
 ```
 
-#### Fitting an HMM to the data
+### Fitting an HMM to the data
 ```{r model, warning=FALSE}
 theta.star = c(-1,-1,1,4,log(1),log(3)) 
 # initial transformed parameters: not chosen too well
@@ -81,8 +85,10 @@ Sys.time()-s
 ```
 Really fast!
 
-#### Visualizing results
+### Visualizing results
+
 Again, we use `tpm()` and `stationary()` to tranform the unconstraint parameters to working parameters.
+
 ```{r visualization}
 # transform parameters to working
 Gamma = tpm(mod$estimate[1:2])

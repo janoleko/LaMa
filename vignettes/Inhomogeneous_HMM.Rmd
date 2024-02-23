@@ -27,7 +27,7 @@ This vignette shows how to fit inhomogeneous HMMs. Inhomogeneity in HMMs can be 
 
 ## Covariate effects in the state process
 
-#### Setting parameters for simulation
+### Setting parameters for simulation
 
 ```{r parameters}
 # parameters
@@ -62,7 +62,7 @@ plot(z[-1], Delta[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
      ylab = "Pr(state 1)", col = color[1])
 ```
 
-#### Simulating data
+### Simulating data
 
 ```{r data}
 s = x = rep(NA, n)
@@ -79,7 +79,7 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
 
 ### Parametric modeling of the transition probabilities
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 Here we specify the likelihood function and pretend we know the polynomial degree of the effect of z on the transition probabilities.
 
@@ -99,7 +99,8 @@ mllk = function(theta.star, x, Z){
 }
 ```
 
-#### Fitting an HMM to the data
+### Fitting an HMM to the data
+
 ```{r model, warning=FALSE}
 theta.star = c(-2, -2, rep(0,4), # initializing with homogeneous tpm
                0, # starting value for initial distribution
@@ -110,7 +111,7 @@ Sys.time()-t1
 ```
 Really fast!
 
-#### Visualizing results
+### Visualizing results
 
 Again, we use `tpm_g()` and `stationary()` to tranform the parameters.
 
@@ -153,7 +154,7 @@ plot(z[-1], Prob[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
 
 In practice, of course we do not know the exact form of the relationship between z and the transition probabilities. Therefore, `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using P-splines. We do so in first calculating the design matrix using the `splines` package which we can easily be handled by `tpm_g()`.
 
-#### Building the B-spline design matrix
+### Building the B-spline design matrix
 
 ```{r Spline}
 Z = splines::bs(x = z, df = 6) ## B-spline design matrix
@@ -169,7 +170,7 @@ for(i in 2:(ncol(Zplot)-1)){
 } 
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 We only need to make small changes to the likelihood function. In general, a penalty for the curvature should also be added, which is done in the last lines.
 
@@ -193,7 +194,7 @@ mllk_np = function(theta.star, x, Z, lambda){
 }
 ```
 
-#### Fitting a non-parametric HMM
+### Fitting a non-parametric HMM
 ```{r model2, warning=FALSE}
 theta.star = c(-2,-2, rep(0, 2*ncol(Z)), # starting values state process
                0, # starting value initial distribution
@@ -206,7 +207,7 @@ Sys.time()-t1
 
 The model fit is still quite fast for non-parametric modeling.
 
-#### Visualizing results
+### Visualizing results
 
 Again, we use `tpm_g()` and `stationary()` to tranform the unconstraint parameters to working parameters.
 
@@ -234,7 +235,7 @@ plot(z[-1], Prob_np[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
 
 We now look at a setting, where covariates influence the mean of the state-dependent distribution, while the state switching is controlled by a homogeneous Markov chain. This is often called Markov-switching regression.
 
-#### Setting parameters for simulation
+### Setting parameters for simulation
 
 ```{r parameters2}
 sigma = c(1, 1)
@@ -252,7 +253,7 @@ delta = stationary(Gamma) # stationary Markov chain
 
 ```
 
-#### Simulation
+### Simulation
 
 ```{r data2}
 s = x = rep(NA, n)
@@ -276,7 +277,7 @@ points(z[which(s==2)], x[which(s==2)], pch = 16, col = color[2])
 
 ### Parametric modeling of the state-dependent regressions
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 ```{r mllk3}
 mllk_reg = function(theta.star, x, Z){
@@ -293,7 +294,7 @@ mllk_reg = function(theta.star, x, Z){
 }
 ```
 
-#### Fitting a Markov-switching regression model
+### Fitting a Markov-switching regression model
 ```{r model3, warning=FALSE}
 theta.star = c(-2,-3, # starting values state process
                8, 10, rep(0,4), # starting values for regression
@@ -303,7 +304,7 @@ mod_reg = stats::nlm(mllk_reg, theta.star, x = x, Z = Z)
 Sys.time()-t1
 ```
 
-#### Visualizing results
+### Visualizing results
 
 ```{r visualization3}
 Gamma_hat_reg = tpm(mod_reg$estimate[1:2]) # calculating all tpms
@@ -323,13 +324,13 @@ curve(beta_hat_reg[2,1] + beta_hat_reg[2,2]*x + beta_hat_reg[2,3]*x^2,
 
 This is now a trivial task, just combininig the previous two examples.
 
-#### Again building the B-spline design matrix
+### Again building the B-spline design matrix
 
 ```{r Spline2}
 Z = splines::bs(x = z, df = 6) ## B-spline design matrix
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 ```{r mllk4}
 mllk_npreg = function(theta.star, x, Z, lambda){
@@ -350,7 +351,7 @@ mllk_npreg = function(theta.star, x, Z, lambda){
 }
 ```
 
-#### Fitting a non-parametric Markov-switching regression model
+### Fitting a non-parametric Markov-switching regression model
 ```{r model4, warning=FALSE}
 theta.star = c(-2,-3, # starting values state process
                8, 10, rep(0, 2*ncol(Z)), # starting values for regression
@@ -361,7 +362,7 @@ mod_npreg = stats::nlm(mllk_npreg, theta.star, x = x, Z = Z, lambda = 10)
 Sys.time()-t1
 ```
 
-#### Visualizing results
+### Visualizing results
 
 ```{r visualization4}
 Gamma_hat_npreg = tpm(mod_npreg$estimate[1:2]) # calculating all tpms

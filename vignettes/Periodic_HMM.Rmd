@@ -30,7 +30,7 @@ $$
 $$
 where $\Gamma^{(t)}$ is the transition probability matrix at time $t$ and $L$ is the cycle length. This can conveniently modeled by letting the off-diagonal elements be trigonometric functions of a cyclic variable such as time of day.
 
-#### Setting parameters for simulation
+### Setting parameters for simulation
 
 We choose a bimodal activity pattern here. We can conveniently calculate the transition probability matrices and all periodically stationary distributions using `tpm_p()` and `stationary_p()`.
 
@@ -53,7 +53,7 @@ points(Delta[,1], pch = 19, col = color[1])
 # only plotting one state, as the other probability is just 1-delta
 ```
 
-#### Simulating data
+### Simulating data
 
 ```{r data}
 # simulation
@@ -77,7 +77,7 @@ boxplot(x ~ z, xlab = "time of day")
 
 ## Trigonometric modeling of the transition probalities
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 Here we specify the likelihood function and pretend we know the degree of the trigonometric link which, in practice, is never the case. Again we use `tpm_p()` and we compute the periodically stationary start by using `stationary_p()` with the additional argument that specifies which time point to compute.
 
@@ -96,7 +96,8 @@ mllk = function(theta.star, x, z){
 }
 ```
 
-#### Fitting an HMM to the data
+### Fitting an HMM to the data
+
 ```{r model, warning=FALSE}
 theta.star = c(-1,-2, rep(0, 8), # starting values state process
                4, 14 ,log(3),log(5)) # starting values state-dependent process
@@ -105,7 +106,7 @@ mod = stats::nlm(mllk, theta.star, x = x, z = z)
 Sys.time()-s
 ```
 
-#### Visualizing results
+### Visualizing results
 
 Again, we use `tpm_p()` and `stationary_p()` to tranform the parameters.
 
@@ -141,7 +142,7 @@ points(Delta_hat[,1], pch = 19, col = color[1])
 
 `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`.
 
-#### Building the cyclic spline design matrix
+### Building the cyclic spline design matrix
 
 ```{r cSpline}
 nk = 8 # number of basis functions
@@ -158,7 +159,7 @@ for(i in 2:nk){
 } 
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 We only need to make small changes to the likelihood function. Most importantly we use `tpm_p()` with the additional argument `Z`, which allows using a bespoke design matrix. In general, a penalty for the curvature should also be added, which is done in the last lines.
 
@@ -181,7 +182,8 @@ mllk_np = function(theta.star, x, z, Z, lambda){
 }
 ```
 
-#### Fitting a non-parametric HMM
+### Fitting a non-parametric HMM
+
 ```{r model2, warning=FALSE}
 theta.star = c(-1,-2, rep(0, 2*nk), # starting values state process
                4, 14 ,log(3),log(5)) # starting values state-dependent process
@@ -193,7 +195,7 @@ Sys.time()-s
 
 The model fit is still quite fast for non-parametric modeling.
 
-#### Visualizing results
+### Visualizing results
 
 Again, we use `tpm_p()` and `stationary_p()` to tranform the unconstraint parameters to working parameters.
 

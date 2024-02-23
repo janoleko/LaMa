@@ -37,7 +37,7 @@ $$
 y_t \mid g_t \sim N(0, (\beta e^{g_t / 2})^2).
 $$
 
-#### Simulating data from the stochastic volatility model
+### Simulating data from the stochastic volatility model
 
 We start by simulating data from the above specified model:
 
@@ -68,7 +68,7 @@ axis(side=4, at = seq(0,150,by=75)/7-40, labels = seq(0,150,by=75))
 mtext("standard deviation", side=4, line=3, at = -30)
 ```
 
-#### Writing the negative log-likelihood function
+### Writing the negative log-likelihood function
 
 This likelihood formulation corresponds to a fine discretization of the continuous state space into the intervals `b` with width `h` and midpoints `bstar`.
 
@@ -91,7 +91,7 @@ mllk = function(theta.star, y, bm, m){
 }
 ```
 
-#### Fitting an SSM to the data
+### Fitting an SSM to the data
 
 ```{r model, warning=FALSE}
 theta.star = c(qlogis(0.95), log(0.3), log(1))
@@ -103,7 +103,8 @@ mod = stats::nlm(mllk, theta.star, y = y, bm = bm, m = m)
 Sys.time()-t1
 ```
 
-#### Results
+### Results
+
 ```{r results}
 # parameter estimates
 (phi = plogis(mod$estimate[1]))

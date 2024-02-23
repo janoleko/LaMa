@@ -67,7 +67,7 @@ arrival_times = sort(arrival_times)
 
 Let's visualize the simulated MMPP
 
-```{r vis MMPP}
+```{r vis_MMPP}
 n = length(arrival_times)
 color = c("orange", "deepskyblue")
 plot(arrival_times[1:100], rep(0.5,100), type = "h", bty = "n", ylim = c(0,1), 
@@ -180,7 +180,7 @@ arrival_times = sort(arrival_times)
 
 Let's visualize the simulated MM**M**PP
 
-```{r vis MMMPP}
+```{r vis_MMMPP}
 n = length(arrival_times)
 plot(arrival_times[1:100], marks[1:100], pch = 16, bty = "n", 
      ylim = c(-9,9), xlab = "arrival times", ylab = "marks")

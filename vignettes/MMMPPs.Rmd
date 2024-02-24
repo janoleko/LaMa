@@ -194,7 +194,7 @@ legend("topright", lwd = 2, col = color,
 
 The likelihood of a stationary MM**M**PP for waiting times $x_1, \dots, x_n$ and marks $y_0, y_1, \dotsc, y_n$ only changes slightly from the MMPP likelihood, as we include the matrix of state-specific densities (@lu2012markov, @mews2023markov):
 $$
-L(\theta) = \delta P(y_0) \bigl(\prod_{i=1}^n \exp((Q-\Lambda)y_i)\Lambda P(y_i) \bigr)1,
+L(\theta) = \delta P(y_0) \bigl(\prod_{i=1}^n \exp((Q-\Lambda) x_i)\Lambda P(y_i) \bigr)1,
 $$
 where $Q$, $\Lambda$ and $\delta$ are as above and $P(y_i)$ is a diagonal matrix with state-dependent densites for the observation at time $t_i$. We can again easily calculate the log of the above expression using the standard implementation of the general forward algorithm `forward_g()` when first calculating the `allprobs` matrix with state-dependent densities for the marks (as usual for HMMs) and then multiplying each row except the first one element-wise with the state-dependent rates.
 

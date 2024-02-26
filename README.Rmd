@@ -51,6 +51,7 @@ Package functionalities for many different model classes are described in severa
 * [Inhomogeneous HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Inhomogeneous_HMM.pdf)
 * [Periodic HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
 * [State space models](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/State_space_models.pdf)
+* [Continuous-time HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Continuous_time_HMMs.pdf)
 * [Hidden semi-Markov models](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/HSMMs.pdf)
 * [Markov-modulated (marked) Poisson processes](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/MMMPPs.pdf)
 

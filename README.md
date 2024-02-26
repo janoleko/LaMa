@@ -3,12 +3,12 @@
 
 A plethora of latent Markov models, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
-(SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**,
-**Markov-modulated (marked) Poisson processes** (MMMPPs) and **Cox
-processes** can be formulated and estimated within the same framework
-via directly maximizing the (approximate) likelihood. The log-likelihood
-can be calculated recursively as a matrix product by the so-called
-**forward algorithm** (for details see
+(SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs** and
+**Markov-modulated (marked) Poisson processes** (MM(M)PPs) can be
+formulated and estimated within the same framework via directly
+maximizing the (approximate) likelihood. The log-likelihood can be
+calculated recursively as a matrix product by the so-called **forward
+algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
 et al. 2016</a>). Implementation of the algorithm in **C++** offers
 10-20 times faster evaluation times, thus substantially speeding up
@@ -168,7 +168,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = stats::nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.104692 secs
+#> Time difference of 0.101562 secs
 ```
 
 Really fast for 10.000 data points!

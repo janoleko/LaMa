@@ -23,29 +23,23 @@ knitr::opts_chunk$set(
 library("Lcpp")
 ```
 
-The regular HMM formulation needs a key assumption to be applicable, namely the data need to be observed at regular, equidistant time-points such that the transition probabilties can be interpreted meaningfully w.r.t. a specific time unit. If this is not the case, the model used should acocunt for this by building on a mathematical formulation in continuous time. The obvious choice here is to retain most of the HMM model formulation, but replace the unobserved discrete-time Markov chain with a continuous-time Markov chain.
+The regular HMM formulation needs a key assumption to be applicable, namely the data need to be observed at regular, equidistant time-points such that the transition probabilties can be interpreted meaningfully w.r.t. a specific time unit. If this is not the case, the model used should acocunt for this by building on a mathematical formulation in continuous time. The obvious choice here is to retain most of the HMM model formulation, but replace the unobserved discrete-time Markov chain with a continuous-time Markov chain. However, here it is important to note that the so-called **snapshot property** needs to be fulfilled, i.e. the observed process at time $t$ can only depend on the state at that time instant and not on the interval since the previous observation. For more details see @glennie2023hidden.
 
 As transition probabilities can only be specified w.r.t. to some time unit, but we have irregular observation times $t_1, \dots, t_T$, such a chain is characterized by a so-called **(infinitesimal) generator matrix** 
 
 $$
 Q = \begin{pmatrix}
-  -\lambda_1 & \lambda_1 \omega_{12} & \lambda_1 \omega_{13} & \cdots\\
-  \lambda_2 \omega_{21} & - \lambda_2 & \lambda_2 \omega_{23} & {} \\
-  \lambda_3 \omega_{31} & \lambda_3 \omega_{32} & - \lambda_3 & {} \\
-  \vdots & {} & {} & \ddots
-\end{pmatrix}
-= \begin{pmatrix}
   q_{11} & q_{12} & q_{13} & \cdots \\
   q_{21} & q_{22} & q_{23} & {} \\
   q_{31} & q_{32} & q_{33} & {} \\
   \vdots & {} & {} & \ddots
 \end{pmatrix},
 $$
-where the diagonal entries are $q_{ii} = - \sum_{j \neq i} q_{ij}$, $q_{ij} \geq 0$ for $i \neq j$. This matrix can be interpreted as the derivative of the transition probability matrix and completely describes the dynamics of the state process. For such a chain, the time-spent in a state $i$ is exponentially distributed with rate $-q_{ii}$ and conditional on leaving the state, the probability to transition to a state $j \neq i$ is $\omega_{ij} = q_{ij} / \lambda_{i}$. For a more detailed introduction see @dobrow2016introduction (pp. 265 f.). For observation times $t_1$ and $t_2$, we can then obtain the transition probability matrix between these points via the identity
+where the diagonal entries are $q_{ii} = - \sum_{j \neq i} q_{ij}$, $q_{ij} \geq 0$ for $i \neq j$. This matrix can be interpreted as the derivative of the transition probability matrix and completely describes the dynamics of the state process. For such a chain, the time-spent in a state $i$ is exponentially distributed with rate $-q_{ii}$ and conditional on leaving the state, the probability to transition to a state $j \neq i$ is $\omega_{ij} = q_{ij} / -q_{ii}$. For a more detailed introduction see @dobrow2016introduction (pp. 265 f.). For observation times $t_1$ and $t_2$, we can then obtain the transition probability matrix between these points via the identity
 $$
 \Gamma(t_1, t_2) = \exp(Q (t_2 - t_1)),
 $$
-where $\exp()$ is the matrix expoential. This follows from the so-called Kolmogorov forward equations, but again, for more details see @dobrow2016introduction. We can easily see that such a model now accounts for irregular observation times, while not explicitely modelling them as a random variable.
+where $\exp()$ is the matrix expoential. This follows from the so-called Kolmogorov forward equations, but again, for more details see @dobrow2016introduction. We can easily see that such a model now accounts for irregular observation times.
 
 ## Example 1: two states
 

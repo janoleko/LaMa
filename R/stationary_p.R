@@ -41,10 +41,12 @@ stationary_p = function(Gamma, t = NULL, tol = .Machine$double.eps){
     for(t in 2:L){
       Delta[t,] = Delta[t-1,]%*%Gamma[,,t-1]
     }
+    colnames(Delta) = paste("state", 1:N)
     return(Delta)
   } else{
     GammaT = tpm_thinned(Gamma, t)
     delta = stationary(GammaT, tol)
+    names(delta) = paste("state", 1:length(delta))
     return(delta)
   }
 }

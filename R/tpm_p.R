@@ -13,9 +13,9 @@
 #' @param beta Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 #' Needs to be of dimension c(N*(N-1), 2*degree+1), where the first column contains the intercepts.
 #' @param degree Degree of the trigonometric link function. For each additional degree, one sine and one cosine frequency are added.
-#' @param Z Defaults to zero if trigonometric link should be calculated. 
-#' From an efficiency perspective, this option should be used within the likelhood function, as the basis expansion should not be redundantly calculated. \cr \cr
-#' Furthermore, Z can also be a pre-calculated design matrix (with p columns), when one wants to use e.g. cyclic P-splines.
+#' @param Z Pre-calculated design matrix (excluding intercept column). Defaults to NULL if trigonometric link should be calculated. 
+#' From an efficiency perspective, Z should be pre-calculated within the likelhood function, as the basis expansion should not be redundantly calculated. This can be done by using trigBasisExpansion(). \cr \cr
+#' Furthermore, Z can also be a pre-calculated design matrix from mgcv::cSplineDes() (with p columns), when one wants to use cyclic P-splines, or it can be any other basis expansion of the cyclic variable.
 #' In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
 #' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.

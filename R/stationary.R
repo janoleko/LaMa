@@ -19,5 +19,6 @@
 stationary = function(Gamma, tol = .Machine$double.eps){
   N = dim(Gamma)[1]
   delta = solve(t(diag(N)-Gamma+1), rep(1,N), tol = tol)
+  names(delta) = paste("state", 1:N)
   delta
 }

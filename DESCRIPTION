@@ -22,5 +22,7 @@ Depends: R (>= 3.5.0)
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3

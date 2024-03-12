@@ -27,7 +27,7 @@ So-called hidden semi-Markov models (HSMMs) are a flexible generalization of HMM
 
 ## Homogeneous HSMMs
 
-We begin by considering homogeneous HSMMs. In such models, each state has a associated state dwell-time distribution. The transition probability matrix of a regular HMM is the replaced by these distributions and the conditional transition probabilities given the state is left.
+We begin by considering homogeneous HSMMs. In such models, each state has an associated state dwell-time distribution. The transition probability matrix of a regular HMM is replaced by these distributions and the conditional transition probabilities given the state is left.
 
 ### Setting parameters
 
@@ -78,7 +78,7 @@ legend("topright", col = color, pch = 20,
 
 ### Writing the negative log-likelihood function
 
-We now write the negative log-likelihood function for an approximating HMM. We need the extra argument `agsizes` to specify the aggregate sizes that should be used to approximate the dwell time distributions. These should be chosen such that most of the support of the state-specific dwell-time distributions is covered.
+We now write the negative log-likelihood function for an approximating HMM. As a semi-Markov chain is specified in terms of state-specific dwell-time distributions and conditional transition probabilities given that the current state is left, we have to compute both (here called `dm` and `omege`). The transition probability matrix of the approxmiating HMM can then be computed by the function `tpm_hsmm()` where the exact procedure is detailed by @langrock2011hidden. We need the extra argument `agsizes` to specify the aggregate sizes that should be used to approximate the dwell-time distributions. These should be chosen such that most of the support of the state-specific dwell-time distributions is covered.
 
 ```{r, mllk}
 mllk = function(theta.star, x, N, agsizes){
@@ -99,7 +99,7 @@ mllk = function(theta.star, x, N, agsizes){
   allprobs = matrix(1, length(x), N)
   ind = which(!is.na(x))
   for(j in 1:N){
-    allprobs[ind,j] = dnorm(x, mu[j], sigma[j])
+    allprobs[ind,j] = dnorm(x[ind], mu[j], sigma[j])
   }
   -Lcpp::forward_s(delta, Gamma, allprobs, agsizes)
 }
@@ -135,6 +135,93 @@ omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N),
                           exp(mod$estimate[3*N+1:(N*(N-2))])),N,N-1)))
 omega = t(omega)/apply(omega,2,sum)
 omega
+```
+## Real-data application
+
+We now want to briefly show the analysis of a real data set using hidden semi-Markov models. For this purpose we use the movement track of an Arctic muskox contained in the `R` package `PHSMM`. Originally these data where collected by ... and have already been analyzed by ...
+
+```{r, muskox_data}
+# install.packages("PHSMM")
+data = PHSMM::muskox[1:1000,] # only using first 1000 observations for speed
+head(data)
+```
+As these data have already been preprossed, we can immediately write the negative log-likelihood function. When modeling the dwell-time distribution of real processes, it is typically advisable to use a more flexible distribution than the shifted Poisson distribution, as the latter cannot account for overdispersion. Here, we will employ the shifted negative binomial distribution that yields the Poisson distribution as a special case for the dispersion parameter equal to zero. The state-dependent step lengths are modeled by gamma distributions, where we reparametrize the gamma distribution in terms of its mean and standard deviation as opposed to shape and scale for better interpretability.
+
+```{r, muskox_likelihood}
+mllk_muskox = function(theta.star, step, N, agsizes){
+  # parameter transformation from working to natural
+  mu = exp(theta.star[1:N]) # step mean
+  sigma = exp(theta.star[N+1:N]) # step standard deviation
+  mu_dwell = exp(theta.star[2*N+1:N]) # dwell time mean
+  phi = exp(theta.star[3*N+1:N]) # dwell time dispersion
+  if(N>2){ 
+    # conditional transition probability matrix
+    omega = matrix(0,N,N)
+    omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N),
+                          exp(theta.star[4*N+1:(N*(N-2))])),N,N-1)))
+    omega = t(omega)/apply(omega,2,sum)
+  } else{ omega = matrix(c(0,1,1,0),2,2) }
+  dm = list() # list of dwell-time distributions
+  for(j in 1:N){ 
+    # R allows to parametrize by mean and size where size = 1/dispersion
+    dm[[j]] = dnbinom(1:agsizes[j]-1, mu=mu_dwell[j], size=1/phi[j]) 
+  }
+  Gamma = Lcpp::tpm_hsmm(omega, dm)
+  delta = Lcpp::stationary(Gamma)
+  allprobs = matrix(1, length(step), N)
+  ind = which(!is.na(step))
+  for(j in 1:N){
+    # we reparametrise the gamma distribution in terms of mean and sd
+    allprobs[ind,j] = dgamma(step[ind], shape = mu[j]^2 / sigma[j]^2, 
+                             scale = sigma[j]^2 / mu[j])
+  }
+  -Lcpp::forward_s(delta, Gamma, allprobs, agsizes)
+}
+```
+
+### Fitting an HSMM (as an approxiating HMM) to the muskox data
+
+```{r, model_muskox, warning=FALSE, cache = TRUE}
+# intial values
+theta.star = c(log(c(4, 50, 300, 4, 50, 300)), # state-dependent mean and sd
+               log(c(3,3,5)), # dwell time means
+               log(c(0.01, 0.01, 0.01)), # dwell time disperion
+               rep(0, 6)) # omega
+
+agsizes = c(11,11,14)
+
+t1 = Sys.time()
+mod_muskox = stats::nlm(mllk_muskox, theta.star, step=data$step, N=3, agsizes=agsizes,
+                        iterlim = 500)
+Sys.time()-t1
+```
+
+### Results
+
+We retransform the parameters for interpretation
+
+```{r, results_muskox}
+theta.star = mod_muskox$estimate; N = 3
+(mu = exp(theta.star[1:N])) # step mean
+(sigma = exp(theta.star[N+1:N])) # step standard deviation
+(mu_dwell = exp(theta.star[2*N+1:N])) # dwell time mean
+(phi = exp(theta.star[3*N+1:N])) # dwell time dispersion
+omega = matrix(0,N,N)
+omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N),
+                        exp(theta.star[4*N+1:(N*(N-2))])),N,N-1)))
+omega = t(omega)/apply(omega,2,sum)
+omega
+```
+
+In this case the Poisson distribution would have been suffficiently flexible, as all dispersion parameters were estimated very close to zero. We can easily visualize the estimated state-specific dwell-time distributions:
+
+```{r, dwell_muskox}
+par(mfrow = c(1,3))
+for(j in 1:N){
+  plot(1:agsizes[j], dnbinom(1:agsizes[j]-1, mu=mu_dwell[j], size = 1/phi[j]),
+       type = "h", lwd = 2, col = color[j], xlab = "dwell time (hours)",
+       ylab = "probabilities", main = paste("state",j), bty = "n", ylim = c(0,0.25))
+}
 ```
 
 ## References

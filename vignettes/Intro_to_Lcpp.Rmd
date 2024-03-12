@@ -84,9 +84,11 @@ Inference for HMMs is more difficult compared to e.g. regression modeling, as th
 $$
 L(\theta) = \delta^{(1)} P(x_1) \Gamma P(x_2) \Gamma \dots \Gamma P(x_T) 1^t,
 $$
-where $\delta^{(1)}$ and $\Gamma$ are as defined above, $P(x_t)$ is a diagonal matrix with state-dependent densities or probability mass functions $f_j(x_t)$ on its diagonal and $1$ is a row vector of ones with length $N$. Being able to evaluate the likelihood function, it can be numerically maximized by popular optimizers like `nlm()` or `optim()`.
+where $\delta^{(1)}$ and $\Gamma$ are as defined above, $P(x_t)$ is a diagonal matrix with state-dependent densities or probability mass functions $f_j(x_t) = f(x_t \mid S_t = j)$ on its diagonal and $1$ is a row vector of ones with length $N$. All model parameters are here summarized in the vector $\theta$. Being able to evaluate the likelihood function, it can be numerically maximized by popular optimizers like `nlm()` or `optim()`.
 
-The algorithm explained above suffers from numerical underflow and for $T$ only moderately large the likelihood is rounded to zero. Thus, one can use a scaling strategy, detailed by @zucchini, to avoid this and calculate the log-likelihood recursively. This version of the forward algorithm is implemented in `Lcpp` and written in C++. Here, within the negative log-likelihood function we also build the transition probability matrix using the `tpm()` function and compute the stationary distribution using `stationary()`. We then calculate the log-likelihood using `forward()` in the last line and return it negative such that the function can be numerically minimized by e.g. `nlm()`.
+The algorithm explained above suffers from numerical underflow and for $T$ only moderately large the likelihood is rounded to zero. Thus, one can use a scaling strategy, detailed by @zucchini, to avoid this and calculate the log-likelihood recursively. This version of the forward algorithm is implemented in `Lcpp` and written in C++. For HMMs we often need to constrain the domains of several of the model parameters in $\theta$ (i.e. positive standard deviations or a transition probability matrix with elements between 0 and 1 and rows that sum to one). One could now resort to contraint numerical optimziation but in practice one usually maximizes the likelihood w.r.t. a transformed version (to the real number line) of the model parameters by using suitable invertible and differenentiable link functions, which we denote here as $\theta^*$ (also in the code). For example we use the log-link for parameters that need to be strictly positive and the multinomial logistic link for the transition probability matrix. While the former can easily be coded by hand, the latter is implemented by the functions `tpm()` and `tpm_g()` for convenience and computational speed. For efficiency, it is also advisable to evaluate the state-dependent densities (or probability mass functions) vectorized outside the recursive forward algorithm. This results in a matrix containing the state-dependent likelihoods for each data point conditioned on each state (i.e. of dimension `c(n,N)`) which, throughout the package, we call the `allprobs` matrix.
+
+In this example, within the negative log-likelihood function we build the homogeneous transition probability matrix using the `tpm()` function and compute the stationary distribution of the Markov chain using `stationary()`. We then build the `allprobs` matrix and calculate the log-likelihood using `forward()` in the last line. It is returned negative such that the function can be numerically minimized by e.g. `nlm()`. 
 
 ```{r mllk}
 mllk = function(theta.star, x){
@@ -95,7 +97,7 @@ mllk = function(theta.star, x){
   delta = Lcpp::stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
-  # calculate all state-dependent probabilities
+  # calculate all state-dependent probabilities outside the forward algorithm
   allprobs = matrix(1, length(x), 2)
   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization

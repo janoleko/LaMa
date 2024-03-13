@@ -6,7 +6,7 @@
 \alias{Lcpp-package}
 \title{Lcpp: Faster numerical maximum likelihood estimation of HMMs, HSMMs and SMMs}
 \description{
-This package provides convenient R wrapper functions for the forward algorithm used to fit hidden Markov models (HMMs), hidden semi-Markov models (HSMMs) and state space models (SSMs) via direct numerical maximum likelihood estimation. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow. Implementation in C++ offers 10-20 times faster evaluation times, thus substantially speeding up estimation by numerical optimizers.
+This package provides convenient R wrapper functions for the forward algorithm that is used to fit hidden Markov models (HMMs), hidden semi-Markov models (HSMMs), state space models (SSMs) and point process models via direct numerical maximum likelihood estimation. The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow. Implementation in C++ offers 10-20 times faster evaluation times, thus substantially speeding up estimation by numerical optimizers. A variety of auxiliary functions that are also necessary for likelihood evaluation are additionally implemented for both efficiency and convenience.
 }
 \author{
 \strong{Maintainer}: Jan-Ole Koslik \email{jan-ole.koslik@uni-bielefeld.de}

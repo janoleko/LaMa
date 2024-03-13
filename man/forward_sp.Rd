@@ -2,7 +2,7 @@
 % Please edit documentation in R/forward_sp.R
 \name{forward_sp}
 \alias{forward_sp}
-\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with periodically varying transition probability matrix}
+\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with periodically varying transition probability matrices}
 \usage{
 forward_sp(delta, Gamma, allprobs, sizes, tod)
 }

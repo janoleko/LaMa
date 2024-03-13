@@ -51,6 +51,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// forward_cpp_s
+double forward_cpp_s(const arma::mat& allprobs, const arma::rowvec& delta, const arma::mat& Gamma, const IntegerVector& agsizes);
+RcppExport SEXP _Lcpp_forward_cpp_s(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type agsizes(agsizesSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_cpp_s(allprobs, delta, Gamma, agsizes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// forward_cpp_sp
+double forward_cpp_sp(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const IntegerVector& agsizes, const std::vector<int> tod);
+RcppExport SEXP _Lcpp_forward_cpp_sp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP, SEXP todSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type delta(deltaSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type agsizes(agsizesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<int> >::type tod(todSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_cpp_sp(allprobs, delta, Gamma, agsizes, tod));
+    return rcpp_result_gen;
+END_RCPP
+}
 // forward_cpp_flies
 double forward_cpp_flies(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma1, arma::cube& Gamma2, int startDD, std::vector<int> tod);
 RcppExport SEXP _Lcpp_forward_cpp_flies(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP Gamma1SEXP, SEXP Gamma2SEXP, SEXP startDDSEXP, SEXP todSEXP) {
@@ -64,6 +93,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type startDD(startDDSEXP);
     Rcpp::traits::input_parameter< std::vector<int> >::type tod(todSEXP);
     rcpp_result_gen = Rcpp::wrap(forward_cpp_flies(allprobs, delta, Gamma1, Gamma2, startDD, tod));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rep_times
+arma::rowvec rep_times(const arma::rowvec& x, const IntegerVector& times);
+RcppExport SEXP _Lcpp_rep_times(SEXP xSEXP, SEXP timesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rep_times(x, times));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -110,7 +151,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_Lcpp_forward_cpp_h", (DL_FUNC) &_Lcpp_forward_cpp_h, 3},
     {"_Lcpp_forward_cpp_g", (DL_FUNC) &_Lcpp_forward_cpp_g, 3},
     {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
+    {"_Lcpp_forward_cpp_s", (DL_FUNC) &_Lcpp_forward_cpp_s, 4},
+    {"_Lcpp_forward_cpp_sp", (DL_FUNC) &_Lcpp_forward_cpp_sp, 5},
     {"_Lcpp_forward_cpp_flies", (DL_FUNC) &_Lcpp_forward_cpp_flies, 6},
+    {"_Lcpp_rep_times", (DL_FUNC) &_Lcpp_rep_times, 2},
     {"_Lcpp_tpm_g_cpp", (DL_FUNC) &_Lcpp_tpm_g_cpp, 4},
     {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
     {"_Lcpp_tpm_thinned_t_cpp", (DL_FUNC) &_Lcpp_tpm_thinned_t_cpp, 2},

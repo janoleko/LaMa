@@ -1,12 +1,13 @@
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with homogeneous transition probability matrix
 #'
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 
+#' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #'
-#' @param delta Initial or stationary distribution of length M
+#' @param delta Initial or stationary distribution of length M (where M is the number of approximating states)
 #' @param Gamma Transition probability matrix of dimension c(M,M)
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N), where N is the number of semi-Markovian states.
 #' This will automatically be converted to the appropriate dimension.
-#' @param sizes State aggregate sizes
+#' @param sizes State aggregate sizes that are used for the approximation of the semi-Markov chain.
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export
@@ -48,6 +49,5 @@
 #' theta.star = c(log(5), log(10), 1, 4, log(2), log(2))
 #' mod = stats::nlm(mllk, theta.star, x = x, sizes = c(20, 30), stepmax = 5)
 forward_s = function(delta, Gamma, allprobs, sizes){
-  allprobsL = t(apply(allprobs, 1, rep, times = sizes))
-  forward_cpp_h(allprobsL, delta, Gamma)
+  forward_cpp_s(allprobs, delta, Gamma, sizes)
 }

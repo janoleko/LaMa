@@ -85,10 +85,10 @@ plot(z[-1], Delta[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
 ```{r data}
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,t-1])
-  x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
 plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
@@ -113,7 +113,7 @@ mllk = function(theta.star, x, Z){
   sigma = exp(theta.star[10:11])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
   -forward_g(delta, Gamma, allprobs)
 }
@@ -126,7 +126,7 @@ theta.star = c(-2, -2, rep(0,4), # initializing with homogeneous tpm
                0, # starting value for initial distribution
                4, 14 ,log(3),log(5)) # starting values state-dependent process
 t1 = Sys.time()
-mod = stats::nlm(mllk, theta.star, x = x, Z = Z)
+mod = nlm(mllk, theta.star, x = x, Z = Z)
 Sys.time()-t1
 ```
 Really fast!
@@ -204,7 +204,7 @@ mllk_np = function(theta.star, x, Z, lambda){
   sigma = exp(theta.star[2+2*ncol(Z)+3+1:2])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
   l = forward_g(delta, Gamma, allprobs)
   # penalize curvature
@@ -220,7 +220,7 @@ theta.star = c(-2,-2, rep(0, 2*ncol(Z)), # starting values state process
                0, # starting value initial distribution
                4, 14 ,log(3),log(5)) # starting values state-dependent process
 t1 = Sys.time()
-mod_np = stats::nlm(mllk_np, theta.star, x = x, Z = Z, lambda = 50)
+mod_np = nlm(mllk_np, theta.star, x = x, Z = Z, lambda = 50)
 # in this case we don't seem to need a lot of penalization
 Sys.time()-t1
 ```
@@ -253,7 +253,11 @@ plot(z[-1], Prob_np[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
 
 ## Covariate effects in the state-dependent process
 
-We now look at a setting, where covariates influence the mean of the state-dependent distribution, while the state switching is controlled by a homogeneous Markov chain. This is often called Markov-switching regression.
+We now look at a setting, where covariates influence the mean of the state-dependent distribution, while the state switching is controlled by a homogeneous Markov chain. This is often called Markov-switching regression. Assuming the observation process to be conditionally normally distributed, this means
+
+$$
+X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
+$$
 
 ### Setting parameters for simulation
 
@@ -278,11 +282,11 @@ delta = stationary(Gamma) # stationary Markov chain
 ```{r data2}
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, beta[s[1],]%*%c(1, Z[1,]), # state-dependent regression
+x[1] = rnorm(1, beta[s[1],]%*%c(1, Z[1,]), # state-dependent regression
                     sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = stats::rnorm(1, beta[s[t],]%*%c(1, Z[t,]), # state-dependent regression
+  x[t] = rnorm(1, beta[s[t],]%*%c(1, Z[t,]), # state-dependent regression
                       sigma[s[t]])
 }
 
@@ -308,7 +312,7 @@ mllk_reg = function(theta.star, x, Z){
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
   # state-dependent regression
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, cbind(1,Z)%*%beta[j,], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, cbind(1,Z)%*%beta[j,], sigma[j]) }
   # return negative for minimization
   -forward(delta, Gamma, allprobs)
 }
@@ -320,7 +324,7 @@ theta.star = c(-2, -3, # starting values state process
                8, 10, rep(0,4), # starting values for regression
                log(1),log(1)) # starting values for sigma
 t1 = Sys.time()
-mod_reg = stats::nlm(mllk_reg, theta.star, x = x, Z = Z)
+mod_reg = nlm(mllk_reg, theta.star, x = x, Z = Z)
 Sys.time()-t1
 ```
 
@@ -362,7 +366,7 @@ mllk_npreg = function(theta.star, x, Z, lambda){
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
   # state-dependent regression
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, cbind(1,Z)%*%beta[j,], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, cbind(1,Z)%*%beta[j,], sigma[j]) }
   # return negative for minimization
   l = forward(delta, Gamma, allprobs)
   # penalize curvature
@@ -378,7 +382,7 @@ theta.star = c(-2,-3, # starting values state process
                8, 10, rep(0, 2*ncol(Z)), # starting values for regression
                log(1),log(1)) # starting values for sigma
 t1 = Sys.time()
-mod_npreg = stats::nlm(mllk_npreg, theta.star, x = x, Z = Z, lambda = 10)
+mod_npreg = nlm(mllk_npreg, theta.star, x = x, Z = Z, lambda = 10)
 # small penalty
 Sys.time()-t1
 ```

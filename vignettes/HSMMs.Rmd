@@ -112,7 +112,7 @@ mllk = function(theta.star, x, N, agsizes){
 # intial values
 theta.star = c(10, 40, 100, log(c(5, 20, 50)), # state-dependent
                log(c(7,4,4)), # dwell time means
-               rep(0, 6)) # omega
+               rep(0, 3)) # omega
 
 agsizes = qpois(0.95, lambda)+1
 
@@ -138,7 +138,7 @@ omega
 ```
 ## Real-data application
 
-We now want to briefly show the analysis of a real data set using hidden semi-Markov models. For this purpose we use the movement track of an Arctic muskox contained in the `R` package `PHSMM`. Originally these data where collected by ... and have already been analyzed by ...
+We now want to briefly show the analysis of a real data set using hidden semi-Markov models. For this purpose we use the movement track of an Arctic muskox contained in the `R` package `PHSMM`. Originally these data where collected by @beumer2020application and have already been analyzed by @pohle2022flexible.
 
 ```{r, muskox_data}
 # install.packages("PHSMM")
@@ -185,14 +185,14 @@ mllk_muskox = function(theta.star, step, N, agsizes){
 # intial values
 theta.star = c(log(c(4, 50, 300, 4, 50, 300)), # state-dependent mean and sd
                log(c(3,3,5)), # dwell time means
-               log(c(0.01, 0.01, 0.01)), # dwell time disperion
-               rep(0, 6)) # omega
+               log(c(0.01, 0.01, 0.01)), # dwell time dispersion
+               rep(0, 3)) # omega
 
 agsizes = c(11,11,14)
 
 t1 = Sys.time()
-mod_muskox = stats::nlm(mllk_muskox, theta.star, step=data$step, N=3, agsizes=agsizes,
-                        iterlim = 500)
+mod_muskox = stats::nlm(mllk_muskox, theta.star, step=data$step, N=3,
+                        agsizes=agsizes,iterlim = 500)
 Sys.time()-t1
 ```
 

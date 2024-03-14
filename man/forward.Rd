@@ -37,10 +37,8 @@ for(t in 2:500){
 ## negative log likelihood function
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = diag(2)
-  Gamma[!Gamma] = exp(theta.star[1:2])
-  Gamma = Gamma / rowSums(Gamma)
-  delta = solve(t(diag(2)-Gamma+1), rep(1,2)) # stationary HMM
+  Gamma = Lcpp::tpm(theta.star[1:2])
+  delta = Lcpp::stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities

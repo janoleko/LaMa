@@ -44,14 +44,8 @@
 #' mllk = function(theta.star, x, tod){
 #'   # parameter transformations for unconstraint optimization
 #'   beta = matrix(theta.star[1:6], 2, 3)
-#'   Gamma = array(dim=c(2,2,24))
-#'   for(t in 1:24){
-#'     G = diag(2)
-#'     G[!G] = exp(beta[,1]+beta[,2]*sin(2*pi*t/24)+
-#'     beta[,3]*cos(2*pi*t/24)) # trigonometric link
-#'     Gamma[,,t] = G / rowSums(G)
-#'   }
-#'   delta = c(plogis(theta.star[7]), 1-plogis(theta.star[5]))
+#'   Gamma = Lcpp::tpm_p(tod=tod, L=24, beta=beta)
+#'   delta = Lcpp::stationary_p(Gamma, t=tod[1])
 #'   mu = theta.star[8:9]
 #'   sigma = exp(theta.star[10:11])
 #'   # calculate all state-dependent probabilities

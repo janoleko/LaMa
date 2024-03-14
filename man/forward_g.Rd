@@ -49,14 +49,7 @@ for(t in 2:n){
 mllk = function(theta.star, x, z){
   # parameter transformations for unconstraint optimization
   beta = matrix(theta.star[1:4], 2, 2)
-  Eta = cbind(1, z)\%*\%t(beta)
-  n = length(x)
-  Gamma = array(dim=c(2,2,n))
-  for(t in 2:n){
-    G = diag(2)
-    G[!G] = exp(Eta[t,])
-    Gamma[,,t] = G / rowSums(G)
-  }
+  Gamma = tpm_g(Z = z, beta = beta)
   delta = c(plogis(theta.star[5]), 1-plogis(theta.star[5]))
   mu = theta.star[6:7]
   sigma = exp(theta.star[8:9])

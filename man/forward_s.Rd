@@ -44,9 +44,8 @@ mllk = function(theta.star, x, sizes){
   omega = matrix(c(0,1,1,0), nrow = 2, byrow = TRUE) # omega fixed (2-states)
   lambda = exp(theta.star[1:2]) # dwell time means
   dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
-  Gamma = tpm_hsmm(omega, dm)
-  delta = solve(t(diag(nrow(Gamma))-Gamma+1), rep(1,nrow(Gamma)), 
-  tol = 1e-40) # stationary
+  Gamma = Lcpp::tpm_hsmm(omega, dm)
+  delta = Lcpp::stationary(Gamma) # stationary
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities

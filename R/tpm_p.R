@@ -57,7 +57,7 @@
 #' Gamma = tpm_p(tod, L, beta, Z = Z)
 tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE){
   K = nrow(beta)
-  # for N > 1: N*(N-1) is bijective with solution
+  # for N > 1: K = N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25+K), 0)
   
   if(is.null(Z)){
@@ -66,5 +66,11 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE){
     Z = cbind(1, Z)
   }
   
-  tpm_g_cpp(Z, beta, N, byrow)
+  p = ncol(beta)-1
+  if(ncol(Z)!=p+1){
+    stop("The dimensions of the design matrix Z and beta do not match - you may have included an intercept column or chosen the wrong degree.")
+  } else{
+    Gamma = tpm_g_cpp(Z, beta, N, byrow)
+    return(Gamma)
+  }
 }

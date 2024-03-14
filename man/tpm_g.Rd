@@ -23,7 +23,7 @@ In an HMM, we can model the influence of covariates on the state process, by lin
 Most commonly, this is done by specifying a linear predictor \cr \cr
 \eqn{ \eta_{ij}^{(t)} = \beta^{(ij)}_0 + \beta^{(ij)}_1 z_{t1} + \dots + \beta^{(ij)}_p z_{tp} } \cr \cr
 for each off-diagonal element (\eqn{i \neq j}) and then applying the inverse multinomial logistic link to each row.
-This function efficiently calculates all transition probabilty matrices for a given design matrix \eqn{Z} and parameter matrix and parameter matrix beta.
+This function efficiently calculates all transition probabilty matrices for a given design matrix \eqn{Z} and parameter matrix beta.
 }
 \examples{
 n = 1000

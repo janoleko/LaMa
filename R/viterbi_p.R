@@ -22,18 +22,13 @@
 viterbi_p = function(delta, Gamma, allprobs, tod){
   n = nrow(allprobs)
   N = ncol(allprobs)
+  
+  # creating repeating Gamma array from L unique tpms
+  Gammanew = array(dim = c(N,N,n-1))
+  for(t in unique(tod)){
+    ind = which(tod[-1]==t)
+    Gammanew[,,ind] = Gamma[,,t]
+  }
 
-  xi = matrix(0, n, ncol = N)
-  foo = delta * allprobs[1, ]
-  xi[1, ] = foo / sum(foo)
-  for (t in 2:n){
-    foo = apply(xi[t - 1, ] * Gamma[,,tod[t]], 2, max) * allprobs[t, ]
-    xi[t, ] = foo / sum(foo)
-  }
-  iv = numeric(n)
-  iv[n] = which.max(xi[n, ])
-  for (t in (n - 1):1){
-    iv[t] = which.max(Gamma[, iv[t + 1], tod[t]] * xi[t, ]) 
-  }
-  return(iv)
+  as.integer(viterbi_g_cpp(allprobs, delta, Gammanew))
 }

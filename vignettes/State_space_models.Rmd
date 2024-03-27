@@ -28,7 +28,7 @@ This vignette shows how to fit state space models which can be interpreted as ge
 $$
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
 $$
-with autoregression parameter $\phi < 1$ an dispersion parameter $\sigma$. We could then model share returns $y_t$ as
+with autoregression parameter $\phi < 1$ a dispersion parameter $\sigma$. We could then model share returns $y_t$ as
 $$
 y_t = \beta \epsilon_t \exp(g_t / 2),
 $$

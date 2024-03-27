@@ -21,16 +21,14 @@ stateprobs = function(delta, Gamma, allprobs){
   N = ncol(allprobs)
   Gammanew = array(Gamma, dim = c(N,N,n-1))
   
-  lalpha = logalpha(delta, Gammanew, allprobs)
-  lbeta = logbeta(Gammanew, allprobs)
+  lalpha = logalpha_cpp(allprobs, delta, Gammanew)
+  lbeta = logbeta_cpp(allprobs, Gammanew)
 
   c = max(lalpha[n,])
   llk = c + log(sum(exp(lalpha[n,]-c)))
   
-  probs = matrix(nrow = n, ncol = N)
-  for(t in 1:n){
-    probs[t,] = exp(lalpha[t,] + lbeta[t,] - llk)
-  }
+  probs = exp(lalpha + lbeta - llk)
+
   # rowsums should already be one
   probs = probs / rowSums(probs)
   return(probs)

@@ -27,17 +27,5 @@ viterbi_g = function(delta, Gamma, allprobs){
     Gamma = Gamma[,,-1]
   }
   
-  xi = matrix(0, n, ncol = N)
-  foo = delta * allprobs[1, ]
-  xi[1, ] = foo / sum(foo)
-  for (t in 2:n){
-    foo = apply(xi[t - 1, ] * Gamma[,,t-1], 2, max) * allprobs[t, ]
-    xi[t, ] = foo / sum(foo)
-  }
-  iv = numeric(n)
-  iv[n] = which.max(xi[n, ])
-  for (t in (n - 1):1){
-    iv[t] = which.max(Gamma[, iv[t + 1], t] * xi[t, ]) 
-  }
-  return(iv)
+  as.integer(viterbi_g_cpp(allprobs, delta, Gamma))
 }

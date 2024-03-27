@@ -21,6 +21,18 @@ forward_cpp_sp <- function(allprobs, delta, Gamma, agsizes, tod) {
     .Call(`_Lcpp_forward_cpp_sp`, allprobs, delta, Gamma, agsizes, tod)
 }
 
+logalpha_cpp <- function(allprobs, delta, Gamma) {
+    .Call(`_Lcpp_logalpha_cpp`, allprobs, delta, Gamma)
+}
+
+logbeta_cpp <- function(allprobs, Gamma) {
+    .Call(`_Lcpp_logbeta_cpp`, allprobs, Gamma)
+}
+
+viterbi_g_cpp <- function(allprobs, delta, Gamma) {
+    .Call(`_Lcpp_viterbi_g_cpp`, allprobs, delta, Gamma)
+}
+
 forward_cpp_flies <- function(allprobs, delta, Gamma1, Gamma2, startDD, tod) {
     .Call(`_Lcpp_forward_cpp_flies`, allprobs, delta, Gamma1, Gamma2, startDD, tod)
 }

@@ -16,19 +16,8 @@
 viterbi = function(delta, Gamma, allprobs){
   n = nrow(allprobs)
   N = ncol(allprobs)
-  xi = matrix(0, n, ncol = N)
-  foo = delta * allprobs[1, ]
-  xi[1, ] = foo / sum(foo)
-  for (t in 2:n){
-    foo = apply(xi[t - 1, ] * Gamma, 2, max) * allprobs[t, ]
-    xi[t, ] = foo / sum(foo)
-  }
-  iv = numeric(n)
-  iv[n] = which.max(xi[n, ])
-  for (t in (n - 1):1){
-    iv[t] = which.max(Gamma[, iv[t + 1]] * xi[t, ]) 
-  }
-  return(iv)
+  Gammanew = array(Gamma, dim = c(N,N,n-1))
+  as.integer(viterbi_g_cpp(allprobs, delta, Gammanew))
 }
 
 

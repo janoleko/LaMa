@@ -7,7 +7,7 @@
 tpm_g(Z, beta, byrow = FALSE)
 }
 \arguments{
-\item{Z}{Covariate design matrix (excluding intercept column) of dimension c(n, p)}
+\item{Z}{Covariate design matrix (excluding intercept column) of dimension c(n, p), where p can also be one (i.e. Z can be a vector).}
 
 \item{beta}{Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.}

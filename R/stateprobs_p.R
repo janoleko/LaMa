@@ -25,23 +25,21 @@ stateprobs_p = function(delta, Gamma, allprobs, tod){
   n = nrow(allprobs)
   N = ncol(allprobs)
   
-  Gammalarge = array(dim = c(N,N,n-1))
+  Gammanew = array(dim = c(N,N,n-1))
   
+  # creating repeating Gamma array from L unique tpms
   for(t in unique(tod)){
     ind = which(tod[-1]==t)
-    Gammalarge[,,ind] = Gamma[,,t]
+    Gammanew[,,ind] = Gamma[,,t]
   }
   
-  lalpha = logalpha(delta, Gammalarge, allprobs)
-  lbeta = logbeta(Gammalarge, allprobs)
+  lalpha = logalpha_cpp(allprobs, delta, Gammanew)
+  lbeta = logbeta_cpp(allprobs, Gammanew)
   
   c = max(lalpha[n,])
   llk = c + log(sum(exp(lalpha[n,]-c)))
   
-  probs = matrix(nrow = n, ncol = N)
-  for(t in 1:n){
-    probs[t,] = exp(lalpha[t,] + lbeta[t,] - llk)
-  }
+  probs = exp(lalpha + lbeta - llk)
   # rowsums should already be one
   probs = probs / rowSums(probs)
   return(probs)

@@ -24,16 +24,14 @@ stateprobs_g = function(delta, Gamma, allprobs){
     Gamma = Gamma[,,-1]
   }
 
-  lalpha = logalpha(delta, Gamma, allprobs)
-  lbeta = logbeta(Gamma, allprobs)
+  lalpha = logalpha_cpp(allprobs, delta, Gamma)
+  lbeta = logbeta_cpp(allprobs, Gamma)
   
   c = max(lalpha[n,])
   llk = c + log(sum(exp(lalpha[n,]-c)))
   
-  probs = matrix(nrow = n, ncol = N)
-  for(t in 1:n){
-    probs[t,] = exp(lalpha[t,] + lbeta[t,] - llk)
-  }
+  probs = exp(lalpha + lbeta - llk)
+  
   # rowsums should already be one
   probs = probs / rowSums(probs)
   return(probs)

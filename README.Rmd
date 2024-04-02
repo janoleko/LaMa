@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# {LaMa}: Likelihood evaluation in C++ <img src="man/figures/LaMa_logo_new.png" align="right" height=170>
+# {LaMa}: Likelihood evaluation in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
 
 A plethora of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs** and **Markov-modulated (marked) Poisson processes** (MM(M)PPs) can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood. The log-likelihood can be calculated recursively as a matrix product by the so-called **forward algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini et al. 2016</a>).

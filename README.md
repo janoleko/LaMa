@@ -1,5 +1,5 @@
 
-# {Lcpp}: Likelihood evaluation in C++ <img src="man/figures/Lcpp_logo_new.png" align="right" height=170>
+# {LaMa}: Likelihood evaluation in C++ <img src="man/figures/LaMa_logo_new.png" align="right" height=170>
 
 A plethora of latent Markov models, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
@@ -14,7 +14,7 @@ et al. 2016</a>). Implementation of the algorithm in **C++** offers
 10-20 times faster evaluation times, thus substantially speeding up
 estimation by numerical optimizers like `nlm()` or `optim()`. This **R**
 package provides a toolbox for flexible and convenient model building
-and fast likelihood evaluation. Current implemenations of the forward
+and fast likelihood evaluation. Current implementations of the forward
 algorithm are:
 
 - `forward()` for models with **homogeneous** transition probabilities,
@@ -63,19 +63,19 @@ Package functionalities for many different model classes are described
 in several vignettes:
 
 - [Introduction to
-  Lcpp](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Intro_to_Lcpp.pdf)
+  LaMa](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Intro_to_LaMa.pdf)
 - [Inhomogeneous
-  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Inhomogeneous_HMM.pdf)
+  HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Inhomogeneous_HMM.pdf)
 - [Periodic
-  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
+  HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
 - [State space
-  models](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/State_space_models.pdf)
+  models](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/State_space_models.pdf)
 - [Continuous-time
-  HMMs](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/Continuous_time_HMMs.pdf)
+  HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Continuous_time_HMMs.pdf)
 - [Hidden semi-Markov
-  models](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/HSMMs.pdf)
+  models](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/HSMMs.pdf)
 - [Markov-modulated (marked) Poisson
-  processes](https://github.com/janoleko/Lcpp/tree/main/vignettes/pdfs/MMMPPs.pdf)
+  processes](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/MMMPPs.pdf)
 
 ## Installation
 
@@ -86,19 +86,19 @@ Then you can use:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("janoleko/Lcpp", build_vignettes = TRUE)
+devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
 ```
 
 Feel free to use
 
 ``` r
-browseVignettes("Lcpp")
+browseVignettes("LaMa")
 ```
 
 or
 
 ``` r
-help(package = "Lcpp")
+help(package = "LaMa")
 ```
 
 for detailed examples on how to use the package.
@@ -108,7 +108,7 @@ for detailed examples on how to use the package.
 #### Loading the package
 
 ``` r
-library(Lcpp)
+library(LaMa)
 ```
 
 #### Generating data from a 2-state HMM
@@ -127,10 +127,10 @@ n = 10000 # rather large
 set.seed(123)
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
 plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
@@ -166,9 +166,9 @@ mllk = function(theta.star, x){
 theta.star = c(-1,-1,1,4,log(1),log(3)) 
 # initial transformed parameters: not chosen too well
 s = Sys.time()
-mod = stats::nlm(mllk, theta.star, x = x)
+mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1037312 secs
+#> Time difference of 0.1047139 secs
 ```
 
 Really fast for 10.000 data points!

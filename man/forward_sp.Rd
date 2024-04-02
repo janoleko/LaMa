@@ -64,17 +64,17 @@ mllk = function(theta.star, x, sizes, tod){
   for(j in 1:2){
     dm[[j]] = sapply(1:sizes[j]-1, dpois, lambda = Lambda[,j])
   }
-  Gamma = Lcpp::tpm_phsmm(omega, dm)
-  delta = Lcpp::stationary_p(Gamma, tod[1])
+  Gamma = tpm_phsmm(omega, dm)
+  delta = stationary_p(Gamma, tod[1])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
-  -Lcpp::forward_sp(delta, Gamma, allprobs, sizes, tod)
+  -forward_sp(delta, Gamma, allprobs, sizes, tod)
 }
 
 ## fitting an HSMM to the data
 theta.star = c(1, 4, log(2), log(2), # state-dependent parameters
                  log(4), log(6), rep(0,4)) # state process parameters dm
-mod = stats::nlm(mllk, theta.star, x = x, sizes = c(10, 15), tod = tod, stepmax = 5)
+mod = nlm(mllk, theta.star, x = x, sizes = c(10, 15), tod = tod, stepmax = 5)
 }

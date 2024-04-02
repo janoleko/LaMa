@@ -1,8 +1,8 @@
-Package: Lcpp
+Package: LaMa
 Type: Package
-Title: Faster numerical maximum likelihood estimation of HMMs, HSMMs and SMMs
-Version: 1.0
-Date: 2023-08-03
+Title: Fast numerical maximum likelihood estimation for latent Markov models like HMMs, SSMs and point processes 
+Version: 1.0.1
+Date: 2024-04-02
 Authors@R: c(person("Jan-Ole", "Koslik", email = "jan-ole.koslik@uni-bielefeld.de", role = c("aut", "cre")))
 Maintainer: <jan-ole.koslik@uni-bielefeld.de>
 Description: 

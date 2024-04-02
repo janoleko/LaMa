@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("Lcpp")
+library("LaMa")
 ```
 
 This vignette shows how to fit an HMM, with the state process being a periodically inhomogeneous Markov chain. Formally, this means that for all $t$
@@ -65,7 +65,7 @@ s[1] = sample(1:2, 1, prob = Delta[z[1],])
 x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,z[t]])
-  x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
 par(mfrow = c(1,2))
@@ -102,7 +102,7 @@ mllk = function(theta.star, x, z){
 theta.star = c(-1,-2, rep(0, 8), # starting values state process
                4, 14 ,log(3),log(5)) # starting values state-dependent process
 s = Sys.time()
-mod = stats::nlm(mllk, theta.star, x = x, z = z)
+mod = nlm(mllk, theta.star, x = x, z = z)
 Sys.time()-s
 ```
 
@@ -188,7 +188,7 @@ mllk_np = function(theta.star, x, z, Z, lambda){
 theta.star = c(-1,-2, rep(0, 2*nk), # starting values state process
                4, 14 ,log(3),log(5)) # starting values state-dependent process
 s = Sys.time()
-mod_np = stats::nlm(mllk_np, theta.star, x = x, z = z, Z = Z, lambda = 0)
+mod_np = nlm(mllk_np, theta.star, x = x, z = z, Z = Z, lambda = 0)
 # in this case we don't seem to need a lot of penalization
 Sys.time()-s
 ```

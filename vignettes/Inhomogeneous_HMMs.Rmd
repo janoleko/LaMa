@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("Lcpp")
+library("LaMa")
 ```
 
 This vignette explains how to fit inhomogeneous HMMs, i.e. models that depend on external covariates. Such inhomogeneity in HMMs can result from covariates affecting the transition probabilities of the underlying Markov chain, or covariates affecting the state-dependent distributions, which would then be called Markov-switching regression. We will begin with effects in the state process

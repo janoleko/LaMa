@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("Lcpp")
+library("LaMa")
 ```
 
 The regular HMM formulation needs a key assumption to be applicable, namely the data need to be observed at regular, equidistant time-points such that the transition probabilties can be interpreted meaningfully w.r.t. a specific time unit. If this is not the case, the model used should acocunt for this by building on a mathematical formulation in continuous time. The obvious choice here is to retain most of the HMM model formulation, but replace the unobserved discrete-time Markov chain with a continuous-time Markov chain. However, here it is important to note that the so-called **snapshot property** needs to be fulfilled, i.e. the observed process at time $t$ can only depend on the state at that time instant and not on the interval since the previous observation. For more details see @glennie2023hidden.
@@ -117,13 +117,13 @@ mllk = function(theta.star, timediff, x, N=2){
   diag(Q) = -rowSums(Q)
   delta = solve(t(Q+1), rep(1,N), tol = 1e-20) # stationary distribution of the
   # continuous-time Markov chain
-  Qube = Lcpp::tpm_cont(Q, timediff) # this computes exp(Q*timediff)
+  Qube = LaMa::tpm_cont(Q, timediff) # this computes exp(Q*timediff)
   allprobs = matrix(1, nrow = length(x), ncol = N)
   ind = which(!is.na(x))
   for(j in 1:N){
     allprobs[ind,j] = dnorm(x[ind], mu[j], sigma[j])
   }
-  -Lcpp::forward_g(delta, Qube, allprobs)
+  -LaMa::forward_g(delta, Qube, allprobs)
 }
 ```
 
@@ -135,7 +135,7 @@ theta.star = c(5, 15, log(3), log(5), # mu and sigma
 timediff = diff(obs_times)
 
 t1 = Sys.time()
-mod = stats::nlm(mllk, theta.star, timediff=timediff, x=x, stepmax = 10)
+mod = nlm(mllk, theta.star, timediff=timediff, x=x, stepmax = 10)
 # we often need the stepmax, as the matrix exponential can be numerically unstable
 Sys.time()-t1
 ```
@@ -208,7 +208,7 @@ theta.star = c(5, 10, 25, log(2), log(2), log(6), # mu and sigma
 timediff = diff(obs_times)
 
 t1 = Sys.time()
-mod2 = stats::nlm(mllk, theta.star, timediff=timediff, x=x, N = 3, stepmax = 10)
+mod2 = nlm(mllk, theta.star, timediff=timediff, x=x, N = 3, stepmax = 10)
 Sys.time()-t1
 ```
 

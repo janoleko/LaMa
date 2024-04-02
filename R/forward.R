@@ -16,24 +16,24 @@
 #' # simulation
 #' s = x = rep(NA, 500)
 #' s[1] = sample(1:2, 1, prob = delta)
-#' x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 #' for(t in 2:500){
 #'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-#'   x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 #' }
 #' 
 #' ## negative log likelihood function
 #' mllk = function(theta.star, x){
 #'   # parameter transformations for unconstraint optimization
-#'   Gamma = Lcpp::tpm(theta.star[1:2])
-#'   delta = Lcpp::stationary(Gamma) # stationary HMM
+#'   Gamma = tpm(theta.star[1:2])
+#'   delta = stationary(Gamma) # stationary HMM
 #'   mu = theta.star[3:4]
 #'   sigma = exp(theta.star[5:6])
 #'   # calculate all state-dependent probabilities
 #'   allprobs = matrix(1, length(x), 2)
-#'   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
 #'   # return negative for minimization
-#'   -Lcpp::forward(delta, Gamma, allprobs)
+#'   -forward(delta, Gamma, allprobs)
 #' }
 #' 
 #' ## fitting an HMM to the data

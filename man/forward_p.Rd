@@ -37,7 +37,7 @@ n = 2000
 s = x = rep(NA, n)
 tod = rep(1:24, ceiling(2000/24))
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 # 24 unique t.p.m.s
 Gamma = array(dim = c(2,2,24))
 for(t in 1:24){
@@ -48,26 +48,28 @@ for(t in 1:24){
 }
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,tod[t]])
-  x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
+# we can also use function from LaMa to make building periodic tpms much easier
+Gamma = tpm_p(1:24, 24, beta, degree = 1)
 
 ## negative log likelihood function
 mllk = function(theta.star, x, tod){
   # parameter transformations for unconstraint optimization
   beta = matrix(theta.star[1:6], 2, 3)
-  Gamma = Lcpp::tpm_p(tod=tod, L=24, beta=beta)
-  delta = Lcpp::stationary_p(Gamma, t=tod[1])
+  Gamma = tpm_p(tod=tod, L=24, beta=beta)
+  delta = stationary_p(Gamma, t=tod[1])
   mu = theta.star[8:9]
   sigma = exp(theta.star[10:11])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
-  -Lcpp::forward_p(delta, Gamma, allprobs, tod)
+  -forward_p(delta, Gamma, allprobs, tod)
 }
 
 ## fitting an HMM to the data
 theta.star = c(-2,-2,1,-1,1,-1,0,0,5,log(2),log(3))
-mod = stats::nlm(mllk, theta.star, x = x, tod = tod)
+mod = nlm(mllk, theta.star, x = x, tod = tod)
 
 }

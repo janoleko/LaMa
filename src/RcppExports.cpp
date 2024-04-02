@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // forward_cpp_h
 double forward_cpp_h(const arma::mat& allprobs, const arma::rowvec& delta, const arma::mat& Gamma);
-RcppExport SEXP _Lcpp_forward_cpp_h(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_h(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -26,7 +26,7 @@ END_RCPP
 }
 // forward_cpp_g
 double forward_cpp_g(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma);
-RcppExport SEXP _Lcpp_forward_cpp_g(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_g(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,7 +39,7 @@ END_RCPP
 }
 // forward_cpp_p
 double forward_cpp_p(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const std::vector<int> tod);
-RcppExport SEXP _Lcpp_forward_cpp_p(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP todSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_p(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +53,7 @@ END_RCPP
 }
 // forward_cpp_s
 double forward_cpp_s(const arma::mat& allprobs, const arma::rowvec& delta, const arma::mat& Gamma, const IntegerVector& agsizes);
-RcppExport SEXP _Lcpp_forward_cpp_s(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_s(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -67,7 +67,7 @@ END_RCPP
 }
 // forward_cpp_sp
 double forward_cpp_sp(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const IntegerVector& agsizes, const std::vector<int> tod);
-RcppExport SEXP _Lcpp_forward_cpp_sp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP, SEXP todSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_sp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP agsizesSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -82,7 +82,7 @@ END_RCPP
 }
 // logalpha_cpp
 arma::mat logalpha_cpp(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma);
-RcppExport SEXP _Lcpp_logalpha_cpp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
+RcppExport SEXP _LaMa_logalpha_cpp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -95,7 +95,7 @@ END_RCPP
 }
 // logbeta_cpp
 arma::mat logbeta_cpp(const arma::mat& allprobs, const arma::cube& Gamma);
-RcppExport SEXP _Lcpp_logbeta_cpp(SEXP allprobsSEXP, SEXP GammaSEXP) {
+RcppExport SEXP _LaMa_logbeta_cpp(SEXP allprobsSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -107,7 +107,7 @@ END_RCPP
 }
 // viterbi_g_cpp
 arma::colvec viterbi_g_cpp(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma);
-RcppExport SEXP _Lcpp_viterbi_g_cpp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
+RcppExport SEXP _LaMa_viterbi_g_cpp(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -120,7 +120,7 @@ END_RCPP
 }
 // forward_cpp_flies
 double forward_cpp_flies(arma::mat& allprobs, arma::rowvec& delta, arma::cube& Gamma1, arma::cube& Gamma2, int startDD, std::vector<int> tod);
-RcppExport SEXP _Lcpp_forward_cpp_flies(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP Gamma1SEXP, SEXP Gamma2SEXP, SEXP startDDSEXP, SEXP todSEXP) {
+RcppExport SEXP _LaMa_forward_cpp_flies(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP Gamma1SEXP, SEXP Gamma2SEXP, SEXP startDDSEXP, SEXP todSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,7 +136,7 @@ END_RCPP
 }
 // rep_times
 arma::rowvec rep_times(const arma::rowvec& x, const IntegerVector& times);
-RcppExport SEXP _Lcpp_rep_times(SEXP xSEXP, SEXP timesSEXP) {
+RcppExport SEXP _LaMa_rep_times(SEXP xSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -148,7 +148,7 @@ END_RCPP
 }
 // tpm_g_cpp
 arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta, const arma::uword N, const bool byrow);
-RcppExport SEXP _Lcpp_tpm_g_cpp(SEXP ZSEXP, SEXP betaSEXP, SEXP NSEXP, SEXP byrowSEXP) {
+RcppExport SEXP _LaMa_tpm_g_cpp(SEXP ZSEXP, SEXP betaSEXP, SEXP NSEXP, SEXP byrowSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -162,7 +162,7 @@ END_RCPP
 }
 // semigroup_cpp
 arma::cube semigroup_cpp(const arma::mat& Q, const std::vector<double>& times);
-RcppExport SEXP _Lcpp_semigroup_cpp(SEXP QSEXP, SEXP timesSEXP) {
+RcppExport SEXP _LaMa_semigroup_cpp(SEXP QSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -174,7 +174,7 @@ END_RCPP
 }
 // tpm_thinned_t_cpp
 arma::mat tpm_thinned_t_cpp(const arma::cube& Gamma, const int t);
-RcppExport SEXP _Lcpp_tpm_thinned_t_cpp(SEXP GammaSEXP, SEXP tSEXP) {
+RcppExport SEXP _LaMa_tpm_thinned_t_cpp(SEXP GammaSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -186,23 +186,23 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Lcpp_forward_cpp_h", (DL_FUNC) &_Lcpp_forward_cpp_h, 3},
-    {"_Lcpp_forward_cpp_g", (DL_FUNC) &_Lcpp_forward_cpp_g, 3},
-    {"_Lcpp_forward_cpp_p", (DL_FUNC) &_Lcpp_forward_cpp_p, 4},
-    {"_Lcpp_forward_cpp_s", (DL_FUNC) &_Lcpp_forward_cpp_s, 4},
-    {"_Lcpp_forward_cpp_sp", (DL_FUNC) &_Lcpp_forward_cpp_sp, 5},
-    {"_Lcpp_logalpha_cpp", (DL_FUNC) &_Lcpp_logalpha_cpp, 3},
-    {"_Lcpp_logbeta_cpp", (DL_FUNC) &_Lcpp_logbeta_cpp, 2},
-    {"_Lcpp_viterbi_g_cpp", (DL_FUNC) &_Lcpp_viterbi_g_cpp, 3},
-    {"_Lcpp_forward_cpp_flies", (DL_FUNC) &_Lcpp_forward_cpp_flies, 6},
-    {"_Lcpp_rep_times", (DL_FUNC) &_Lcpp_rep_times, 2},
-    {"_Lcpp_tpm_g_cpp", (DL_FUNC) &_Lcpp_tpm_g_cpp, 4},
-    {"_Lcpp_semigroup_cpp", (DL_FUNC) &_Lcpp_semigroup_cpp, 2},
-    {"_Lcpp_tpm_thinned_t_cpp", (DL_FUNC) &_Lcpp_tpm_thinned_t_cpp, 2},
+    {"_LaMa_forward_cpp_h", (DL_FUNC) &_LaMa_forward_cpp_h, 3},
+    {"_LaMa_forward_cpp_g", (DL_FUNC) &_LaMa_forward_cpp_g, 3},
+    {"_LaMa_forward_cpp_p", (DL_FUNC) &_LaMa_forward_cpp_p, 4},
+    {"_LaMa_forward_cpp_s", (DL_FUNC) &_LaMa_forward_cpp_s, 4},
+    {"_LaMa_forward_cpp_sp", (DL_FUNC) &_LaMa_forward_cpp_sp, 5},
+    {"_LaMa_logalpha_cpp", (DL_FUNC) &_LaMa_logalpha_cpp, 3},
+    {"_LaMa_logbeta_cpp", (DL_FUNC) &_LaMa_logbeta_cpp, 2},
+    {"_LaMa_viterbi_g_cpp", (DL_FUNC) &_LaMa_viterbi_g_cpp, 3},
+    {"_LaMa_forward_cpp_flies", (DL_FUNC) &_LaMa_forward_cpp_flies, 6},
+    {"_LaMa_rep_times", (DL_FUNC) &_LaMa_rep_times, 2},
+    {"_LaMa_tpm_g_cpp", (DL_FUNC) &_LaMa_tpm_g_cpp, 4},
+    {"_LaMa_semigroup_cpp", (DL_FUNC) &_LaMa_semigroup_cpp, 2},
+    {"_LaMa_tpm_thinned_t_cpp", (DL_FUNC) &_LaMa_tpm_thinned_t_cpp, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_Lcpp(DllInfo *dll) {
+RcppExport void R_init_LaMa(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

@@ -1,6 +1,6 @@
 #' @keywords internal
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib Lcpp, .registration=TRUE
+#' @useDynLib LaMa, .registration=TRUE
 "_PACKAGE"
 
 ## usethis namespace: start

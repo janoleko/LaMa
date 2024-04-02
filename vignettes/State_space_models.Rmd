@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("Lcpp")
+library("LaMa")
 ```
 
 This vignette shows how to fit state space models which can be interpreted as generalization of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very general state space models can be fitted via approximate maximum likelihood estimation, when the continous state space is finely discretized. Here, we will showcase this approach for a basic stochastic volatily model, which can be used to describe fincancial markets. In this model the unobserved marked volatility is described by an AR(1) process:

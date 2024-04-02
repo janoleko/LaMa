@@ -20,6 +20,11 @@ This function builds the transition probability matrix from an unconstraint para
 For each row of the matrix, the inverse multinomial logistic link is applied.
 }
 \examples{
-param = rep(-2,6)
-Gamma = tpm(param)
+# 2 states: 2 free off-diagonal elements
+param1 = rep(-1, 2)
+Gamma1 = tpm(param1)
+
+# 3 states: 6 free off-diagonal elements
+param2 = rep(-2, 6)
+Gamma2 = tpm(param2)
 }

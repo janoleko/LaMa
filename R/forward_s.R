@@ -33,20 +33,20 @@
 #'   omega = matrix(c(0,1,1,0), nrow = 2, byrow = TRUE) # omega fixed (2-states)
 #'   lambda = exp(theta.star[1:2]) # dwell time means
 #'   dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
-#'   Gamma = Lcpp::tpm_hsmm(omega, dm)
-#'   delta = Lcpp::stationary(Gamma) # stationary
+#'   Gamma = tpm_hsmm(omega, dm)
+#'   delta = stationary(Gamma) # stationary
 #'   mu = theta.star[3:4]
 #'   sigma = exp(theta.star[5:6])
 #'   # calculate all state-dependent probabilities
 #'   allprobs = matrix(1, length(x), 2)
-#'   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
 #'   # return negative for minimization
-#'   -Lcpp::forward_s(delta, Gamma, allprobs, sizes)
+#'   -forward_s(delta, Gamma, allprobs, sizes)
 #' }
 #' 
 #' ## fitting an HSMM to the data
 #' theta.star = c(log(5), log(10), 1, 4, log(2), log(2))
-#' mod = stats::nlm(mllk, theta.star, x = x, sizes = c(20, 30), stepmax = 5)
+#' mod = nlm(mllk, theta.star, x = x, sizes = c(20, 30), stepmax = 5)
 forward_s = function(delta, Gamma, allprobs, sizes){
   forward_cpp_s(allprobs, delta, Gamma, sizes)
 }

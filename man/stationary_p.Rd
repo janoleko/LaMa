@@ -25,18 +25,11 @@ The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t
 This function calculates the periodically stationary distribution.
 }
 \examples{
-beta = matrix(c(-1, -2, 2, -1, 2, -4), nrow = 2, byrow = TRUE)
-# building trigonometric design matrix
-Z = cbind(1,trigBasisExp(1:24, 24, 1))
-# calculating all 24 linear predictor vectors
-Eta = Z\%*\%t(beta)
-# building all 24 t.p.m.s
-Gamma = array(dim = c(2,2,24))
-for(t in 1:24){
-  Gamma[,,t] = tpm(Eta[t,])
-}
+L = 24
+beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+Gamma = tpm_p(1:L, L, beta, degree = 1)
 # Periodically stationary distribution for specific time point
-delta4 = stationary_p(Gamma, 4)
+delta = stationary_p(Gamma, 4)
 
 # All periodically stationary distributions
 Delta = stationary_p(Gamma)

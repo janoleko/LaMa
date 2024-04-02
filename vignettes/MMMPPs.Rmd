@@ -21,10 +21,10 @@ knitr::opts_chunk$set(
   out.width = "85%"
 )
 
-library(Lcpp)
+library("LaMa")
 ```
 
-The functionalities of `Lcpp` can also be called to fit so-called **Markov-modulated Poisson processes**. These are doubly stochastic Poisson point processes where the intensity is directed by an underlying continuous-time Markov chain. Such processes are useful for modeling arrival times, for example of calls in a call center, or patients in the hospital. The main difference compared to continuous-time HMMs is that we explicitely model the arrival times as random-variables, i.e. we assign probabilities to them. A homogeneous Poisson process is mainly characterized by the fact that the number of arrivals in a fixed time interval is Poisson distributed with a mean that is proporional to the length of the interval. The waiting times between arrivals are exponentially distributed. While the latter is not true for non-homogeneous Poisson processes in general, we can interpret a Markov modulated Poisson process as alternating between homogeneous Poisson processes, i.e. when the unobserved continuous-time Markov chain stays in a particular state for some interval, the associated Poisson rate in that interval is homogeneous and state-specific. To learn more about Poisson processes, see @dobrow2016introduction.
+The functionalities of `LaMa` can also be called to fit so-called **Markov-modulated Poisson processes**. These are doubly stochastic Poisson point processes where the intensity is directed by an underlying continuous-time Markov chain. Such processes are useful for modeling arrival times, for example of calls in a call center, or patients in the hospital. The main difference compared to continuous-time HMMs is that we explicitely model the arrival times as random-variables, i.e. we assign probabilities to them. A homogeneous Poisson process is mainly characterized by the fact that the number of arrivals in a fixed time interval is Poisson distributed with a mean that is proporional to the length of the interval. The waiting times between arrivals are exponentially distributed. While the latter is not true for non-homogeneous Poisson processes in general, we can interpret a Markov modulated Poisson process as alternating between homogeneous Poisson processes, i.e. when the unobserved continuous-time Markov chain stays in a particular state for some interval, the associated Poisson rate in that interval is homogeneous and state-specific. To learn more about Poisson processes, see @dobrow2016introduction.
 
 ## Example 1: Markov-modulated Poisson processes
 
@@ -94,11 +94,11 @@ mllk = function(theta.star, timediff, N=2){
   Q[!Q] = exp(theta.star[N+1:(N*(N-1))])
   diag(Q) = 0
   diag(Q) = -rowSums(Q)
-  Qube = Lcpp::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
+  Qube = LaMa::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
   allprobs = matrix(lambda, nrow = length(timediff+1), ncol = N, byrow = T)
   allprobs[1,] = 1
   delta = solve(t(Q+1), rep(1,N), tol = 1e-20)
-  -Lcpp::forward_g(delta, Qube, allprobs)
+  -LaMa::forward_g(delta, Qube, allprobs)
 }
 ```
 
@@ -110,7 +110,7 @@ theta.star = log(c(2, 15, # lambda
 timediff = diff(arrival_times)
 
 t1 = Sys.time()
-mod = stats::nlm(mllk, theta.star, timediff=timediff, stepmax = 10)
+mod = nlm(mllk, theta.star, timediff=timediff, stepmax = 10)
 # we often need the stepmax, as the matrix exponential can be numerically unstable
 Sys.time()-t1
 ```
@@ -210,13 +210,13 @@ mllk = function(theta.star, y, timediff, N){
   diag(Q) = 0
   diag(Q) = -rowSums(Q)
   delta = solve(t(Q+1), rep(1,N), tol = 1e-20)
-  Qube = Lcpp::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
+  Qube = LaMa::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
   allprobs = matrix(1, length(y), N)
   for(j in 1:N){
     allprobs[,j] = dnorm(y, mu[j], sigma[j])
   }
   allprobs[-1,] = allprobs[-1,] * matrix(lambda, length(y)-1, N, byrow = T)
-  -Lcpp::forward_g(delta, Qube, allprobs)
+  -LaMa::forward_g(delta, Qube, allprobs)
 }
 ```
 
@@ -229,7 +229,7 @@ theta.star = c(log(c(1, 5, 20)), # lambda
                log(c(0.7, 1, 0.3, 1, 0.2, 0.3))) # Q
 timediff = diff(arrival_times)
 t1 = Sys.time()
-mod2 = stats::nlm(mllk, theta.star, y = marks, timediff=timediff, N=3, stepmax = 5)
+mod2 = nlm(mllk, theta.star, y = marks, timediff=timediff, N=3, stepmax = 5)
 Sys.time()-t1
 ```
 

@@ -36,13 +36,13 @@ n = 2000
 s = x = rep(NA, n)
 z = rnorm(n, 0, 2)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   Gamma = diag(2)
   Gamma[!Gamma] = exp(beta[,1]+beta[,2]*z[t])
   Gamma = Gamma / rowSums(Gamma)
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = stats::rnorm(1, mu[s[t]], sigma[s[t]])
+  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
 ## negative log likelihood function
@@ -55,13 +55,13 @@ mllk = function(theta.star, x, z){
   sigma = exp(theta.star[8:9])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
-  -Lcpp::forward_g(delta, Gamma, allprobs)
+  -forward_g(delta, Gamma, allprobs)
 }
 
 ## fitting an HMM to the data
 theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
-mod = stats::nlm(mllk, theta.star, x = x, z = z)
+mod = nlm(mllk, theta.star, x = x, z = z)
 
 }

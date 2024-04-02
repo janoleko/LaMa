@@ -1,10 +1,10 @@
 ---
-title: "Introduction to Lcpp"
+title: "Introduction to LaMa"
 author: "Jan-Ole Koslik"
 output: rmarkdown::html_vignette
 # output: pdf_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to Lcpp}
+  %\VignetteIndexEntry{Introduction to LaMa}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: refs.bib
@@ -20,10 +20,10 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "75%"
 )
-library("Lcpp")
+library("LaMa")
 ```
 
-The R package `Lcpp` provides convenient R wrapper functions for the **forward algorithm** that can be used to fit a wide range of **latent Markov models** like **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. To make writing bespoke likelihood functions faster and more convenient, it also includes many auxiliary functions that to be used in the likelihood computation.
+The R package `LaMa` provides convenient R wrapper functions for the **forward algorithm** that can be used to fit a wide range of **latent Markov models** like **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. To make writing bespoke likelihood functions faster and more convenient, it also includes many auxiliary functions that to be used in the likelihood computation.
 
 The three main families of functions therefore are `forward`, `tpm` and `stationary` and we showcasse the simplest versions in the following introductory example.
 
@@ -64,7 +64,7 @@ n = 1000
 set.seed(123)
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = stats::rnorm(1, mu[s[1]], sigma[s[1]])
+x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   # we draw the next state conditional on the last one
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],]) 
@@ -86,22 +86,22 @@ L(\theta) = \delta^{(1)} P(x_1) \Gamma P(x_2) \Gamma \dots \Gamma P(x_T) 1^t,
 $$
 where $\delta^{(1)}$ and $\Gamma$ are as defined above, $P(x_t)$ is a diagonal matrix with state-dependent densities or probability mass functions $f_j(x_t) = f(x_t \mid S_t = j)$ on its diagonal and $1$ is a row vector of ones with length $N$. All model parameters are here summarized in the vector $\theta$. Being able to evaluate the likelihood function, it can be numerically maximized by popular optimizers like `nlm()` or `optim()`.
 
-The algorithm explained above suffers from numerical underflow and for $T$ only moderately large the likelihood is rounded to zero. Thus, one can use a scaling strategy, detailed by @zucchini, to avoid this and calculate the log-likelihood recursively. This version of the forward algorithm is implemented in `Lcpp` and written in C++. For HMMs we often need to constrain the domains of several of the model parameters in $\theta$ (i.e. positive standard deviations or a transition probability matrix with elements between 0 and 1 and rows that sum to one). One could now resort to contraint numerical optimziation but in practice one usually maximizes the likelihood w.r.t. a transformed version (to the real number line) of the model parameters by using suitable invertible and differenentiable link functions, which we denote here as $\theta^*$ (also in the code). For example we use the log-link for parameters that need to be strictly positive and the multinomial logistic link for the transition probability matrix. While the former can easily be coded by hand, the latter is implemented by the functions `tpm()` and `tpm_g()` for convenience and computational speed. For efficiency, it is also advisable to evaluate the state-dependent densities (or probability mass functions) vectorized outside the recursive forward algorithm. This results in a matrix containing the state-dependent likelihoods for each data point conditioned on each state (i.e. of dimension `c(n,N)`) which, throughout the package, we call the `allprobs` matrix.
+The algorithm explained above suffers from numerical underflow and for $T$ only moderately large the likelihood is rounded to zero. Thus, one can use a scaling strategy, detailed by @zucchini, to avoid this and calculate the log-likelihood recursively. This version of the forward algorithm is implemented in `LaMa` and written in C++. For HMMs we often need to constrain the domains of several of the model parameters in $\theta$ (i.e. positive standard deviations or a transition probability matrix with elements between 0 and 1 and rows that sum to one). One could now resort to contraint numerical optimziation but in practice one usually maximizes the likelihood w.r.t. a transformed version (to the real number line) of the model parameters by using suitable invertible and differenentiable link functions, which we denote here as $\theta^*$ (also in the code). For example we use the log-link for parameters that need to be strictly positive and the multinomial logistic link for the transition probability matrix. While the former can easily be coded by hand, the latter is implemented by the functions `tpm()` and `tpm_g()` for convenience and computational speed. For efficiency, it is also advisable to evaluate the state-dependent densities (or probability mass functions) vectorized outside the recursive forward algorithm. This results in a matrix containing the state-dependent likelihoods for each data point conditioned on each state (i.e. of dimension `c(n,N)`) which, throughout the package, we call the `allprobs` matrix.
 
 In this example, within the negative log-likelihood function we build the homogeneous transition probability matrix using the `tpm()` function and compute the stationary distribution of the Markov chain using `stationary()`. We then build the `allprobs` matrix and calculate the log-likelihood using `forward()` in the last line. It is returned negative such that the function can be numerically minimized by e.g. `nlm()`. 
 
 ```{r mllk}
 mllk = function(theta.star, x){
   # parameter transformations for unconstraint optimization
-  Gamma = Lcpp::tpm(theta.star[1:2])
-  delta = Lcpp::stationary(Gamma) # stationary HMM
+  Gamma = LaMa::tpm(theta.star[1:2])
+  delta = LaMa::stationary(Gamma) # stationary HMM
   mu = theta.star[3:4]
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities outside the forward algorithm
   allprobs = matrix(1, length(x), 2)
   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
-  -Lcpp::forward(delta, Gamma, allprobs)
+  -LaMa::forward(delta, Gamma, allprobs)
 }
 ```
 
@@ -110,7 +110,7 @@ mllk = function(theta.star, x){
 theta.star = c(-1,-1,1,4,log(1),log(3)) 
 # initial transformed parameters: not chosen too well
 s = Sys.time()
-mod = stats::nlm(mllk, theta.star, x = x)
+mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
 ```
 We see that implementation of the forward algorithm in C++ leads to really fast estimation speeds.

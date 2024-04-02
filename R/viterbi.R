@@ -12,7 +12,6 @@
 #' Gamma = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' states = viterbi(delta, Gamma, allprobs)
-#' 
 viterbi = function(delta, Gamma, allprobs){
   n = nrow(allprobs)
   N = ncol(allprobs)

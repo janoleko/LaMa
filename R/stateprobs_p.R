@@ -15,11 +15,14 @@
 #' @export
 #'
 #' @examples
-#' Gamma = tpm_g(runif(99), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))
-#' delta = c(0.5, 0.5)
+#' L = 24
+#' beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+#' Gamma = tpm_p(1:L, L, beta, degree = 1)
+#' delta = stationary_p(Gamma, 1)
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
+#' tod = rep(1:24, 5)[1:100]
 #' 
-#' probs = stateprobs_g(delta, Gamma, allprobs)
+#' probs = stateprobs_p(delta, Gamma, allprobs, tod)
 
 stateprobs_p = function(delta, Gamma, allprobs, tod){
   n = nrow(allprobs)

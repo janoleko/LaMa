@@ -29,10 +29,10 @@ As transition probabilities can only be specified w.r.t. to some time unit, but 
 
 $$
 Q = \begin{pmatrix}
-  q_{11} & q_{12} & q_{13} & \cdots \\
-  q_{21} & q_{22} & q_{23} & {} \\
-  q_{31} & q_{32} & q_{33} & {} \\
-  \vdots & {} & {} & \ddots
+  q_{11} & q_{12} & \cdots & q_{1N} \\
+  q_{21} & q_{22} & \cdots & q_{2N} \\
+  \vdots & \vdots & \ddots & \vdots \\
+  q_{N1} & q_{N2} & \cdots & q_{NN} \\
 \end{pmatrix},
 $$
 where the diagonal entries are $q_{ii} = - \sum_{j \neq i} q_{ij}$, $q_{ij} \geq 0$ for $i \neq j$. This matrix can be interpreted as the derivative of the transition probability matrix and completely describes the dynamics of the state process. For such a chain, the time-spent in a state $i$ is exponentially distributed with rate $-q_{ii}$ and conditional on leaving the state, the probability to transition to a state $j \neq i$ is $\omega_{ij} = q_{ij} / -q_{ii}$. For a more detailed introduction see @dobrow2016introduction (pp. 265 f.). For observation times $t_1$ and $t_2$, we can then obtain the transition probability matrix between these points via the identity
@@ -86,7 +86,7 @@ for(t in 2:k){
 
 Let's visualize the simulated continuous-time HMM:
 
-```{r, vis_MMMPP}
+```{r, vis_ctHMM}
 color = c("orange", "deepskyblue")
 
 n = length(obs_times)

@@ -16,7 +16,7 @@ often need to build highly customized models for which standard software
 implementation is lacking, or the construction of such models in said
 software is as complicated as writing fully tailored **R** code. The
 latter provides great flexibility and control, but suffers from slow
-estimation speeds that make custom solutions inconvenient. This R
+estimation speeds that make custom solutions inconvenient. This **R**
 package addresses the above issues in two ways. Standard blocks of code
 common to all these model classes, most importantly the forward
 algorithm, are implemented as simple-to-use functions. These can be
@@ -180,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.104996 secs
+#> Time difference of 0.108922 secs
 ```
 
 Really fast for 10.000 data points!

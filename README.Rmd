@@ -12,11 +12,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# {LaMa}: Likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
+# {LaMa}: Latent Markov model likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
 
-A plethora of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs** and **Markov-modulated (marked) Poisson processes** (MM(M)PPs) can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood. The log-likelihood can be calculated recursively as a matrix product by the so-called **forward algorithm** (for details see
+A plethora of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**, and **Markov-modulated marked Poisson processes** (MMMPPs) can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood using the so-called **forward algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini et al. 2016</a>).
-Implementation of the algorithm in **C++** offers 10-20 times faster evaluation times, thus substantially speeding up estimation by numerical optimizers like `nlm()` or `optim()`. This **R** package provides a toolbox for flexible and convenient model building and fast likelihood evaluation. Current implementations of the forward algorithm are:
+While these models are immensely popular for conducting inference on time series driven by latent processes, due to their great flexibility, researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, or the construction of such models in said software is as complicated as writing fully tailored **R** code. The latter provides great flexibility and control, but suffers from slow estimation speeds that make custom solutions inconvenient. This R package addresses the above issues in two ways. Standard blocks of code common to all these model classes, most importantly the forward algorithm, are implemented as simple-to-use functions. These can be added like Lego blocks to an otherwise fully custom likelihood function, making building fully custom models much easier. Moreover, under the hood, these functions are written in **C++**, allowing for 10-20 times faster evaluation time, and thus drastically speeding up estimation by numerical optimizers like `nlm()` or `optim()`.
+
+Current implementations of the forward algorithm are:
 
 * `forward()` for models with **homogeneous** transition probabilities,
 * `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs and points processes),
@@ -25,7 +27,7 @@ Implementation of the algorithm in **C++** offers 10-20 times faster evaluation 
 
 The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
 
-To serve as a toolbox, this package also includes many auxiliary functions like
+To serve as a powerful toolbox, this package also includes many auxiliary functions like
 
 * The `tpm` family with
   + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link, 

@@ -6,11 +6,18 @@ Date: 2024-04-02
 Authors@R: c(person("Jan-Ole", "Koslik", email = "jan-ole.koslik@uni-bielefeld.de", role = c("aut", "cre")))
 Maintainer: <jan-ole.koslik@uni-bielefeld.de>
 Description: 
-  This package provides convenient R wrapper functions for the forward algorithm that is used to fit hidden Markov models (HMMs), 
-  hidden semi-Markov models (HSMMs), state space models (SSMs) and point process models via direct numerical maximum likelihood estimation. 
-  The algorithm calculates the log-likelihood recursively as a matrix product and uses a scaling strategy to avoid numerical underflow.
-  Implementation in C++ offers 10-20 times faster evaluation times, thus substantially speeding up estimation by numerical optimizers. 
-  A variety of auxiliary functions that are also necessary for likelihood evaluation are additionally implemented for both efficiency and convenience.
+  The class of latent Markov models, including hidden Markov models (HMMs), 
+  hidden semi-Markov models (HSMMs), state space models (SSMs), and point processes, is a very popular and powerful framework for inference of time series driven by latent processes. 
+  Furthermore, all these models can be fitted using direct numerical maximum likelihood estimation using the so-called forward algorithm.
+  However, due to their great flexibility, researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, 
+  or the construction of such models in said software is as complicated as writing fully tailored R code. 
+  While providing greater flexibility and control, the latter suffers from slow estimation speeds that make custom solutions inconvenient. 
+  This R package addresses the above issues in two ways. 
+  Standard blocks of code, common to all these model classes, are implemented as simple-to-use functions. 
+  These can be added like Lego blocks to an otherwise fully custom likelihood function, making writing custom code much easier. Moreover, under the hood, 
+  these functions are written in C++, allowing for 10-20 times faster evaluation time, and thus drastically speeding up model estimation. 
+  To aid in building fully custom likelihood functions, this package also contains several vignettes that show how to simulate data from and estimate all the above model classes.
+URL: https://janoleko.github.io/software/, https://github.com/janoleko/LaMa
 License: GPL-3
 Encoding: UTF-8
 Imports: 

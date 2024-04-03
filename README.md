@@ -70,8 +70,9 @@ Further functionalities will be added as needed. Have fun!
 
 ## Package documentation
 
-Package functionalities for many different model classes are described
-in several vignettes:
+To aid in building fully custom likelihood functions, this package also
+contains several vignettes that show how to simulate data from and
+estimate a wide range of models:
 
 - [Introduction to
   LaMa](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Intro_to_LaMa.pdf)
@@ -179,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1067901 secs
+#> Time difference of 0.104996 secs
 ```
 
 Really fast for 10.000 data points!

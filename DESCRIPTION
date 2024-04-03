@@ -3,8 +3,12 @@ Type: Package
 Title: Fast numerical maximum likelihood estimation for latent Markov models like HMMs, SSMs and point processes 
 Version: 1.0.1
 Date: 2024-04-02
-Authors@R: c(person("Jan-Ole", "Koslik", email = "jan-ole.koslik@uni-bielefeld.de", role = c("aut", "cre")))
-Maintainer: <jan-ole.koslik@uni-bielefeld.de>
+Authors@R: c(
+    person(given = "Jan-Ole", 
+          family = "Koslik", 
+          role = c("aut", "cre"),
+          email = "jan-ole.koslik@uni-bielefeld.de",
+          comment = c(ORCID = "0009-0004-1556-9053")))
 Description: 
   The class of latent Markov models, including hidden Markov models (HMMs), 
   hidden semi-Markov models (HSMMs), state space models (SSMs), and point processes, is a very popular and powerful framework for inference of time series driven by latent processes. 

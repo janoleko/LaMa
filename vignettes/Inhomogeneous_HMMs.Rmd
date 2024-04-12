@@ -41,7 +41,7 @@ At this point we want to point out that the definition of the transition probabi
 $$
 \Pr(S_{t+1} = j \mid S_t = i) = \gamma_{ij}^{(t)}.
 $$
-We point this out very clearly here, as for HMMs there is no established convention, so this choice can be made by users and can be important when the exact timing of the covariate effect is relevant. In `Lcpp` this comes down to either passing the design matrix excluding its first or last row to `tpm_g()`, where we use the first option in this vignette. If you forget to exclude the first or the last row of the design matrix when calculating all transition matrices, and pass an array of dimension `c(N,N,T)` to `forward_g()` for likelihood evaluation, the function will revert to the first option by just ignoring the first slice of the array.
+We point this out very clearly here, as for HMMs there is no established convention, so this choice can be made by users and can be important when the exact timing of the covariate effect is relevant. In `LaMa` this comes down to either passing the design matrix excluding its first or last row to `tpm_g()`, where we use the first option in this vignette. If you forget to exclude the first or the last row of the design matrix when calculating all transition matrices, and pass an array of dimension `c(N,N,T)` to `forward_g()` for likelihood evaluation, the function will revert to the first option by just ignoring the first slice of the array.
 
 ### Setting parameters for simulation
 
@@ -149,7 +149,7 @@ Prob = matrix(nrow = n-1, ncol = 2)
 for(i in 1:(n-1)){ Prob[i,] = stationary(Gamma_hat[,,i]) }
 prob = apply(Prob, 2, mean)
 
-par(mfrow = c(1,2))
+par(mfrow = c(1,1))
 hist(x, prob = TRUE, bor = "white", breaks = 20, main = "")
 curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 2, 
       col = color[1], n=500)
@@ -160,6 +160,7 @@ curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1])+
       add = TRUE, lwd = 2, lty = "dashed", n = 500)
 legend("topright", col = c(color[1], color[2], "black"), lwd = 2, bty = "n",
        lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
+
 par(mfrow = c(1,2))
 plot(z[-1], Gamma_hat[1,2,], pch = 19, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12_hat", col = color[1])
@@ -172,7 +173,7 @@ plot(z[-1], Prob[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z",
 
 ### Non-parametric modeling of the transition probalities
 
-In practice, of course we do not know the exact form of the relationship between z and the transition probabilities. Therefore, `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using P-splines. We do so in first calculating the design matrix using the `splines` package which we can easily be handled by `tpm_g()`.
+In practice, of course we do not know the exact form of the relationship between z and the transition probabilities. Therefore, `LaMa` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using P-splines. We do so in first calculating the design matrix using the `splines` package which we can easily be handled by `tpm_g()`.
 
 ### Building the B-spline design matrix
 

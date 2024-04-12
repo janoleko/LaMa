@@ -77,7 +77,7 @@ estimate a wide range of models:
 - [Introduction to
   LaMa](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Intro_to_LaMa.pdf)
 - [Inhomogeneous
-  HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Inhomogeneous_HMM.pdf)
+  HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Inhomogeneous_HMMs.pdf)
 - [Periodic
   HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
 - [State space
@@ -180,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.108922 secs
+#> Time difference of 0.105535 secs
 ```
 
 Really fast for 10.000 data points!

@@ -1,6 +1,6 @@
 #' General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
 #'
-#' @param delta Initial distribution of length N
+#' @param delta Initial distribution of length N, or matrix of dimension c(N,k) for k independent tracks, if trackInd is provided.
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
 #' If you provide an array of dimension c(N,N,n), the first slice will be ignored. \cr
 #' 
@@ -10,6 +10,9 @@
 #' This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator of the continuous-time Markov chain.
 #' 
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param trackInd Optional vector of length k containing the indices that correspond to the beginning of a separate track. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' In this case, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
+#' Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(N,k), can be provided, such that each track starts with it's own initial distribution.
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export
@@ -53,10 +56,25 @@
 #' theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
 #' mod = nlm(mllk, theta.star, x = x, z = z)
 #'
-forward_g = function(delta, Gamma, allprobs){
+forward_g = function(delta, Gamma, allprobs, trackInd = NULL){
   n = nrow(allprobs)
-  if(dim(Gamma)[3]==n){
+  
+  if(is.null(trackInd)){
+    if(dim(Gamma)[3]==n){
       Gamma = Gamma[,,-1]
+    }
+    l = forward_cpp_g(allprobs, delta, Gamma)
+  } else{
+    k = length(trackInd)
+    
+    if(dim(Gamma)[3]!=n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+    
+    if(is.vector(delta)){
+      delta = matrix(delta, nrow = k, ncol = length(delta))
+    }
+    
+    l = forward_cpp_g_tracks(allprobs, delta, Gamma, trackInd)
   }
-  forward_cpp_g(allprobs, delta, Gamma)
+  
+  return(l)
 }

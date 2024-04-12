@@ -37,6 +37,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// forward_cpp_g_tracks
+double forward_cpp_g_tracks(const arma::mat& allprobs, const arma::mat& Delta, const arma::cube& Gamma, const IntegerVector trackInd);
+RcppExport SEXP _LaMa_forward_cpp_g_tracks(SEXP allprobsSEXP, SEXP DeltaSEXP, SEXP GammaSEXP, SEXP trackIndSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Delta(DeltaSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type trackInd(trackIndSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_cpp_g_tracks(allprobs, Delta, Gamma, trackInd));
+    return rcpp_result_gen;
+END_RCPP
+}
+// forward_cpp_h_tracks
+double forward_cpp_h_tracks(const arma::mat& allprobs, const arma::mat& Delta, const arma::cube& Gamma, const IntegerVector trackInd);
+RcppExport SEXP _LaMa_forward_cpp_h_tracks(SEXP allprobsSEXP, SEXP DeltaSEXP, SEXP GammaSEXP, SEXP trackIndSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type allprobs(allprobsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Delta(DeltaSEXP);
+    Rcpp::traits::input_parameter< const arma::cube& >::type Gamma(GammaSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type trackInd(trackIndSEXP);
+    rcpp_result_gen = Rcpp::wrap(forward_cpp_h_tracks(allprobs, Delta, Gamma, trackInd));
+    return rcpp_result_gen;
+END_RCPP
+}
 // forward_cpp_p
 double forward_cpp_p(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const std::vector<int> tod);
 RcppExport SEXP _LaMa_forward_cpp_p(SEXP allprobsSEXP, SEXP deltaSEXP, SEXP GammaSEXP, SEXP todSEXP) {
@@ -188,6 +216,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_LaMa_forward_cpp_h", (DL_FUNC) &_LaMa_forward_cpp_h, 3},
     {"_LaMa_forward_cpp_g", (DL_FUNC) &_LaMa_forward_cpp_g, 3},
+    {"_LaMa_forward_cpp_g_tracks", (DL_FUNC) &_LaMa_forward_cpp_g_tracks, 4},
+    {"_LaMa_forward_cpp_h_tracks", (DL_FUNC) &_LaMa_forward_cpp_h_tracks, 4},
     {"_LaMa_forward_cpp_p", (DL_FUNC) &_LaMa_forward_cpp_p, 4},
     {"_LaMa_forward_cpp_s", (DL_FUNC) &_LaMa_forward_cpp_s, 4},
     {"_LaMa_forward_cpp_sp", (DL_FUNC) &_LaMa_forward_cpp_sp, 5},

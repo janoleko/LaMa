@@ -47,6 +47,70 @@ double forward_cpp_g(const arma::mat& allprobs, const arma::rowvec& delta, const
 }
 
 // [[Rcpp::export]]
+double forward_cpp_g_tracks(const arma::mat& allprobs, const arma::mat& Delta, 
+                            const arma::cube& Gamma, const IntegerVector trackInd)
+{
+  int N = allprobs.n_cols;
+  int nObs = allprobs.n_rows;
+  int K = trackInd.size();
+
+  // forward algorithm
+  double l = 0;
+  arma::rowvec foo(N);
+  arma::rowvec phi(N);
+
+  unsigned int k=0; // animal index
+  
+  for (unsigned int t=0; t<nObs; t++){
+    
+    if(k<K && t==(unsigned)(trackInd(k)-1)) {
+      // if 't' is the 'k'-th element of 'aInd', switch to the next track
+      foo = Delta.row(k) % allprobs.row(t);
+      k++;
+    } else {
+      foo = (phi * Gamma.slice(t)) % allprobs.row(t);
+    }
+    
+    l = l + log(sum(foo));
+    phi = foo / sum(foo);
+  }
+  
+  return l;
+}
+
+// [[Rcpp::export]]
+double forward_cpp_h_tracks(const arma::mat& allprobs, const arma::mat& Delta, 
+                          const arma::cube& Gamma, const IntegerVector trackInd)
+{
+  int N = allprobs.n_cols;
+  int nObs = allprobs.n_rows;
+  int K = trackInd.size();
+  
+  // forward algorithm
+  double l = 0;
+  arma::rowvec foo(N);
+  arma::rowvec phi(N);
+  
+  unsigned int k=0; // animal index
+  
+  for (unsigned int t=0; t<nObs; t++){
+    
+    if(k<K && t==(unsigned)(trackInd(k)-1)) {
+      // if 't' is the 'k'-th element of 'aInd', switch to the next track
+      foo = Delta.row(k) % allprobs.row(t);
+      k++;
+    } else {
+      foo = (phi * Gamma.slice(k-1)) % allprobs.row(t);
+    }
+    
+    l = l + log(sum(foo));
+    phi = foo / sum(foo);
+  }
+  
+  return l;
+}
+
+// [[Rcpp::export]]
 double forward_cpp_p(const arma::mat& allprobs, const arma::rowvec& delta, const arma::cube& Gamma, const std::vector<int> tod)
 {
   int N = allprobs.n_cols;

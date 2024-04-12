@@ -3,7 +3,7 @@
 #' @param delta Initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if trackInd is provided
 #' @param Gamma Transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if trackInd is provided.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackInd Optional vector of length k containing the indices that correspond to the beginning of a separate track. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' @param trackInd Optional vector of length k containing the indices that correspond to the beginning of separate tracks. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' In this case, Gamma can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
 #' Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #'

@@ -7,7 +7,7 @@
 forward_g(delta, Gamma, allprobs, trackInd = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N, or matrix of dimension c(N,k) for k independent tracks, if trackInd is provided.}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if trackInd is provided.}
 
 \item{Gamma}{Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
 If you provide an array of dimension c(N,N,n), the first slice will be ignored. \cr
@@ -21,7 +21,7 @@ This function can also be used to fit continuous-time HMMs, where each array ent
 
 \item{trackInd}{Optional vector of length k containing the indices that correspond to the beginning of a separate track. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 In this case, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
-Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(N,k), can be provided, such that each track starts with it's own initial distribution.}
+Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
 }
 \value{
 Log-likelihood for given data and parameters

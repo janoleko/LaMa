@@ -51,7 +51,7 @@ forward = function(delta, Gamma, allprobs, trackInd = NULL){
     k = length(trackInd)
     
     if(is.vector(delta)){
-      delta = matrix(delta, nrow = k, ncol = length(delta))
+      delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
     } else if(dim(delta)[1] != k){
       stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
     }

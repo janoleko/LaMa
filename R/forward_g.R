@@ -73,7 +73,7 @@ forward_g = function(delta, Gamma, allprobs, trackInd = NULL){
     if(dim(Gamma)[3]!=n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
     
     if(is.vector(delta)){
-      delta = matrix(delta, nrow = k, ncol = length(delta))
+      delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
     }
     
     l = forward_cpp_g_tracks(allprobs, delta, Gamma, trackInd)

@@ -68,15 +68,17 @@ delta = c(0.5, 0.5) # non-stationary initial distribution
 color = c("orange", "deepskyblue")
 
 par(mfrow = c(1,2))
-plot(z[-1], Gamma[1,2,], pch = 19, bty = "n", ylim = c(0,1), 
+zseq = seq(-2,2,by = 0.01)
+Gamma_seq = tpm_g(Z = cbind(zseq, zseq^2), beta)
+plot(zseq, Gamma_seq[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12", col = color[1])
-plot(z[-1], Gamma[2,1,], pch = 19, bty = "n", ylim = c(0,1),
+plot(zseq, Gamma_seq[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
      xlab = "z", ylab = "gamma_21", col = color[2])
-Delta = matrix(nrow = n-1, ncol = 2)
-for(i in 1:(n-1)){ Delta[i,] = stationary(Gamma[,,i]) }
+Delta = matrix(nrow = length(zseq), ncol = 2)
+for(i in 1:length(zseq)){ Delta[i,] = stationary(Gamma_seq[,,i]) }
 
 par(mfrow = c(1,1))
-plot(z[-1], Delta[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z", 
+plot(zseq, Delta[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
 ```
 
@@ -145,29 +147,31 @@ mu_hat = mod$estimate[8:9]
 sigma_hat = exp(mod$estimate[10:11])
 
 # we calculate the average state distribution overall all covariate values
-Prob = matrix(nrow = n-1, ncol = 2)
-for(i in 1:(n-1)){ Prob[i,] = stationary(Gamma_hat[,,i]) }
+zseq = seq(-2, 2, by = 0.01)
+Gamma_seq = tpm_g(Z = cbind(zseq, zseq^2), beta_hat)
+Prob = matrix(nrow = length(zseq), ncol = 2)
+for(i in 1:length(zseq)){ Prob[i,] = stationary(Gamma_seq[,,i]) }
 prob = apply(Prob, 2, mean)
 
 par(mfrow = c(1,1))
 hist(x, prob = TRUE, bor = "white", breaks = 20, main = "")
-curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 2, 
+curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 3, 
       col = color[1], n=500)
-curve(prob[2]*dnorm(x, mu_hat[2], sigma_hat[2]), add = TRUE, lwd = 2, 
+curve(prob[2]*dnorm(x, mu_hat[2], sigma_hat[2]), add = TRUE, lwd = 3, 
       col = color[2], n=500)
 curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1])+
         prob[2]*dnorm(x, mu[2], sigma_hat[2]),
-      add = TRUE, lwd = 2, lty = "dashed", n = 500)
-legend("topright", col = c(color[1], color[2], "black"), lwd = 2, bty = "n",
+      add = TRUE, lwd = 3, lty = "dashed", n = 500)
+legend("topright", col = c(color[1], color[2], "black"), lwd = 3, bty = "n",
        lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
 
 par(mfrow = c(1,2))
-plot(z[-1], Gamma_hat[1,2,], pch = 19, bty = "n", ylim = c(0,1), 
+plot(zseq, Gamma_seq[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12_hat", col = color[1])
-plot(z[-1], Gamma_hat[2,1,], pch = 19, bty = "n", ylim = c(0,1),
+plot(zseq, Gamma_seq[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
      xlab = "z", ylab = "gamma_21_hat", col = color[2])
 par(mfrow = c(1,1))
-plot(z[-1], Prob[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z", 
+plot(zseq, Prob[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
 ```
 
@@ -178,16 +182,16 @@ In practice, of course we do not know the exact form of the relationship between
 ### Building the B-spline design matrix
 
 ```{r Spline}
-Z = splines::bs(x = z, df = 6) ## B-spline design matrix
+Z = splines::bs(x = z, df = 8) ## B-spline design matrix
 
 # visualizing the splines
 zseq = seq(min(z), max(z), length = 200)
-Zplot = splines::bs(x = zseq, df = 8)
+Zseq = splines::bs(x = zseq, df = 8)
 
-plot(zseq, Zplot[,1], type = "l", lwd = 2, bty = "n", 
+plot(zseq, Zseq[,1], type = "l", lwd = 3, bty = "n", 
      xlim = c(zseq[1], zseq[200]), ylim = c(0,0.7), xlab = "z", ylab = "basis function")
-for(i in 2:(ncol(Zplot)-1)){
-  lines(zseq, Zplot[,i], lwd = 2, col = i)
+for(i in 2:(ncol(Zseq)-1)){
+  lines(zseq, Zseq[,i], lwd = 3, col = i)
 } 
 ```
 
@@ -216,12 +220,12 @@ mllk_np = function(theta.star, x, Z, lambda){
 ```
 
 ### Fitting a non-parametric HMM
-```{r model2, warning=FALSE}
+```{r model2, warning=FALSE, cache=TRUE}
 theta.star = c(-2,-2, rep(0, 2*ncol(Z)), # starting values state process
                0, # starting value initial distribution
                4, 14 ,log(3),log(5)) # starting values state-dependent process
 t1 = Sys.time()
-mod_np = nlm(mllk_np, theta.star, x = x, Z = Z, lambda = 50)
+mod_np = nlm(mllk_np, theta.star, x = x, Z = Z, lambda = 70)
 # in this case we don't seem to need a lot of penalization
 Sys.time()-t1
 ```
@@ -238,17 +242,19 @@ beta_hat_np = matrix(mod_np$estimate[1:(2+2*ncol(Z))], nrow = 2)
 Gamma_hat_np = tpm_g(Z = Z[-1,], beta = beta_hat_np)
 
 # we calculate the average state distribution overall all covariate values
-Prob_np = matrix(nrow = n-1, ncol = 2)
-for(i in 1:(n-1)){ Prob_np[i,] = stationary(Gamma_hat_np[,,i]) }
+Gamma_seq_np = tpm_g(Z = Zseq, beta = beta_hat_np)
+Prob_np = matrix(nrow = length(zseq), ncol = 2)
+for(i in 1:length(zseq)){ Prob_np[i,] = stationary(Gamma_seq_np[,,i]) }
 
 # visualizing the Spline fit
 par(mfrow = c(1,2))
-plot(z[-1], Gamma_hat_np[1,2,], pch = 19, bty = "n", ylim = c(0,1), 
+plot(zseq, Gamma_seq_np[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12_hat", col = color[1])
-plot(z[-1], Gamma_hat_np[2,1,], pch = 19, bty = "n", ylim = c(0,1),
+plot(zseq, Gamma_seq_np[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
      xlab = "z", ylab = "gamma_21_hat", col = color[2])
+
 par(mfrow = c(1,1))
-plot(z[-1], Prob_np[,1], pch = 19, bty = "n", ylim = c(0,1), xlab = "z", 
+plot(zseq, Prob_np[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
 ```
 
@@ -341,9 +347,9 @@ sigma_hat_reg = exp(mod_reg$estimate[2+2*2+2 +1:2])
 plot(z, x, pch = 16, bty = "n", xlab = "z", ylab = "x", col = color[s])
 points(z, x, pch = 20)
 curve(beta_hat_reg[1,1] + beta_hat_reg[1,2]*x + beta_hat_reg[1,3]*x^2, 
-      add = T, lwd = 4, col = color[2])
+      add = TRUE, lwd = 4, col = color[2])
 curve(beta_hat_reg[2,1] + beta_hat_reg[2,2]*x + beta_hat_reg[2,3]*x^2, 
-      add = T, lwd = 4, col = color[1])
+      add = TRUE, lwd = 4, col = color[1])
 ```
 
 ### Non-parametric modeling of the state-dependent regressions

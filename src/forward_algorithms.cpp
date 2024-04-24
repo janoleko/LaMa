@@ -184,9 +184,8 @@ arma::mat logalpha_cpp(const arma::mat& allprobs, const arma::rowvec& delta, con
   foo = delta % allprobs.row(0);
   double sumfoo = sum(foo);
   double l = log(sumfoo);
-  // arma::rowvec phi = foo/sumfoo;
   foo = foo / sumfoo;
-  lalpha.row(0) = l + log(foo);
+  lalpha.row(0) = log(foo) + l;
   
   for (unsigned int i=1; i<nObs; i++){
     foo = (foo*Gamma.slice(i-1)) % allprobs.row(i);
@@ -194,7 +193,7 @@ arma::mat logalpha_cpp(const arma::mat& allprobs, const arma::rowvec& delta, con
     l = l + log(sumfoo);
     foo = foo / sumfoo;
     
-    lalpha.row(i) = l + log(foo);
+    lalpha.row(i) = log(foo) + l;
   }
   return lalpha;
 }

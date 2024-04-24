@@ -50,6 +50,7 @@ To aid in building fully custom likelihood functions, this package also contains
 
 * [Introduction to LaMa](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Intro_to_LaMa.pdf)
 * [Inhomogeneous HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Inhomogeneous_HMMs.pdf)
+* [Longitudinal data](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Longitudinal_data.pdf)
 * [Periodic HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Periodic_HMM.pdf)
 * [State space models](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/State_space_models.pdf)
 * [Continuous-time HMMs](https://github.com/janoleko/LaMa/tree/main/vignettes/pdfs/Continuous_time_HMMs.pdf)

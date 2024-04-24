@@ -192,7 +192,6 @@ arma::mat logalpha_cpp(const arma::mat& allprobs, const arma::rowvec& delta, con
     sumfoo = sum(foo);
     l = l + log(sumfoo);
     foo = foo / sumfoo;
-    
     lalpha.row(i) = log(foo) + l;
   }
   return lalpha;

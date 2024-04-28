@@ -125,6 +125,7 @@ double forward_cpp_p(const arma::mat& allprobs, const arma::rowvec& delta, const
     foo = (phi*Gamma.slice(tod[i])) % allprobs.row(i);
     sumfoo = sum(foo);
     l = l + log(sumfoo);
+    
     phi = foo/sumfoo;
   }
   return l;

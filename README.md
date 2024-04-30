@@ -31,9 +31,7 @@ Current implementations of the forward algorithm are:
 - `forward()` for models with **homogeneous** transition probabilities,
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
   transition probabilities (including **continuous-time** HMMs and
-  points processes),
-- `forward_p()` which is more efficient than the general implementation,
-  when transition probabilities only vary **periodically**, and
+  points processes), and
 - `forward_s()` for fitting **HSMMs**.
 
 The functions are built to be included in the **negative log-likelihood
@@ -182,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1058249 secs
+#> Time difference of 0.10289 secs
 ```
 
 Really fast for 10.000 data points!

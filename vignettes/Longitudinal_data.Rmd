@@ -111,6 +111,12 @@ Now we estimate the model with complete pooling. We compare the fast version usi
 # defining the indices where a new track begins
 trackInd = n*(0:(K-1)) + 1
 
+# In a real data scenario, we would typically have an ID column in the data set.
+# We can then use the function calc_trackInd() to calculate the trackInd vector:
+ID = rep(1:K, each = n)
+trackInd = calc_trackInd(ID)
+# the ID variable does not have to be numeric, it can also be a character vector.
+
 # initial parameter vector
 theta.star = c(-1,-1, # off-diagonals of Gamma (on logit scale)
                15,60,log(10),log(40)) # mu and sigma
@@ -166,9 +172,6 @@ for(k in 1:K){
   s[(k-1)*n + 1:n] = sk
   x[(k-1)*n + 1:n] = xk
 }
-
-# now we define all the indices where a new track begins
-trackInd = n*(0:(K-1)) + 1
 ```
 
 ### Writing the negative log-likelihood function
@@ -196,6 +199,10 @@ mllk_partial = function(theta.star, x, z, trackInd){
 ### Estimating the model
 
 ```{r model_partial, warning=FALSE}
+# again defining all the indices where a new track begins
+ID = rep(1:K, each = n)
+trackInd = calc_trackInd(ID)
+
 # initial parameter vector
 theta.star = c(-2,-2,0,0, # beta
                15,60,log(10),log(40)) # mu and sigma

@@ -16,8 +16,8 @@ A vector of indices of the first observation of each track which can be passed t
 Function to conveniently calculate the trackInd variable that is needed when fitting a model to longitudinal data with multiple tracks.
 }
 \details{
-Caution: This function should NEVER be used INSIDE the likelihood function, as it will drastically slow down the computation speed!
-Instead, it should be called once and the result can then be passed as an argument to the likelihood function.
+Preferably, this function should not be used inside the likelihood function, as it may slow down the computation speed.
+Instead, it can be called once and the result can then be passed as an argument to the likelihood function.
 }
 \examples{
 uniqueID = c("Animal1", "Animal2", "Animal3")

@@ -18,11 +18,9 @@ calc_trackInd = function(ID){
   if(!is.vector(ID)){
     stop("ID must be a vector")
   }
-  uniqueID = unique(ID)
-  trackInd = rep(NA, length(uniqueID))
-  for(i in 1:length(uniqueID)){
-    ind = which(ID == uniqueID[i])
-    trackInd[i] = ind[1]
-  }
+  
+  RLE = rle(ID)
+  trackInd1 = c(1, cumsum(RLE$lengths[-length(RLE$lengths)]) + 1)
+
   return(trackInd)
 }

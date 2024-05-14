@@ -20,7 +20,7 @@ calc_trackInd = function(ID){
   }
   
   RLE = rle(ID)
-  trackInd1 = c(1, cumsum(RLE$lengths[-length(RLE$lengths)]) + 1)
+  trackInd = c(1, cumsum(RLE$lengths[-length(RLE$lengths)]) + 1)
 
   return(trackInd)
 }

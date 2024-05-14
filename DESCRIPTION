@@ -1,7 +1,7 @@
 Package: LaMa
 Type: Package
 Title: Fast numerical maximum likelihood estimation for latent Markov models like HMMs, SSMs and point processes 
-Version: 1.0.1
+Version: 1.0.0
 Date: 2024-04-02
 Authors@R: c(
     person(given = "Jan-Ole", 

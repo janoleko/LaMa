@@ -8,8 +8,8 @@ Authors@R: c(
           role = c("aut", "cre"),
           comment = c(ORCID = "0009-0004-1556-9053")))
 Description: 
-  The class of latent Markov models, including hidden Markov models (HMMs), 
-  hidden semi-Markov models (HSMMs), state space models (SSMs), and point processes, is a very popular and powerful framework for inference of time series driven by latent processes. 
+  The class of latent Markov models, including hidden Markov models, 
+  hidden semi-Markov models, state space models, and point processes, is a very popular and powerful framework for inference of time series driven by latent processes. 
   Furthermore, all these models can be fitted using direct numerical maximum likelihood estimation using the so-called forward algorithm.
   However, due to their great flexibility, researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, 
   or the construction of such models in said software is as complicated as writing fully tailored R code. 

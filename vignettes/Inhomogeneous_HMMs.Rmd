@@ -417,4 +417,9 @@ lines(zseq, xhat[,1], lwd = 4, col = color[1])
 lines(zseq, xhat[,2], lwd = 4, col = color[2])
 ```
 
+```{r echo = FALSE}
+# resetting par
+par(mfrow = c(1,1))
+```
+
 ## References

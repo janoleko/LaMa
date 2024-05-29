@@ -143,4 +143,9 @@ axis(side=4, at = seq(-5,5, by = 5)*4-35, labels = seq(-5,5, by = 5))
 mtext("g", side=4, line=3, at = -30)
 ```
 
+```{r echo = FALSE}
+# resetting par
+par(mfrow = c(1,1), 
+    mar = c(5,4,4,2)+0.1)
+```
 ## References

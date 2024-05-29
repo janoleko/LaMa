@@ -224,4 +224,9 @@ for(j in 1:N){
 }
 ```
 
+```{r echo = FALSE}
+# resetting par
+par(mfrow = c(1,1))
+```
+
 ## References

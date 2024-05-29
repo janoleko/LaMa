@@ -73,21 +73,21 @@ contains several vignettes that show how to simulate data from and
 estimate a wide range of models:
 
 - [Introduction to
-  LaMa](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/Intro_to_LaMa.pdf)
+  LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
 - [Inhomogeneous
-  HMMs](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/Inhomogeneous_HMMs.pdf)
+  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
 - [Longitudinal
-  data](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/Longitudinal_data.pdf)
+  data](https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf)
 - [Periodic
-  HMMs](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/Periodic_HMM.pdf)
+  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Periodic_HMM.pdf)
 - [State space
-  models](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/State_space_models.pdf)
+  models](https://janoleko.github.io/files/vignettes/LaMa/State_space_models.pdf)
 - [Continuous-time
-  HMMs](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/Continuous_time_HMMs.pdf)
+  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf)
 - [Hidden semi-Markov
-  models](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/HSMMs.pdf)
+  models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 - [Markov-modulated (marked) Poisson
-  processes](https://github.com/janoleko/LaMa/blob/main/vignettes/pdfs/MMMPPs.pdf)
+  processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
 
 ## Installation
 
@@ -180,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1055951 secs
+#> Time difference of 0.1056249 secs
 ```
 
 Really fast for 10.000 data points!

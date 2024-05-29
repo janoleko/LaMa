@@ -17,7 +17,7 @@ Description:
   We address the above issues in two ways. 
   Standard blocks of code, common to all these model classes, are implemented as simple-to-use functions. 
   These can be added like Lego blocks to an otherwise fully custom likelihood function, making writing custom code much easier. Moreover, under the hood, 
-  these functions are written in C++, allowing for 10-20 times faster evaluation time, and thus drastically speeding up model estimation. 
+  these functions are written in 'C++', allowing for 10-20 times faster evaluation time, and thus drastically speeding up model estimation. 
   To aid in building fully custom likelihood functions, several vignettes are included that show how to simulate data from and estimate all the above model classes.
 URL: https://janoleko.github.io/software/, https://github.com/janoleko/LaMa
 License: GPL-3

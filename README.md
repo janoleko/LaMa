@@ -180,7 +180,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1052618 secs
+#> Time difference of 0.1055951 secs
 ```
 
 Really fast for 10.000 data points!

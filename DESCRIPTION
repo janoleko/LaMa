@@ -11,7 +11,7 @@ Description:
   The class of latent Markov models, including hidden Markov models, 
   hidden semi-Markov models, state space models, and point processes, is a very popular and powerful framework for inference of time series driven by latent processes. 
   Furthermore, all these models can be fitted using direct numerical maximum likelihood estimation using the so-called forward algorithm as discussed in 
-  Zucchini et al. (2016) <https://doi.org/10.1201/b20790>.
+  Zucchini et al. (2016) <doi:10.1201/b20790>.
   However, due to their great flexibility, researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, 
   or the construction of such models in said software is as complicated as writing fully tailored 'R' code. 
   While providing greater flexibility and control, the latter suffers from slow estimation speeds that make custom solutions inconvenient. 

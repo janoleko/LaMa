@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("LaMa")
 ```
 
 This vignette shows how to fit state space models which can be interpreted as generalization of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very general state space models can be fitted via approximate maximum likelihood estimation, when the continous state space is finely discretized. Here, we will showcase this approach for a basic stochastic volatily model, which can be used to describe fincancial markets. In this model the unobserved marked volatility is described by an AR(1) process:
@@ -41,6 +40,11 @@ $$
 
 We start by simulating data from the above specified model:
 
+```{r, setup}
+# loading the package
+library("LaMa")
+```
+
 ```{r data}
 beta = 2 # baseline standard deviation
 phi = 0.95 # AR parameter
@@ -59,13 +63,14 @@ for(t in 2:n){
 }
 
 # share returns
-par(mar = c(5,4,3,4.5)+0.1)
+oldpar = par(mar = c(5,4,3,4.5)+0.1)
 plot(y, type = "l", bty = "n", ylim = c(-40,20), yaxt = "n")
 # true underlying standard deviation
 lines(beta*exp(g)/7 - 40, col = "deepskyblue", lwd = 2)
 axis(side=2, at = seq(-20,20,by=5), labels = seq(-20,20,by=5))
 axis(side=4, at = seq(0,150,by=75)/7-40, labels = seq(0,150,by=75))
 mtext("standard deviation", side=4, line=3, at = -30)
+par(oldpar)
 ```
 
 ### Writing the negative log-likelihood function
@@ -124,7 +129,7 @@ allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
 probs = stateprobs(delta, Gamma, allprobs)
 states = viterbi(delta, Gamma, allprobs)
 
-par(mar = c(5,4,3,4.5)+0.1)
+oldpar = par(mar = c(5,4,3,4.5)+0.1)
 plot(y, type = "l", bty = "n", ylim = c(-50,20), yaxt = "n")
 # when there are so many states it is not too sensable to only plot the most probable state,
 # as its probability might still be very small. Generally, we are approximating continuous 
@@ -141,11 +146,7 @@ lines(bstar[states]*4-35)
 axis(side=2, at = seq(-20,20,by=5), labels = seq(-20,20,by=5))
 axis(side=4, at = seq(-5,5, by = 5)*4-35, labels = seq(-5,5, by = 5))
 mtext("g", side=4, line=3, at = -30)
+par(oldpar)
 ```
 
-```{r echo = FALSE}
-# resetting par
-par(mfrow = c(1,1), 
-    mar = c(5,4,4,2)+0.1)
-```
 ## References

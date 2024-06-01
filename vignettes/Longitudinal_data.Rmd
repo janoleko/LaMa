@@ -22,8 +22,6 @@ knitr::opts_chunk$set(
 )
 
 options(rmarkdown.html_vignette.check_title = FALSE)
-
-library("LaMa")
 ```
 
 In real-data applications, one will often be faced by a data set consisting of several measurement tracks, that can reasonably be assumed to be mutually independent. Examples for such a longitudinal structure include GPS tracks of several individuals (or several tracks (e.g. days) of one individual), or when analyzing sports data, one will often be faced by time series for separate games. In such settings, the researcher of course has to decide whether to pool parameters across tracks or not. Here, we will provide brief examples for complete and partial pooling.
@@ -39,6 +37,11 @@ where $L_k(\theta)$ is the usual HMM likelihood for the $k$-th track. Thus the l
 ### Generating data
 
 We generate $K$ separate tracks, all from the exact same model:
+
+```{r, setup}
+# loading the package
+library("LaMa")
+```
 
 ```{r data_pooling}
 K = 100 # number of individuals, for example different animals

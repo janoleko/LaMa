@@ -20,10 +20,7 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "75%"
 )
-
 options(rmarkdown.html_vignette.check_title = FALSE)
-
-library("LaMa")
 ```
 
 The R package `LaMa` provides convenient R wrapper functions for the **forward algorithm** that can be used to fit a wide range of **latent Markov models** like **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs) and **state space models** (SSMs) via **direct numerical maximum likelihood estimation**. To make writing bespoke likelihood functions faster and more convenient, it also includes many auxiliary functions that to be used in the likelihood computation.
@@ -54,6 +51,11 @@ For the conditional distributions of the observations $f_j(x_t)$, a typical choi
 ### Generating data from a 2-state HMM
 
 Here we can already use `stationary()` to compute the stationary distribution.
+
+```{r, setup}
+# loading the package
+library("LaMa")
+```
 
 ```{r data}
 # parameters

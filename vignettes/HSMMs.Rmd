@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("LaMa")
 ```
 
 So-called hidden semi-Markov models (HSMMs) are a flexible generalization of HMMs to a semi-Markovian state process which is motivated by the fact that for homogeneous HMMs, the time spent in a hidden state, also called the state dwell time or sojourn time is necessarily geometrically distributed as a consequence of the Markov assumption. HSMMs are designed to mitigate this often unrealistic assumption by allowing for arbitrary distributions on the positive integers to be estimated for the state dwell time. Inference in such models becomes more involved, but @langrock2011hidden showed that HSMMs can be estimated conveniently via approximating them by HMMs with an extended state space. Each state of the HSMMs is represented by a state aggregate of several states and the transition probabilities within each aggregate are designed carefully to represent the chosen dwell-time distribution. For more details see @langrock2011hidden or @zucchini. Due to this approximate inference procedure, such models can again be fitted by numerically maximizing the (approximate) likelihood which can be evaluated using the forward algorithm.
@@ -32,6 +31,11 @@ We begin by considering homogeneous HSMMs. In such models, each state has an ass
 ### Setting parameters
 
 Here we choose the simplest case of dwell times that are **shifted Poisson** distributed. We have to specify the Poisson mean for each state, the conditional transition probability matrix called $\Omega$ and the parameters of the state-dependent process.
+
+```{r, setup}
+# loading the package
+library("LaMa")
+```
 
 ```{r, parameters}
 lambda = c(7, 4, 4)
@@ -216,17 +220,13 @@ omega
 In this case the Poisson distribution would have been suffficiently flexible, as all dispersion parameters were estimated very close to zero. We can easily visualize the estimated state-specific dwell-time distributions:
 
 ```{r, dwell_muskox}
-par(mfrow = c(1,3))
+oldpar = par(mfrow = c(1,3))
 for(j in 1:N){
   plot(1:agsizes[j], dnbinom(1:agsizes[j]-1, mu=mu_dwell[j], size = 1/phi[j]),
        type = "h", lwd = 2, col = color[j], xlab = "dwell time (hours)",
        ylab = "probabilities", main = paste("state",j), bty = "n", ylim = c(0,0.25))
 }
-```
-
-```{r echo = FALSE}
-# resetting par
-par(mfrow = c(1,1))
+par(oldpar)
 ```
 
 ## References

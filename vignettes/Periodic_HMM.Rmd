@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("LaMa")
 ```
 
 This vignette shows how to fit an HMM, with the state process being a periodically inhomogeneous Markov chain. Formally, this means that for all $t$
@@ -33,6 +32,11 @@ where $\Gamma^{(t)}$ is the transition probability matrix at time $t$ and $L$ is
 ### Setting parameters for simulation
 
 We choose a bimodal activity pattern here. We can conveniently calculate the transition probability matrices and all periodically stationary distributions using `tpm_p()` and `stationary_p()`.
+
+```{r, setup}
+# loading the package
+library("LaMa")
+```
 
 ```{r parameters}
 # parameters
@@ -68,11 +72,12 @@ for(t in 2:n){
   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
 
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 plot(x[1:400], bty = "n", pch = 20, ylab = "x", 
      col = c(color[1], color[2])[s[1:400]])
 boxplot(x ~ z, xlab = "time of day")
 # we see a periodic pattern in the data
+par(oldpar)
 ```
 
 ## Trigonometric modeling of the transition probalities
@@ -120,7 +125,7 @@ sigma_hat = exp(mod$estimate[13:14])
 
 delta_hat = apply(Delta_hat, 2, mean)
 
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 hist(x, prob = TRUE, bor = "white", breaks = 40, main = "")
 curve(delta_hat[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 2, 
       col = color[1], n=500)
@@ -135,7 +140,7 @@ legend("topright", col = c(color[1], color[2], "black"), lwd = 2, bty = "n",
 plot(Delta_hat[,1], type = "l", lwd = 3, col = color[1], bty = "n", 
      xlab = "time of day", ylab = "Pr(state 1)")
 points(Delta_hat[,1], pch = 19, col = color[1])
-
+par(oldpar)
 ```
 
 ## Non-parametric modeling of the transition probalities
@@ -210,12 +215,6 @@ plot(Delta_hat_np[,1], type = "l", lwd = 3, col = "purple", bty = "n",
      xlab = "time of day", ylab = "Pr(state 1)")
 # parametric fit
 lines(Delta_hat[,1], lwd = 3, col = color[1])
-
-```
-
-```{r echo = FALSE}
-# resetting par
-par(mfrow = c(1,1))
 ```
 
 ## References

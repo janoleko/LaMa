@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-library("LaMa")
 ```
 
 This vignette explains how to fit inhomogeneous HMMs, i.e. models that depend on external covariates. Such inhomogeneity in HMMs can result from covariates affecting the transition probabilities of the underlying Markov chain, or covariates affecting the state-dependent distributions, which would then be called Markov-switching regression. We will begin with effects in the state process
@@ -47,6 +46,11 @@ We point this out very clearly here, as for HMMs there is no established convent
 
 We begin by setting parameters to simulate data from an inhomogeneous HMM. In this case we use normal state-dependent distributions. The covariate effects for the state process are fully specified by a parameter matrix of dimension `c(N*(N-1), p+1)`. By default the function `tpm_g()` will fill the off-diagonal elements of each transition matrix by column, which can be changed by setting `byrow = TRUE`. The latter is useful, as popular HMM packages like `moveHMM` or `momentuHMM` return the parameter matrix such that the t.p.m. needs to be filled by row.
 
+```{r, setup}
+# loading the package
+library("LaMa")
+```
+
 ```{r parameters}
 # parameters
 mu = c(5, 20)
@@ -67,17 +71,18 @@ delta = c(0.5, 0.5) # non-stationary initial distribution
 
 color = c("orange", "deepskyblue")
 
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 zseq = seq(-2,2,by = 0.01)
 Gamma_seq = tpm_g(Z = cbind(zseq, zseq^2), beta)
 plot(zseq, Gamma_seq[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12", col = color[1])
 plot(zseq, Gamma_seq[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
      xlab = "z", ylab = "gamma_21", col = color[2])
+par(oldpar)
+
 Delta = matrix(nrow = length(zseq), ncol = 2)
 for(i in 1:length(zseq)){ Delta[i,] = stationary(Gamma_seq[,,i]) }
 
-par(mfrow = c(1,1))
 plot(zseq, Delta[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
 ```
@@ -153,7 +158,6 @@ Prob = matrix(nrow = length(zseq), ncol = 2)
 for(i in 1:length(zseq)){ Prob[i,] = stationary(Gamma_seq[,,i]) }
 prob = apply(Prob, 2, mean)
 
-par(mfrow = c(1,1))
 hist(x, prob = TRUE, bor = "white", breaks = 20, main = "")
 curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 3, 
       col = color[1], n=500)
@@ -165,7 +169,7 @@ curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1])+
 legend("topright", col = c(color[1], color[2], "black"), lwd = 3, bty = "n",
        lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
 
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 plot(zseq, Gamma_seq[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12_hat", col = color[1])
 plot(zseq, Gamma_seq[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
@@ -173,6 +177,7 @@ plot(zseq, Gamma_seq[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
 par(mfrow = c(1,1))
 plot(zseq, Prob[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
+par(oldpar)
 ```
 
 ### Non-parametric modeling of the transition probalities
@@ -247,13 +252,13 @@ Prob_np = matrix(nrow = length(zseq), ncol = 2)
 for(i in 1:length(zseq)){ Prob_np[i,] = stationary(Gamma_seq_np[,,i]) }
 
 # visualizing the Spline fit
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 plot(zseq, Gamma_seq_np[1,2,], type = "l", lwd = 3, bty = "n", ylim = c(0,1), 
      xlab = "z", ylab = "gamma_12_hat", col = color[1])
 plot(zseq, Gamma_seq_np[2,1,], type = "l", lwd = 3, bty = "n", ylim = c(0,1),
      xlab = "z", ylab = "gamma_21_hat", col = color[2])
+par(oldpar)
 
-par(mfrow = c(1,1))
 plot(zseq, Prob_np[,1], type = "l", lwd = 3, bty = "n", ylim = c(0,1), xlab = "z", 
      ylab = "Pr(state 1)", col = color[1])
 ```
@@ -281,7 +286,6 @@ Z = cbind(z, z^2) # quadratic effect of z
 
 Gamma = matrix(c(0.9, 0.1, 0.05, 0.95), nrow = 2, byrow = TRUE) # homogeneous 
 delta = stationary(Gamma) # stationary Markov chain
-
 ```
 
 ### Simulation
@@ -297,13 +301,14 @@ for(t in 2:n){
                       sigma[s[t]])
 }
 
-par(mfrow = c(1,2))
+oldpar = par(mfrow = c(1,2))
 plot(x[1:400], bty = "n", pch = 20, ylab = "x", 
      col = c(color[1], color[2])[s[1:400]])
 
 plot(z[which(s==1)], x[which(s==1)], pch = 16, col = color[1], bty = "n", 
      ylim = c(0,15), xlab = "z", ylab = "x")
 points(z[which(s==2)], x[which(s==2)], pch = 16, col = color[2])
+par(oldpar)
 ```
 
 ### Parametric modeling of the state-dependent regressions
@@ -415,11 +420,6 @@ for(j in 1:2){
 }
 lines(zseq, xhat[,1], lwd = 4, col = color[1])
 lines(zseq, xhat[,2], lwd = 4, col = color[2])
-```
-
-```{r echo = FALSE}
-# resetting par
-par(mfrow = c(1,1))
 ```
 
 ## References

@@ -20,13 +20,17 @@ knitr::opts_chunk$set(
   fig.dim = c(8, 6),
   out.width = "85%"
 )
-
-library("LaMa")
 ```
 
 The functionalities of `LaMa` can also be called to fit so-called **Markov-modulated Poisson processes**. These are doubly stochastic Poisson point processes where the intensity is directed by an underlying continuous-time Markov chain. Such processes are useful for modeling arrival times, for example of calls in a call center, or patients in the hospital. The main difference compared to continuous-time HMMs is that we explicitely model the arrival times as random-variables, i.e. we assign probabilities to them. A homogeneous Poisson process is mainly characterized by the fact that the number of arrivals in a fixed time interval is Poisson distributed with a mean that is proporional to the length of the interval. The waiting times between arrivals are exponentially distributed. While the latter is not true for non-homogeneous Poisson processes in general, we can interpret a Markov modulated Poisson process as alternating between homogeneous Poisson processes, i.e. when the unobserved continuous-time Markov chain stays in a particular state for some interval, the associated Poisson rate in that interval is homogeneous and state-specific. To learn more about Poisson processes, see @dobrow2016introduction.
 
 ## Example 1: Markov-modulated Poisson processes
+
+```{r, setup}
+# loading the package
+library("LaMa")
+```
+
 
 ### Setting parameters 
 

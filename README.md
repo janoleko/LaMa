@@ -84,9 +84,9 @@ devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
 
 ## Package documentation
 
-To aid in building fully custom likelihood functions, this package also
-contains several vignettes that show how to simulate data from and
-estimate a wide range of models using the functions included in this
+To aid in building fully custom likelihood functions, this package
+contains several vignettes that demonstrate how to simulate data from
+and estimate a wide range of models using the functions included in this
 package:
 
 - [Introduction to
@@ -171,7 +171,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.102937 secs
+#> Time difference of 0.103642 secs
 ```
 
 Really fast for 10.000 data points!

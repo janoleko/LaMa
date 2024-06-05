@@ -63,7 +63,7 @@ devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
 
 ## Package documentation
 
-To aid in building fully custom likelihood functions, this package also contains several vignettes that show how to simulate data from and estimate a wide range of models using the functions included in this package:
+To aid in building fully custom likelihood functions, this package contains several vignettes that demonstrate how to simulate data from and estimate a wide range of models using the functions included in this package:
 
 * [Introduction to LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
 * [Inhomogeneous HMMs with covariate effects](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)

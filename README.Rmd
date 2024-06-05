@@ -14,6 +14,12 @@ knitr::opts_chunk$set(
 
 # {LaMa}: Latent Markov model likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
 
+<!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-project.org/package=LaMa)
+[![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 A plethora of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**, and **Markov-modulated marked Poisson processes** (MMMPPs) can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood using the so-called **forward algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini et al. 2016</a>).
 While these models are immensely popular for conducting inference on time series driven by latent processes, due to their great flexibility, researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, or the construction of such models in said software is as complicated as writing fully tailored **R** code. The latter provides great flexibility and control, but suffers from slow estimation speeds that make custom solutions inconvenient. This **R** package addresses the above issues in two ways. Standard blocks of code common to all these model classes, most importantly the forward algorithm, are implemented as simple-to-use functions. These can be added like Lego blocks to an otherwise fully custom likelihood function, making building fully custom models much easier. Moreover, under the hood, these functions are written in **C++**, allowing for 10-20 times faster evaluation time, and thus drastically speeding up estimation by numerical optimizers like `nlm()` or `optim()`.
@@ -28,27 +34,39 @@ The functions are built to be included in the **negative log-likelihood function
 
 To serve as a powerful toolbox, this package also includes many auxiliary functions like
 
-* The `tpm` family with
-  + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link, 
-  + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices, 
-  + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs,
-  + `tpm_cont()` for calculating the transition probabilites of a continuous-time Markov chain,
-  + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM,
+* the `tpm` family with for calculating transition probability matrices,
+  <!-- + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link,  -->
+  <!-- + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices,  -->
+  <!-- + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs, -->
+  <!-- + `tpm_cont()` for calculating the transition probabilites of a continuous-time Markov chain, -->
+  <!-- + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, -->
 
-* the `stationary` family to compute stationary and periodically stationary distributions,
+* the `stationary` family to compute stationary and periodically stationary distributions
 
-* functions of the `stateprobs` family for local decoding and of the `viterbi` family for global decoding,
+* as well as the `stateprobs` and `viterbi` family for local and global decoding.
 
-* and `trigBasisExp()` for efficient computation of a trigonometric basis expansion.
+## Installation
 
-Further functionalities will be added as needed. Have fun!
+You can install the released package version from [CRAN](https://CRAN.R-project.org) with:
+
+```{r installation_cran, eval = FALSE}
+install.packages("LaMa")
+```
+
+or the development version from Github:
+```{r installation_github, eval = FALSE, warning=FALSE, message = FALSE}
+# install.packages("devtools")
+devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
+```
+<!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
+
 
 ## Package documentation
 
-To aid in building fully custom likelihood functions, this package also contains several vignettes that show how to simulate data from and estimate a wide range of models:
+To aid in building fully custom likelihood functions, this package also contains several vignettes that show how to simulate data from and estimate a wide range of models using the functions included in this package:
 
 * [Introduction to LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
-* [Inhomogeneous HMMs](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
+* [Inhomogeneous HMMs with covariate effects](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
 * [Longitudinal data](https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf)
 * [Periodic HMMs](https://janoleko.github.io/files/vignettes/LaMa/Periodic_HMM.pdf)
 * [State space models](https://janoleko.github.io/files/vignettes/LaMa/State_space_models.pdf)
@@ -56,25 +74,6 @@ To aid in building fully custom likelihood functions, this package also contains
 * [Hidden semi-Markov models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
 
-## Installation
-
-To install and use the package, you need to have a functional C++ compiler. For details click
-<a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">here</a>. Then you can use:
-```{r installation, eval = FALSE, warning=FALSE, message = FALSE}
-# install.packages("devtools")
-devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
-```
-
-Feel free to use
-```{r vignettes, eval = FALSE, warning=FALSE, message = FALSE}
-browseVignettes("LaMa")
-```
-or
-```{r help, eval = FALSE, warning=FALSE, message = FALSE}
-help(package = "LaMa")
-```
-
-for detailed examples on how to use the package.
 
 ## Example: Homogeneous HMM
 

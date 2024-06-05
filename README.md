@@ -1,6 +1,15 @@
 
 # {LaMa}: Latent Markov model likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-project.org/package=LaMa)
+[![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 A plethora of latent Markov models, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
 (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**,
@@ -42,40 +51,48 @@ calculated.
 To serve as a powerful toolbox, this package also includes many
 auxiliary functions like
 
-- The `tpm` family with
-
-  - `tpm()` for calculating a homogeneous transition probability matrix
-    via the multinomial logistic link,
-  - `tpm_g()` for calculating general inhomogeneous transition
-    probabilty matrices,
-  - `tpm_p()` for calculating transition matrices of periodically
-    inhomogeneous HMMs,
-  - `tpm_cont()` for calculating the transition probabilites of a
-    continuous-time Markov chain,
-  - `tpm_hsmm()` for calculating the transition matrix of an
-    HSMM-approximating HMM,
+- the `tpm` family with for calculating transition probability matrices,
+  <!-- + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link,  -->
+  <!-- + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices,  -->
+  <!-- + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs, -->
+  <!-- + `tpm_cont()` for calculating the transition probabilites of a continuous-time Markov chain, -->
+  <!-- + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, -->
 
 - the `stationary` family to compute stationary and periodically
-  stationary distributions,
+  stationary distributions
 
-- functions of the `stateprobs` family for local decoding and of the
-  `viterbi` family for global decoding,
+- as well as the `stateprobs` and `viterbi` family for local and global
+  decoding.
 
-- and `trigBasisExp()` for efficient computation of a trigonometric
-  basis expansion.
+## Installation
 
-Further functionalities will be added as needed. Have fun!
+You can install the released package version from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("LaMa")
+```
+
+or the development version from Github:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
+```
+
+<!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
 
 ## Package documentation
 
 To aid in building fully custom likelihood functions, this package also
 contains several vignettes that show how to simulate data from and
-estimate a wide range of models:
+estimate a wide range of models using the functions included in this
+package:
 
 - [Introduction to
   LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
-- [Inhomogeneous
-  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
+- [Inhomogeneous HMMs with covariate
+  effects](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
 - [Longitudinal
   data](https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf)
 - [Periodic
@@ -88,32 +105,6 @@ estimate a wide range of models:
   models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
-
-## Installation
-
-To install and use the package, you need to have a functional C++
-compiler. For details click
-<a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">here</a>.
-Then you can use:
-
-``` r
-# install.packages("devtools")
-devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
-```
-
-Feel free to use
-
-``` r
-browseVignettes("LaMa")
-```
-
-or
-
-``` r
-help(package = "LaMa")
-```
-
-for detailed examples on how to use the package.
 
 ## Example: Homogeneous HMM
 
@@ -180,7 +171,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1056249 secs
+#> Time difference of 0.102937 secs
 ```
 
 Really fast for 10.000 data points!

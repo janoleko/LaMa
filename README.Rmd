@@ -60,7 +60,6 @@ devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
 ```
 <!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
 
-
 ## Package documentation
 
 To aid in building fully custom likelihood functions, this package contains several vignettes that demonstrate how to simulate data from and estimate a wide range of models using the functions included in this package:
@@ -73,6 +72,14 @@ To aid in building fully custom likelihood functions, this package contains seve
 * [Continuous-time HMMs](https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf)
 * [Hidden semi-Markov models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
+
+
+## Citation
+
+When using LaMa, please cite the package as follows:
+```{r citation}
+citation(package = "LaMa")
+```
 
 
 ## Example: Homogeneous HMM

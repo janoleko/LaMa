@@ -106,6 +106,30 @@ package:
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
 
+## Citation
+
+When using LaMa, please cite the package as follows:
+
+``` r
+citation(package = "LaMa")
+#> To cite package 'LaMa' in publications use:
+#> 
+#>   Koslik J (2024). _LaMa: Fast Numerical Maximum Likelihood Estimation
+#>   for Latent Markov Models_. R package version 1.0.0,
+#>   <https://CRAN.R-project.org/package=LaMa>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov
+#> Models},
+#>     author = {Jan-Ole Koslik},
+#>     year = {2024},
+#>     note = {R package version 1.0.0},
+#>     url = {https://CRAN.R-project.org/package=LaMa},
+#>   }
+```
+
 ## Example: Homogeneous HMM
 
 #### Loading the package
@@ -171,7 +195,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.103642 secs
+#> Time difference of 0.1051061 secs
 ```
 
 Really fast for 10.000 data points!

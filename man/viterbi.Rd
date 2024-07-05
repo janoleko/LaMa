@@ -4,14 +4,16 @@
 \alias{viterbi}
 \title{Viterbi algorithm for decoding states}
 \usage{
-viterbi(delta, Gamma, allprobs)
+viterbi(delta, Gamma, allprobs, ID = NULL)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution of length N}
+\item{delta}{Initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if ID is provided}
 
 \item{Gamma}{Transition probability matrix of dimension c(N,N)}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{ID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
 Vector of decoded states of length n

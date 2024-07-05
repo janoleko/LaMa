@@ -43,7 +43,8 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
       id_i = which(ID == uID[i])
       
       allprobs_i = allprobs[id_i, ]
-      if(dim(allprobs_i)[1] == 1) stop("All tracks must be at least of length 2.")
+      
+      if(length(id_i) == 1) stop("All tracks must be at least of length 2.")
       
       if(dim(allprobs_i)[1] == 2){
         # viterbi algorithm for track of length 2 only

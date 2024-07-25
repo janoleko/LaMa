@@ -71,7 +71,7 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
     }
     
   } else{
-    if(!is.vector(delta)){
+    if(!is.vector(delta) | nrow(delta)==1 | ncol(delta)==1){
       stop("If no ID is provided, delta needs to be a vector of length N.")
     }
     

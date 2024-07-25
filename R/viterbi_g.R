@@ -54,7 +54,7 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
         foo = delta[i,] * allprobs_i[1, ]
         xi[1, ] = foo / sum(foo)
         
-        foo = apply(xi[1, ] * Gamma_i, 2, max) * allprobs[2, ]
+        foo = apply(xi[1, ] * Gamma_i, 2, max) * allprobs_i[2, ]
         xi[2, ] = foo / sum(foo)
         
         iv = numeric(2)

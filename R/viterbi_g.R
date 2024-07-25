@@ -29,7 +29,7 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
     uID = unique(ID)
     k = length(uID) # number of tracks
     
-    if(is.vector(delta) | nrow(delta)==1 | ncol(delta)==1){
+    if(is.vector(delta)){
       delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
     } else if(dim(delta)[1] != k){
       stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
@@ -71,7 +71,7 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
     }
     
   } else{
-    if(!is.vector(delta) | nrow(delta)==1 | ncol(delta)==1){
+    if(!is.vector(delta)){
       stop("If no ID is provided, delta needs to be a vector of length N.")
     }
     

@@ -23,7 +23,8 @@ License: GPL-3
 Encoding: UTF-8
 Imports: 
     Rcpp,
-    mgcv
+    mgcv,
+    RTMB
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

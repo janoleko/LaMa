@@ -44,8 +44,6 @@ library("LaMa")
 ```
 
 ```{r data_pooling}
-K = 100 # number of individuals, for example different animals
-
 # parameters are shared across individuals
 mu = c(15, 60)
 sigma = c(10, 40)
@@ -54,7 +52,9 @@ delta = stationary(Gamma) # stationary HMM
 
 # simulation of all tracks
 set.seed(123)
-n = 30 # observations per animal only (but many animals)
+K = 200 # number of individuals, for example different animals
+n = 50 # observations per animal only (but many animals)
+
 s = x = rep(NA, n*K)
 for(k in 1:K){
   sk = xk = rep(NA, n)
@@ -67,6 +67,8 @@ for(k in 1:K){
   s[(k-1)*n + 1:n] = sk
   x[(k-1)*n + 1:n] = xk
 }
+
+trackID = rep(1:K, each = n)
 ```
 
 ### Writing the negative log-likelihood function
@@ -75,7 +77,7 @@ To calculate the joint log-likelihood of the independent tracks, we slightly mod
 
 ```{r mllk_pool}
 # fast version using trackInd in forward()
-mllk_pool = function(theta.star, x, trackInd){
+mllk_pool = function(theta.star, x, trackID){
   Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma)
   mu = theta.star[3:4]
@@ -84,12 +86,12 @@ mllk_pool = function(theta.star, x, trackInd){
   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   
   # here we add trackInd as an argument to forward()
-  -forward(delta, Gamma, allprobs, trackInd)
+  -forward(delta, Gamma, allprobs, trackID)
 }
 
 # slow alternative looping over individuals in R
 mllk_pool_slow = function(theta.star, x, K){
-  n = length(x)/K
+  n = length(x) / K
   Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma)
   mu = theta.star[3:4]
@@ -108,25 +110,15 @@ mllk_pool_slow = function(theta.star, x, K){
 
 ### Estimating the model
 
-Now we estimate the model with complete pooling. We compare the fast version using `forward()` with `trackInd` with the slow version also using `forward()` but looping over individuals in `R`. Before we begin, we define the indices where a new track starts:
-
+Now we estimate the model with complete pooling. We compare the fast version using `forward()` with `trackID` with the slow version also using `forward()` but looping over individuals in `R`.
 ```{r model_pool, warning=FALSE}
-# defining the indices where a new track begins
-trackInd = n*(0:(K-1)) + 1
-
-# In a real data scenario, we would typically have an ID column in the data set.
-# We can then use the function calc_trackInd() to calculate the trackInd vector:
-ID = rep(1:K, each = n)
-trackInd = calc_trackInd(ID)
-# the ID variable does not have to be numeric, it can also be a character vector.
-
 # initial parameter vector
 theta.star = c(-1,-1, # off-diagonals of Gamma (on logit scale)
                15,60,log(10),log(40)) # mu and sigma
 
 # fast version:
 s = Sys.time()
-mod = nlm(mllk_pool, theta.star, x = x, trackInd = trackInd)
+mod = nlm(mllk_pool, theta.star, x = x, trackID = trackID)
 Sys.time()-s
 
 # slow version
@@ -183,7 +175,7 @@ Now we write the corresponding negative log-likehood function that incorporates 
 
 ```{r mllk_partial}
 # fast version using trackInd in forward()
-mllk_partial = function(theta.star, x, z, trackInd){
+mllk_partial = function(theta.star, x, z, trackID){
   # individual-specific tpms
   beta = matrix(theta.star[1:4], nrow = 2)
   Gamma = tpm_g(z, beta)
@@ -195,7 +187,7 @@ mllk_partial = function(theta.star, x, z, trackInd){
   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   
   # just handing a Delta matrix and Gamma array for all individuals to forward()
-  -forward(Delta, Gamma, allprobs, trackInd)
+  -forward(Delta, Gamma, allprobs, trackID)
 }
 ```
 
@@ -203,14 +195,13 @@ mllk_partial = function(theta.star, x, z, trackInd){
 
 ```{r model_partial, warning=FALSE}
 # again defining all the indices where a new track begins
-ID = rep(1:K, each = n)
-trackInd = calc_trackInd(ID)
+trackID = rep(1:K, each = n)
 
 # initial parameter vector
 theta.star = c(-2,-2,0,0, # beta
                15,60,log(10),log(40)) # mu and sigma
 
 s = Sys.time()
-mod_partial = nlm(mllk_partial, theta.star, x = x, z = z, trackInd = trackInd)
+mod_partial = nlm(mllk_partial, theta.star, x = x, z = z, trackID = trackID)
 Sys.time()-s
 ```

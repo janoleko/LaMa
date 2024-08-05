@@ -17,7 +17,9 @@ A homogeneous, finite state Markov chain that is irreducible and aperiodic conve
 As it is stationary, this distribution satisfies \cr \cr
 \eqn{\delta \Gamma = \delta}, subject to \eqn{\sum_{j=1}^N \delta_j = 1}, \cr \cr
 where \eqn{\Gamma} is the transition probability matrix. 
-This function solves the linear system of equations above.
+This function solves the linear system of equations above.\cr
+
+Compatible with automatic differentiation by RTMB
 }
 \examples{
 Gamma = tpm(c(rep(-2,3), rep(-3,3)))

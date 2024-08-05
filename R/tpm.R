@@ -2,7 +2,9 @@
 #'
 #' @description
 #' This function builds the transition probability matrix from an unconstraint parameter vector. 
-#' For each row of the matrix, the inverse multinomial logistic link is applied.
+#' For each row of the matrix, the inverse multinomial logistic link is applied.\cr
+#'
+#' Compatible with automatic differentiation by RTMB
 #'
 #' @param param Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain
 #' @param byrow Logical that indicates if the transition probability matrix should be filled by row. 

@@ -13,6 +13,7 @@
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
 #' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
 #' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
+#' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,n)
 #' @export
@@ -23,7 +24,7 @@
 #' Z = matrix(runif(n*2), ncol = 2)
 #' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_g(Z, beta)
-tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE){
+tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE){
   
   K = nrow(beta)
   p = ncol(beta)
@@ -45,6 +46,10 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE){
     
   } else if(ad) {
     "[<-" <- ADoverload("[<-") # currently necessary
+    
+    if(report) {
+      RTMB::REPORT(beta) # reporting coefficient matrix
+    }
     
     expEta = exp(Z %*% t(beta))
     Gamma = array(NaN, dim = c(N, N, nrow(expEta)))

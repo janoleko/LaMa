@@ -11,6 +11,7 @@
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export
+#' @import RTMB
 #'
 #' @examples
 #' ## generating data from homogeneous 2-state HMM

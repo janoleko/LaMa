@@ -27,21 +27,21 @@
 #' Gamma = tpm_cont(Q, timediff)
 tpm_cont = function(Q, timediff, ad = FALSE){
   
-  # if(!ad) {
+  if(!ad) {
     
     Qube = semigroup_cpp(Q, timediff) # C++ version
     
-  # } else if(ad) { # ad version with RTMB
-  #   "[<-" <- ADoverload("[<-") # currently necessary
-  #   
-  #   n = length(timediff)
-  #   N = nrow(Q)
-  #   
-  #   Qube = array(NaN, dim = c(N, N, n))
-  #   
-  #   for(t in 1:n){
-  #     Qube[,,t] = expm(Q * timediff[t]) # using RTMB::expm for AD
-  #   }
-  # }
+  } else if(ad) { # ad version with RTMB
+    "[<-" <- ADoverload("[<-") # currently necessary
+
+    n = length(timediff)
+    N = nrow(Q)
+
+    Qube = array(NaN, dim = c(N, N, n))
+
+    for(t in 1:n){
+      Qube[,,t] = Matrix::expm(Q * timediff[t]) # using Matrix::expm for AD
+    }
+  }
   Qube
 }

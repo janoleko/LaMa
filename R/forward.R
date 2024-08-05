@@ -137,7 +137,7 @@ forward = function(delta, Gamma, allprobs,
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        deltai = RMTB::matrix(Delta[i,], nrow = 1, ncol = N)
+        deltai = RTMB::matrix(Delta[i,], nrow = 1, ncol = N)
         
         foo = deltai %*% RTMB::diag(allprobs[ind[1],])
         sumfoo = sum(foo)

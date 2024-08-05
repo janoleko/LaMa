@@ -4,7 +4,7 @@
 \alias{dgamma2}
 \title{Reparametrized gamma distribution}
 \usage{
-dgamma2(x, mu, sigma)
+dgamma2(x, mu, sigma, log = FALSE)
 }
 \arguments{
 \item{x}{vector of quantiles}
@@ -12,6 +12,8 @@ dgamma2(x, mu, sigma)
 \item{mu}{mean parameter, must be positive scalar.}
 
 \item{sigma}{standard deviation parameter, must be positive scalar.}
+
+\item{log}{logical; if TRUE, densities are returned on the log scale.}
 }
 \value{
 Returns the gamma density function evaluated at x.

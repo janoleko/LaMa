@@ -6,6 +6,7 @@
 #' @param x vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
 #' @param kappa non-negative numeric value for the concentration parameter of the distribution.
+#' @param log logical; if TRUE, densities are returned on the log scale.
 #'
 #' @return Returns the von Mises density function evaluated at x.
 #' @export
@@ -13,8 +14,10 @@
 #' @examples 
 #' x = c(0, pi/2, pi)
 #' dvm(x, 0, 1)
-dvm = function(x, mu, kappa) {
-  1 / (2 * pi * RTMB::besselI(kappa, 0)) * exp(kappa * cos(x - mu))
+dvm = function(x, mu, kappa, log = FALSE) {
+  res = 1 / (2 * pi * RTMB::besselI(kappa, 0)) * exp(kappa * cos(x - mu))
+  if(log) res = log(res)
+  res
 }
 
 #' Reparametrized gamma distribution
@@ -25,14 +28,15 @@ dvm = function(x, mu, kappa) {
 #' @param x vector of quantiles
 #' @param mu mean parameter, must be positive scalar.
 #' @param sigma standard deviation parameter, must be positive scalar.
+#' @param log logical; if TRUE, densities are returned on the log scale.
 #'
 #' @return Returns the gamma density function evaluated at x.
 #' @export
 #'
 #' @examples
 #' dgamma2(1, 1, 1)
-dgamma2 = function(x, mu, sigma) {
+dgamma2 = function(x, mu, sigma, log = FALSE) {
   shape = mu^2 / sigma^2
   scale = sigma^2 / mu
-  RTMB::dgamma(x, shape = shape, scale = scale)
+  RTMB::dgamma(x = x, shape = shape, scale = scale, log = log)
 }

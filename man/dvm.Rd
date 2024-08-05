@@ -4,7 +4,7 @@
 \alias{dvm}
 \title{von Mises Density Function}
 \usage{
-dvm(x, mu, kappa)
+dvm(x, mu, kappa, log = FALSE)
 }
 \arguments{
 \item{x}{vector of angles measured in radians at which to evaluate the density function.}
@@ -12,6 +12,8 @@ dvm(x, mu, kappa)
 \item{mu}{mean direction of the distribution measured in radians.}
 
 \item{kappa}{non-negative numeric value for the concentration parameter of the distribution.}
+
+\item{log}{logical; if TRUE, densities are returned on the log scale.}
 }
 \value{
 Returns the von Mises density function evaluated at x.

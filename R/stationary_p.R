@@ -12,6 +12,7 @@
 #'
 #' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
+#' @import RTMB
 #'
 #' @examples
 # setting parameters for trigonometric link

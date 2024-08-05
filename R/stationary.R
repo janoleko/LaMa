@@ -11,6 +11,7 @@
 #'
 #' @return Stationary distribution of the Markov chain with the given transition probability matrix
 #' @export
+#' @import RTMB
 #'
 #' @examples
 #' Gamma = tpm(c(rep(-2,3), rep(-3,3)))

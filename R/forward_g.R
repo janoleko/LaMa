@@ -13,9 +13,11 @@
 #' This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator of the continuous-time Markov chain.
 #' 
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackInd Optional vector of length k containing the indices that correspond to the beginning of separate tracks. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' @param trackID Optional vector of length n containing IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' In this case, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
 #' Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
+#' @param report Logical, indicating whether delta, Gamma and allprobs should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'
 #' @return Log-likelihood for given data and parameters
 #' @export
@@ -59,24 +61,112 @@
 #' theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
 #' mod = nlm(mllk, theta.star, x = x, z = z)
 #'
-forward_g = function(delta, Gamma, allprobs, trackInd = NULL){
-  n = nrow(allprobs)
+forward_g = function(delta, Gamma, allprobs, 
+                     trackID = NULL, ad = FALSE, report = TRUE) {
   
-  if(is.null(trackInd)){
-    if(dim(Gamma)[3]==n){
-      Gamma = Gamma[,,-1]
+  if(!ad) {
+    
+    n = nrow(allprobs) # number of observations
+    
+    if(is.null(trackID)){ # only one track
+      
+      if(dim(Gamma)[3]==n){
+        Gamma = Gamma[,,-1]
+      }
+      l = forward_cpp_g(allprobs, delta, Gamma)
+      
+    } else{ # several tracks
+      
+      trackInd = calc_trackInd(trackID) # creating trackInd for faster C++
+      
+      k = length(trackInd) # number of tracks
+      
+      if(dim(Gamma)[3]!=n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+      
+      if(is.vector(delta)){
+        delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
+      }
+      
+      l = forward_cpp_g_tracks(allprobs, delta, Gamma, trackInd)
     }
-    l = forward_cpp_g(allprobs, delta, Gamma)
-  } else{
-    k = length(trackInd)
     
-    if(dim(Gamma)[3]!=n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+  } else if(ad) {
     
-    if(is.vector(delta)){
-      delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operator, just to be safe
+    
+    if(report) { # report these quantities by default
+      RTMB::REPORT(delta)
+      RTMB::REPORT(Gamma)
+      RTMB::REPORT(allprobs)
     }
     
-    l = forward_cpp_g_tracks(allprobs, delta, Gamma, trackInd)
+    N = ncol(allprobs) # number of states
+    n = nrow(allprobs) # number of observations
+    
+    if(is.null(trackID)) { # only one track
+      
+      delta = matrix(delta, nrow = 1, ncol = N, byrow = TRUE) # reshape to matrix
+      
+      Gamma = array(Gamma, dim = dim(Gamma))
+      if(dim(Gamma)[3] == n) Gamma = Gamma[,,-1] # deleting first slice
+      
+      # forward algorithm
+      foo = delta * allprobs[1,]
+      sumfoo = sum(foo)
+      phi = foo / sumfoo
+      l = log(sumfoo)
+      
+      for(t in 2:n) {
+        foo = (phi %*% Gamma[,,t-1]) * allprobs[t,]
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+      }
+      
+    } else if(!is.null(trackID)) {
+      
+      RTMB::REPORT(trackID)
+      
+      uID = unique(trackID) # unique track IDs
+      k = length(uID) # number of tracks
+      
+      ## dealing with the initial distribution, either a vector of length N 
+      # or a matrix of dimension c(k,N) for k tracks
+      delta = as.matrix(delta) # reshape to matrix for easier handling
+      
+      if(ncol(delta) != N) delta = t(delta) # transpose if necessary
+      
+      if(nrow(delta) == 1) {
+        Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE) 
+      } else {
+        Delta = delta
+      }
+      
+      ## dealing with Gamma, needs to be array of dimension c(N,N,k)
+      
+      if(dim(Gamma)[3] != n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+      Gamma = array(Gamma, dim = dim(Gamma))
+      
+      ## forward algorithm
+      l = 0 # initialize log-likelihood
+      for(i in 1:k) {
+        ind = which(trackID == uID[i]) # indices of track i
+        
+        deltai = matrix(Delta[i,], nrow = 1, ncol = N)
+        
+        foo = deltai * allprobs[ind[1],]
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+        
+        for(t in 2:length(ind)) {
+          foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
+          sumfoo = sum(foo)
+          phi = foo / sumfoo
+          l = l + log(sumfoo)
+        }
+      }
+    }
   }
   
   return(l)

@@ -4,7 +4,7 @@
 \alias{forward_g}
 \title{General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix}
 \usage{
-forward_g(delta, Gamma, allprobs, trackInd = NULL)
+forward_g(delta, Gamma, allprobs, trackID = NULL, ad = FALSE, report = TRUE)
 }
 \arguments{
 \item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if trackInd is provided.}
@@ -22,9 +22,13 @@ This function can also be used to fit continuous-time HMMs, where each array ent
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
-\item{trackInd}{Optional vector of length k containing the indices that correspond to the beginning of separate tracks. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+\item{trackID}{Optional vector of length n containing IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 In this case, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
 Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
+
+\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
+
+\item{report}{Logical, indicating whether delta, Gamma and allprobs should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
 }
 \value{
 Log-likelihood for given data and parameters

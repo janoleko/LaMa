@@ -52,6 +52,9 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE){
     for(t in 1:nrow(expEta)){
       G = diag(N)
       G[!G] = expEta[t,]
+      
+      if(byrow) G = t(G) # transpose if necessary
+      
       Gamma[,,t] = G / rowSums(G)
     }
   }

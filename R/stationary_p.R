@@ -9,7 +9,6 @@
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,L). 
 #' @param t Integer index of the time point in the cycle, for which to calculate the stationary distribution
 #' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
-#' @param tol The tolerance for detecting linear dependencies in the columns of the thinned transition matrix. The default is .Machine$double.eps.
 #'
 #' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
@@ -24,13 +23,13 @@
 #'
 #' # All periodically stationary distributions
 #' Delta = stationary_p(Gamma)
-stationary_p = function(Gamma, t = NULL, tol = .Machine$double.eps){
+stationary_p = function(Gamma, t = NULL){
   if(is.null(t)){
     N = dim(Gamma)[2]
     L = dim(Gamma)[3]
     Delta = matrix(nrow = L, ncol = N)
     GammaT = tpm_thinned(Gamma, 1)
-    Delta[1,] = stationary(GammaT, tol)
+    Delta[1,] = stationary(GammaT)
     for(t in 2:L){
       Delta[t,] = Delta[t-1,]%*%Gamma[,,t-1]
     }
@@ -38,7 +37,7 @@ stationary_p = function(Gamma, t = NULL, tol = .Machine$double.eps){
     return(Delta)
   } else{
     GammaT = tpm_thinned(Gamma, t)
-    delta = stationary(GammaT, tol)
+    delta = stationary(GammaT)
     names(delta) = paste("state", 1:length(delta))
     return(delta)
   }

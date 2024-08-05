@@ -8,7 +8,6 @@
 #' This function solves the linear system of equations above.
 #
 #' @param Gamma Transition probability matrix of dimension c(N,N)
-#' @param tol The tolerance for detecting linear dependencies in the columns of Gamma. The default is .Machine$double.eps.
 #'
 #' @return Stationary distribution of the Markov chain with the given transition probability matrix
 #' @export
@@ -16,9 +15,9 @@
 #' @examples
 #' Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 #' delta = stationary(Gamma)
-stationary = function(Gamma, tol = .Machine$double.eps){
+stationary = function(Gamma){
   N = dim(Gamma)[1]
-  delta = solve(t(diag(N)-Gamma+1), rep(1,N), tol = tol)
+  delta = RTMB::solve(t(diag(N)-Gamma+1), rep(1,N))
   names(delta) = paste("state", 1:N)
   delta
 }

@@ -15,9 +15,9 @@
 #'
 #' @examples
 #' # 2 states: 2 free off-diagonal elements
-#' generator(rep(-1, 2)
+#' generator(rep(-1, 2))
 #' # 3 states: 6 free off-diagonal elements
-#' generator(rep(-2, 6)
+#' generator(rep(-2, 6))
 generator = function(param, byrow = FALSE) {
   
   "[<-" <- ADoverload("[<-") # currently necessary

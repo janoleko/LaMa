@@ -89,13 +89,13 @@ forward = function(delta, Gamma, allprobs,
       delta = matrix(delta, nrow = 1, ncol = length(delta), byrow = TRUE) # reshape to matrix
       
       # forward algorithm
-      foo = delta * allprobs[1,]
+      foo = delta %*% RTMB::diag(allprobs[1,])
       sumfoo = sum(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:nrow(allprobs)) {
-        foo = (phi %*% Gamma) * allprobs[t,]
+        foo = phi %*% Gamma %*% RTMB::diag(allprobs[t,])
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -139,7 +139,7 @@ forward = function(delta, Gamma, allprobs,
         
         deltai = matrix(Delta[i,], nrow = 1, ncol = N)
         
-        foo = deltai * allprobs[ind[1],]
+        foo = deltai %*% RTMB::diag(allprobs[ind[1],])
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -147,7 +147,7 @@ forward = function(delta, Gamma, allprobs,
         Gamma_i = Gamma[,,i]
         
         for(t in 2:length(ind)) {
-          foo = (phi %*% Gamma_i) * allprobs[ind[t],]
+          foo = phi %*% Gamma_i %*% RTMB::diag(allprobs[ind[t],])
           sumfoo = sum(foo)
           phi = foo / sumfoo
           l = l + log(sumfoo)

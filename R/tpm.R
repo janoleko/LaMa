@@ -21,15 +21,18 @@
 #' param2 = rep(-2, 6)
 #' Gamma2 = tpm(param2)
 tpm = function(param, byrow = FALSE) {
+  
+  "[<-" <- ADoverload("[<-") # currently necessary
+  
   K = length(param)
   # for N > 1: N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25 + K), 0)
   
   Gamma = diag(N)
   Gamma[!Gamma] = exp(param[1:(N*(N-1))])
-  if(byrow == TRUE){
-    Gamma = t(Gamma)
-  }
+  
+  if(byrow) Gamma = t(Gamma)
+  
   Gamma = Gamma / rowSums(Gamma)
   Gamma
 }

@@ -27,17 +27,15 @@
 tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE){
   
   K = nrow(beta)
-  p = ncol(beta)
+  p = ncol(beta) - 1
   N = as.integer(0.5 + sqrt(0.25 + K), 0)
   
   Z = as.matrix(Z)
   
-  if(!(ncol(Z) %in% c(p, p-1))){
-    stop("The dimensions of Z and beta do not match.")
-  }
-  
-  if(ncol(Z) == p-1){
+  if(ncol(Z) == p){
     Z = cbind(1, Z) # adding intercept column
+  } else if(ncol(Z) != p + 1){
+    stop("The dimensions of Z and beta do not match.")
   }
   
   if(!ad) {

@@ -40,7 +40,7 @@ tpm_cont = function(Q, timediff, ad = FALSE){
     Qube = array(NaN, dim = c(N, N, n))
 
     for(t in 1:n){
-      Qube[,,t] = Matrix::expm(Q * timediff[t]) # using Matrix::expm for AD
+      Qube[,,t] = as.matrix(Matrix::expm(Q * timediff[t])) # Matrix::expm for AD
     }
   }
   Qube

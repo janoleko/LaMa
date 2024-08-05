@@ -9,6 +9,7 @@
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,L). 
 #' @param t Integer index of the time point in the cycle, for which to calculate the stationary distribution
 #' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
+#' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
 #'
 #' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
@@ -24,22 +25,52 @@
 #'
 #' # All periodically stationary distributions
 #' Delta = stationary_p(Gamma)
-stationary_p = function(Gamma, t = NULL){
-  if(is.null(t)){
-    N = dim(Gamma)[2]
-    L = dim(Gamma)[3]
-    Delta = matrix(nrow = L, ncol = N)
-    GammaT = tpm_thinned(Gamma, 1)
-    Delta[1,] = stationary(GammaT)
-    for(t in 2:L){
-      Delta[t,] = Delta[t-1,]%*%Gamma[,,t-1]
+stationary_p = function(Gamma, t = NULL, ad = FALSE){
+  
+  N = dim(Gamma)[2]
+  L = dim(Gamma)[3]
+  
+  if(!ad) {
+    if(is.null(t)){
+      Delta = matrix(nrow = L, ncol = N)
+      GammaT = tpm_thinned(Gamma, 1)
+      Delta[1,] = stationary(GammaT)
+      for(t in 2:L){
+        Delta[t,] = Delta[t-1,]%*%Gamma[,,t-1]
+      }
+      colnames(Delta) = paste("state", 1:N)
+      return(Delta)
+    } else{
+      GammaT = tpm_thinned(Gamma, t)
+      delta = stationary(GammaT)
+      names(delta) = paste("state", 1:length(delta))
+      return(delta)
     }
-    colnames(Delta) = paste("state", 1:N)
-    return(Delta)
-  } else{
-    GammaT = tpm_thinned(Gamma, t)
-    delta = stationary(GammaT)
-    names(delta) = paste("state", 1:length(delta))
-    return(delta)
+  } else if(ad) {
+    
+    if(is.null(t)) {
+      Delta = matrix(NaN, nrow = L, ncol = N)
+      
+      GammaT = Gamma[,,1]
+      for(k in 2:L) GammaT = GammaT %*% Gamma[,,k]
+
+      Delta[1,] = stationary(GammaT)
+      
+      for(t in 2:L){
+        Delta[t,] = Delta[t-1,] %*% Gamma[,,t-1]
+      }
+      colnames(Delta) = paste("state", 1:N)
+      return(Delta)
+    } else{
+      GammaT = Gamma[,,t]
+      if(t < L){
+        for(k in (t+1):L) GammaT = GammaT %*% Gamma[,,k]
+        for(k in 1:(t-1)) GammaT = GammaT %*% Gamma[,,k]
+      } else if(t == L){
+        for(k in 1:(L-1)) GammaT = GammaT %*% Gamma[,,k]
+      }
+      delta = stationary(GammaT)
+      return(delta)
+    }
   }
 }

@@ -4,13 +4,15 @@
 \alias{stationary_p}
 \title{Compute the periodically stationary distribution of a periodically inhomogeneous Markov chain}
 \usage{
-stationary_p(Gamma, t = NULL)
+stationary_p(Gamma, t = NULL, ad = FALSE)
 }
 \arguments{
 \item{Gamma}{Array of transition probability matrices of dimension c(N,N,L).}
 
 \item{t}{Integer index of the time point in the cycle, for which to calculate the stationary distribution
 If t is not provided, the function calculates all stationary distributions for each time point in the cycle.}
+
+\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
 }
 \value{
 Either the periodically stationary distribution at time t or all periodically stationary distributions.

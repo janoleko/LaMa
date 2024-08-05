@@ -10,6 +10,7 @@
 #'
 #' @return Transition probability matrix of dimension c(N,N)
 #' @export
+#' @import RTMB
 #'
 #' @examples
 #' # 2 states: 2 free off-diagonal elements
@@ -24,11 +25,11 @@ tpm = function(param, byrow = FALSE) {
   # for N > 1: N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25 + K), 0)
   
-  Gamma = diag(N)
+  Gamma = RTMB::diag(N)
   Gamma[!Gamma] = exp(param[1:(N*(N-1))])
   if(byrow == TRUE){
     Gamma = t(Gamma)
   }
-  Gamma = Gamma / rowSums(Gamma)
+  Gamma = Gamma / RTMB::rowSums(Gamma)
   Gamma
 }

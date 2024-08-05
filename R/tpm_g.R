@@ -14,6 +14,7 @@
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,n)
 #' @export
+#' @import RTMB
 #'
 #' @examples
 #' n = 1000

@@ -4,15 +4,13 @@
 \alias{stationary_p}
 \title{Compute the periodically stationary distribution of a periodically inhomogeneous Markov chain}
 \usage{
-stationary_p(Gamma, t = NULL, tol = .Machine$double.eps)
+stationary_p(Gamma, t = NULL)
 }
 \arguments{
 \item{Gamma}{Array of transition probability matrices of dimension c(N,N,L).}
 
 \item{t}{Integer index of the time point in the cycle, for which to calculate the stationary distribution
 If t is not provided, the function calculates all stationary distributions for each time point in the cycle.}
-
-\item{tol}{The tolerance for detecting linear dependencies in the columns of the thinned transition matrix. The default is .Machine$double.eps.}
 }
 \value{
 Either the periodically stationary distribution at time t or all periodically stationary distributions.

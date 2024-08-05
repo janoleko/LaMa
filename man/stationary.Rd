@@ -4,12 +4,10 @@
 \alias{stationary}
 \title{Compute the stationary distribution of a homogeneous Markov chain}
 \usage{
-stationary(Gamma, tol = .Machine$double.eps)
+stationary(Gamma)
 }
 \arguments{
 \item{Gamma}{Transition probability matrix of dimension c(N,N)}
-
-\item{tol}{The tolerance for detecting linear dependencies in the columns of Gamma. The default is .Machine$double.eps.}
 }
 \value{
 Stationary distribution of the Markov chain with the given transition probability matrix

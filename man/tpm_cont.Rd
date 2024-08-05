@@ -4,12 +4,14 @@
 \alias{tpm_cont}
 \title{Calculation of continuous time transition probabilities}
 \usage{
-tpm_cont(Q, timediff)
+tpm_cont(Q, timediff, ad = FALSE)
 }
 \arguments{
 \item{Q}{Infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)}
 
 \item{timediff}{Time differences between observations of length n-1 when based on n observations}
+
+\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
 }
 \value{
 An array of transition matrices of dimension c(N,N,n-1)

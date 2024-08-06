@@ -1,0 +1,187 @@
+---
+title: "LaMa and RTMB"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{LaMa_and_RTMB}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The rather new `R` package `RTMB` conveniently allows for automatic differentiation for non-standard statistical models written in plain `R` code, enabling the estimation very complicated models, potentially with complex random effect structures -- which is basically magic because you have access to analytic gradients without doing any calculations!
+
+Automatic differentiation is hugely important as it allows for much higher accuracy and enormeous speed increases in the estimation of rich statistical models with potentially many parameters.
+
+`LaMa` also provides automatic differentiation for most of its functions when the user is setting `ad = TRUE`, hence making the estimation of latent Markov models extremly convenient and fast, while making the process of model specification very smooth and less prone to errors (which at the current state tend to happen when not experienced with `RTMB`).
+
+Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We always start by loading both packages.
+
+```{r setup}
+library(LaMa)
+library(RTMB)
+```
+
+For the purpose of this vignette, we will analyze the `elephant` data set contained in the `LaMa` package:
+
+```{r data}
+head(elephant, 5)
+```
+
+The workflow with `RTMB` is basically always the same. We need to define the negative log-likelihood function, create an automatically differentiable objective function from it and fit the model by numerical minimization of the latter. We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains everything else.
+
+```{r parameters}
+par = list(logmu = log(c(0.3, 1)), 
+           logsigma = log(c(0.2, 0.7)),
+           logkappa = log(c(0.2, 0.7)),
+           eta = rep(-2, 2))
+dat = list(step = elephant$step, angle = elephant$angle, N = 2)
+```
+
+We see that `par` is a named list which is really useful for accessing the parameters later on and much more convenient than indexing. I use the `dat` list to package all the data and other hyperparameters that are not to be estimated, but this is just my choice out of convenience.
+
+We can now define the negative log-likelihood function.
+
+```{r mllk}
+mllk = function(par) {
+  getAll(par, dat) # makes everything contained available without $
+  
+  Gamma = tpm(eta) # computes transition probability matrix from unconstrained eta
+  delta = stationary(Gamma) # computes stationary distribution
+  
+  # exponentiating because all parameters strictly positive
+  mu = exp(logmu)
+  sigma = exp(logsigma)
+  kappa = exp(logkappa)
+  
+  REPORT(mu)
+  REPORT(sigma)
+  REPORT(kappa)
+  
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N) # only for non-NA obs.
+  ind = which(!is.na(step) & !is.na(angle))
+  for(j in 1:N){
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j]) * 
+      dvm(angle[ind],0,kappa[j])
+  }
+  -forward(delta, Gamma, allprobs, ad = TRUE) # simple forward algorithm
+}
+```
+
+There are a few points to note here:
+
+-   Most prominently, the negative log-likelihood is a function of the parameters to be estimated *only* while data and other parameters are not passed as an argument at this stage. This is something to get used to, but just the way `RTMB` works.
+-   The `getAll()` function is insanely useful and you should basically always use it in the first line, as it unpacks both the `par` and the `dat` list.
+-   `par` and `dat` should be named lists which is also super useful as you can just access the parameters by their names after unpacking them with `getAll()` -- the names `par` and `dat` of course being arbitrary.
+-   Parameter transformations are still necessary, i.e. all parameters in `par` should be unconstrained.
+-   Simple `LaMa` functions work for both automatic differentiation and standard optimization. For the more complicated functions like `forward()`, currently you need to specify `ad = TRUE` to get automatic differentiation. When you are not sure if you need it, check the documentation.
+-   You might wonder how on earth `RTMB` can calculate the gradient of standard distributions like the gamma or von Mises distribution. The answer is it doesn't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions. `dgamma2()` is just a convenience function as it reparametrizes the gamma distribution in terms of mean and standard deviation, which is often more intuitive.
+-   the `REPORT()` function offered by `RTMB` is also very useful as quantities reported will be available after optimization, while the report statement is ignored during optimization.
+
+We can now create the objective function and fit the model. This needs some explanation: At this point, `RTMB` takes the negative log-likelihood function and compiles its own version of it, including the gradient. This is what makes automatic differentiation so fast as evaluating the gradient takes similar computational resources as the original function. `MakeADFun` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will also have no result. We set `silent = TRUE` to suppress printing of the optimization process.
+
+The optimization routine `nlminb` is very robust and conveniently allows us to provide a gradient function.
+
+```{r modelfit}
+obj = MakeADFun(mllk, par, silent = TRUE) # creating the objective function
+
+opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
+```
+
+Very nicely, `obj` is automatically updated after the optimization. We can now look at the results.
+
+```{r objective2}
+obj$fn() # function value at estimated parameter
+obj$gr() # gradient at estimated parameter
+obj$par # estimated parameter
+```
+
+`obj$par` contains the unconstrained MLE which is not very useful to us. Conveniently, however, we don't have to do the backtransformation manually. We can just do
+
+```{r MLe}
+mod = obj$report() # runs the reporting from the negative log-likelihood once
+(delta = mod$delta)
+(Gamma = mod$Gamma)
+(mu = mod$mu)
+(sigma = mod$sigma)
+(kappa = mod$kappa)
+```
+
+Note that `delta`, `Gamma` and `allprobs` are always reported by default. This is done under the hood by the `forward()` function and very useful for e.g. state decoding, because `LaMa` functions take these as inputs.
+
+```{r decoding}
+mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
+
+plot(elephant$step[1:200], type = "h", xlab = "time", ylab = "step length", 
+     col = c("orange", "deepskyblue")[mod$states[1:200]], bty = "n")
+```
+
+As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood.
+
+Generalizing is also straightforward. For example, we can add time of day variation to the state process:
+
+```{r tod}
+Z = trigBasisExp(1:24, degree = 2) # building trigonometric basis desing matrix
+dat$tod = elephant$tod # adding time of day to dat
+par = list(logmu = log(c(0.3, 1)), 
+           logsigma = log(c(0.2, 0.7)),
+           logkappa = log(c(0.2, 0.7)),
+           betavec = c(rep(-2, 2), rep(0, 2*ncol(Z)))) 
+# replacing eta with regression parameters, initializing slopes at zero
+```
+
+```{r mllk2}
+mllk2 = function(par) {
+  getAll(par, dat) # makes everything contained available without $
+  
+  beta = matrix(betavec, nrow = N*(N-1)) # reshaping to N*(N-1) x p+1 matrix
+  Gamma = tpm_g(Z, beta, ad = TRUE)
+  delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
+  
+  # exponentiating because all parameters strictly positive
+  mu = exp(logmu)
+  sigma = exp(logsigma)
+  kappa = exp(logkappa)
+  
+  REPORT(mu)
+  REPORT(sigma)
+  REPORT(kappa)
+  
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N) # only for non-NA obs.
+  ind = which(!is.na(step) & !is.na(angle))
+  for(j in 1:N){
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j]) * 
+      dvm(angle[ind],0,kappa[j])
+  }
+  l = forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # simple forward algorithm
+  
+  REPORT(Gamma) # I am overwriting the default report to only get the 24 unique tpms
+  
+  -l
+}
+```
+
+Model fit is then essentially the same:
+
+```{r modelfit2}
+obj2 = MakeADFun(mllk2, par, silent = TRUE) # creating the objective function
+
+opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimization
+```
+
+And we can look at the reported results:
+
+```{r MLE2}
+mod2 = obj2$report()
+Delta = stationary_p(mod2$Gamma)
+
+plot(Delta[,2], type = "b", lwd = 2, xlab = "time of day", ylab = "Pr(active)", 
+     col = "deepskyblue", bty = "n")
+```

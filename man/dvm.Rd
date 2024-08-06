@@ -16,10 +16,10 @@ dvm(x, mu, kappa, log = FALSE)
 \item{log}{logical; if TRUE, densities are returned on the log scale.}
 }
 \value{
-Returns the von Mises density function evaluated at x.
+Returns the density function of the von Mises density distribution evaluated at x.
 }
 \description{
-Returns the von Mises density function evaluated at a particular value. 
+Returns the density function of the van Mises distribution evaluated at a particular value.\cr\cr
 This implementation allows for automatic differentiation with RTMB.
 }
 \examples{

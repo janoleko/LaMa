@@ -121,13 +121,13 @@ mllk = function(theta.star, timediff, x, N=2){
   diag(Q) = -rowSums(Q)
   delta = solve(t(Q+1), rep(1,N), tol = 1e-20) # stationary distribution of the
   # continuous-time Markov chain
-  Qube = LaMa::tpm_cont(Q, timediff) # this computes exp(Q*timediff)
+  Qube = tpm_cont(Q, timediff) # this computes exp(Q*timediff)
   allprobs = matrix(1, nrow = length(x), ncol = N)
   ind = which(!is.na(x))
   for(j in 1:N){
     allprobs[ind,j] = dnorm(x[ind], mu[j], sigma[j])
   }
-  -LaMa::forward_g(delta, Qube, allprobs)
+  -forward_g(delta, Qube, allprobs)
 }
 ```
 

@@ -98,10 +98,10 @@ mllk = function(theta.star, timediff, N=2){
   Q[!Q] = exp(theta.star[N+1:(N*(N-1))])
   diag(Q) = 0
   diag(Q) = -rowSums(Q)
-  Qube = LaMa::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
+  Qube = tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
   allprobs = matrix(lambda, nrow = length(timediff+1), ncol = N, byrow = T)
   allprobs[1,] = 1
-  delta = solve(t(Q+1), rep(1,N), tol = 1e-20)
+  delta = solve(t(Q+1), rep(1,N))
   -LaMa::forward_g(delta, Qube, allprobs)
 }
 ```
@@ -213,14 +213,14 @@ mllk = function(theta.star, y, timediff, N){
   Q[!Q] = exp(theta.star[3*N+1:(N*(N-1))])
   diag(Q) = 0
   diag(Q) = -rowSums(Q)
-  delta = solve(t(Q+1), rep(1,N), tol = 1e-20)
-  Qube = LaMa::tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
+  delta = solve(t(Q+1), rep(1,N))
+  Qube = tpm_cont(Q-diag(lambda), timediff) # exp((Q-Lambda)*deltat)
   allprobs = matrix(1, length(y), N)
   for(j in 1:N){
     allprobs[,j] = dnorm(y, mu[j], sigma[j])
   }
   allprobs[-1,] = allprobs[-1,] * matrix(lambda, length(y)-1, N, byrow = T)
-  -LaMa::forward_g(delta, Qube, allprobs)
+  -forward_g(delta, Qube, allprobs)
 }
 ```
 

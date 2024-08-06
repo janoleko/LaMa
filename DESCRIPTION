@@ -25,7 +25,8 @@ Imports:
     Rcpp,
     mgcv,
     RTMB,
-    Matrix
+    Matrix,
+    stats
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
@@ -38,3 +39,4 @@ Suggests:
     PHSMM
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+LazyData: true

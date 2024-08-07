@@ -29,6 +29,7 @@
 #' lambda = list(c(1,1), 2)
 #' penalty(re, S, lambda)
 penalty = function(re_coef, S, lambda) {
+  "[<-" <- ADoverload("[<-") # currently necessary
   
   # convert paramter matrix to list of length 1 if necessary  
   if(!is.list(re_coef)) {

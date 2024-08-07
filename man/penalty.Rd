@@ -7,11 +7,14 @@
 penalty(re_coef, S, lambda)
 }
 \arguments{
-\item{re_coef}{coefficient vector, matrix or list of coefficient vectors/ matrices.
+\item{re_coef}{coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
 Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in S.
-When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.}
+When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
+Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
+i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
+If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}.}
 
-\item{S}{penalty matrix or list of penalty matrices matching the structure of re_coef and also the dimension of the individuals smooths/ random effects.}
+\item{S}{penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.}
 
 \item{lambda}{penalty strength parameter or list of penalty strength parameters matching the structure of re_coef.}
 }

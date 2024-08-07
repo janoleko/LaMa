@@ -234,5 +234,36 @@ pql = function(pnll, par, dat, random,
     mod$allmods = allmods
   }
   
+  ## calculating effective degrees of freedom for final model
+  mod$edoF = list()
+  for(i in 1:n_re){
+    edoF_i = numeric(nrow(re_inds[[i]]))
+    for(j in 1:nrow(re_inds[[i]])){
+      idx = re_inds[[i]][j,]
+      edoF_i[j] = nrow(S[[i]]) - sum(diag(Lambdas[[length(Lambdas)]][[i]][j] * J_inv[idx, idx] %*% S[[i]]))
+    }
+    mod$edoF[[i]] = edoF_i
+  }
+  
+  ## calculate effective numer of parameters
+  n_fixpar = length(unlist(par[!(names(par) %in% random)]))
+  mod$n_fixpar = n_fixpar
+  edoF_re = sum(unlist(mod$edoF))
+  edoF = n_fixpar + edoF_re
+  
+  ## calculating unpenalized log-likelihood at final parameter values
+  zerolambda = list()
+  for(i in 1:n_re) zerolambda[[i]] = numeric(nrow(re_inds[[i]]))
+  dat$lambda = zerolambda
+  
+  obj_final = MakeADFun(pnll, par)
+  llk = -obj_final$fn()
+  
+  ## calculating AIC and BIC
+  mod$AIC = -2 * llk + 2 * edoF
+  mod$BIC = -2 * llk + log(nrow(mod$allprobs)) * edoF
+  
+  mod = mod[names(mod) != "Pen"] # removing penalty list from model object
+  
   return(mod)
 }

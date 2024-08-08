@@ -9,6 +9,7 @@ pql(
   par,
   dat,
   random,
+  getJointPrecision = FALSE,
   alpha_sm = 0.98,
   maxiter = 50,
   tol = 0.01,
@@ -24,6 +25,8 @@ pql(
 \item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength that needs to be called \code{lambda} and structured as detailed in the documentation of \code{penalty}.}
 
 \item{random}{vector of names of the random effects in \code{par} that are penalized.}
+
+\item{getJointPrecision}{logical, if TRUE, then the joint precision matrix/ Hessian that is computed takes into account the uncertainty in the penalty strength parameters. Defaults to FALSE because it is computationally expensive and results are similar to the conditional Hessian that is reported.}
 
 \item{alpha_sm}{optional hyperparamater for exponential smoothing of the penalty strengths. For smaller values smoother convergence is to be expected but the algorithm may need more iterations.}
 

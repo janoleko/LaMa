@@ -83,6 +83,8 @@ penalty = function(re_coef, S, lambda) {
   }
   
   RTMB::REPORT(Pen) # reporting the penalty list for pql update
+  # RTMB::REPORT(pen)
+  # RTMB::REPORT(re_coef)
   
   0.5 * pen
 }
@@ -113,6 +115,7 @@ penalty = function(re_coef, S, lambda) {
 #' @examples
 #' # currently no example
 pql = function(pnll, par, dat, random,
+               getJointPrecision = FALSE,
                alpha_sm = 0.98, maxiter = 50, tol = 1e-2, 
                silent = TRUE, saveall = FALSE) {
   
@@ -156,10 +159,12 @@ pql = function(pnll, par, dat, random,
     m[i] = nrow(S[[i]]) - Matrix::rankMatrix(S[[i]])
   } 
   
-  ## updating algorithm
-  Start = Sys.time()
+  # saving parameter names for updating
+  parnames = names(par)
   
-  # loop over outer iterations until maxiter or convergence
+  ## updating algorithm
+  
+  # loop over outer iterations until convergence or maxiter
   for(k in 1:maxiter){
     cat("\nouter", k)
     cat("\n inner fit...")
@@ -170,7 +175,8 @@ pql = function(pnll, par, dat, random,
     # fitting the model conditional on lambda
     opt = stats::nlminb(start=obj$par, objective=obj$fn, gradient=obj$gr)
     
-    mod = obj$report() # reporting to extract random effects
+    # reporting to extract penalties
+    mod = obj$report() 
     
     J = obj$he() # saving current Hessian
     J_inv = MASS::ginv(J) # computing Fisher information
@@ -195,7 +201,7 @@ pql = function(pnll, par, dat, random,
         # calculating new lambda based on updating rule
         lambda_new = as.numeric((edoF - m[i]) / mod$Pen[[i]][j]) # m is correction if S_i does not have full rank
         
-        # potentially smooting new lambda
+        # potentially smoothing new lambda
         lambdas_k[[i]][j] = alpha_sm * lambda_new + (1-alpha_sm) * Lambdas[[k]][[i]][j]
       }
       
@@ -212,11 +218,14 @@ pql = function(pnll, par, dat, random,
     }
     
     # sdreport to get estimate in list form for good initialization of RE in next iteration
-    sdr = sdreport(obj) 
+    sdr = sdreport(obj)
     parlist = as.list(sdr, "Estimate")
     
-    for(i in 1:n_re) {
-      par[[random[i]]] = parlist[[random[i]]]
+    # for(i in 1:n_re) {
+    #   par[[random[i]]] = parlist[[random[i]]]
+    # }
+    for(i in 1:length(parnames)) {
+      par[[parnames[i]]] = parlist[[parnames[i]]]
     }
     
     cat("\n lambda:", round(unlist(Lambdas[[k+1]]), 4))
@@ -259,12 +268,94 @@ pql = function(pnll, par, dat, random,
   for(i in 1:n_re) zerolambda[[i]] = numeric(nrow(re_inds[[i]]))
   dat$lambda = zerolambda
   
-  obj_final = MakeADFun(pnll, par)
-  llk = -obj_final$fn()
+  llk = - pnll(par)
   
-  ## calculating AIC and BIC
+  ## calculating conditional AIC and BIC
   mod$AIC = -2 * llk + 2 * edoF
   mod$BIC = -2 * llk + log(nrow(mod$allprobs)) * edoF
+  
+  ## calculating marginal AIC and BIC
+  
+  ## Hessians
+  mod$Hessian_conditional = obj$he()
+  
+  ## joint precision matrix
+  if(getJointPrecision){
+    cat("Computing joint precision matrix, this can take some time...")
+    
+    loglambdavec = log(unlist(mod$lambda))
+    par$loglambdavec = loglambdavec
+    
+    # finding the number of similar random effects for each random effect
+    n_re_i = rep(NA, n_re)
+    for(i in 1:n_re){
+      n_re_i[i] = nrow(re_inds[[i]])
+    }
+    indvec = rep(1:n_re, times = n_re_i)
+    
+    if(is.matrix(S)) S = list(S)
+    
+    ## defining joint negative log-likelihood
+    pnll_joint = function(par) {
+      # getAll(par, dat)
+      
+      environment(pnll) = environment()
+      
+      ## structuring lambda again as a list
+      if(!is.list(dat$lambda)) {
+        dat$lambda = exp(loglambdavec)
+      } else{
+        lambda = list()
+        
+        # finding the number of similar random effects for each random effect
+        lambda[[1]] = exp(par$loglambdavec[1:n_re_i[1]])
+        if(n_re > 1){
+          for(i in 2:n_re){
+            lambda[[i]] = exp(par$loglambdavec[sum(n_re_i[1:(i-1)]) + 1: n_re_i[i]])
+          }
+        }
+        dat$lambda = lambda
+      }
+      
+      l_p = -pnll(par[names(par) != "loglambdavec"])
+      
+      ## computing additive constants
+      const = 0
+      logdetS = numeric(length(S))
+      for(i in 1:length(S)){
+        logdetS[i] = determinant(S[[i]])$modulus
+      }
+      # for(i in 1:length(par$loglambdavec)){
+      #   k = nrow(S[[indvec[i]]])
+      #   const = const - k * log(2*pi) + k * loglambdavec[i] + logdetS[indvec[i]]
+      # }
+      
+      for(i in 1:n_re){
+        for(j in 1:nrow(re_inds[[i]])){
+          k = length(re_inds[[i]][j,])
+          const = const -k * log(2*pi) + k * log(lambda[[i]][j]) + logdetS[i]
+        }
+      }
+      
+      l_joint = l_p + 0.5 * const
+      -l_joint
+    }
+    
+    obj_joint = MakeADFun(pnll_joint, par, 
+                          random = names(par)[names(par) != "loglambdavec"],
+                          silent = TRUE)
+    
+    opt_joint = nlminb(obj_joint$par, obj_joint$fn, obj_joint$gr)
+    
+    sdr = sdreport(obj_joint, getJointPrecision = TRUE)
+    
+    mod$obj_joint = obj_joint
+    
+    H = sdr$jointPrecision
+    nonlambdaind = which(rownames(H) != "loglambdavec")
+    
+    mod$Hessian_joint = H[nonlambdaind, nonlambdaind]
+  }
   
   mod = mod[names(mod) != "Pen"] # removing penalty list from model object
   

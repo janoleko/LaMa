@@ -187,10 +187,13 @@ pql = function(pnll, par, dat, random,
     ## updating all lambdas
     lambdas_k = list() # temporary lambda list
     
+    gradient = list()
+    
     # looping over random effects (matrices)
     for(i in 1:n_re){
       
       lambdas_k[[i]] = numeric(nrow(re_inds[[i]])) # initializing lambda vector for i-th random effect
+      gradient[[i]] = numeric(nrow(re_inds[[i]]))
       
       # looping over similar random effects
       for(j in 1:nrow(re_inds[[i]])){
@@ -204,6 +207,8 @@ pql = function(pnll, par, dat, random,
         
         # potentially smoothing new lambda
         lambdas_k[[i]][j] = alpha_sm * lambda_new + (1-alpha_sm) * Lambdas[[k]][[i]][j]
+        
+        gradient[[i]][j] = - 0.5 * mod$Pen[[i]][j] + 1 / (2 * lambdas_k[[i]][j]) * edoF
       }
       
       # minimum of zero for penalty strengths
@@ -230,6 +235,8 @@ pql = function(pnll, par, dat, random,
     }
     
     cat("\n lambda:", round(unlist(Lambdas[[k+1]]), 4))
+    
+    car("n gradient:", round(unlist(gradient), 4))
     
     # convergence check
     if(max(abs(unlist(Lambdas[[k+1]]) - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol){

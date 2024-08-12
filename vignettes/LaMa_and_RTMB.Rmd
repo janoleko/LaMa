@@ -10,7 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  out.width = "85%",
+  fig.align = "center"
 )
 ```
 
@@ -50,25 +52,21 @@ We can now define the negative log-likelihood function.
 ```{r mllk}
 mllk = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  
   Gamma = tpm(eta) # computes transition probability matrix from unconstrained eta
   delta = stationary(Gamma) # computes stationary distribution
-  
   # exponentiating because all parameters strictly positive
   mu = exp(logmu)
   sigma = exp(logsigma)
   kappa = exp(logkappa)
-  
+  # reporting statements for later use
   REPORT(mu)
   REPORT(sigma)
   REPORT(kappa)
-  
   # calculating all state-dependent densities
-  allprobs = matrix(1, nrow = length(step), ncol = N) # only for non-NA obs.
-  ind = which(!is.na(step) & !is.na(angle))
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
   for(j in 1:N){
-    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j]) * 
-      dvm(angle[ind],0,kappa[j])
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
   -forward(delta, Gamma, allprobs, ad = TRUE) # simple forward algorithm
 }
@@ -90,7 +88,6 @@ The optimization routine `nlminb` is very robust and conveniently allows us to p
 
 ```{r modelfit}
 obj = MakeADFun(mllk, par, silent = TRUE) # creating the objective function
-
 opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
 ```
 
@@ -99,10 +96,8 @@ Very nicely, `obj` is automatically updated after the optimization. We can now l
 ```{r objective2}
 obj$fn() # function value at estimated parameter
 obj$gr() # gradient at estimated parameter
-obj$par # estimated parameter
 ```
-
-`obj$par` contains the unconstrained MLE which is not very useful to us. Conveniently, however, we don't have to do the backtransformation manually. We can just do
+To get our estimated parameters on their natural scale, very conveniently we don't have to do the backtransformation manually. We can just do
 
 ```{r MLe}
 mod = obj$report() # runs the reporting from the negative log-likelihood once
@@ -115,73 +110,165 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 
 Note that `delta`, `Gamma` and `allprobs` are always reported by default. This is done under the hood by the `forward()` function and very useful for e.g. state decoding, because `LaMa` functions take these as inputs.
 
-```{r decoding}
+```{r decoding, fig.width = 7, fig.height = 4}
 mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
 
+# defining color vector
+color = c("orange", "deepskyblue")
+
 plot(elephant$step[1:200], type = "h", xlab = "time", ylab = "step length", 
-     col = c("orange", "deepskyblue")[mod$states[1:200]], bty = "n")
+     col = color[mod$states[1:200]], bty = "n")
 ```
 
-As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood.
+As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having done this, we can use the parameters to plot the estimated state-dependent distributions.
 
-Generalizing is also straightforward. For example, we can add time of day variation to the state process:
+```{r statedepdist, fig.width = 8, fig.height = 4}
+oldpar = par(mfrow = c(1,2))
 
+hist(elephant$step, prob = TRUE, breaks = 40, 
+     bor = "white", main = "", xlab = "step length")
+for(j in 1:2) curve(delta[j] * dgamma2(x, mu[j], sigma[j]), 
+                    lwd = 2, add = T, col = color[j])
+curve(delta[1]*dgamma2(x, mu[1], sigma[1]) + delta[2]*dgamma2(x, mu[2], sigma[2]), 
+      lwd = 2, lty = 2, add = T)
+
+hist(elephant$angle, prob = TRUE, breaks = 40, 
+     bor = "white", main = "", xlab = "turning angle")
+for(j in 1:2) curve(delta[j] * dvm(x, 0, kappa[j]), 
+                    lwd = 2, add = T, col = color[j])
+curve(delta[1]*dvm(x, 0, kappa[1]) + delta[2]*dvm(x, 0, kappa[2]), 
+      lwd = 2, lty = 2, add = T)
+
+par(oldpar)
+```
+
+Generalizing is also straightforward. For example, we can add time of day variation to the state process. For this we compute the trigonometric basis design matrix `Z` and add the time of day to the `dat` list. 
 ```{r tod}
 Z = trigBasisExp(1:24, degree = 2) # building trigonometric basis desing matrix
 dat$tod = elephant$tod # adding time of day to dat
+```
+
+We also need to change the parameter list `par` to include the regression parameters for the time of day. The regression parameters for the state process will typically have the form of a $N (N-1) \times p+1$ matrix, where $N$ is the number of states and $p$ is the number of regressors -- this format is also expected by `tpm_g()` which computes the array of transition matrices based on the design and parameter matrix. Very conveniently, in our parameter list we can use matrices for some parameters, making reshaping of vectors to matrices inside the likelihood function unnessesary.
+
+```{r todpar}
 par = list(logmu = log(c(0.3, 1)), 
            logsigma = log(c(0.2, 0.7)),
            logkappa = log(c(0.2, 0.7)),
-           betavec = c(rep(-2, 2), rep(0, 2*ncol(Z)))) 
+           beta = matrix(c(rep(-2, 2), 
+                           rep(0, 2*ncol(Z))), nrow = 2)) # 2 times 4+1 matrix
 # replacing eta with regression parameters, initializing slopes at zero
 ```
+
+We can now define a more general likelihood function with the main difference being the use of `tpm_g()` instead of `tpm()` and the inclusion of the time of day in the transition matrix calculation. This leads to us using `stationary_p()` instead of `stationary()` to calculate the initial distribuion and `forward_g()` instead of `forward()` to calculate the log-likelihood.
 
 ```{r mllk2}
 mllk2 = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  
-  beta = matrix(betavec, nrow = N*(N-1)) # reshaping to N*(N-1) x p+1 matrix
   Gamma = tpm_g(Z, beta, ad = TRUE)
   delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
-  
   # exponentiating because all parameters strictly positive
   mu = exp(logmu)
   sigma = exp(logsigma)
   kappa = exp(logkappa)
-  
+  # report statements for later use
   REPORT(mu)
   REPORT(sigma)
   REPORT(kappa)
-  
   # calculating all state-dependent densities
-  allprobs = matrix(1, nrow = length(step), ncol = N) # only for non-NA obs.
-  ind = which(!is.na(step) & !is.na(angle))
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
   for(j in 1:N){
-    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j]) * 
-      dvm(angle[ind],0,kappa[j])
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  l = forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # simple forward algorithm
-  
-  REPORT(Gamma) # I am overwriting the default report to only get the 24 unique tpms
-  
-  -l
+  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # simple forward algorithm
 }
 ```
 
-Model fit is then essentially the same:
+Having done this, the model fit is then essentially the same:
 
 ```{r modelfit2}
 obj2 = MakeADFun(mllk2, par, silent = TRUE) # creating the objective function
-
 opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimization
 ```
 
 And we can look at the reported results:
 
-```{r MLE2}
+```{r MLE2, fig.width = 8, fig.height = 5}
 mod2 = obj2$report()
-Delta = stationary_p(mod2$Gamma)
+mod2$Gamma = tpm_g(Z, mod2$beta) # calculating 24 tpms
+Delta = stationary_p(mod2$Gamma) # calculating all periodically stationary distributions
 
 plot(Delta[,2], type = "b", lwd = 2, xlab = "time of day", ylab = "Pr(active)", 
-     col = "deepskyblue", bty = "n")
+     col = "deepskyblue", bty = "n", xaxt = "n")
+axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
+```
+
+We can go one step further and model the transition probabilities as smooth functions of the time of day using cyclic P-splines. `LaMa` provides the function `make_matrices()` which creates design matrices and penalty matrices based on the R package `mgcv` when provided with a formula and data.
+
+```{r tod2}
+knots = seq(0, 24, length = 11)
+modmat = make_matrices(~ s(tod, bs = "cp", k = 10), 
+                       data = data.frame(tod = 1:24),
+                       knots = list(tod = knots))
+Z = modmat$Z # spline design matrix
+S = modmat$S # penalty matrix
+```
+
+To use this, we have to change our likelihood function slightly by adding the penalization. For this we use the `penalty()` function contained in `LaMa` that computes the sum of quadratic form penalties based on the penalty matrices, the parameters to be estimated and the penalty strength parameters.
+
+```{r mllk3}
+pnll = function(par) {
+  getAll(par, dat) # makes everything contained available without $
+  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
+  delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
+  # exponentiating because all parameters strictly positive
+  mu = exp(logmu)
+  sigma = exp(logsigma)
+  kappa = exp(logkappa)
+  # report statements for later use
+  REPORT(mu)
+  REPORT(sigma)
+  REPORT(kappa)
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
+  for(j in 1:N){
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
+  }
+  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+    penalty(betaspline, S, lambda)
+}
+```
+
+```{r todpar2}
+par = list(logmu = log(c(0.3, 1)), 
+           logsigma = log(c(0.2, 0.7)),
+           logkappa = log(c(0.2, 0.7)),
+           beta0 = c(-2,2),
+           betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2))
+
+dat$lambda = rep(1000, 2)
+dat$S = S
+```
+
+```{r pql, echo = FALSE, message=F}
+mod3 = pql(pnll, par, dat, random = "betaspline")
+```
+
+```{r results pql, fig.width = 8, fig.height = 5}
+mod3$Gamma = tpm_g(Z, mod3$beta) # calculating 24 tpms
+
+tod_seq = seq(0,24, length=200)
+Z_pred = pred_matrix(modmat, data.frame(tod = tod_seq))
+
+Gamma_plot = tpm_g(Z_pred, mod3$beta)
+plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
+     xlab = "time of day", ylab = "transition probability", bty = "n")
+lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
+
+Delta = stationary_p(mod3$Gamma) # calculating all periodically stationary distributions
+
+plot(Delta[,2], type = "b", lwd = 2, xlab = "time of day", ylab = "Pr(active)", 
+     col = "deepskyblue", bty = "n", xaxt = "n")
+axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 ```

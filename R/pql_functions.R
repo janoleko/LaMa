@@ -192,7 +192,7 @@ pql = function(pnll, par, dat, random,
     for(i in 1:n_re){
       
       lambdas_k[[i]] = numeric(nrow(re_inds[[i]])) # initializing lambda vector for i-th random effect
-      gradient[[i]] = numeric(nrow(re_inds[[i]]))
+      # gradient[[i]] = numeric(nrow(re_inds[[i]]))
       
       # looping over similar random effects
       for(j in 1:nrow(re_inds[[i]])){

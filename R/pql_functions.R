@@ -186,7 +186,7 @@ pql = function(pnll, par, dat, random,
     
     ## updating all lambdas
     lambdas_k = list() # temporary lambda list
-    gradient = list()
+    # gradient = list()
     
     # looping over random effects (matrices)
     for(i in 1:n_re){
@@ -207,7 +207,7 @@ pql = function(pnll, par, dat, random,
         # potentially smoothing new lambda
         lambdas_k[[i]][j] = alpha_sm * lambda_new + (1-alpha_sm) * Lambdas[[k]][[i]][j]
         
-        gradient[[i]][j] = - 0.5 * mod$Pen[[i]][j] + 1 / (2 * lambdas_k[[i]][j]) * edoF
+        # gradient[[i]][j] = - 0.5 * mod$Pen[[i]][j] + 1 / (2 * lambdas_k[[i]][j]) * edoF
       }
       
       # minimum of zero for penalty strengths
@@ -223,18 +223,11 @@ pql = function(pnll, par, dat, random,
     }
     
     # sdreport to get estimate in list form for good initialization of RE in next iteration
-    sdr = sdreport(obj)
-    parlist = as.list(sdr, "Estimate")
-    
-    # for(i in 1:n_re) {
-    #   par[[random[i]]] = parlist[[random[i]]]
-    # }
-    for(i in 1:length(parnames)) {
-      par[[parnames[i]]] = parlist[[parnames[i]]]
-    }
+    sdr = sdreport(obj, ignore.parm.uncertainty = TRUE)
+    par = as.list(sdr, "Estimate")
     
     cat("\n lambda:", round(unlist(Lambdas[[k+1]]), 4))
-    cat("\n gradient:", round(unlist(gradient), 4))
+    # cat("\n gradient:", round(unlist(gradient), 4))
     
     # convergence check
     if(max(abs(unlist(Lambdas[[k+1]]) - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol){

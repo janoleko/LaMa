@@ -186,7 +186,6 @@ pql = function(pnll, par, dat, random,
     
     ## updating all lambdas
     lambdas_k = list() # temporary lambda list
-    
     gradient = list()
     
     # looping over random effects (matrices)
@@ -235,8 +234,7 @@ pql = function(pnll, par, dat, random,
     }
     
     cat("\n lambda:", round(unlist(Lambdas[[k+1]]), 4))
-    
-    car("n gradient:", round(unlist(gradient), 4))
+    cat("\n gradient:", round(unlist(gradient), 4))
     
     # convergence check
     if(max(abs(unlist(Lambdas[[k+1]]) - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol){

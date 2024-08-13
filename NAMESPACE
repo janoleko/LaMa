@@ -2,6 +2,7 @@
 
 export(calc_trackInd)
 export(dgamma2)
+export(dgmrf2)
 export(dvm)
 export(forward)
 export(forward_g)

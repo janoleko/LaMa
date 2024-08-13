@@ -78,3 +78,60 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
   scale = sigma^2 / mu
   stats::rgamma(n = n, shape = shape, scale = scale)
 }
+
+
+#' Reparametrized multivariate Gaussian distribution
+#'
+#' Density function of a multivariate Gaussian distribution reparametrized in terms of its precision matrix (inverse variance).
+#' This is particularly useful for marginal ML with penalized splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is the penalty matrix.
+#' As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the log determinant of \eqn{S} and only scale the quadratic form by \eqn{\lambda}
+#' when multiple spline parameters/ random effects with different \eqn{\lambda}'s but the same penalty matrix \eqn{S} are evaluated.
+#'
+#' This implementation allows for automatic differentiation with RTMB.
+#'
+#' @param x Density evaluation point. Either a vector or a matrix.
+#' @param mu Mean parameter. Either scalar or vector.
+#' @param S Unscaled precision matrix.
+#' @param lambda Precision scaling parameter. Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
+#' This is benefitial from an efficiency perspective because the log determinant of \code{S} is only computed once.
+#' @param log logical; if TRUE, densities are returned on the log scale.
+#'
+#' @return Vector of densities
+#' @export
+#' @import RTMB
+#'
+#' @examples
+#' x = matrix(runif(30), nrow = 3)
+#'
+#' # iid random effects
+#' S = diag(10)
+#' sigma = c(1, 2, 3) # random effect standard deviations
+#' lambda = 1 / sigma^2
+#' dgmrf2(x, 0, S, lambda)
+#'
+#' # P-splines
+#' L = diff(diag(10), diff = 2) # second-order difference matrix
+#' S = t(L) %*% L
+#' lambda = c(1,2,3)
+#' dgmrf2(x, 0, S, lambda, log = TRUE)
+dgmrf2 = function(x, mu = 0, S, lambda, log = FALSE) {
+  logdetS = as.numeric(determinant(S, logarithm = TRUE)$modulus)
+  k = nrow(S)
+  
+  x_centered = x - mu
+  
+  if(is.matrix(x_centered)){
+    y = S %*% t(x_centered)
+    quadform = lambda * rowSums(x_centered * t(y))
+  } else{
+    quadform = lambda * crossprod(x_centered, S %*% x_centered)
+  }
+  
+  logdens = as.numeric(0.5 * (-k * log(2*pi) + k * log(lambda) + logdetS - quadform))
+  
+  if(log){
+    return(logdens)
+  } else{
+    return(exp(logdens))
+  }
+}

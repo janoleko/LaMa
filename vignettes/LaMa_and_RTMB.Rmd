@@ -302,8 +302,7 @@ Allowing for a more flexible smooth function shows that the time of day effect i
 
 Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points. This method is much more general, allowing for very flexible random effects, but estimation will be slower. 
 We have to alter our likelihood function slightly, because the Laplace method, we need the joint likelihood of the data and the random effect, which in this case has a multivariate normal distribuiton.
-Most conveniently this is done by using the `dgmrf()` function included in `RTMB` which provides the density function of the multivariate normal distribution reparametrized in terms of the precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$.
-`dgmrf()` expects a sparse precision matrix, hence he have to make `S` of class `sparseMatrix`.
+Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`.
 We also have to include the log of our penalty strength as a parameter now.
 
 ```{r todpar3}
@@ -314,7 +313,7 @@ par = list(logmu = log(c(0.3, 1)),
            betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2),
            loglambda = rep(log(1000), 2)) # include as parameter
 
-dat$S = as(S[[1]], "sparseMatrix") # make sparse
+dat$S = S[[1]] # make sparse
 ```
 
 ```{r mllk4}
@@ -336,12 +335,9 @@ pnll = function(par) {
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  l = forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE)
   
-  lambda = exp(loglambda)
-  l = l + dgmrf(betaspline[1,], 0, S, scale = 1 / sqrt(lambda[1]), log = TRUE) +
-    dgmrf(betaspline[2,], 0, S, scale = 1 / sqrt(lambda[2]), log = TRUE)
-  -l
+  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) -
+    sum(dgmrf2(betaspline, 0, S, exp(loglambda), log = TRUE)) 
 }
 ```
 

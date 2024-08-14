@@ -1,6 +1,7 @@
 ---
 title: "LaMa and RTMB"
 output: rmarkdown::html_vignette
+# output: pdf_document
 vignette: >
   %\VignetteIndexEntry{LaMa_and_RTMB}
   %\VignetteEngine{knitr::rmarkdown}

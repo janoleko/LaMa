@@ -77,7 +77,9 @@ forward = function(delta, Gamma, allprobs,
     }
   } else if(ad) {
     
-    "[<-" <- RTMB::ADoverload("[<-")
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
     
     if(report) {
       RTMB::REPORT(delta)

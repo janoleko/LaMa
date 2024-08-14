@@ -48,6 +48,10 @@ stationary_p = function(Gamma, t = NULL, ad = FALSE){
     }
   } else if(ad) {
     
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
+    
     if(is.null(t)) {
       Delta = matrix(NaN, nrow = L, ncol = N)
       

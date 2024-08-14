@@ -24,7 +24,9 @@
 #' Gamma2 = tpm(param2)
 tpm = function(param, byrow = FALSE) {
   
-  "[<-" <- ADoverload("[<-") # currently necessary
+  "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+  "c" <- ADoverload("c")
+  "diag<-" <- ADoverload("diag<-")
   
   K = length(param)
   # for N > 1: N*(N-1) is bijective with solution

@@ -43,7 +43,9 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE){
     Gamma = tpm_g_cpp(Z, beta, N, byrow) # C++ version
     
   } else if(ad) {
-    "[<-" <- ADoverload("[<-") # currently necessary
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
     
     if(report) {
       RTMB::REPORT(beta) # reporting coefficient matrix

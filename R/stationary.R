@@ -19,6 +19,10 @@
 #' Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 #' delta = stationary(Gamma)
 stationary = function(Gamma){
+  "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+  "c" <- ADoverload("c")
+  "diag<-" <- ADoverload("diag<-")
+  
   N = dim(Gamma)[1]
   delta = RTMB::solve(t(diag(N)-Gamma+1), rep(1,N))
   names(delta) = paste("state", 1:N)

@@ -9,34 +9,31 @@ pql(
   par,
   dat,
   random,
-  getJointPrecision = FALSE,
-  alpha_sm = 0.98,
+  alpha = 0,
   maxiter = 50,
-  tol = 0.01,
-  silent = TRUE,
+  tol = 0.001,
+  silent = 1,
   saveall = FALSE
 )
 }
 \arguments{
-\item{pnll}{penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.}
+\item{pnll}{Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.}
 
 \item{par}{Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.}
 
-\item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength that needs to be called \code{lambda} and structured as detailed in the documentation of \code{penalty}.}
+\item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. Currently needs to be called \code{dat}. The initial penalty strength vector needs to be called \code{lambda} and has to be of length corresponding to the total number of random effects.}
 
-\item{random}{vector of names of the random effects in \code{par} that are penalized.}
+\item{random}{Vector of names of the random effects in \code{par} that are penalized.}
 
-\item{getJointPrecision}{logical, if TRUE, then the joint precision matrix/ Hessian that is computed takes into account the uncertainty in the penalty strength parameters. Defaults to FALSE because it is computationally expensive and results are similar to the conditional Hessian that is reported.}
+\item{alpha}{Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.}
 
-\item{alpha_sm}{optional hyperparamater for exponential smoothing of the penalty strengths. For smaller values smoother convergence is to be expected but the algorithm may need more iterations.}
+\item{maxiter}{Maximum number of iterations.}
 
-\item{maxiter}{maximum number of iterations.}
+\item{tol}{Convergence tolerance for the penalty strength parameters.}
 
-\item{tol}{convergence tolerance for the penalty strength parameters.}
+\item{silent}{Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.}
 
-\item{silent}{logical, if TRUE, then the inner optimization detailes are not printed.}
-
-\item{saveall}{logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.}
+\item{saveall}{Logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.}
 }
 \value{
 Returns a model list influenced by the users report statements in \code{pnll}

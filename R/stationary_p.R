@@ -69,7 +69,9 @@ stationary_p = function(Gamma, t = NULL, ad = FALSE){
       GammaT = Gamma[,,t]
       if(t < L){
         for(k in (t+1):L) GammaT = GammaT %*% Gamma[,,k]
-        for(k in 1:(t-1)) GammaT = GammaT %*% Gamma[,,k]
+        if(t > 1){
+          for(k in 1:(t-1)) GammaT = GammaT %*% Gamma[,,k]
+        }
       } else if(t == L){
         for(k in 1:(L-1)) GammaT = GammaT %*% Gamma[,,k]
       }

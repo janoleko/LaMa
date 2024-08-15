@@ -215,8 +215,8 @@ pql = function(pnll, # penalized negative log-likelihood function
   for(k in 1:maxiter){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
-    opt = optim(newpar, obj$fn, newgrad, 
-                method = "BFGS", control = list(reltol = inner_tol))
+    opt = stats::optim(newpar, obj$fn, newgrad, 
+                       method = "BFGS", control = list(reltol = inner_tol))
     
     # setting new optimum par for next iteration
     newpar = opt$par 

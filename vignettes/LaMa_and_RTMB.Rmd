@@ -276,7 +276,15 @@ dat$S = S
 
 The model fit can then be conducted by using the `pql` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
 
-```{r pql, echo = FALSE, message = FALSE, cache = TRUE}
+There are some rules to follow when using `pql()`:
+
+1. In general, the likelihood function must be `RTMB`-compatible, i.e. have the same structure as all the likelihood functions in our vignette -- most importantly, it should only be a function of the parameter list.
+2. Currently, the data list that includes the penalty strength parameter necessarily needs to be called `dat` and the penalty parameters itself needs to be called `lambda` (inside the likelihood function).
+3. `lambda` needs to be a vector with its length corresponding to the *total* number of random effects used. In our case, this is the number of rows of betaspline, but if we had another random effect in our parameter list, we would have needed more elements in `lambda`.
+4. The `penalty()` function can only be called *once* in the likelihood. If several random effects are penalized, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
+5. When we summarise multiple random effects in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged by row, i.e. each row is one random effect. If it is arranged by column, `pql()` will fail.
+
+```{r pql, message = FALSE, cache = TRUE}
 system.time(
   mod3 <- pql(pnll, par, dat, random = "betaspline")
 )
@@ -318,7 +326,7 @@ par = list(logmu = log(c(0.3, 1)),
            betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2),
            loglambda = rep(log(1000), 2)) # include as parameter
 
-dat$S = S[[1]] # make sparse
+dat$S = S[[1]] # dgmrf2() cannot work with lists
 ```
 
 ```{r mllk4}
@@ -346,7 +354,7 @@ jnll = function(par) {
 }
 ```
 
-```{r refit, echo = FALSE, message = FALSE, cache = TRUE}
+```{r refit, message = FALSE, cache = TRUE}
 obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
 system.time(
   opt <- nlminb(obj4$par, obj4$fn, obj4$gr)

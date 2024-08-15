@@ -11,7 +11,8 @@ pql(
   random,
   alpha = 0,
   maxiter = 50,
-  tol = 0.001,
+  tol = 1e-05,
+  inner_tol = 1e-10,
   silent = 1,
   saveall = FALSE
 )
@@ -30,6 +31,8 @@ pql(
 \item{maxiter}{Maximum number of iterations.}
 
 \item{tol}{Convergence tolerance for the penalty strength parameters.}
+
+\item{inner_tol}{Convergence tolerance for the inner optimization.}
 
 \item{silent}{Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.}
 

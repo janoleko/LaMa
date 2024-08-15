@@ -175,6 +175,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.
 #' @param maxiter Maximum number of iterations.
 #' @param tol Convergence tolerance for the penalty strength parameters.
+#' @param inner_tol Convergence tolerance for the inner optimization.
 #' @param silent Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param saveall Logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.
 #'
@@ -191,7 +192,8 @@ pql = function(pnll, # penalized negative log-likelihood function
                random, # names of parameters in par that are random effects/ penalized
                alpha = 0, # exponential smoothing parameter
                maxiter = 50, # maximum number of iterations
-               tol = 1e-3, # tolerance for convergence
+               tol = 1e-5, # tolerance for convergence
+               inner_tol = 1e-10, # tolerance for inner optimization
                silent = 1, # print level
                saveall = FALSE) # save all intermediate models?
 {
@@ -272,7 +274,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     opt = optim(newpar, obj$fn, newgrad, 
-                method = "BFGS", control = list(reltol = 1e-10))
+                method = "BFGS", control = list(reltol = inner_tol))
     
     # setting new optimum par for next iteration
     newpar = opt$par 
@@ -377,6 +379,55 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   # removing penalty list from model object
   mod = mod[names(mod) != "Pen"] 
+  
+  #############################
+  ### constructing joint object
+  parlist$loglambda = log(mod$lambda)
+  
+  # finding the number of similar random effects for each random effect
+  # indvec = rep(1:n_re, times = re_lengths)
+  
+  # computing log determinants
+  logdetS = numeric(length(S))
+  for(i in 1:length(S)){
+    logdetS[i] = determinant(S[[i]])$modulus
+  }
+  
+  ## defining joint negative log-likelihood
+  jnll = function(par) {
+    
+    environment(pnll) = environment()
+    
+    dat$lambda = exp(par$loglambda)
+    
+    l_p = -pnll(par[names(par) != "loglambda"])
+    
+    ## computing additive constants (missing from only penalized likelihood)
+    const = 0
+    for(i in 1:n_re){
+      for(j in 1:nrow(re_inds[[i]])){
+        k = length(re_inds[[i]][j,])
+        
+        if(i == 1){
+          loglam = par$loglambda[j]
+        } else{
+          loglam = par$loglambda[re_lengths[i-1] + j]
+        }
+        
+        const = const - k * log(2*pi) + k * loglam + logdetS[i]
+      }
+    }
+    
+    l_joint = l_p + 0.5 * const
+    -l_joint
+  }
+  
+  # creating joint AD object
+  obj_joint = MakeADFun(jnll, parlist,
+                        random = names(par)[names(par) != "loglambda"]) # REML, everything random except lambda
+  
+  # assigning object to return object
+  mod$obj_joint = obj_joint
 
   return(mod)
 }

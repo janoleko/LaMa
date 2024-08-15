@@ -383,6 +383,8 @@ pql = function(pnll, # penalized negative log-likelihood function
 #'
 #' @return Returns nothing, but overloads some settings to make AD work.
 #' @export
+#' 
+#' @import RTMB
 #'
 #' @examples
 #' nll = function(par){

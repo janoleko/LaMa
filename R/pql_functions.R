@@ -18,7 +18,7 @@ reshape_lambda <- function(num_elements, lambda) {
 #' and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via penalized quasi-likelihood (PQL) with the \code{pql()} function.
 #'
 #' @param re_coef Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
-#' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in S.
+#' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
 #' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
 #' Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 #' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
@@ -42,7 +42,7 @@ reshape_lambda <- function(num_elements, lambda) {
 #' # where one element contains two random effects of similar structure
 #' re = list(matrix(0, 2, 5), rep(0, 4))
 #' S = list(diag(5), diag(4))
-#' lambda = list(c(1,1), 2)
+#' lambda = c(1,1,2) # length = total number of random effects
 #' penalty(re, S, lambda)
 penalty = function(re_coef, S, lambda) {
   "[<-" <- ADoverload("[<-") # currently necessary

@@ -376,3 +376,26 @@ pql = function(pnll, # penalized negative log-likelihood function
 
   return(mod)
 }
+
+#' Overload some settings to make automatic differentiation work smoothly
+#' 
+#' Run this function in the first line of your likelihood function when using \code{RTMB} to be safe.
+#'
+#' @return Returns nothing, but overloads some settings to make AD work.
+#' @export
+#'
+#' @examples
+#' nll = function(par){
+#'  safeAD()
+#'  # ...
+#'  print("AD is safe now")
+#' }
+#' par = list(a = 1, b = 2)
+#' nll(par)
+safeAD = function() {
+  # overloading assignment operators, currently necessary
+  
+  "[<-" <- ADoverload("[<-")
+  "c" <- ADoverload("c")
+  "diag<-" <- ADoverload("diag<-")
+}

@@ -299,6 +299,9 @@ pql = function(pnll, # penalized negative log-likelihood function
   parlist = as.list(sdreport(obj, ignore.parm.uncertainty = TRUE), "Estimate")
   mod[[argname_par]] = parlist # and assing to return object
   
+  # assign estimated parameter as vector
+  mod[[paste0(argname_par, "_vec")]] = opt$par
+  
   # assign log-likelihood at optimum to return object
   mod$llk = -pnll(parlist)
   

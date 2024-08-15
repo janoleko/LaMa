@@ -13,8 +13,8 @@ reshape_lambda <- function(num_elements, lambda) {
 
 #' Computes penalty based on quadratic form
 #'
-#' This function computes penalties of the form\cr\cr
-#' \eqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}\cr\cr
+#' This function computes penalties of the form
+#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
 #' and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via penalized quasi-likelihood (PQL) with the \code{pql()} function.
 #'
 #' @param re_coef Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
@@ -69,7 +69,7 @@ penalty = function(re_coef, S, lambda) {
     S = rep(S, n_re)
   }
   
-  RTMB::REPORT(lambda) # lambda is reported
+  # RTMB::REPORT(lambda) # lambda is reported
   RTMB::REPORT(S) # penalty matrix list is reported
   
   Pen = list() # penalty list that is reported and used for update in pql
@@ -103,10 +103,10 @@ penalty = function(re_coef, S, lambda) {
   0.5 * pen
 }
 
-#' Penalized quasi-likelihood (PQL) algorithm for mixed models
+#' Penalized quasi-likelihood (PQL) algorithm for models with simple random effects
 #'
-#' This algorithm can be used very flexible to fit any kind of statistical model that involves splines or simple i.i.d. random effects with \code{RTMB} with penalties of the form\cr\cr
-#' \eqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}\cr\cr
+#' This algorithm can be used very flexible to fit statistical models that involves \strong{penalized splines} or simple \strong{i.i.d. random effects} with \code{RTMB} that have penalties of the form
+#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
 #' PQL is typically much faster than the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
 #' The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the penalty inside the likelihood.
 #'

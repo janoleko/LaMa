@@ -22,8 +22,8 @@ If these are seperate random effects, each with its own name, they need to be pa
 Returns the penalty value and reports to \code{pql()} for a seamless experience.
 }
 \description{
-This function computes penalties of the form\cr\cr
-\eqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}\cr\cr
+This function computes penalties of the form
+\deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
 and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via penalized quasi-likelihood (PQL) with the \code{pql()} function.
 }
 \examples{

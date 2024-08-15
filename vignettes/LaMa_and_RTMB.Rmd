@@ -90,6 +90,11 @@ opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
 ```
 
 Very nicely, `obj` is automatically updated after the optimization. We can now look at the results.
+We can look at the estimated parameter in its vector form by
+```{r par_raw}
+opt$par
+```
+
 To get our estimated parameters on their natural scale, we don't have to do the backtransformation manually. We can just do
 
 ```{r MLe}
@@ -100,8 +105,7 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 (sigma = mod$sigma)
 (kappa = mod$kappa)
 ```
-
-Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding, because many downstream `LaMa` functions take these arguments as inputs.
+which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding, because many downstream `LaMa` functions take these arguments as inputs.
 
 ```{r decoding, fig.width = 7, fig.height = 4}
 mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
@@ -270,7 +274,7 @@ dat$lambda = rep(1000, 2)
 dat$S = S
 ```
 
-The model fit can then be conducted by using the `pql` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, this function also constructs and AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `pql` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
 
 ```{r pql, echo = FALSE, message = FALSE, cache = TRUE}
 system.time(
@@ -301,7 +305,7 @@ Allowing for a more flexible smooth function shows that the time of day effect i
 
 ### Full Laplace method
 
-Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points. This method is much more general, allowing for very flexible random effects, but estimation will be slower. 
+Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points. This method is much more general, allowing for very flexible random effects. However, estimation will be slower because this method does not exploit the simple structure of splines that are treated as random effects.
 We have to alter our likelihood function slightly, because the Laplace method, we need the joint likelihood of the data and the random effect, which in this case has a multivariate normal distribuiton.
 Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`.
 We also have to include the log of our penalty strength as a parameter now.
@@ -318,7 +322,7 @@ dat$S = S[[1]] # make sparse
 ```
 
 ```{r mllk4}
-pnll = function(par) {
+jnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
   delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
@@ -343,13 +347,13 @@ pnll = function(par) {
 ```
 
 ```{r refit, echo = FALSE, message = FALSE, cache = TRUE}
-obj4 = MakeADFun(pnll, par, random = "betaspline", silent = TRUE)
+obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
 system.time(
   opt <- nlminb(obj4$par, obj4$fn, obj4$gr)
 )
 ```
 
-As we can see, the results are basically identical while the model fit took more than five times as long.
+As we can see, the results are basically identical while the model fit took more than ten times as long.
 
 ```{r results refit, fig.width = 8, fig.height = 5}
 mod4 = obj4$report()

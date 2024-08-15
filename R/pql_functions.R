@@ -224,7 +224,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     # reporting to extract penalties
     mod = obj$report() 
     
-    # extracting current Hessian
+    # evaluating current Hessian
     J = obj$he()
     
     # computing Fisher information matrix

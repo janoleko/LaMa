@@ -14,7 +14,7 @@ dgmrf2(x, mu = 0, S, lambda, log = FALSE)
 \item{S}{Unscaled precision matrix.}
 
 \item{lambda}{Precision scaling parameter. Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
-This is benefitial from an efficiency perspective because the log determinant of \code{S} is only computed once.}
+This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.}
 
 \item{log}{logical; if TRUE, densities are returned on the log scale.}
 }
@@ -24,7 +24,7 @@ Vector of densities
 \description{
 Density function of a multivariate Gaussian distribution reparametrized in terms of its precision matrix (inverse variance).
 This is particularly useful for marginal ML with penalized splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is the penalty matrix.
-As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the log determinant of \eqn{S} and only scale the quadratic form by \eqn{\lambda}
+As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalization constant) and only scale the quadratic form by \eqn{\lambda}
 when multiple spline parameters/ random effects with different \eqn{\lambda}'s but the same penalty matrix \eqn{S} are evaluated.
 }
 \details{

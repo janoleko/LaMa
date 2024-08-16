@@ -133,7 +133,7 @@ pql = function(pnll, # penalized negative log-likelihood function
                dat, # initial dat object, currently needs to be called dat!
                random, # names of parameters in par that are random effects/ penalized
                alpha = 0, # exponential smoothing parameter
-               maxiter = 50, # maximum number of iterations
+               maxiter = 100, # maximum number of iterations
                tol = 1e-5, # tolerance for convergence
                inner_tol = 1e-10, # tolerance for inner optimization
                silent = 1, # print level

@@ -5,7 +5,7 @@
 #' If you provide an array of dimension c(N,N,n), the first slice will be ignored. \cr
 #' If you provide an ID vector, Gamma needs to be an array of dimension c(N,N,n), where n is the number of rows in allprobs. Then for each track the first transition matrix will be ignored.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param ID Optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
 #'
 #' @return Vector of decoded states of length n
 #' @export
@@ -20,7 +20,7 @@
 #' }
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' states = viterbi_g(delta, Gamma, allprobs)
-viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
+viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -31,8 +31,14 @@ viterbi_g = function(delta, Gamma, allprobs, ID = NULL){
     
     if(is.vector(delta)){
       delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
-    } else if(dim(delta)[1] != k){
-      stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+    } else if(is.matrix(delta)){
+      if(dim(delta)[1] != k){
+        if(dim(delta)[1] == 1){
+          delta = matrix(c(delta), nrow = k, ncol = length(delta), byrow = TRUE)
+        } else{
+          stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+        }
+      }
     }
     
     # initialising state vector

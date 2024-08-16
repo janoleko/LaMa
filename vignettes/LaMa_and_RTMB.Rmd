@@ -13,7 +13,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   out.width = "85%",
-  fig.align = "center"
+  fig.align = "center",
+  error = TRUE
 )
 ```
 
@@ -105,7 +106,7 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 (sigma = mod$sigma)
 (kappa = mod$kappa)
 ```
-which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding, because many downstream `LaMa` functions take these arguments as inputs.
+which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs.
 
 ```{r decoding, fig.width = 7, fig.height = 4}
 mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
@@ -146,7 +147,8 @@ $$
 where $t$ is the time of day.
 For this we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list. 
 ```{r tod}
-Z = trigBasisExp(1:24, degree = 2) # building trigonometric basis desing matrix
+# building trigonometric basis desing matrix
+Z = trigBasisExp(1:24, degree = 2) # convenience function from LaMa
 dat$tod = elephant$tod # adding time of day to dat
 ```
 
@@ -225,10 +227,9 @@ where $s_{ij}(t)$ is a smooth periodic function of time of day. `LaMa` provides 
 We fix 11 knots (one more than the number of basis functions) including 0 and 24 to ensure that `mgcv` knows where to wrap the basis.
 
 ```{r tod2}
-knots = seq(0, 24, length = 11)
 modmat = make_matrices(~ s(tod, bs = "cp", k = 10), 
                        data = data.frame(tod = 1:24),
-                       knots = list(tod = knots))
+                       knots = list(tod = c(0,24))) # telling mgcv where to wrap
 Z = modmat$Z # spline design matrix
 S = modmat$S # penalty matrix
 ```
@@ -274,7 +275,7 @@ dat$lambda = rep(1000, 2)
 dat$S = S
 ```
 
-The model fit can then be conducted by using the `pql` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `pql()` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `pql()`:
 
@@ -284,7 +285,7 @@ There are some rules to follow when using `pql()`:
 4. The `penalty()` function can only be called *once* in the likelihood. If several random effects are penalized, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
 5. When we summarise multiple random effects in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged by row, i.e. each row is one random effect. If it is arranged by column, `pql()` will fail.
 
-```{r pql, message = FALSE, cache = TRUE}
+```{r pql, message = FALSE}
 system.time(
   mod3 <- pql(pnll, par, dat, random = "betaspline")
 )
@@ -315,7 +316,7 @@ Allowing for a more flexible smooth function shows that the time of day effect i
 
 Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points. This method is much more general, allowing for very flexible random effects. However, estimation will be slower because this method does not exploit the simple structure of splines that are treated as random effects.
 We have to alter our likelihood function slightly, because the Laplace method, we need the joint likelihood of the data and the random effect, which in this case has a multivariate normal distribuiton.
-Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`.
+Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`. It differs from `RTMB`s `dgmrf()` by not expecting a sparse precision matrix and being more robust for rank-deficient penalty matrices, which are typical for penalized splines.
 We also have to include the log of our penalty strength as a parameter now.
 
 ```{r todpar3}
@@ -354,10 +355,10 @@ jnll = function(par) {
 }
 ```
 
-```{r refit, message = FALSE, cache = TRUE}
+```{r refit, message = FALSE}
 obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
 system.time(
-  opt <- nlminb(obj4$par, obj4$fn, obj4$gr)
+  opt4 <- nlminb(obj4$par, obj4$fn, obj4$gr)
 )
 ```
 
@@ -372,3 +373,48 @@ plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
      xlab = "time of day", ylab = "transition probability", bty = "n")
 lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
 ```
+
+### Common issues with `RTMB`
+
+A typical issue with `RTMB` is that some operators might need to be overloaded to allow for automatic differentiation. In typical model setups `LaMa` functions do this themselves, but if you go a very individualistic route and get an error like 
+```{r error, echo = FALSE}
+stop("Invalid argument to 'advector' (lost class attribute?)")
+```
+you might have to overload the operator yourself. To do this put
+```{r overloading}
+"[<-" <- ADoverload("[<-")
+```
+in the first line of your likelihood function. If the error still prevails also add
+```{r overloading2}
+"c" <- ADoverload("c")
+"diag<-" <- ADoverload("diag<-")
+```
+which should hopefully fix the error.
+
+Another common problem occurs when initiating objects with `NA` values and then trying to fill them with `numeric`'s. This is because `NA` is logical which screws up the automatic differentiation due to the mismatching types. To avoid this, always initiate with `numeric` values or `NaN`. For example, don't do
+```{r NA, eval = FALSE}
+X = array(dim = c(1,2,3))
+# which is the same as
+X = array(NA, dim = c(1,2,3))
+```
+but rather
+```{r NaN, eval = FALSE}
+X = array(NaN, dim = c(1,2,3))
+# or
+X = array(0, dim = c(1,2,3))
+```
+to avoid the error.
+
+Furthermore, there are some unfortunate side effects of R's 'byte compiler' (enabled by default in R). So if you encounter an error not matching the previous ones, try disabling the byte compiler with
+```{r bytecompiler, message = FALSE}
+compiler::enableJIT(0)
+```
+and see if the error is resolved.
+
+Some more minor things:
+
+* if your used to using `expm::expm()` that won't work with AD. Use `Matrix::expm()` instead.
+* `CircStats::dvm()` also isn't compatible with AD. Use `LaMa::dvm()` instead.
+* you can use `if` statements in your likelihood function, but *not* on the parameter itself as this will obviously not be differentiable.
+* most of the standard distributions are available in `RTMB`. If you need a non-standard one, try implementing the density function yourself using plain R code. 
+`RTMB` also provides AD versions of many building-block functions (like the Gamma or Bessel function) which might help with this.

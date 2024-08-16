@@ -18,10 +18,8 @@ formulated and estimated within the same framework via directly
 maximizing the (approximate) likelihood using the so-called **forward
 algorithm** (for details see
 <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
-et al. 2016</a>). While these models are immensely popular for
-conducting inference on time series driven by latent processes, due to
-their great flexibility, researchers using these models in applied work
-often need to build highly customized models for which standard software
+et al. 2016</a>). Researchers using these models in applied work often
+need to build highly customized models for which standard software
 implementation is lacking, or the construction of such models in said
 software is as complicated as writing fully tailored **R** code. The
 latter provides great flexibility and control, but suffers from slow
@@ -34,6 +32,9 @@ making building fully custom models much easier. Moreover, under the
 hood, these functions are written in **C++**, allowing for 10-20 times
 faster evaluation time, and thus drastically speeding up estimation by
 numerical optimizers like `nlm()` or `optim()`.
+
+The development version now also allows for automatic differentiation
+with the `RTMB` package which drastically increases speed and accuracy.
 
 Current implementations of the forward algorithm are:
 
@@ -77,7 +78,7 @@ or the development version from Github:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("janoleko/LaMa", build_vignettes = TRUE)
+devtools::install_github("janoleko/LaMa")
 ```
 
 <!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
@@ -115,8 +116,9 @@ citation(package = "LaMa")
 #> To cite package 'LaMa' in publications use:
 #> 
 #>   Koslik J (2024). _LaMa: Fast Numerical Maximum Likelihood Estimation
-#>   for Latent Markov Models_. R package version 1.0.0,
-#>   <https://CRAN.R-project.org/package=LaMa>.
+#>   for Latent Markov Models_. R package version 2.0.0, commit
+#>   26c7b10c531182678942e8276c1d2dd7f6c8ff89,
+#>   <https://github.com/janoleko/LaMa>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
@@ -125,8 +127,8 @@ citation(package = "LaMa")
 #> Models},
 #>     author = {Jan-Ole Koslik},
 #>     year = {2024},
-#>     note = {R package version 1.0.0},
-#>     url = {https://CRAN.R-project.org/package=LaMa},
+#>     note = {R package version 2.0.0, commit 26c7b10c531182678942e8276c1d2dd7f6c8ff89},
+#>     url = {https://github.com/janoleko/LaMa},
 #>   }
 ```
 
@@ -195,7 +197,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1051061 secs
+#> Time difference of 0.1108079 secs
 ```
 
 Really fast for 10.000 data points!

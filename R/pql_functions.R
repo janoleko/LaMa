@@ -157,11 +157,15 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   # creating the objective function as wrapper around pnll to pull lambda from local
   f = function(par){
+    environment(pnll) = environment()
+    
+    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
+    
     getLambda = function(x) lambda
     
     dat$lambda = DataEval(getLambda, rep(advector(1), 0))
-    
-    environment(pnll) = environment()
     
     pnll(par)
   }
@@ -342,6 +346,10 @@ pql = function(pnll, # penalized negative log-likelihood function
   jnll = function(par) {
     
     environment(pnll) = environment()
+    
+    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
     
     dat$lambda = exp(par$loglambda)
     

@@ -112,8 +112,10 @@ penalty = function(re_coef, S, lambda) {
 #'
 #' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.
 #' @param par Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
-#' @param dat Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. Currently needs to be called \code{dat}. The initial penalty strength vector needs to be called \code{lambda} and has to be of length corresponding to the total number of random effects.
+#' @param dat Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If initial penalty strength vector is not called \code{lambda}, you need to specify its name in \code{dat}. 
+#' Its length needs to match the to the total number of random effects.
 #' @param random Vector of names of the random effects in \code{par} that are penalized.
+#' @param penalty Name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.
 #' @param maxiter Maximum number of iterations.
 #' @param tol Convergence tolerance for the penalty strength parameters.
@@ -132,6 +134,7 @@ pql = function(pnll, # penalized negative log-likelihood function
                par, # initial parameter list
                dat, # initial dat object, currently needs to be called dat!
                random, # names of parameters in par that are random effects/ penalized
+               penalty = "lambda", # name given to the penalty parameter in dat
                alpha = 0, # exponential smoothing parameter
                maxiter = 100, # maximum number of iterations
                tol = 1e-5, # tolerance for convergence
@@ -142,6 +145,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   # setting the argument name for par because later updated par is returned
   argname_par = as.character(substitute(par))
+  argname_dat = as.character(substitute(dat))
   
   # setting the environment for mllk to be the local environment such that it pull the right lambda
   environment(pnll) = environment() 
@@ -153,7 +157,10 @@ pql = function(pnll, # penalized negative log-likelihood function
   allmods = list() 
   
   # initial lambda locally
-  lambda = dat$lambda
+  lambda = dat[[penalty]]
+  
+  # experimentally, changing the name of the data object in pnll to dat
+  body(pnll) <- parse(text=gsub(argname_dat, "dat", deparse(body(pnll))))
   
   # creating the objective function as wrapper around pnll to pull lambda from local
   f = function(par){
@@ -165,12 +172,13 @@ pql = function(pnll, # penalized negative log-likelihood function
     
     getLambda = function(x) lambda
     
-    dat$lambda = DataEval(getLambda, rep(advector(1), 0))
+    dat[[penalty]] = DataEval(getLambda, rep(advector(1), 0))
     
     pnll(par)
   }
   
   # creating the RTMB objective function
+  cat("Creating AD function\n")
   obj = MakeADFun(func = f, parameters = par, silent = TRUE) # silent and replacing with own prints
   newpar = obj$par # saving initial paramter value as vector to initialize optimization in loop
   
@@ -205,7 +213,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   Lambdas[[1]] = reshape_lambda(re_lengths, lambda) # reshaping to match structure of random effects
   
   if(silent < 2){
-    cat("Initializing with lambda0:", round(lambda, 3), "\n")
+    cat("Initializing with", paste0(penalty, ":"), round(lambda, 3), "\n")
   }
   
   # computing rank deficiency for each penalty matrix to use in correction term
@@ -270,7 +278,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     lambda = unlist(lambdas_k) 
     
     if(silent < 2){
-      cat("outer", k, "- lambda:", round(lambda, 3), "\n")
+      cat("outer", k, "-", paste0(penalty, ":"), round(lambda, 3), "\n")
     }
     
     # convergence check
@@ -293,11 +301,11 @@ pql = function(pnll, # penalized negative log-likelihood function
   }
   
   # assign final lambda to return object
-  mod$lambda = lambda
+  mod[[penalty]] = lambda
   
   # calculating unpenalized log-likelihood at final parameter values
   lambda = rep(0, length(lambda))
-  dat$lambda = lambda
+  dat[[penalty]] = lambda
   
   # format parameter to list
   parlist = as.list(sdreport(obj, ignore.parm.uncertainty = TRUE), "Estimate")
@@ -331,7 +339,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   #############################
   ### constructing joint object
-  parlist$loglambda = log(mod$lambda)
+  parlist$loglambda = log(mod[[penalty]])
   
   # finding the number of similar random effects for each random effect
   # indvec = rep(1:n_re, times = re_lengths)
@@ -351,7 +359,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
     
-    dat$lambda = exp(par$loglambda)
+    dat[[penalty]] = exp(par$loglambda)
     
     l_p = -pnll(par[names(par) != "loglambda"])
     
@@ -381,6 +389,6 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   # assigning object to return object
   mod$obj_joint = obj_joint
-
+  
   return(mod)
 }

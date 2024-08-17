@@ -9,6 +9,7 @@ pql(
   par,
   dat,
   random,
+  penalty = "lambda",
   alpha = 0,
   maxiter = 100,
   tol = 1e-05,
@@ -22,9 +23,12 @@ pql(
 
 \item{par}{Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.}
 
-\item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. Currently needs to be called \code{dat}. The initial penalty strength vector needs to be called \code{lambda} and has to be of length corresponding to the total number of random effects.}
+\item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If initial penalty strength vector is not called \code{lambda}, you need to specify its name in \code{dat}. 
+Its length needs to match the to the total number of random effects.}
 
 \item{random}{Vector of names of the random effects in \code{par} that are penalized.}
+
+\item{penalty}{Name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
 \item{alpha}{Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.}
 

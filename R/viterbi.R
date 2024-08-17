@@ -18,13 +18,13 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL){
   N = ncol(allprobs)
   
   # inflating Gamma to use viterbi_g
-  if(!is.null(ID)){
+  if(!is.null(trackID)){
     Gamma = array(Gamma, dim = c(N,N,n))
   } else{
     Gamma = array(Gamma, dim = c(N,N,n-1))
   }
   
-  viterbi_g(delta, Gamma, allprobs, ID)
+  viterbi_g(delta, Gamma, allprobs, trackID)
 }
 
 

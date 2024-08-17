@@ -25,8 +25,8 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
   N = ncol(allprobs)
   
   # If ID is provided, several tracks need to be decoded separately
-  if(!is.null(ID)){
-    uID = unique(ID)
+  if(!is.null(trackID)){
+    uID = unique(trackID)
     k = length(uID) # number of tracks
     
     if(is.vector(delta)){
@@ -46,7 +46,7 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
     
     # loop over individual tracks
     for(i in 1:length(uID)){
-      id_i = which(ID == uID[i])
+      id_i = which(trackID == uID[i])
       
       allprobs_i = allprobs[id_i, ]
       

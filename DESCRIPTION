@@ -26,7 +26,8 @@ Imports:
     mgcv,
     RTMB,
     Matrix,
-    stats
+    stats,
+    MASS
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

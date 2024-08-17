@@ -228,7 +228,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     J = obj$he()
     
     # computing Fisher information matrix
-    J_inv = Matrix::solve(J) 
+    J_inv = MASS::ginv(J) 
     
     # saving entire model object
     allmods[[k]] = mod 

@@ -114,27 +114,27 @@ forward = function(delta, Gamma, allprobs,
       
       ## dealing with the initial distribution, either a vector of length N 
       # or a matrix of dimension c(k,N) for k tracks
-      if(is.vector(delta)){
-        Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
-      } else if(is.matrix(delta)){
-        if(nrow(delta) == 1){
-          Delta = matrix(c(delta), nrow = k, ncol = N, byrow = TRUE)
-        } else if(nrow(delta) == k){
-          Delta = delta
-        } else {
-          stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
-        }
-      }
-      
-      # delta = as.matrix(delta) # reshape to matrix for easier handling
-      # 
-      # if(ncol(delta) != N) delta = t(delta) # transpose if necessary
-      # 
-      # if(nrow(delta) == 1) {
-      #   Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE) 
-      # } else {
-      #   Delta = delta
+      # if(is.vector(delta)){
+      #   Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      # } else if(is.matrix(delta)){
+      #   if(nrow(delta) == 1){
+      #     Delta = matrix(c(delta), nrow = k, ncol = N, byrow = TRUE)
+      #   } else if(nrow(delta) == k){
+      #     Delta = delta
+      #   } else {
+      #     stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+      #   }
       # }
+      
+      delta = as.matrix(delta) # reshape to matrix for easier handling
+
+      if(ncol(delta) != N) delta = t(delta) # transpose if necessary
+
+      if(nrow(delta) == 1) {
+        Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      } else {
+        Delta = delta
+      }
       
       ## dealing with Gamma, 
       # either a matrix of dimension c(N,N) or an array of dimension c(N,N,k)

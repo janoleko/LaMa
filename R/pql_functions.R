@@ -295,7 +295,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   }
   
   # assign RTMB obj to return object
-  mod$obj = obj
+  mod$obj <- obj
   
   # if all intermediate models should be returned, assign
   if(saveall) {
@@ -310,8 +310,8 @@ pql = function(pnll, # penalized negative log-likelihood function
   dat[[penalty]] = lambda
   
   # format parameter to list
-  parlist = as.list(sdreport(obj, ignore.parm.uncertainty = TRUE), "Estimate")
-  mod[[argname_par]] = parlist # and assing to return object
+  skeleton = as.relistable(par)
+  mod[[argname_par]] = relist(opt$par, skeleton) # and assing to return object
   
   # assign estimated parameter as vector
   mod[[paste0(argname_par, "_vec")]] = opt$par

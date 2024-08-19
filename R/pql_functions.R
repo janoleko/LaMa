@@ -311,7 +311,8 @@ pql = function(pnll, # penalized negative log-likelihood function
   
   # format parameter to list
   skeleton = as.relistable(par)
-  mod[[argname_par]] = relist(opt$par, skeleton) # and assing to return object
+  parlist = relist(opt$par, skeleton)
+  mod[[argname_par]] = parlist # and assing to return object
   
   # assign estimated parameter as vector
   mod[[paste0(argname_par, "_vec")]] = opt$par

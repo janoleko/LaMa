@@ -52,5 +52,37 @@ PQL is typically much faster than the full Laplace approximation method, but may
 The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the penalty inside the likelihood.
 }
 \examples{
-# currently no example
+data = elephant[1:1000,] # subset
+# initial parameter list
+par = list(logmu = log(c(0.3, 1)), 
+          logsigma = log(c(0.2, 0.7)),
+          logkappa = log(c(0.2, 0.7)),
+          beta0 = c(-2,2),
+          betaspline = matrix(rep(0, 18), nrow = 2))
+# data object with initial penalty strength lambda
+dat = list(step = data$step, angle = data$angle, tod = data$tod, N = 2, lambda = rep(10,2))
+# model matrices
+modmat = make_matrices(~ s(tod, bs = "cp"), data = data.frame(tod = 1:24), 
+   knots = list(tod = c(0,24))) # wrapping points
+dat$Z = modmat$Z # spline design matrix
+dat$S = modmat$S # penalty matrix
+# penalized negative log-likelihood function
+pnll = function(par) {
+getAll(par, dat) # makes everything contained available without $
+Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
+delta = stationary_p(Gamma, t = 1, ad = TRUE)
+mu = exp(logmu)
+sigma = exp(logsigma)
+kappa = exp(logkappa)
+# calculating all state-dependent densities
+allprobs = matrix(1, nrow = length(step), ncol = N)
+ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
+for(j in 1:N){
+  allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
+} 
+-forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+  penalty(betaspline, S, lambda) # this does all the penalization work
+}
+# model fitting
+mod = pql(pnll, par, dat, random = "betaspline")
 }

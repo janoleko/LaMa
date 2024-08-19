@@ -27,6 +27,7 @@ Imports:
     RTMB,
     Matrix,
     stats,
+    utils,
     MASS
 LinkingTo: 
     Rcpp, 

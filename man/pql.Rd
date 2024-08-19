@@ -12,8 +12,8 @@ pql(
   penalty = "lambda",
   alpha = 0,
   maxiter = 100,
-  tol = 1e-05,
-  inner_tol = 1e-10,
+  tol = 1e-04,
+  inner_tol = 1e-08,
   silent = 1,
   saveall = FALSE
 )

@@ -18,14 +18,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-The recently introduced `R` package `RTMB` conveniently allows for automatic differentiation for non-standard statistical models written in plain `R` code. This enables the estimation of very complicated models, potentially with complex random effect structures. Also it feels like magic because you have access to analytic gradients -- drastically increasng accuracy and speed -- without doing any calculations!
+The recently introduced `R` package `RTMB` conveniently allows for automatic differentiation for non-standard statistical models written in plain `R` code. This enables the estimation of very complicated models, potentially with complex random effect structures. Also it feels like magic because you have access to analytic gradients -- drastically increasing accuracy and speed -- without doing any calculations!
 
-`LaMa` also allows for automatic differentiation with `RTMB` for most of its functions when the user is setting `ad = TRUE`, hence making the estimation of latent Markov models extremly convenient and fast, while making the process of model specification very smooth and less prone to errors (which at the current state tend to happen when not experienced with `RTMB`).
+`LaMa` now also allows for automatic differentiation with `RTMB` for most of its functions when you set `ad = TRUE`. Hence, estimation of latent Markov models extremly is now extremely convenient and fast, while making the process of model specification very smooth and less prone to errors (which at the current state tend to happen when not experienced with `RTMB`).
 
 Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We always start by loading both packages.
 
 ```{r setup}
-library(LaMa)
+library(LaMa) # development version
 library(RTMB)
 ```
 
@@ -33,9 +33,13 @@ For the purpose of this vignette, we will analyze the `elephant` data set contai
 ```{r data}
 head(elephant, 5)
 ```
-### Basic HMM
+### Basic workflow
 
-The workflow with `RTMB` is basically always the same. We need to define the negative log-likelihood function, create an automatically differentiable objective function from it and fit the model by numerical minimization of the latter. We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains everything else.
+The workflow with `RTMB` is basically always the same. We need to define the negative log-likelihood function, create an automatically differentiable objective function from it and fit the model by numerical minimization of the latter. `RTMB` also provides many functions that makes this process very convenient.
+
+### Simple HMM
+
+We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains everything else. The names `par` and `dat` are of course arbitrary.
 
 ```{r parameters}
 par = list(logmu = log(c(0.3, 1)),      # initial means for step length (log-transformed)
@@ -45,9 +49,9 @@ par = list(logmu = log(c(0.3, 1)),      # initial means for step length (log-tra
 dat = list(step = elephant$step, angle = elephant$angle, N = 2)
 ```
 
-We see that `par` is a named list which is really useful for accessing the parameters later on and much more convenient than indexing. I use the `dat` list to package all the data and other hyperparameters that are not to be estimated, but this is just my choice out of convenience.
+We see that `par` is a named list or initial parameter values which is really useful for accessing the parameters later on and much more convenient than indexing. With `RTMB`, you could also use a parameter vector, but using a named list is so much easier. Moreover, I use the `dat` list to package all the data and other hyperparameters that are not to be estimated, but this is just my choice out of convenience.
 
-We can now define the negative log-likelihood function:
+We can now define the negative log-likelihood function in a similar fashion to basic numerical ML
 
 ```{r mllk}
 mllk = function(par) {
@@ -59,9 +63,9 @@ mllk = function(par) {
   sigma = exp(logsigma)
   kappa = exp(logkappa)
   # reporting statements for later use
-  REPORT(mu)
-  REPORT(sigma)
-  REPORT(kappa)
+  REPORT(mu); ADREPORT(mu)
+  REPORT(sigma); ADREPORT(sigma)
+  REPORT(kappa); ADREPORT(kappa)
   # calculating all state-dependent densities
   allprobs = matrix(1, nrow = length(step), ncol = N)
   ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
@@ -72,31 +76,47 @@ mllk = function(par) {
 }
 ```
 
-There are a few points to note here:
+but a few point should be made here:
 
--   Most prominently, the negative log-likelihood is a function of the parameters to be estimated *only* while data and other parameters are not passed as an argument at this stage. This is something to get used to, but just the way `RTMB` works.
--   The `getAll()` function is very useful and you should use it in the first line as it unpacks both the `par` and the `dat` list, making all elements available without the `$` operator.
--   Parameter transformations are still necessary, i.e. all parameters in `par` should be unconstrained.
--   Simple `LaMa` functions work for both automatic differentiation and standard optimization. For the more complicated functions like `forward()`, currently you need to specify `ad = TRUE` to get automatic differentiation. When you are not sure if you need it, check the documentation.
--   You might wonder how on earth `RTMB` can calculate the gradient of standard distributions like the gamma or von Mises distribution. The answer is it doesn't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions. `dgamma2()` is just a convenience function as it reparametrizes the gamma distribution in terms of mean and standard deviation, which is often more intuitive.
--   the `REPORT()` function offered by `RTMB` is also extremely convenient as quantities reported will be available after optimization, while the report statements are ignored during optimization.
+-   Most prominently, the negative log-likelihood is a function of the parameters to be estimated *only* while data and other parameters are not passed as an argument at this stage. This is something to get used to (I know), but just the way `RTMB` works.
+-   The `getAll()` function is extremely useful and you should use it in the first line to unpack both the `par` and the `dat` list, making all elements available without the `$` operator. We also see, that `mllk` just takes the dat object from the global environment.
+-   Parameter transformations are of course still necessary, i.e. all parameters in `par` should be unconstrained.
+-   Simple `LaMa` functions (like `tpm()` or `stationary()`) work for both automatic differentiation and standard optimization. For the more complicated functions like `forward()`, currently you need to specify `ad = TRUE` to get automatic differentiation. I would like to make this smoother in the future, but currently that's where we're at. Whenever you are not sure if you `ad = TRUE`, just check the documentation.
+-   You might wonder how on earth `RTMB` can calculate the gradient of distributions like the gamma or von Mises distribution. The answer is: It can't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions. `dgamma2()` is just a convenience function as it reparametrizes the gamma distribution in terms of mean and standard deviation, which is often more intuitive.
+- Actually, most of the standard functions (e.g. `sum()`), operators (e.g. `%*%`) and methods (e.g. `matrix`) are overwritten when you use `RTMB` but you typically don't notice that and should not care -- but this is how the magic works.
+-   the `REPORT()` function offered by `RTMB` is insanely convenient as any quantities calculated in the likelihood function (for which you have the code anyway), if reported, will be available after optimization, while the report statements are ignored during optimization. So no annoying backtransformations anymore, wohoo!
+- for simple parameter transformations, `ADREPORT()` is also great, because it calculates standard deviations for whatever quantities, based on the delta method. Note that the delta method is not advisable for complex non-linear and multivariate transformations.
 
-We can now create the objective function and fit the model. This needs some explanation: At this point, `RTMB` takes the negative log-likelihood function and generates its own version of it, including a gradient. `MakeADFun` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will also have no result. We set `silent = TRUE` to suppress printing of the optimization process.
+Having defined the negative log-likelihood, we can now create the objective function and fit the model. This needs some explanation: At this point, `RTMB` takes the negative log-likelihood function and generates its own version of it, including a gradient. `MakeADFun()` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will have no effect on the optimization result. We set `silent = TRUE` to suppress printing of the optimization process.
 
-The optimization routine `nlminb` is very robust and conveniently allows us to provide a gradient function.
-
-```{r modelfit}
+```{r ADfunction}
 obj = MakeADFun(mllk, par, silent = TRUE) # creating the objective function
+```
+
+Let's check out `obj`:
+```{r tmbobject}
+names(obj)
+```
+We see that it contains the initial parameter `par` (now tranformed to a vector), the actual loss function `fn`, its gradient `gr` and Hessian `he`.
+
+```{r tmbobject2}
+obj$par
+obj$fn()
+obj$gr()
+```
+I do not show the Hessian for brevity.
+
+We can now maximize the objective function. The optimization routine `nlminb` is very robust and conveniently allows us to provide a gradient function. Alternatively, you can also use `optim()`. Indeed, we do not provide the Hessian to `nlminb` because while evaluating the Hessian is very fast with `RTMB`, optimization is still much faster if we use a quasi-Newton algorithm that approximates the current Hessian based on previous gradient evaluations, than using full Newton-Raphson.
+```{r modelfit}
 opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
 ```
 
-Very nicely, `obj` is automatically updated after the optimization. We can now look at the results.
-We can look at the estimated parameter in its vector form by
-```{r par_raw}
+We can check out the estimated parameter and function value by
+```{r optpar}
 opt$par
+opt$value
 ```
-
-To get our estimated parameters on their natural scale, we don't have to do the backtransformation manually. We can just do
+which is just `nlminb` standard stuff. Much nicer however is that `obj` (yes `obj` not `opt`) is automatically updated after the optimization. To get our estimated parameters on their natural scale, we don't have to do the backtransformation manually. We can just do the reporting:
 
 ```{r MLe}
 mod = obj$report() # runs the reporting from the negative log-likelihood once
@@ -106,7 +126,7 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 (sigma = mod$sigma)
 (kappa = mod$kappa)
 ```
-which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs.
+which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs. As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having all the parameters, we can plot the decoded time series
 
 ```{r decoding, fig.width = 7, fig.height = 4}
 mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
@@ -118,7 +138,7 @@ plot(elephant$step[1:200], type = "h", xlab = "time", ylab = "step length",
      col = color[mod$states[1:200]], bty = "n")
 ```
 
-As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having done this, we can use the parameters to plot the estimated state-dependent distributions.
+or the estimated state-dependent distributions.
 
 ```{r statedepdist, fig.width = 8, fig.height = 4}
 oldpar = par(mfrow = c(1,2))
@@ -138,21 +158,38 @@ curve(delta[1]*dvm(x, 0, kappa[1]) + delta[2]*dvm(x, 0, kappa[2]),
 par(oldpar)
 ```
 
+Lastly, we can also use the `sdreport()` function to directly give us standard errors for our unconstraint parameters and everything we `ADREPORT()`ed. 
+
+```{r sdreport}
+(sdr = sdreport(obj))
+# estimated parameter in list format
+(parlist = as.list(sdr, "Estimate"))
+# parameter standard errors in list format
+(parlist_sd = as.list(sdr, "Std"))
+# standard erros also for ADREPORT with delta method
+summary(sdr)
+# or only adreported parameters as list
+as.list(sdr, "Estimate", report = TRUE)
+as.list(sdr, "Std", report = TRUE)
+```
+
 ### Covariate effects
 
-Generalizing is also straightforward. For example, we can add time of day variation to the state process. In this case we want to obtain a state process model of the form
+Generalizing to covariate effects is also straightforward. For example, we can add time of day variation to the state process. In this case we want to obtain a state process model of the form
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + \beta_1^{(ij)} \sin \bigl(\frac{2 \pi t}{24}\bigr) + \beta_2^{(ij)} \cos \bigl(\frac{2 \pi t}{24}\bigr) + \beta_3^{(ij)} \sin \bigl(\frac{2 \pi t}{12}\bigr) + \beta_4^{(ij)} \cos \bigl(\frac{2 \pi t}{12}\bigr),
 $$
 where $t$ is the time of day.
-For this we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list. 
+For this we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list. The `LaMa` function `trigBasisExp()` does this very conveniently.
+
 ```{r tod}
 # building trigonometric basis desing matrix
 Z = trigBasisExp(1:24, degree = 2) # convenience function from LaMa
+dat$Z = Z # adding design matrix to dat
 dat$tod = elephant$tod # adding time of day to dat
 ```
 
-We also need to change the parameter list `par` to include the regression parameters for the time of day. The regression parameters for the state process will typically have the form of a $N (N-1) \times p+1$ matrix, where $N$ is the number of states and $p$ is the number of regressors -- this format is also expected by `tpm_g()` which computes the array of transition matrices based on the design and parameter matrix. Very conveniently, in our parameter list we can use matrices for some parameters, making reshaping of vectors to matrices inside the likelihood function unnessesary.
+We also need to change the parameter list `par` to include the regression parameters for the time of day. The regression parameters for the state process will typically have the form of a $N (N-1) \times p+1$ matrix, where $N$ is the number of states and $p$ is the number of regressors -- this format is also expected by `tpm_g()` which computes the array of transition matrices based on the design and parameter matrix. Another lovely convenience that `RTMB` allows for is that, in our parameter list, we can have matrices, making reshaping of vectors to matrices inside the likelihood function unnessesary.
 
 ```{r todpar}
 par = list(logmu = log(c(0.3, 1)), 
@@ -160,7 +197,7 @@ par = list(logmu = log(c(0.3, 1)),
            logkappa = log(c(0.2, 0.7)),
            beta = matrix(c(rep(-2, 2), 
                            rep(0, 2*ncol(Z))), nrow = 2)) # 2 times 4+1 matrix
-# replacing eta with regression parameters, initializing slopes at zero
+# replacing eta with regression parameter matrix, initializing slopes at zero
 ```
 
 We can now define a more general likelihood function with the main difference being the use of `tpm_g()` instead of `tpm()` and the inclusion of the time of day in the transition matrix calculation. This leads to us using `stationary_p()` instead of `stationary()` to calculate the initial distribuion and `forward_g()` instead of `forward()` to calculate the log-likelihood.
@@ -168,23 +205,22 @@ We can now define a more general likelihood function with the main difference be
 ```{r mllk2}
 mllk2 = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, beta, ad = TRUE)
-  delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
+  Gamma = tpm_g(Z, beta, ad = TRUE) # computes covariate-dependent tpms (in this case only 24 unique)
+  ADREPORT(Gamma) # adreporting
+  Delta = stationary_p(Gamma, ad = TRUE) # periodically stationary dist
+  ADREPORT(Delta)
+  delta = Delta[tod[1],]
   # exponentiating because all parameters strictly positive
-  mu = exp(logmu)
-  sigma = exp(logsigma)
-  kappa = exp(logkappa)
-  # report statements for later use
-  REPORT(mu)
-  REPORT(sigma)
-  REPORT(kappa)
+  mu = exp(logmu); REPORT(mu)
+  sigma = exp(logsigma); REPORT(sigma)
+  kappa = exp(logkappa); REPORT(kappa)
   # calculating all state-dependent densities
   allprobs = matrix(1, nrow = length(step), ncol = N)
   ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # simple forward algorithm
+  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # indexing 24 unique tpms by tod in data
 }
 ```
 
@@ -195,14 +231,17 @@ obj2 = MakeADFun(mllk2, par, silent = TRUE) # creating the objective function
 opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimization
 ```
 
-And we can look at the reported results:
+And we can look at the reported results. In this case, I get standard errors for `Gamma` with the delta method because of simplicity. In general this is not advisable.
 
 ```{r MLE2, fig.width = 8, fig.height = 5}
 mod2 = obj2$report()
 
-# in this case overwriting the reported Gamma, because we only want the 24 unique tpms
-mod2$Gamma = tpm_g(Z, mod2$beta) # calculating 24 tpms
-Delta = stationary_p(mod2$Gamma) # calculating all periodically stationary distributions
+sdr = sdreport(obj2)
+Gamma = as.list(sdr, "Estimate", report = TRUE)$Gamma
+Gammasd = as.list(sdr, "Std", report = TRUE)$Gamma
+
+Delta = as.list(sdr, "Estimate", report = TRUE)$Delta
+Deltasd = as.list(sdr, "Std", report = TRUE)$Delta
 
 tod_seq = seq(0, 24, length = 200) # sequence for plotting
 Z_pred = trigBasisExp(tod_seq, degree = 2) # design matrix for prediction
@@ -210,10 +249,15 @@ Z_pred = trigBasisExp(tod_seq, degree = 2) # design matrix for prediction
 Gamma_plot = tpm_g(Z_pred, mod2$beta)
 plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
      xlab = "time of day", ylab = "transition probability", bty = "n")
+segments(x0 = 1:24, y0 = Gamma[1,2,]-1.96*Gammasd[1,2,], 
+         y1 = Gamma[1,2,]+1.96*Gammasd[1,2,])
+segments(x0 = 1:24, y0 = Gamma[2,1,]-1.96*Gammasd[2,1,], 
+         y1 = Gamma[2,1,]+1.96*Gammasd[2,1,])
 lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
-
 plot(Delta[,2], type = "b", lwd = 2, xlab = "time of day", ylab = "Pr(active)", 
      col = "deepskyblue", bty = "n", xaxt = "n")
+segments(x0 = 1:24, y0 = Delta[,2]-1.96*Deltasd[,2], lwd = 2,
+         y1 = Delta[,2]+1.96*Deltasd[,2], col = "deepskyblue")
 axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 ```
 
@@ -223,15 +267,16 @@ We can go one step further and model the transition probabilities as smooth func
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
 $$
-where $s_{ij}(t)$ is a smooth periodic function of time of day. `LaMa` provides the function `make_matrices()` which creates design matrices and penalty matrices based on the R package `mgcv` when provided with a formula and data. Hence, we can use standard `mgcv` syntax to create the matrices for cyclic P-splines (`cp`).
-We fix 11 knots (one more than the number of basis functions) including 0 and 24 to ensure that `mgcv` knows where to wrap the basis.
+where $s_{ij}(t)$ is a smooth periodic function of time of day. `LaMa` provides the function `make_matrices()` which creates design and penalty matrices based on the R package `mgcv` when provided with a formula and data. Hence, we can use standard `mgcv` syntax to create the matrices for cyclic P-splines (`cp`). We then append both to the `dat` list.
 
 ```{r tod2}
-modmat = make_matrices(~ s(tod, bs = "cp", k = 10), 
+modmat = make_matrices(~ s(tod, bs = "cp"), 
                        data = data.frame(tod = 1:24),
                        knots = list(tod = c(0,24))) # telling mgcv where to wrap
 Z = modmat$Z # spline design matrix
 S = modmat$S # penalty matrix
+dat$Z = Z
+dat$S = S
 ```
 
 We have to change our likelihood function slightly by adding the penalization. For this we use the `penalty()` function contained in `LaMa` that computes the sum of quadratic form penalties (the standard penalty used for penalized splines) based on the penalty matrices, the parameters to be estimated and the penalty strength parameters.
@@ -241,16 +286,13 @@ Importantly, we now have to separate the non-penalized intercept `beta0` from th
 ```{r mllk3}
 pnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
-  delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
+  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE); ADREPORT(Gamma)
+  Delta = stationary_p(Gamma, ad = TRUE); ADREPORT(Delta)
+  delta = Delta[tod[1],]
   # exponentiating because all parameters strictly positive
-  mu = exp(logmu)
-  sigma = exp(logsigma)
-  kappa = exp(logkappa)
-  # report statements for later use
-  REPORT(mu)
-  REPORT(sigma)
-  REPORT(kappa)
+  mu = exp(logmu); REPORT(mu)
+  sigma = exp(logsigma); REPORT(sigma)
+  kappa = exp(logkappa); REPORT(kappa)
   # calculating all state-dependent densities
   allprobs = matrix(1, nrow = length(step), ncol = N)
   ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
@@ -262,17 +304,16 @@ pnll = function(par) {
 }
 ```
 
-We also have to append a `lambda` argument to our `dat` list (currently this needs to be called `lambda` to work) which is the initial penalty strength parameter vector. In this case of length two because our coefficient matrix has two rows. Lastly, we also need to attach the penalty matrix `S`.
+We also have to append a `lambda` argument to our `dat` list, which is the initial penalty strength parameter vector. In this case of length two because our coefficient matrix has two rows.
 
 ```{r todpar2}
 par = list(logmu = log(c(0.3, 1)), 
            logsigma = log(c(0.2, 0.7)),
            logkappa = log(c(0.2, 0.7)),
-           beta0 = c(-2,2),
+           beta0 = c(-2,2), # intercept now separated!
            betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2))
 
 dat$lambda = rep(1000, 2)
-dat$S = S
 ```
 
 The model fit can then be conducted by using the `pql()` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are random/ spline coefficients by providing the name of the corresponding list element of `par`.
@@ -280,8 +321,7 @@ The model fit can then be conducted by using the `pql()` function contained in `
 There are some rules to follow when using `pql()`:
 
 1. In general, the likelihood function must be `RTMB`-compatible, i.e. have the same structure as all the likelihood functions in our vignette -- most importantly, it should only be a function of the parameter list.
-2. Currently, the data list that includes the penalty strength parameter necessarily needs to be called `dat` and the penalty parameters itself needs to be called `lambda` (inside the likelihood function).
-3. `lambda` needs to be a vector with its length corresponding to the *total* number of random effects used. In our case, this is the number of rows of betaspline, but if we had another random effect in our parameter list, we would have needed more elements in `lambda`.
+3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of random effects used. In our case, this is the number of rows of betaspline, but if we had another random effect in our parameter list, we would have needed more elements in `lambda`.
 4. The `penalty()` function can only be called *once* in the likelihood. If several random effects are penalized, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
 5. When we summarise multiple random effects in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged by row, i.e. each row is one random effect. If it is arranged by column, `pql()` will fail.
 
@@ -290,12 +330,12 @@ system.time(
   mod3 <- pql(pnll, par, dat, random = "betaspline")
 )
 ```
-
-We can now look at the results:
+The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. I now ignore confidence bands because I'm lazy. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day.
 
 ```{r results pql, fig.width = 8, fig.height = 5}
-mod3$Gamma = tpm_g(Z, mod3$beta) # calculating 24 tpms
-Delta = stationary_p(mod3$Gamma) # calculating all periodically stationary distributions
+sdr = sdreport(mod3$obj)
+Gamma = as.list(sdr, "Estimate", report = TRUE)$Gamma
+Delta = as.list(sdr, "Estimate", report = TRUE)$Delta
 
 tod_seq = seq(0,24, length=200)
 Z_pred = pred_matrix(modmat, data.frame(tod = tod_seq))
@@ -314,9 +354,15 @@ Allowing for a more flexible smooth function shows that the time of day effect i
 
 ### Full Laplace method
 
-Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points. This method is much more general, allowing for very flexible random effects. However, estimation will be slower because this method does not exploit the simple structure of splines that are treated as random effects.
-We have to alter our likelihood function slightly, because the Laplace method, we need the joint likelihood of the data and the random effect, which in this case has a multivariate normal distribuiton.
-Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`. It differs from `RTMB`s `dgmrf()` by not expecting a sparse precision matrix and being more robust for rank-deficient penalty matrices, which are typical for penalized splines.
+Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method to integrate out the random effects/ spline coefficients which is natively supported by `RTMB` -- and actually one of its core selling points and the standard way we can now deal with random effects. This method is much more general, allowing for very flexible random effects. However, estimation will be slower because this method does not exploit the simple structure of splines when they are treated as random effects.
+
+We have to alter our likelihood function slightly, because for the Laplace method, we need the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution in this case Specifically, if $b$ is our random effect for the spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ is $f(x \mid b)$ (just our regular likelihoot that treats $b$ as a parameter) and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood is
+$$
+f(x, b) = f(x \mid b) f_{\lambda}(b)
+$$
+and the negative log-likelihood becomes $- \log(f(x \mid b)) - \log(f_{\lambda}(b))$. This is what we implement below.
+
+Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`. It differs from `RTMB`'s `dgmrf()` by not expecting a *sparse* precision matrix and being more robust for rank-deficient penalty matrices, which are typical for penalized splines. I did implement `dgmrf2()` because I felt like `dgmrf()` was very inconvenient for spline models, which is not surprising as it was not designed for this, but for Gaussian-Markov random fields (big surprise).
 We also have to include the log of our penalty strength as a parameter now.
 
 ```{r todpar3}
@@ -327,33 +373,35 @@ par = list(logmu = log(c(0.3, 1)),
            betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2),
            loglambda = rep(log(1000), 2)) # include as parameter
 
-dat$S = S[[1]] # dgmrf2() cannot work with lists
+dat$S = S[[1]] # dgmrf2() cannot work with lists (returned by mgcv per default)
 ```
 
 ```{r mllk4}
 jnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
-  delta = stationary_p(Gamma, t = tod[1], ad = TRUE) # p-stationary start
+  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE); ADREPORT(Gamma)
+  Delta = stationary_p(Gamma, ad = TRUE); ADREPORT(Delta)
+  delta = Delta[tod[1],]
   # exponentiating because all parameters strictly positive
-  mu = exp(logmu)
-  sigma = exp(logsigma)
-  kappa = exp(logkappa)
-  # report statements for later use
-  REPORT(mu)
-  REPORT(sigma)
-  REPORT(kappa)
+  mu = exp(logmu); REPORT(mu)
+  sigma = exp(logsigma); REPORT(sigma)
+  kappa = exp(logkappa); REPORT(kappa)
   # calculating all state-dependent densities
   allprobs = matrix(1, nrow = length(step), ncol = N)
   ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  
   -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) -
-    sum(dgmrf2(betaspline, 0, S, exp(loglambda), log = TRUE)) 
+    sum(dgmrf2(betaspline, 0, S, exp(loglambda), log = TRUE)) # just like any other density in R
 }
 ```
+
+To create the objective function, we need to tell `RTMB` that `betaspline` is a random effect such that it is integrated out and as our objective function we have the marginal likelihood
+$$
+f(x) = \int f(x, b) db.
+$$
+(actually the negative log of $f(x)$.
 
 ```{r refit, message = FALSE}
 obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
@@ -375,6 +423,8 @@ lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
 ```
 
 ### Common issues with `RTMB`
+
+There are some problems with `RTMB` one has to keep in mind. They can be a bit annoying, but in my opinion the benefits of automatic differentiation far outweigh the drawbacks. I list the main ones I have encountered here. Please tell me if you encounter more.
 
 A typical issue with `RTMB` is that some operators might need to be overloaded to allow for automatic differentiation. In typical model setups `LaMa` functions do this themselves, but if you go a very individualistic route and get an error like 
 ```{r error, echo = FALSE}

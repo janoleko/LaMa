@@ -61,7 +61,7 @@ stationary_p = function(Gamma, t = NULL, ad = FALSE){
       Delta[1,] = stationary(GammaT)
       
       for(t in 2:L){
-        Delta[t,] = Delta[t-1,] %*% Gamma[,,t-1]
+        Delta[t,] = c(t(Delta[t-1,]) %*% Gamma[,,t-1])
       }
       colnames(Delta) = paste("state", 1:N)
       return(Delta)

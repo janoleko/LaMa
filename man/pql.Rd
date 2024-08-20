@@ -26,7 +26,7 @@ pql(
 \item{dat}{Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If initial penalty strength vector is not called \code{lambda}, you need to specify its name in \code{dat}. 
 Its length needs to match the to the total number of random effects.}
 
-\item{random}{Vector of names of the random effects in \code{par} that are penalized.}
+\item{random}{Vector of names of the random effects in \code{par} that are penalized. Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{penalty()} inside the likelihood function.}
 
 \item{penalty}{Name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
 

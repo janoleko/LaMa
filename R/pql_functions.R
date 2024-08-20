@@ -22,7 +22,7 @@ reshape_lambda <- function(num_elements, lambda) {
 #' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
 #' Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 #' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}.
+#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{pql}.
 #' @param S Penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.
 #' @param lambda Penalty strength parameter. Vector that has a length corresponding to the total number of random effects/ spline coefficients in \code{re_coef}.
 #'
@@ -45,60 +45,58 @@ reshape_lambda <- function(num_elements, lambda) {
 #' lambda = c(1,1,2) # length = total number of random effects
 #' penalty(re, S, lambda)
 penalty = function(re_coef, S, lambda) {
-  "[<-" <- ADoverload("[<-") # currently necessary
+  # "[<-" <- ADoverload("[<-") # currently necessary
   
-  # convert paramter matrix to list of length 1 if necessary  
-  if(!is.list(re_coef)) re_coef = list(re_coef)
+  # Convert re_coef to a list of matrices (even if originally a vector)
+  if (!is.list(re_coef)) {
+    re_coef = list(re_coef)
+  }
   
-  # number of distinct random effects (of same structure)
-  n_re = length(re_coef) 
-  
-  # get number of similar random effects for each distinct random effect (of same structure)
-  re_lengths = sapply(re_coef, function(x) if (is.vector(x)) 1 else nrow(x))
-  
-  # reshape penalty to match structure of random effects
-  lambda_list = reshape_lambda(re_lengths, lambda)
-  
-  # convert penalty matrix to list of length n_re if necessary
-  if(is.list(S)) {
-    if(length(S) == 1) {
-      S = rep(S, n_re)
+  re_coef = lapply(re_coef, function(x) {
+    if (is.vector(x)) {
+      matrix(x, nrow = 1)  # Convert vectors to 1-row matrices
+    } else {
+      x  # Leave matrices unchanged
     }
-  } else if(is.matrix(S)) {
+  })
+  
+  # Get number of distinct random effects (of the same structure)
+  n_re = length(re_coef)
+  
+  # Get the number of similar random effects for each distinct random effect
+  re_lengths = sapply(re_coef, nrow)  # All elements are matrices now
+  
+  # Precompute start and end indices for lambda
+  end = cumsum(re_lengths)
+  start = c(1, end[-length(end)] + 1)
+  
+  # Ensure S is a list of length n_re, replicating it if necessary
+  if (!is.list(S)) {
     S = list(S)
+  }
+  if (length(S) == 1) {
     S = rep(S, n_re)
   }
   
-  # RTMB::REPORT(lambda) # lambda is reported
-  RTMB::REPORT(S) # penalty matrix list is reported
+  RTMB::REPORT(S) # Report penalty matrix list
   
-  Pen = list() # penalty list that is reported and used for update in pql
-  pen = 0 # initializing penalty that will be returned
+  # Initialize penalty variables
+  Pen = vector("list", n_re)
+  pen = 0
   
-  # loop over distinct random effects - each either vector or matrix
-  for(i in 1:n_re){
+  # Loop over distinct random effects - each now a matrix
+  for (i in 1:n_re) {
+    current_re = re_coef[[i]]  # current_re is always a matrix now
     
-    if(is.vector(re_coef[[i]])){
-      current_re = matrix(re_coef[[i]], nrow = 1)
-    } else{
-      current_re = re_coef[[i]]
-    }
+    # Vectorized calculation of penalty for each random effect
+    quadform = rowSums(current_re %*% S[[i]] * current_re)
+    Pen[[i]] = quadform
     
-    Pen[[i]] = numeric(re_lengths[i])
-    
-    # for each distinct random effect loop over rows and compute penalty
-    for(j in 1:nrow(current_re)){
-      re = current_re[j,]
-      
-      # quadform
-      Pen[[i]][j] = crossprod(re, S[[i]] %*% re)
-      
-      # overall penalty
-      pen = pen + lambda_list[[i]][j] * Pen[[i]][j]
-    }
+    # Apply lambda directly using precomputed indices
+    pen = pen + sum(lambda[start[i]:end[i]] * quadform)
   }
   
-  RTMB::REPORT(Pen) # reporting the penalty list for pql update
+  RTMB::REPORT(Pen) # Report the penalty list for pql update
   
   0.5 * pen
 }
@@ -114,7 +112,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param par Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
 #' @param dat Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If initial penalty strength vector is not called \code{lambda}, you need to specify its name in \code{dat}. 
 #' Its length needs to match the to the total number of random effects.
-#' @param random Vector of names of the random effects in \code{par} that are penalized.
+#' @param random Vector of names of the random effects in \code{par} that are penalized. Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{penalty()} inside the likelihood function.
 #' @param penalty Name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.
 #' @param maxiter Maximum number of iterations.
@@ -212,7 +210,8 @@ pql = function(pnll, # penalized negative log-likelihood function
   }
   
   # creating the RTMB objective function
-  cat("Creating AD function\n")
+  if(silent %in% 1:2) cat("Creating AD function\n")
+  
   obj = MakeADFun(func = f, parameters = par, silent = TRUE) # silent and replacing with own prints
   newpar = obj$par # saving initial paramter value as vector to initialize optimization in loop
   

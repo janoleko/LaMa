@@ -261,7 +261,8 @@ pql = function(pnll, # penalized negative log-likelihood function
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     opt = stats::optim(newpar, obj$fn, newgrad, 
-                       method = "BFGS", control = list(reltol = inner_tol))
+                       method = "BFGS", 
+                       control = list(reltol = inner_tol, maxit = 500))
     
     # setting new optimum par for next iteration
     newpar = opt$par 
@@ -284,7 +285,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     # looping over distinct random effects (matrices)
     for(i in 1:n_re){
       # initializing lambda vector for i-th random effect
-      lambdas_k[[i]] = numeric(nrow(re_inds[[i]])) 
+      lambdas_k[[i]] = numeric(nrow(re_inds[[i]]))
       
       # looping over similar random effects
       for(j in 1:nrow(re_inds[[i]])){

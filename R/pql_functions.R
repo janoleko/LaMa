@@ -219,7 +219,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   if(silent == 0){
     newgrad = function(par){
       gr = obj$gr(par)
-      cat(" inner mgc:", max(abs(gr)),"\n")
+      cat(" inner mgc:", max(abs(gr)), "\n")
       gr
     }
   } else{

@@ -210,7 +210,7 @@ pql = function(pnll, # penalized negative log-likelihood function
   }
   
   # creating the RTMB objective function
-  if(silent %in% 1:2) cat("Creating AD function\n")
+  if(silent %in% 0:1) cat("Creating AD function\n")
   
   obj = MakeADFun(func = f, parameters = par, silent = TRUE) # silent and replacing with own prints
   newpar = obj$par # saving initial paramter value as vector to initialize optimization in loop

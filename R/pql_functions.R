@@ -337,6 +337,9 @@ pql = function(pnll, # penalized negative log-likelihood function
   # assign final lambda to return object
   mod[[penalty]] = lambda
   
+  # assigning all lambdas to return object
+  mod[[paste0("all_", penalty)]] = Lambdas
+  
   # calculating unpenalized log-likelihood at final parameter values
   lambda = rep(0, length(lambda))
   dat[[penalty]] = lambda

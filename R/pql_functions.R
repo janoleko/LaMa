@@ -167,8 +167,8 @@ pql = function(pnll, # penalized negative log-likelihood function
                penalty = "lambda", # name given to the penalty parameter in dat
                alpha = 0, # exponential smoothing parameter
                maxiter = 100, # maximum number of iterations
-               tol = 1e-4, # tolerance for convergence
-               inner_tol = 1e-8, # tolerance for inner optimization
+               tol = 1e-5, # tolerance for convergence
+               inner_tol = 1e-10, # tolerance for inner optimization
                silent = 1, # print level
                saveall = FALSE) # save all intermediate models?
 {

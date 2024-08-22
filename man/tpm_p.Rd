@@ -30,9 +30,9 @@ Array of transition probability matrices of dimension c(N,N,length(tod))
 }
 \description{
 Given a periodically varying variable such as time of day or day of year and the associated cycle length, 
-this function calculates the transition probability matrices by applying the inverse multinomial logistic link to linear predictors of the form \cr \cr
-\eqn{ 
- \eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L}) \bigr) } \cr \cr
+this function calculates the transition probability matrices by applying the inverse multinomial logistic link to linear predictors of the form
+\deqn{ 
+ \eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L}) \bigr) }
 for the off-diagonal elements (\eqn{i \neq j}).
 This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing \eqn{K}).
 }

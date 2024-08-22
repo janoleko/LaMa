@@ -19,8 +19,8 @@ Either the periodically stationary distribution at time t or all periodically st
 }
 \description{
 If the transition probability matrix of an inhomogeneous Markov chain varies only periodically (with period length \eqn{L}), it converges to a so-called periodically stationary distribution. 
-This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix \cr\cr
-\eqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L}. \cr \cr
+This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix
+\deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}
 The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t = \delta^{(t)}}. \cr
 This function calculates the periodically stationary distribution.
 }

@@ -1,8 +1,8 @@
 #' Calculation of continuous time transition probabilities
 #'
 #' A continuous-time Markov chain is described by an infinitesimal generator matrix \eqn{Q}. 
-#' When observing data at time points \eqn{t_1, \dots, t_n} the transition probabilites between \eqn{t_i} and \eqn{t_{i+1}} are caluclated as \cr \cr
-#' \eqn{\Gamma(\Delta t_i) = \exp(Q \Delta t_i)}, \cr \cr
+#' When observing data at time points \eqn{t_1, \dots, t_n} the transition probabilites between \eqn{t_i} and \eqn{t_{i+1}} are caluclated as
+#' \deqn{\Gamma(\Delta t_i) = \exp(Q \Delta t_i),}
 #' where \eqn{\exp()} is the matrix exponential. The mapping \eqn{\Gamma(\Delta t)} is also called the Markov semigroup.
 #' This function calculates all transition matrices based on a given generator and time differences.
 #'

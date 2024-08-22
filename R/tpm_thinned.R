@@ -1,8 +1,8 @@
 #' Compute the transition probability matrix of a thinned periodically inhomogeneous Markov chain.
 #'
 #' If the transition probability matrix of an inhomogeneous Markov chain varies only periodically (with period length \eqn{L}), it converges to a so-called periodically stationary distribution. 
-#' This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix \cr\cr
-#' \eqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L}. \cr \cr
+#' This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix
+#' \deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}
 #' This function calculates the matrix above efficiently as a preliminery step to calculating the periodically stationary distribution.
 #'
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,L).

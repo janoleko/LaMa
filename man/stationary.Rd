@@ -14,8 +14,8 @@ Stationary distribution of the Markov chain with the given transition probabilit
 }
 \description{
 A homogeneous, finite state Markov chain that is irreducible and aperiodic converges to a unique stationary distribution, here called \eqn{\delta}.
-As it is stationary, this distribution satisfies \cr \cr
-\eqn{\delta \Gamma = \delta}, subject to \eqn{\sum_{j=1}^N \delta_j = 1}, \cr \cr
+As it is stationary, this distribution satisfies
+\deqn{\delta \Gamma = \delta,} subject to \eqn{\sum_{j=1}^N \delta_j = 1},
 where \eqn{\Gamma} is the transition probability matrix. 
 This function solves the linear system of equations above.\cr
 

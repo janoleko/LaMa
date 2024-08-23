@@ -41,7 +41,7 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
   # extract parameter list from sdreport
   parlist = as.list(sdr, "Estimate")
   # save parameter list skeleton to reshape later
-  skeleton = as.relistable(parlist)
+  skeleton = utils::as.relistable(parlist)
   # save parameter names
   parnames = names(parlist)
   # turn estimated parameter list into vector
@@ -62,18 +62,18 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
   if(length(whatpar) > 0){
     if(length(whatpar) == 1){
       Samplepars1 = lapply(1:n, function(t){
-        samplelist = relist(simpars[t,], skeleton)
+        samplelist = utils::relist(simpars[t,], skeleton)
         samplelist[[whatpar]]})
       
-      Samplepars = setNames(vector("list", length(whatpar)), whatpar)
+      Samplepars = stats::setNames(vector("list", length(whatpar)), whatpar)
       Samplepars[[1]] = Samplepars1
     } else{
       Samplepars1 = lapply(1:n, function(t){
-        samplelist = relist(simpars[t,], skeleton)
+        samplelist = utils::relist(simpars[t,], skeleton)
         samplelist[whatpar]})
       
       # create list skeleton, first layer: what, second layer: samples
-      Samplepars = setNames(vector("list", length(whatpar)), whatpar)
+      Samplepars = stats::setNames(vector("list", length(whatpar)), whatpar)
       
       # reshaping
       for (name in whatpar) {
@@ -108,7 +108,7 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
     cat("Sampling reported quantities...\n")
     if(length(whatreport) == 1){
       Samplereports1 = lapply(1:n, function(t) obj$report(simpars[t,])[[whatreport]])
-      Samplereports = setNames(vector("list", length(whatreport)), whatreport)
+      Samplereports = stats::setNames(vector("list", length(whatreport)), whatreport)
       Samplereports[[1]] = Samplereports1
     } else {
       Samplereports1 = lapply(1:n, function(t){
@@ -116,7 +116,7 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
         reportlist[whatreport]})
       
       # create list skeleton, first layer: what, second layer: samples
-      Samplereports = setNames(vector("list", length(whatreport)), whatreport)
+      Samplereports = stats::setNames(vector("list", length(whatreport)), whatreport)
       
       # reshaping
       for (name in whatreport) {
@@ -162,11 +162,11 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
       for(i in 1:length(Samplepars)){
         thisSamplepars = Samplepars[[i]]
         if(is.vector(thisSamplepars)){
-          qthisSamplepars = quantile(thisSamplepars, probs)
+          qthisSamplepars = stats::quantile(thisSamplepars, probs)
         } else if(is.matrix(thisSamplepars)){
-          qthisSamplepars = apply(thisSamplepars, 2, quantile, probs)
+          qthisSamplepars = apply(thisSamplepars, 2, stats::quantile, probs)
         } else if(is.array(thisSamplepars) & !is.matrix(thisSamplepars)){
-          qthisSamplepars = apply(thisSamplepars, 1:(length(dim(thisSamplepars))-1), quantile, probs)
+          qthisSamplepars = apply(thisSamplepars, 1:(length(dim(thisSamplepars))-1), stats::quantile, probs)
         }
         CIpar[[i]] = qthisSamplepars
       }
@@ -177,11 +177,11 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
       for(i in 1:length(Samplereports)){
         thisSamplereports = Samplereports[[i]]
         if(is.vector(thisSamplereports)){
-          qthisSamplereports = quantile(thisSamplereports, probs)
+          qthisSamplereports = stats::quantile(thisSamplereports, probs)
         } else if(is.matrix(thisSamplereports)){
-          qthisSamplereports = apply(thisSamplereports, 2, quantile, probs)
+          qthisSamplereports = apply(thisSamplereports, 2, stats::quantile, probs)
         } else if(is.array(thisSamplepars) & !is.matrix(thisSamplepars)){
-          qthisSamplereports = apply(thisSamplereports, 1:(length(dim(thisSamplereports))-1), quantile, probs)
+          qthisSamplereports = apply(thisSamplereports, 1:(length(dim(thisSamplereports))-1), stats::quantile, probs)
         }
         CIreport[[i]] = qthisSamplereports
       }

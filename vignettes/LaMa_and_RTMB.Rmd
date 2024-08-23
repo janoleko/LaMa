@@ -354,7 +354,7 @@ There are some rules to follow when using `pql()`:
 
 ```{r pql, message = FALSE}
 system.time(
-  mod3 <- pql(pnll, par, dat, random = "betaspline")
+  mod3 <- qreml(pnll, par, dat, random = "betaspline")
 )
 ```
 The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day -- I now ignore confidence bands due to laziness.
@@ -425,7 +425,7 @@ par$loglambda = log(rep(100, 2))
 
 To create the objective function, we need to tell `RTMB` that `betaspline` is a random effect such that it is integrated out and as our objective function we have the marginal likelihood
 $$
-f(x) = \int f(x, b) db,
+f(x) = \int f(x, b) \,db,
 $$
 actually its negative log of course.
 

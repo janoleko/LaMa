@@ -28,7 +28,8 @@ Imports:
     Matrix,
     stats,
     utils,
-    MASS
+    MASS,
+    mvtnorm
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

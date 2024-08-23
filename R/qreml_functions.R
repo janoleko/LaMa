@@ -1,4 +1,4 @@
-# helper function for penalty and pql
+# helper function for penalty and qreml
 reshape_lambda <- function(num_elements, lambda) {
   start <- 1
   result <- lapply(num_elements, function(len) {
@@ -15,18 +15,18 @@ reshape_lambda <- function(num_elements, lambda) {
 #'
 #' This function computes penalties of the form
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-#' and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via penalized quasi-likelihood (PQL) with the \code{pql()} function.
+#' and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
 #'
 #' @param re_coef Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
 #' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
 #' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
 #' Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 #' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{pql}.
+#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{qreml()}.
 #' @param S Penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.
 #' @param lambda Penalty strength parameter. Vector that has a length corresponding to the total number of random effects/ spline coefficients in \code{re_coef}.
 #'
-#' @return Returns the penalty value and reports to \code{pql()} for a seamless experience.
+#' @return Returns the penalty value and reports to \code{qreml()} for a seamless experience.
 #' @export
 #' 
 #' @import RTMB
@@ -96,16 +96,16 @@ penalty = function(re_coef, S, lambda) {
     pen = pen + sum(lambda[start[i]:end[i]] * quadform)
   }
   
-  RTMB::REPORT(Pen) # Report the penalty list for pql update
+  RTMB::REPORT(Pen) # Report the penalty list for qreml update
   
   0.5 * pen
 }
 
-#' Penalized quasi-likelihood (PQL) algorithm for models with simple random effects
+#' Quasi restricted maximum likelihood (qREML) algorithm for models with penalized splines or simple i.i.d. random effects
 #'
 #' This algorithm can be used very flexible to fit statistical models that involves \strong{penalized splines} or simple \strong{i.i.d. random effects} with \code{RTMB} that have penalties of the form
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-#' PQL is typically much faster than the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
+#' qREML is typically much faster than the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
 #' The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the penalty inside the likelihood.
 #'
 #' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.
@@ -159,8 +159,8 @@ penalty = function(re_coef, S, lambda) {
 #'   penalty(betaspline, S, lambda) # this does all the penalization work
 #'}
 #' # model fitting
-#' mod = pql(pnll, par, dat, random = "betaspline")
-pql = function(pnll, # penalized negative log-likelihood function
+#' mod = qreml(pnll, par, dat, random = "betaspline")
+qreml = function(pnll, # penalized negative log-likelihood function
                par, # initial parameter list
                dat, # initial dat object, currently needs to be called dat!
                random, # names of parameters in par that are random effects/ penalized
@@ -316,6 +316,7 @@ pql = function(pnll, # penalized negative log-likelihood function
     }
     
     # convergence check
+    # if(all(abs(lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol)){
     if(max(abs(lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol){
       if(silent < 2){
         cat("Converged\n")

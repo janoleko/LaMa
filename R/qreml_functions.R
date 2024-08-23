@@ -261,7 +261,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     opt = stats::optim(newpar, obj$fn, newgrad, 
-                       method = "BFGS", 
+                       method = "BFGS", hessian = TRUE, # return hessian in the end
                        control = list(reltol = inner_tol, maxit = 1000))
     
     # setting new optimum par for next iteration
@@ -271,7 +271,8 @@ qreml = function(pnll, # penalized negative log-likelihood function
     mod = obj$report() 
     
     # evaluating current Hessian
-    J = obj$he()
+    # J = obj$he()
+    J = opt$hessian
     
     # computing Fisher information matrix
     J_inv = MASS::ginv(J) 

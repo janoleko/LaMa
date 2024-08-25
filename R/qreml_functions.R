@@ -278,7 +278,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
     J_inv = MASS::ginv(J) 
     
     # saving entire model object
-    allmods[[k]] = mod 
+    if(saveall){
+      allmods[[k]] = mod
+    }
     
     ## updating all lambdas
     lambdas_k = list() # temporary lambda list

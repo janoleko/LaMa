@@ -15,7 +15,8 @@ reshape_lambda <- function(num_elements, lambda) {
 #'
 #' This function computes penalties of the form
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-#' and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
+#' and is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
+#' For \code{qreml()} to work, the likelihood function needs to be compatible with the \code{RTMB} package to enable automatic differentiation.
 #'
 #' @param re_coef Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
 #' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
@@ -104,9 +105,9 @@ penalty = function(re_coef, S, lambda) {
 #' Quasi restricted maximum likelihood (qREML) algorithm for models with penalized splines or simple i.i.d. random effects
 #'
 #' This algorithm can be used very flexibly to fit statistical models that involves \strong{penalized splines} or simple \strong{i.i.d. random effects} with \code{RTMB} that have penalties of the form
-#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
+#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i.}
 #' qREML is typically much faster than the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
-#' The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the penalty inside the likelihood.
+#' The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the quadratic-form-penalty inside the likelihood.
 #'
 #' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.
 #' @param par Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
@@ -161,16 +162,16 @@ penalty = function(re_coef, S, lambda) {
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
 qreml = function(pnll, # penalized negative log-likelihood function
-               par, # initial parameter list
-               dat, # initial dat object, currently needs to be called dat!
-               random, # names of parameters in par that are random effects/ penalized
-               penalty = "lambda", # name given to the penalty parameter in dat
-               alpha = 0, # exponential smoothing parameter
-               maxiter = 100, # maximum number of iterations
-               tol = 1e-5, # tolerance for convergence
-               inner_tol = 1e-10, # tolerance for inner optimization
-               silent = 1, # print level
-               saveall = FALSE) # save all intermediate models?
+                 par, # initial parameter list
+                 dat, # initial dat object, currently needs to be called dat!
+                 random, # names of parameters in par that are random effects/ penalized
+                 penalty = "lambda", # name given to the penalty parameter in dat
+                 alpha = 0, # exponential smoothing parameter
+                 maxiter = 100, # maximum number of iterations
+                 tol = 1e-5, # tolerance for convergence
+                 inner_tol = 1e-10, # tolerance for inner optimization
+                 silent = 1, # print level
+                 saveall = FALSE) # save all intermediate models?
 {
   
   # setting the argument name for par because later updated par is returned
@@ -274,7 +275,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     # J = obj$he()
     J = opt$hessian
     
-    # computing Fisher information matrix
+    # computing inverse Hessian
     J_inv = MASS::ginv(J) 
     
     # saving entire model object
@@ -434,3 +435,4 @@ qreml = function(pnll, # penalized negative log-likelihood function
   
   return(mod)
 }
+

@@ -24,7 +24,8 @@ Returns the penalty value and reports to \code{qreml()} for a seamless experienc
 \description{
 This function computes penalties of the form
 \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-and is intended to be used inside the penalized negative log-likelihood function when fitting models with splines or simple random effects with \code{RTMB} via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
+and is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
+For \code{qreml()} to work, the likelihood function needs to be compatible with the \code{RTMB} package to enable automatic differentiation.
 }
 \examples{
 # Example with a single random effect

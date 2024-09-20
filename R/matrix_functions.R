@@ -100,7 +100,8 @@ make_matrices_dens = function(x, K, degree = 3, npoints = 1e4, diff_order = 2){
   S = t(L[,-1])%*%L[,-1] # leaving out first column
   cat("Leaving out first column of S, fix first column of parameter matrix at zero!")
   
-  list(Z=B, S = S, knots=knots, w=w, degree = degree, basis_pos = basis_pos)
+  basis = list(knots = knots, w = w, degree = degree, basis_pos = basis_pos)
+  list(Z=B, S = S, basis = basis)
 }
 
 #' Build the prediction design matrix for a new data vector based on model_matrices object created by \code{make_matrices_dens()}
@@ -115,9 +116,9 @@ make_matrices_dens = function(x, K, degree = 3, npoints = 1e4, diff_order = 2){
 #' modmat = make_matrices_dens(x = 1:100, K = 20)
 #' pred_matrix_dens(modmat, xnew = 1:100 - 0.5)
 pred_matrix_dens = function(model_matrices, xnew){
-  knots = model_matrices$knots
-  degree = model_matrices$degree
-  w = model_matrices$w
+  knots = model_matrices$basis$knots
+  degree = model_matrices$basis$degree
+  w = model_matrices$basis$w
   
   B = splines::spline.des(knots, xnew, degree+1, outer.ok=T)$design
   sweep(B, 2, w, FUN = "*")

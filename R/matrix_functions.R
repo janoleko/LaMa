@@ -98,7 +98,7 @@ make_matrices_dens = function(x, K, degree = 3, npoints = 1e4, diff_order = 2){
   ## building the penalty matrix
   L = diff(diag(K), differences = diff_order) # second-order difference matrix
   S = t(L[,-1])%*%L[,-1] # leaving out first column
-  cat("Leaving out first column of S, fix first column of parameter matrix at zero!")
+  cat("Leaving out first column of the penalty matrix, fix the first spline coefficient at zero!")
   
   basis = list(knots = knots, w = w, degree = degree, basis_pos = basis_pos)
   list(Z=B, S = S, basis = basis)

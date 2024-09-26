@@ -343,23 +343,23 @@ par = list(logmu = log(c(0.3, 2.5)),
 dat$lambda = rep(100, 2)
 ```
 
-The model fit can then be conducted by using the `pql()` function contained in `LaMa`, PQL standing for penalized quasi-likelihood. Under the hood, `pql()` also constructs an AD function with `RTMB` but uses the PQL algorithm described in Koslik, 2024 to fit the model. We have to tell the `pql()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`, qREML standing for penalized quasi-likelihood. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the qREML algorithm described in Koslik, 2024 to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
-There are some rules to follow when using `pql()`:
+There are some rules to follow when using `qreml()`:
 
 1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as all the likelihood functions in our vignette -- most importantly, it should only be a function of the parameter list.
 3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of betaspline, but if we additionally had a different spline coefficient in our parameter list (that may have a different length and a differnt penalty matrix), we would have needed more elements in `lambda`.
 4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalized, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
-5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged by row, i.e. each row is one spline coefficient vector. If it is arranged by column, `pql()` will fail.
+5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged by row, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail.
 
-```{r pql, message = FALSE}
+```{r qreml, message = FALSE}
 system.time(
   mod3 <- qreml(pnll, par, dat, random = "betaspline")
 )
 ```
 The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day -- I now ignore confidence bands due to laziness.
 
-```{r results pql, fig.width = 8, fig.height = 5}
+```{r results qreml, fig.width = 8, fig.height = 5}
 sdr = sdreport(mod3$obj)
 Gamma = as.list(sdr, "Estimate", report = TRUE)$Gamma
 Delta = as.list(sdr, "Estimate", report = TRUE)$Delta
@@ -386,7 +386,7 @@ We see that by allowing for a more flexible relationship, the estimated time of 
 
 Lastly, we could have achieved the fit above using the slightly more accurate full Laplace approximation method which can be used to fit models via marginal maximum likelihood estimation by integrating random effects. This is natively supported by `RTMB` -- and actually one of its core selling points and the standard way we can now deal with general random effects. 
 
-Indeed, the PQL algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yiedling a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects.
+Indeed, the qREML algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yiedling a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects.
 
 We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihoot that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as
 $$

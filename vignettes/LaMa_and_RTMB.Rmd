@@ -429,7 +429,7 @@ f(x) = \int f(x, b) \,db,
 $$
 actually its negative log of course.
 
-```{r refit, message = FALSE}
+```{r refit, message = FALSE, cache = TRUE}
 obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
 system.time(
   opt4 <- nlminb(obj4$par, obj4$fn, obj4$gr)

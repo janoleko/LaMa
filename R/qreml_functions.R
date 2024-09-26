@@ -87,8 +87,7 @@ reshape_lambda <- function(num_elements, lambda) {
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
 penalty = function(re_coef, S, lambda) {
-  # "[<-" <- ADoverload("[<-") # currently necessary
-  
+
   # Convert re_coef to a list of matrices (even if originally a vector)
   if (!is.list(re_coef)) {
     re_coef = list(re_coef)
@@ -320,7 +319,6 @@ qreml = function(pnll, # penalized negative log-likelihood function
   for(k in 1:maxiter){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
-
     opt = stats::optim(newpar, obj$fn, newgrad, 
                        method = "BFGS", hessian = TRUE, # return hessian in the end
                        control = control)

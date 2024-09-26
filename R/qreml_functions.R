@@ -176,29 +176,29 @@ penalty = function(re_coef, S, lambda) {
 #' @import RTMB
 #'
 #' @examples
-#'data = elephant[1:1000,] # subset
+#' data = elephant[1:1000,] # subset
 #'
-#'# initial parameter list
-#'par = list(logmu = log(c(0.3, 1)), # step mean
-#'           logsigma = log(c(0.2, 0.7)), # step sd
-#'           beta0 = c(-2,2), # state process intercept
-#'           betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
+#' # initial parameter list
+#' par = list(logmu = log(c(0.3, 1)), # step mean
+#'            logsigma = log(c(0.2, 0.7)), # step sd
+#'            beta0 = c(-2,2), # state process intercept
+#'            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
 #'           
-#'# data object with initial penalty strength lambda
-#'dat = list(step = data$step, # step length
-#'           tod = data$tod, # time of day covariate
-#'           N = 2, # number of states
-#'           lambda = rep(10,2)) # initial penalty strength
+#' # data object with initial penalty strength lambda
+#' dat = list(step = data$step, # step length
+#'            tod = data$tod, # time of day covariate
+#'            N = 2, # number of states
+#'            lambda = rep(10,2)) # initial penalty strength
 #'
-#'# building model matrices
-#'modmat = make_matrices(~ s(tod, bs = "cp"), 
-#'                       data = data.frame(tod = 1:24), 
-#'                       knots = list(tod = c(0,24))) # wrapping points
-#'dat$Z = modmat$Z # spline design matrix
-#'dat$S = modmat$S # penalty matrix
+#' # building model matrices
+#' modmat = make_matrices(~ s(tod, bs = "cp"), 
+#'                        data = data.frame(tod = 1:24), 
+#'                        knots = list(tod = c(0,24))) # wrapping points
+#' dat$Z = modmat$Z # spline design matrix
+#' dat$S = modmat$S # penalty matrix
 #'
-#'# penalized negative log-likelihood function
-#'pnll = function(par) {
+#' # penalized negative log-likelihood function
+#' pnll = function(par) {
 #'   getAll(par, dat) # makes everything contained available without $
 #'   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
 #'   delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
@@ -210,7 +210,7 @@ penalty = function(re_coef, S, lambda) {
 #'   for(j in 1:N) allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])
 #'   -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
 #'       penalty(betaspline, S, lambda) # this does all the penalization work
-#'}
+#' }
 #'
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")

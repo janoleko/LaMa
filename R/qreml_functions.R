@@ -13,21 +13,22 @@ reshape_lambda <- function(num_elements, lambda) {
 
 #' Computes penalty based on quadratic form
 #'
-#' This function computes penalties of the form
-#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-#' and is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
-#' For \code{qreml()} to work, the likelihood function needs to be compatible with the \code{RTMB} package to enable automatic differentiation.
+#' This function computes quadratic penalties of the form
+#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
+#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
+#' It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
+#' For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
 #'
-#' @param re_coef Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
+#' @param re_coef Coefficient vector/ matrix or list of coefficient vectors/ matrices.\cr\cr
 #' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
-#' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
+#' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
 #' Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 #' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{qreml()}.
-#' @param S Penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.
-#' @param lambda Penalty strength parameter. Vector that has a length corresponding to the total number of random effects/ spline coefficients in \code{re_coef}.
+#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.
+#' @param S Fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.
+#' @param lambda Penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}. E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.
 #'
-#' @return Returns the penalty value and reports to \code{qreml()} for a seamless experience.
+#' @return Returns the penalty value and reports to \code{\link{qreml}}.
 #' @export
 #' 
 #' @import RTMB
@@ -45,6 +46,46 @@ reshape_lambda <- function(num_elements, lambda) {
 #' S = list(diag(5), diag(4))
 #' lambda = c(1,1,2) # length = total number of random effects
 #' penalty(re, S, lambda)
+#' 
+#' # Full model-fitting example
+#' data = elephant[1:1000,] # subset
+#'
+#' # initial parameter list
+#' par = list(logmu = log(c(0.3, 1)), # step mean
+#'            logsigma = log(c(0.2, 0.7)), # step sd
+#'            beta0 = c(-2,2), # state process intercept
+#'            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
+#'           
+#' # data object with initial penalty strength lambda
+#' dat = list(step = data$step, # step length
+#'            tod = data$tod, # time of day covariate
+#'            N = 2, # number of states
+#'            lambda = rep(10,2)) # initial penalty strength
+#'
+#' # building model matrices
+#' modmat = make_matrices(~ s(tod, bs = "cp"), 
+#'                        data = data.frame(tod = 1:24), 
+#'                        knots = list(tod = c(0,24))) # wrapping points
+#' dat$Z = modmat$Z # spline design matrix
+#' dat$S = modmat$S # penalty matrix
+#'
+#' # penalized negative log-likelihood function
+#' pnll = function(par) {
+#'   getAll(par, dat) # makes everything contained available without $
+#'   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
+#'   delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
+#'   mu = exp(logmu) # step mean
+#'   sigma = exp(logsigma) # step sd
+#'   # calculating all state-dependent densities
+#'   allprobs = matrix(1, nrow = length(step), ncol = N)
+#'   ind = which(!is.na(step)) # only for non-NA obs.
+#'   for(j in 1:N) allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])
+#'   -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+#'       penalty(betaspline, S, lambda) # this does all the penalization work
+#' }
+#'
+#' # model fitting
+#' mod = qreml(pnll, par, dat, random = "betaspline")
 penalty = function(re_coef, S, lambda) {
   # "[<-" <- ADoverload("[<-") # currently necessary
   
@@ -104,21 +145,28 @@ penalty = function(re_coef, S, lambda) {
 
 #' Quasi restricted maximum likelihood (qREML) algorithm for models with penalized splines or simple i.i.d. random effects
 #'
-#' This algorithm can be used very flexibly to fit statistical models that involves \strong{penalized splines} or simple \strong{i.i.d. random effects} with \code{RTMB} that have penalties of the form
-#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i.}
-#' qREML is typically much faster than the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
-#' The user has to specify the penalized negative log-likelihood function \code{pnll} structured as dictated by \code{RTMB} and use the \code{penalty} function contained in \code{LaMa} to compute the quadratic-form-penalty inside the likelihood.
+#' This algorithm can be used very flexibly to fit statistical models that involve \strong{penalized splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
+#' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
+#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
+#' The \strong{qREML} algorithm is typically much faster than REML or marginal ML using the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
+#' Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimization.
+#' The user has to specify the \strong{penalized negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function contained in \code{LaMa} to compute the quadratic-form penalty inside the likelihood.
 #'
-#' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{penalty} function from \code{LaMa} to compute the penalty.
+#' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty.
+#' Needs to be a function of the named list of initial parameters \code{par} only.
 #' @param par Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
-#' @param dat Initial data list, that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If initial penalty strength vector is not called \code{lambda}, you need to specify its name in \code{dat}. 
+#' @param dat Initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
 #' Its length needs to match the to the total number of random effects.
-#' @param random Vector of names of the random effects in \code{par} that are penalized. Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{penalty()} inside the likelihood function.
-#' @param penalty Name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
-#' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations.
-#' @param maxiter Maximum number of iterations.
+#' @param random Vector of names of the random effects in \code{par} that are penalized.
+#' 
+#' Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
+#' @param penalty Optional, name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
+#' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations. Defaults to no smoothing.
+#' @param maxiter Maximum number of iterations in the outer optimization over the penalty strength parameters.
 #' @param tol Convergence tolerance for the penalty strength parameters.
-#' @param inner_tol Convergence tolerance for the inner optimization.
+#' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimization. Here, \code{optim} uses the BFGS method which cannot be changed.
+#' 
+#' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
 #' @param silent Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param saveall Logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.
 #'
@@ -129,36 +177,41 @@ penalty = function(re_coef, S, lambda) {
 #'
 #' @examples
 #'data = elephant[1:1000,] # subset
+#'
 #'# initial parameter list
-#'par = list(logmu = log(c(0.3, 1)), 
-#'           logsigma = log(c(0.2, 0.7)),
-#'           logkappa = log(c(0.2, 0.7)),
-#'           beta0 = c(-2,2),
-#'           betaspline = matrix(rep(0, 18), nrow = 2))
+#'par = list(logmu = log(c(0.3, 1)), # step mean
+#'           logsigma = log(c(0.2, 0.7)), # step sd
+#'           beta0 = c(-2,2), # state process intercept
+#'           betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
+#'           
 #'# data object with initial penalty strength lambda
-#'dat = list(step = data$step, angle = data$angle, tod = data$tod, N = 2, lambda = rep(10,2))
-#'# model matrices
-#'modmat = make_matrices(~ s(tod, bs = "cp"), data = data.frame(tod = 1:24), 
-#'    knots = list(tod = c(0,24))) # wrapping points
+#'dat = list(step = data$step, # step length
+#'           tod = data$tod, # time of day covariate
+#'           N = 2, # number of states
+#'           lambda = rep(10,2)) # initial penalty strength
+#'
+#'# building model matrices
+#'modmat = make_matrices(~ s(tod, bs = "cp"), 
+#'                       data = data.frame(tod = 1:24), 
+#'                       knots = list(tod = c(0,24))) # wrapping points
 #'dat$Z = modmat$Z # spline design matrix
 #'dat$S = modmat$S # penalty matrix
+#'
 #'# penalized negative log-likelihood function
 #'pnll = function(par) {
-#' getAll(par, dat) # makes everything contained available without $
-#' Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE)
-#' delta = stationary_p(Gamma, t = 1, ad = TRUE)
-#' mu = exp(logmu)
-#' sigma = exp(logsigma)
-#' kappa = exp(logkappa)
-#' # calculating all state-dependent densities
-#' allprobs = matrix(1, nrow = length(step), ncol = N)
-#' ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
-#' for(j in 1:N){
-#'   allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
-#' } 
-#' -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
-#'   penalty(betaspline, S, lambda) # this does all the penalization work
+#'   getAll(par, dat) # makes everything contained available without $
+#'   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
+#'   delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
+#'   mu = exp(logmu) # step mean
+#'   sigma = exp(logsigma) # step sd
+#'   # calculating all state-dependent densities
+#'   allprobs = matrix(1, nrow = length(step), ncol = N)
+#'   ind = which(!is.na(step)) # only for non-NA obs.
+#'   for(j in 1:N) allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])
+#'   -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+#'       penalty(betaspline, S, lambda) # this does all the penalization work
 #'}
+#'
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
 qreml = function(pnll, # penalized negative log-likelihood function
@@ -169,7 +222,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  alpha = 0, # exponential smoothing parameter
                  maxiter = 100, # maximum number of iterations
                  tol = 1e-5, # tolerance for convergence
-                 inner_tol = 1e-10, # tolerance for inner optimization
+                 control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                  silent = 1, # print level
                  saveall = FALSE) # save all intermediate models?
 {
@@ -214,7 +267,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   if(silent %in% 0:1) cat("Creating AD function\n")
   
   obj = MakeADFun(func = f, parameters = par, silent = TRUE) # silent and replacing with own prints
-  newpar = obj$par # saving initial paramter value as vector to initialize optimization in loop
+  newpar = obj$par # saving initial parameter value as vector to initialize optimization in loop
   
   # own printing of maximum gradient component if silent = 0
   if(silent == 0){
@@ -230,12 +283,18 @@ qreml = function(pnll, # penalized negative log-likelihood function
   # prepwork
   mod0 = obj$report() # getting all necessary information from penalty report
   S = mod0$S # penalty matrix/ matrices in list format
+  # S_dims = sapply(S, nrow)
   
   # finding the indices of the random effects to later index Hessian
   re_inds = list() 
   for(i in 1:n_re){
     re_dim = dim(as.matrix(par[[random[i]]]))
-    re_inds[[i]] = matrix(which(names(obj$par) == random[i]), nrow = re_dim[1], ncol = re_dim[2])
+    # if(re_dim[2] == S_dims[i]){
+    #   byrow = FALSE
+    # } else{
+    #   byrow = TRUE
+    # }
+    re_inds[[i]] = matrix(which(names(obj$par) == random[i]), nrow = re_dim[1], ncol = re_dim[2])# , byrow = byrow)
     if(dim(re_inds[[i]])[2] == 1) re_inds[[i]] = t(re_inds[[i]]) # if only one column, then transpose
   }
   
@@ -261,9 +320,11 @@ qreml = function(pnll, # penalized negative log-likelihood function
   for(k in 1:maxiter){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
+
     opt = stats::optim(newpar, obj$fn, newgrad, 
                        method = "BFGS", hessian = TRUE, # return hessian in the end
-                       control = list(reltol = inner_tol, maxit = 1000))
+                       control = control)
+
     
     # setting new optimum par for next iteration
     newpar = opt$par 

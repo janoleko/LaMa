@@ -7,25 +7,26 @@
 penalty(re_coef, S, lambda)
 }
 \arguments{
-\item{re_coef}{Coefficient vector, matrix or list of coefficient vectors/ matrices.\cr\cr
+\item{re_coef}{Coefficient vector/ matrix or list of coefficient vectors/ matrices.\cr\cr
 Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
-When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.\cr\cr
+When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
 Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{qreml()}.}
+If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.}
 
-\item{S}{Penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.}
+\item{S}{Fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.}
 
-\item{lambda}{Penalty strength parameter. Vector that has a length corresponding to the total number of random effects/ spline coefficients in \code{re_coef}.}
+\item{lambda}{Penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}. E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.}
 }
 \value{
-Returns the penalty value and reports to \code{qreml()} for a seamless experience.
+Returns the penalty value and reports to \code{\link{qreml}}.
 }
 \description{
-This function computes penalties of the form
-\deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i}
-and is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via quasi restricted maximum likelihood (qREML) with the \code{qreml()} function.
-For \code{qreml()} to work, the likelihood function needs to be compatible with the \code{RTMB} package to enable automatic differentiation.
+This function computes quadratic penalties of the form
+\deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
+with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
+It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
+For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
 }
 \examples{
 # Example with a single random effect
@@ -40,4 +41,44 @@ re = list(matrix(0, 2, 5), rep(0, 4))
 S = list(diag(5), diag(4))
 lambda = c(1,1,2) # length = total number of random effects
 penalty(re, S, lambda)
+
+# Full model-fitting example
+data = elephant[1:1000,] # subset
+
+# initial parameter list
+par = list(logmu = log(c(0.3, 1)), # step mean
+           logsigma = log(c(0.2, 0.7)), # step sd
+           beta0 = c(-2,2), # state process intercept
+           betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
+          
+# data object with initial penalty strength lambda
+dat = list(step = data$step, # step length
+           tod = data$tod, # time of day covariate
+           N = 2, # number of states
+           lambda = rep(10,2)) # initial penalty strength
+
+# building model matrices
+modmat = make_matrices(~ s(tod, bs = "cp"), 
+                       data = data.frame(tod = 1:24), 
+                       knots = list(tod = c(0,24))) # wrapping points
+dat$Z = modmat$Z # spline design matrix
+dat$S = modmat$S # penalty matrix
+
+# penalized negative log-likelihood function
+pnll = function(par) {
+  getAll(par, dat) # makes everything contained available without $
+  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
+  delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
+  mu = exp(logmu) # step mean
+  sigma = exp(logsigma) # step sd
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step)) # only for non-NA obs.
+  for(j in 1:N) allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])
+  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+      penalty(betaspline, S, lambda) # this does all the penalization work
+}
+
+# model fitting
+mod = qreml(pnll, par, dat, random = "betaspline")
 }

@@ -4,26 +4,41 @@
 \alias{make_matrices_dens}
 \title{Build a standardized P-Spline design matrix and the associated P-Spline penalty matrix}
 \usage{
-make_matrices_dens(x, K, degree = 3, npoints = 10000, diff_order = 2)
+make_matrices_dens(
+  x,
+  k,
+  type = "real",
+  degree = 3,
+  npoints = 10000,
+  diff_order = 2,
+  pow = 0.5
+)
 }
 \arguments{
 \item{x}{data vector}
 
-\item{K}{number of basis functions}
+\item{k}{number of basis functions}
+
+\item{type}{type of the data, either "real" for data on the reals, "positive" for data on the positive reals or "circular" for angular data}
 
 \item{degree}{degree of the B-spline basis functions, defaults to cubic B-Splines}
 
 \item{npoints}{number of points used in the numerical integration for normalizing the B-spline basis functions}
 
 \item{diff_order}{order of the difference used for the penalty matrix. Defaults to second-order differences.}
+
+\item{pow}{power for polynomial knot spacing. Non-equidistant knot spacing is only used for type = "positive"}
 }
 \value{
-a list containing the design matrix Z, the penalty matrix S, the knots, the normalization weights w, the degree of the B-spline basis functions and the basis positions
+a list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
 }
 \description{
 This function builds the B-spline design matrix for a given data vector x. 
 The B-spline basis functions are normalized such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation.
 }
 \examples{
-modmat = make_matrices_dens(x = 1:100, K = 20)
+modmat = make_matrices_dens(x = (-50):50, k = 20)
+modmat = make_matrices_dens(x = 1:100, k = 20, type = "positive")
+modmat = make_matrices_dens(x = seq(-pi,pi), k = 20, type = "circular")
+
 }

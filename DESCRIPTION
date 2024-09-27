@@ -29,7 +29,8 @@ Imports:
     stats,
     utils,
     MASS,
-    mvtnorm
+    mvtnorm,
+    splines
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

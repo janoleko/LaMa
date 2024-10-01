@@ -106,6 +106,8 @@ package:
   models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
+- [LaMa and
+  RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa%20and%20RTMB.html)
 
 ## Citation
 
@@ -117,7 +119,7 @@ citation(package = "LaMa")
 #> 
 #>   Koslik J (2024). _LaMa: Fast Numerical Maximum Likelihood Estimation
 #>   for Latent Markov Models_. R package version 2.0.0, commit
-#>   26c7b10c531182678942e8276c1d2dd7f6c8ff89,
+#>   300cd3dbfe01236a4a9c0a1e714151255b60760d,
 #>   <https://github.com/janoleko/LaMa>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -127,7 +129,7 @@ citation(package = "LaMa")
 #> Models},
 #>     author = {Jan-Ole Koslik},
 #>     year = {2024},
-#>     note = {R package version 2.0.0, commit 26c7b10c531182678942e8276c1d2dd7f6c8ff89},
+#>     note = {R package version 2.0.0, commit 300cd3dbfe01236a4a9c0a1e714151255b60760d},
 #>     url = {https://github.com/janoleko/LaMa},
 #>   }
 ```
@@ -197,7 +199,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1108079 secs
+#> Time difference of 0.1359401 secs
 ```
 
 Really fast for 10.000 data points!

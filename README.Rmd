@@ -74,7 +74,7 @@ To aid in building fully custom likelihood functions, this package contains seve
 * [Continuous-time HMMs](https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf)
 * [Hidden semi-Markov models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
-
+* [LaMa and RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa and RTMB.html)
 
 ## Citation
 

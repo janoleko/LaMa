@@ -343,7 +343,7 @@ par = list(logmu = log(c(0.3, 2.5)),
 dat$lambda = rep(100, 2)
 ```
 
-The model fit can then be conducted by using the `qreml()` function contained in `LaMa`, qREML standing for penalized quasi-likelihood. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the qREML algorithm described in Koslik, 2024 to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`, qREML standing for **quasi restricted maximum likelihood**. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the qREML algorithm described in Koslik, 2024 to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `qreml()`:
 

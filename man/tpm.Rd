@@ -2,7 +2,7 @@
 % Please edit documentation in R/tpm.R
 \name{tpm}
 \alias{tpm}
-\title{Build the transition probability matrix from unconstraint parameter vector}
+\title{Build the transition probability matrix from unconstrained parameter vector}
 \usage{
 tpm(param, byrow = FALSE)
 }
@@ -10,13 +10,13 @@ tpm(param, byrow = FALSE)
 \item{param}{Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
 
 \item{byrow}{Logical that indicates if the transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
+Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 }
 \value{
 Transition probability matrix of dimension c(N,N)
 }
 \description{
-This function builds the transition probability matrix from an unconstraint parameter vector. 
+This function builds the transition probability matrix from an unconstrained parameter vector. 
 For each row of the matrix, the inverse multinomial logistic link is applied.\cr
 
 Compatible with automatic differentiation by RTMB

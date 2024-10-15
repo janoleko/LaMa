@@ -14,7 +14,7 @@ If Z has only p columns, an intercept column of ones will be added automatically
 Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.}
 
 \item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
+Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 
 \item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
 

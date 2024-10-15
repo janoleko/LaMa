@@ -18,7 +18,7 @@
 #' Furthermore, Z can also be a pre-calculated design matrix from mgcv::cSplineDes() (with p columns), when one wants to use cyclic P-splines, or it can be any other basis expansion of the cyclic variable.
 #' In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,length(tod))
 #' @export

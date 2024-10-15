@@ -11,7 +11,7 @@
 #' @param beta Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
 #' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
 #' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
 #' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'

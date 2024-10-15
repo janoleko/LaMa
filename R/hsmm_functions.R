@@ -1167,3 +1167,132 @@ stationary_p_sparse = function(Gamma, t = NULL){
     return(delta)
   }
 }
+
+#' Build the embedded transition probability matrix of an HSMM from unconstrained parameter vector
+#'
+#' @description
+#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left.
+#' This function builds the embedded/ conditional transition probability matrix from an unconstraint parameter vector. 
+#' For each row of the matrix, the inverse multinomial logistic link is applied.
+#' 
+#' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2), hence also the length of \code{param}.
+#'
+#' Compatible with automatic differentiation by \code{RTMB}
+#'
+#' @param param Unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
+#' If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.
+#' @param byrow Logical that indicates if the transition probability matrix should be filled by row. 
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
+#'
+#' @return Embedded/ conditional transition probability matrix of dimension c(N,N)
+#' @export
+#' @import RTMB
+#'
+#' @examples
+#' # 2 states: no free off-diagonal elements
+#' omega = tpm_emb()
+#' 
+#' # 3 states: 3 free off-diagonal elements
+#' param = rep(0, 3)
+#' omega = tpm_emb(param)
+#' 
+#' # 4 states: 8 free off-diagonal elements
+#' param = rep(0, 8)
+#' omega = tpm_emb(param)
+tpm_emb = function(param = NULL, byrow = FALSE){
+  "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+  "c" <- ADoverload("c")
+  "diag<-" <- ADoverload("diag<-")
+  
+  if(is.null(param)){
+    omega = matrix(c(0,1,1,0), nrow = 2, ncol = 2)
+  } else{
+    K = length(param)
+    # for N > 2: N*(N-2) is bijective with solution
+    N = as.integer(1 + sqrt(1 + K), 0)
+    
+    omega = matrix(0,N,N)
+    omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N), exp(param)), N, N-1)))
+    
+    if(byrow){
+      omega = t(omega)
+    }
+    
+    omega = omega / rowSums(omega)
+  }
+  
+  omega
+}
+
+#' Build all embedded transition probability matrices of an inhomogeneous HSMM
+#'
+#' @description
+#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left.
+#' This function builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
+#' For each row of the matrix, the inverse multinomial logistic link is applied.
+#' 
+#' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2) which determines the number of rows of the parameter matrix.
+#'
+#' Compatible with automatic differentiation by \code{RTMB}
+#' @param Z Covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1).
+#' If Z has only p columns, an intercept column of ones will be added automatically.
+#' @param beta Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
+#' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
+#' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
+#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
+#' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.
+#'
+#'
+#' @return Array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
+#' @export
+#' @import RTMB
+#'
+#' @examples
+#' ## parameter matrix for 3-state HSMM
+#' beta = matrix(c(rep(0, 3), -0.2, 0.2, 0.1), nrow = 3)
+#' # no intercept
+#' Z = rnorm(100)
+#' omega = tpm_emb_g(Z, beta)
+#' # intercept
+#' Z = cbind(1, Z)
+#' omega = tpm_emb_g(Z, beta)
+tpm_emb_g = function(Z, beta, byrow = FALSE, report = TRUE){
+  "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+  "c" <- ADoverload("c")
+  "diag<-" <- ADoverload("diag<-")
+  
+  p = ncol(beta) - 1 # number of parameters per state (excluding intercept)
+  # for N > 2: N*(N-2) is bijective with solution
+  N = as.integer(1 + sqrt(1 + p), 0)
+  
+  Z = as.matrix(Z)
+  
+  if(ncol(Z) == p){
+    Z = cbind(1, Z) # adding intercept column
+  } else if(ncol(Z) != p + 1){
+    stop("The dimensions of Z and beta do not match.")
+  }
+  
+  n = nrow(Z)
+  
+  if(report){
+    RTMB::REPORT(beta)
+  }
+  
+  expEta = exp(Z %*% t(beta))
+  
+  omega = array(NaN, dim = c(N,N,n))
+  
+  for(t in 1:n){
+    O = matrix(0, N, N)
+    O[!diag(N)] = as.vector(t(matrix(c(rep(1, N), expEta[t,]), N, N-1)))
+    
+    if(byrow){
+      O = t(O)
+    }
+    
+    omega[,,t] = O / rowSums(O)
+  }
+  
+  omega
+}

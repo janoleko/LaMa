@@ -30,12 +30,13 @@ Imports:
     utils,
     MASS,
     mvtnorm,
-    splines
+    splines,
+    methods
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
 Depends: R (>= 3.5.0)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,

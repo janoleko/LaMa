@@ -98,7 +98,7 @@ mllk = function(theta.star, x, N, agsizes){
   } else{ omega = matrix(c(0,1,1,0),2,2) }
   dm = list() # list of dwell-time distributions
   for(j in 1:N){ dm[[j]] = dpois(1:agsizes[j]-1, lambda[j]) } # shifted Poisson
-  Gamma = LaMa::tpm_hsmm(omega, dm)
+  Gamma = LaMa::tpm_hsmm2(omega, dm)
   delta = LaMa::stationary(Gamma)
   allprobs = matrix(1, length(x), N)
   ind = which(!is.na(x))
@@ -170,7 +170,7 @@ mllk_muskox = function(theta.star, step, N, agsizes){
     # R allows to parametrize by mean and size where size = 1/dispersion
     dm[[j]] = dnbinom(1:agsizes[j]-1, mu=mu_dwell[j], size=1/phi[j]) 
   }
-  Gamma = LaMa::tpm_hsmm(omega, dm)
+  Gamma = LaMa::tpm_hsmm2(omega, dm)
   delta = LaMa::stationary(Gamma)
   allprobs = matrix(1, length(step), N)
   ind = which(!is.na(step))

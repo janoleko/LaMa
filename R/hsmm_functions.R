@@ -31,6 +31,7 @@ forward_hsmm <- function(dm, omega, allprobs,
   ################################
   
   agsizes = sapply(dm, length)
+  
   N = ncol(allprobs) # number of HSMM states
   M = sum(agsizes) # total number of states of the approximating HMM
   
@@ -251,8 +252,6 @@ forward_ihsmm <- function(dm, omega, allprobs,
   ################################
   
   N = ncol(allprobs) # number of HSMM states
-  M = sum(agsizes) # total number of states of the approximating HMM
-  n = nrow(allprobs) # number of observations
   
   # obtain aggregate sizes based on dm
   if(is.matrix(dm[[1]])){
@@ -261,6 +260,8 @@ forward_ihsmm <- function(dm, omega, allprobs,
     agsizes = sapply(dm, length)
   }
   
+  M = sum(agsizes) # total number of states of the approximating HMM
+  n = nrow(allprobs) # number of observations
   maxag = max(agsizes) # maximum number of states in the approximating HMM
   # this is important, because the forward algo can only start at maxag because the first 1:(maxag-1) data points are needed for the first tpm
   

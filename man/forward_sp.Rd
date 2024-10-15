@@ -64,7 +64,7 @@ mllk = function(theta.star, x, sizes, tod){
   for(j in 1:2){
     dm[[j]] = sapply(1:sizes[j]-1, dpois, lambda = Lambda[,j])
   }
-  Gamma = tpm_phsmm(omega, dm)
+  Gamma = tpm_phsmm2(omega, dm)
   delta = stationary_p(Gamma, tod[1])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)

@@ -42,7 +42,7 @@
 #' 
 #' # calculating extended-state-space t.p.m.s
 #' Gamma = tpm_phsmm(omega, dm)
-tpm_phsmm = function(omega, dm, eps = 1e-10){
+tpm_phsmm2 = function(omega, dm, eps = 1e-10){
   # dm list over states: entries matrices of dim c(L, N_i)
   L = nrow(dm[[1]]) # length of one cycle
   N = length(dm) # number of states

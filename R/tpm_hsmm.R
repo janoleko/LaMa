@@ -22,7 +22,7 @@
 #' dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
 #' # calculating extended-state-space t.p.m.
 #' Gamma = tpm_hsmm(omega, dm)
-tpm_hsmm = function(omega,dm,eps=1e-10){
+tpm_hsmm2 = function(omega,dm,eps=1e-10){
   mv = sapply(dm,length)
   m = length(mv)
   G = matrix(0,0,sum(mv))

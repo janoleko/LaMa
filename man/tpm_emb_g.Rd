@@ -11,7 +11,8 @@ tpm_emb_g(Z, beta, report = TRUE)
 If Z has only p columns, an intercept column of ones will be added automatically.}
 
 \item{beta}{Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
-Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.}
+Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
+p can be 0, in which case the model is homogeneous.}
 
 \item{report}{Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.}
 }

@@ -1231,6 +1231,7 @@ tpm_emb = function(param = NULL){
 #' If Z has only p columns, an intercept column of ones will be added automatically.
 #' @param beta Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
 #' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
+#' p can be 0, in which case the model is homogeneous.
 #' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.
 #'
 #'
@@ -1251,6 +1252,9 @@ tpm_emb_g = function(Z, beta, report = TRUE){
   "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
   "c" <- ADoverload("c")
   "diag<-" <- ADoverload("diag<-")
+  
+  beta = as.matrix(beta) # turn beta into matrix if it is a vector
+  # that way, we can have homogeneity as a special case with Z = rep(1, ...)
   
   p = ncol(beta) - 1 # number of parameters per state (excluding intercept)
   K = nrow(beta) # number of rows in beta -> N*(N-2) off-diagonal elements

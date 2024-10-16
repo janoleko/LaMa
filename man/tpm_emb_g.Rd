@@ -4,7 +4,7 @@
 \alias{tpm_emb_g}
 \title{Build all embedded transition probability matrices of an inhomogeneous HSMM}
 \usage{
-tpm_emb_g(Z, beta, byrow = FALSE, report = TRUE)
+tpm_emb_g(Z, beta, report = TRUE)
 }
 \arguments{
 \item{Z}{Covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1).
@@ -12,9 +12,6 @@ If Z has only p columns, an intercept column of ones will be added automatically
 
 \item{beta}{Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
 Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.}
-
-\item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 
 \item{report}{Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.}
 }

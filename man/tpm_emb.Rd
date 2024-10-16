@@ -4,14 +4,11 @@
 \alias{tpm_emb}
 \title{Build the embedded transition probability matrix of an HSMM from unconstrained parameter vector}
 \usage{
-tpm_emb(param = NULL, byrow = FALSE)
+tpm_emb(param = NULL)
 }
 \arguments{
 \item{param}{Unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
 If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.}
-
-\item{byrow}{Logical that indicates if the transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 }
 \value{
 Embedded/ conditional transition probability matrix of dimension c(N,N)

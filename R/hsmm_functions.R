@@ -1181,8 +1181,6 @@ stationary_p_sparse = function(Gamma, t = NULL){
 #'
 #' @param param Unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
 #' If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.
-#' @param byrow Logical that indicates if the transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
 #'
 #' @return Embedded/ conditional transition probability matrix of dimension c(N,N)
 #' @export
@@ -1199,7 +1197,7 @@ stationary_p_sparse = function(Gamma, t = NULL){
 #' # 4 states: 8 free off-diagonal elements
 #' param = rep(0, 8)
 #' omega = tpm_emb(param)
-tpm_emb = function(param = NULL, byrow = FALSE){
+tpm_emb = function(param = NULL){
   "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
   "c" <- ADoverload("c")
   "diag<-" <- ADoverload("diag<-")
@@ -1213,12 +1211,7 @@ tpm_emb = function(param = NULL, byrow = FALSE){
     
     omega = matrix(0,N,N)
     omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N), exp(param)), N, N-1)))
-    
-    if(byrow){
-      omega = t(omega)
-    }
-    
-    omega = omega / rowSums(omega)
+    omega = t(omega) / apply(omega, 2, sum)
   }
   
   omega
@@ -1238,8 +1231,6 @@ tpm_emb = function(param = NULL, byrow = FALSE){
 #' If Z has only p columns, an intercept column of ones will be added automatically.
 #' @param beta Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
 #' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
-#' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
 #' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.
 #'
 #'
@@ -1256,14 +1247,15 @@ tpm_emb = function(param = NULL, byrow = FALSE){
 #' # intercept
 #' Z = cbind(1, Z)
 #' omega = tpm_emb_g(Z, beta)
-tpm_emb_g = function(Z, beta, byrow = FALSE, report = TRUE){
+tpm_emb_g = function(Z, beta, report = TRUE){
   "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
   "c" <- ADoverload("c")
   "diag<-" <- ADoverload("diag<-")
   
   p = ncol(beta) - 1 # number of parameters per state (excluding intercept)
+  K = nrow(beta) # number of rows in beta -> N*(N-2) off-diagonal elements
   # for N > 2: N*(N-2) is bijective with solution
-  N = as.integer(1 + sqrt(1 + p), 0)
+  N = as.integer(1 + sqrt(1 + K))
   
   Z = as.matrix(Z)
   
@@ -1286,12 +1278,7 @@ tpm_emb_g = function(Z, beta, byrow = FALSE, report = TRUE){
   for(t in 1:n){
     O = matrix(0, N, N)
     O[!diag(N)] = as.vector(t(matrix(c(rep(1, N), expEta[t,]), N, N-1)))
-    
-    if(byrow){
-      O = t(O)
-    }
-    
-    omega[,,t] = O / rowSums(O)
+    omega[,,t] = t(O) / apply(O, 2, sum)
   }
   
   omega

@@ -13,7 +13,7 @@
 #' In this case, \code{dm} can be a nested list, where the top layer contains k \code{dm} lists as described above. \code{omega} can then also be an array of dimension c(N,N,k) with one conditional transition probability matrix for each track.
 #' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param delta Optional vector of initial state probabilities of length N. By default, the stationary distribution is computed (which is typically recommended).
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction.
+#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
 #' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
 #'
 #' @return Log-likelihood for given data and parameters
@@ -233,7 +233,7 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param delta Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction.
+#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
 #' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
 #'
 #' @return Log-likelihood for given data and parameters
@@ -544,7 +544,7 @@ forward_ihsmm <- function(dm, omega, allprobs,
 #' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param delta Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction.
+#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
 #' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
 #'
 #' @return Log-likelihood for given data and parameters
@@ -844,7 +844,7 @@ max2 = function(x,y){
 #' @param dm State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
 #' @param Fm Optional list of length N containing the cumulative distribution functions of the dwell-time distributions.
 #' @param sparse Logical, indicating whether the output should be a sparse matrix. Defaults to TRUE.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
+#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
 #'
 #' @return The extended-state-space transition probability matrix of the approximating HMM
 #' @export
@@ -925,7 +925,7 @@ tpm_hsmm <- function(omega, dm,
 #' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,n) for inhomogeneous conditional transition probabilities.
 #' @param dm State dwell-time distributions arranged in a list of length(N).
 #' Each list element needs to be a matrix of dimension c(n, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
+#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
 #'
 #' @return A list of dimension length \code{n - max(sapply(dm, ncol))}, containing sparse extended-state-space transition probability matrices for each time point (except the first \code{max(sapply(dm, ncol)) - 1}).
 #' @export
@@ -997,7 +997,7 @@ tpm_ihsmm = function(omega, dm,
 #' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.
 #' @param dm State dwell-time distributions arranged in a list of length(N).
 #' Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
+#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
 #'
 #' @return A list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
 #' @export

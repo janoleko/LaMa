@@ -32,7 +32,7 @@ Instead of a single vector \code{delta} corresponding to the initial distributio
 
 \item{delta}{Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.}
 
-\item{eps}{Small value to avoid numerical issues in the approximating transition matrix construction.}
+\item{eps}{Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.}
 
 \item{report}{Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.}
 }

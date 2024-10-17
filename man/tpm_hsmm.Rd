@@ -15,7 +15,7 @@ tpm_hsmm(omega, dm, Fm = NULL, sparse = TRUE, eps = 1e-10)
 
 \item{sparse}{Logical, indicating whether the output should be a sparse matrix. Defaults to TRUE.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
+\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
 }
 \value{
 The extended-state-space transition probability matrix of the approximating HMM

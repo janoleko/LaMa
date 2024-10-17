@@ -27,7 +27,7 @@ Furthermore, instead of a single vector \code{delta} corresponding to the initia
 
 \item{delta}{Optional vector of initial state probabilities of length N. By default, the stationary distribution is computed (which is typically recommended).}
 
-\item{eps}{Small value to avoid numerical issues in the approximating transition matrix construction.}
+\item{eps}{Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.}
 
 \item{report}{Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.}
 }

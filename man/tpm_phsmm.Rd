@@ -13,7 +13,7 @@ Either a matrix of dimension c(N,N) for homogeneous conditional transition proba
 \item{dm}{State dwell-time distributions arranged in a list of length(N).
 Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
+\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
 }
 \value{
 A list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.

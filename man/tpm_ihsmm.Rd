@@ -4,7 +4,7 @@
 \alias{tpm_ihsmm}
 \title{Build all transition probability matrices of an inhomogeneous-HSMM-approximating HMM}
 \usage{
-tpm_ihsmm(omega, dm, eps = 1e-20)
+tpm_ihsmm(omega, dm, eps = 1e-10)
 }
 \arguments{
 \item{omega}{Embedded transition probability matrix

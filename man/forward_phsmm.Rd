@@ -11,7 +11,7 @@ forward_phsmm(
   tod,
   trackID = NULL,
   delta = NULL,
-  eps = 1e-20,
+  eps = 1e-10,
   report = TRUE
 )
 }

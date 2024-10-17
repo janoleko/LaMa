@@ -23,7 +23,7 @@
 #' @examples
 #' # currently no examples
 forward_hsmm <- function(dm, omega, allprobs,
-                         trackID = NULL, delta = NULL, eps = 1e-20, report = TRUE){
+                         trackID = NULL, delta = NULL, eps = 1e-10, report = TRUE){
   # overloading assignment operators, currently necessary
   "[<-" <- ADoverload("[<-")
   "c" <- ADoverload("c")
@@ -243,7 +243,7 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' @examples
 #' # currently no examples
 forward_ihsmm <- function(dm, omega, allprobs,
-                          trackID = NULL, delta = NULL, eps = 1e-20, report = TRUE){
+                          trackID = NULL, delta = NULL, eps = 1e-10, report = TRUE){
   
   # overloading assignment operators, currently necessary
   "[<-" <- ADoverload("[<-")
@@ -554,7 +554,7 @@ forward_ihsmm <- function(dm, omega, allprobs,
 #' @examples
 #' # currently no examples
 forward_phsmm <- function(dm, omega, allprobs, tod,
-                          trackID = NULL, delta = NULL, eps = 1e-20, report = TRUE){
+                          trackID = NULL, delta = NULL, eps = 1e-10, report = TRUE){
   
   # overloading assignment operators, currently necessary
   "[<-" <- ADoverload("[<-")
@@ -860,7 +860,7 @@ max2 = function(x,y){
 #' # calculating extended-state-space t.p.m.
 #' Gamma = tpm_hsmm(omega, dm)
 tpm_hsmm <- function(omega, dm, 
-                     Fm = NULL, sparse = TRUE, eps = 1e-20) {
+                     Fm = NULL, sparse = TRUE, eps = 1e-10) {
   "[<-" <- ADoverload("[<-")
   "c" <- ADoverload("c")
   "diag<-" <- ADoverload("diag<-")
@@ -878,7 +878,8 @@ tpm_hsmm <- function(omega, dm,
   row_start = 1  # Track row start index for G
   for (i in 1:N) {
     Ni = Nv[i]
-    ci = dm[[i]] / (1 - Fm[[i]] + eps)
+    # ci = dm[[i]] / (1 - Fm[[i]] + eps)
+    ci = max2(dm[[i]], eps) / (1 - Fm[[i]] + eps)
     cim = max2(1 - ci, 0)
     
     Gi = matrix(0, Ni, total_cols)  # Pre-allocate the block for Gi
@@ -954,7 +955,7 @@ tpm_hsmm <- function(omega, dm,
 #' # calculating extended-state-space t.p.m.s
 #' Gamma = tpm_ihsmm(omega, dm)
 tpm_ihsmm = function(omega, dm, 
-                     eps = 1e-20){
+                     eps = 1e-10){
   n = nrow(dm[[1]]) # length of timeseries
   N = length(dm) # number of states
   Ni = sapply(dm, ncol) # state aggregate sizes

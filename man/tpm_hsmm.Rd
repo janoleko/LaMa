@@ -4,7 +4,7 @@
 \alias{tpm_hsmm}
 \title{Build the transition probability matrix of an HSMM-approximating HMM}
 \usage{
-tpm_hsmm(omega, dm, Fm = NULL, sparse = TRUE, eps = 1e-20)
+tpm_hsmm(omega, dm, Fm = NULL, sparse = TRUE, eps = 1e-10)
 }
 \arguments{
 \item{omega}{Embedded transition probability matrix of dimension c(N,N)}

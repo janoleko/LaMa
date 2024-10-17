@@ -879,7 +879,7 @@ tpm_hsmm <- function(omega, dm,
   for (i in 1:N) {
     Ni = Nv[i]
     # ci = dm[[i]] / (1 - Fm[[i]] + eps)
-    ci = max2(dm[[i]], eps) / (1 - Fm[[i]] + eps)
+    ci = max2(dm[[i]], eps) / (1 - Fm[[i]] + eps/2)
     cim = max2(1 - ci, 0)
     
     Gi = matrix(0, Ni, total_cols)  # Pre-allocate the block for Gi

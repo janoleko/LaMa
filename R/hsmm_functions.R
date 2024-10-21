@@ -898,9 +898,9 @@ tpm_hsmm <- function(omega, dm,
         }
       } else {
         if (Ni == 1) {
-          Gi[1, col_start:(col_start + Nj - 1)] = c(omega[i, j] * ci, rep(0, Nj - 1))
+          Gi[1, col_start:(col_start + Nj - 1)] = c(omega[i, j] * (1-cim), rep(0, Nj - 1))
         } else {
-          Gi[, col_start] = omega[i, j] * ci
+          Gi[, col_start] = omega[i, j] * (1-cim)
         }
       }
       

@@ -48,11 +48,17 @@ The workflow with `RTMB` is basically always the same. We need to
 We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains the data and potential hyperparamters -- here $N$, the number of hidden states. The names `par` and `dat` are of course arbitrary.
 
 ```{r parameters}
-par = list(logmu = log(c(0.3, 1)),      # initial means for step length (log-transformed)
-           logsigma = log(c(0.2, 0.7)), # initial sds for step length (log-transformed)
-           logkappa = log(c(0.2, 0.7)), # initial concentration for turning angle (log-transformed)
-           eta = rep(-2, 2))            # initial t.p.m. parameters (on logit scale)
-dat = list(step = elephant$step, angle = elephant$angle, N = 2)
+par = list(
+  logmu = log(c(0.3, 1)),      # initial means for step length (log-transformed)
+  logsigma = log(c(0.2, 0.7)), # initial sds for step length (log-transformed)
+  logkappa = log(c(0.2, 0.7)), # initial concentration for turning angle (log-transformed)
+  eta = rep(-2, 2)             # initial t.p.m. parameters (on logit scale)
+  )            
+dat = list(
+  step = elephant$step[1:5000], # only using a subset of the data for faster computation
+  angle = elephant$angle[1:5000], 
+  N = 2
+  )
 ```
 
 As `par` is a named list or initial parameter values, accessing the parameters later on and much more convenient than indexing. You could also use a parameter vector with `RTMB`, but using a named list makes our life so much easier.
@@ -455,7 +461,7 @@ legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
 There are some problems with `RTMB` one has to keep in mind. They can be a bit annoying, but in my opinion the benefits of automatic differentiation far outweigh the drawbacks. I list the main ones I have encountered here, but please tell me if you encounter more, such that they can be added.
 
 A typical issue with `RTMB` is that some operators might need to be overloaded to allow for automatic differentiation which cannot be done by default. In typical model setups `LaMa` functions do this themselves, but if you go a very individualistic route and get an error like 
-```{r error, echo = FALSE}
+```{r error, eval = FALSE}
 stop("Invalid argument to 'advector' (lost class attribute?)")
 ```
 you might have to overload the operator yourself. To do this put

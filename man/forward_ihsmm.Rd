@@ -10,6 +10,7 @@ forward_ihsmm(
   allprobs,
   trackID = NULL,
   delta = NULL,
+  startInd = NULL,
   eps = 1e-10,
   report = TRUE
 )
@@ -31,6 +32,9 @@ In the latter case, the first \code{max(sapply(dm, ncol)) - 1} observations will
 Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
 
 \item{delta}{Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.}
+
+\item{startInd}{Optional integer index at which the forward algorithm starts. When approximating inhomogeneous HSMMs by inhomogeneous HMMs, the first t.p.m. that can be constructed is at time max(aggregate sizes) (as it depends on the previous covariate values).
+Hence, when not provided, \code{startInd} is chosen to be max(aggregate sizes). Fixing \code{startInd} at a value \strong{larger} than max(aggregate sizes) is useful when models with different aggregate sizes are fitted to the same data and are supposed to be compared. In that case it is important that all models use the same number of observations.}
 
 \item{eps}{Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.}
 

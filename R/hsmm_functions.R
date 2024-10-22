@@ -233,6 +233,8 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param delta Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
+#' @param startInd Optional integer index at which the forward algorithm starts. When approximating inhomogeneous HSMMs by inhomogeneous HMMs, the first t.p.m. that can be constructed is at time max(aggregate sizes) (as it depends on the previous covariate values).
+#' Hence, when not provided, \code{startInd} is chosen to be max(aggregate sizes). Fixing \code{startInd} at a value \strong{larger} than max(aggregate sizes) is useful when models with different aggregate sizes are fitted to the same data and are supposed to be compared. In that case it is important that all models use the same number of observations.
 #' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
 #' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
 #'
@@ -243,7 +245,8 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' @examples
 #' # currently no examples
 forward_ihsmm <- function(dm, omega, allprobs,
-                          trackID = NULL, delta = NULL, eps = 1e-10, report = TRUE){
+                           trackID = NULL, delta = NULL, startInd = NULL,
+                           eps = 1e-10, report = TRUE){
   
   # overloading assignment operators, currently necessary
   "[<-" <- ADoverload("[<-")
@@ -265,6 +268,14 @@ forward_ihsmm <- function(dm, omega, allprobs,
   maxag = max(agsizes) # maximum number of states in the approximating HMM
   # this is important, because the forward algo can only start at maxag because the first 1:(maxag-1) data points are needed for the first tpm
   
+  # check if startInd is provided
+  # if not, take the maximum aggregate size as startInd
+  if(is.null(startInd)){
+    startInd = maxag
+  } else {
+    if(startInd < maxag) stop("startInd must be at least the maximum aggregate size")
+  }
+  
   stationary = is.null(delta) # if delta is not provided, stationary distribution needs to be computed
   
   if(is.null(trackID)) {
@@ -278,7 +289,7 @@ forward_ihsmm <- function(dm, omega, allprobs,
       
       ## if stationary, compute initial stationary distribution
       if(stationary){
-        delta = stationary_sparse(Gamma_sparse[[1]])
+        delta = stationary_sparse(Gamma_sparse[[startInd - maxag + 1]])
         delta_sparse = methods::as(t(delta), "sparseMatrix")
       } else{ # if delta is provided, "stuff out" with zeros
         cols_to_fill = c(1, cumsum(agsizes[-N])+1)
@@ -295,14 +306,14 @@ forward_ihsmm <- function(dm, omega, allprobs,
       
       # forward algorithm
       # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-      foo = delta_sparse %*% diag(rep(allprobs[maxag,], times = agsizes))
+      foo = delta_sparse %*% diag(rep(allprobs[startInd,], times = agsizes))
       sumfoo = sum(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
-      for(t in (maxag + 1):nrow(allprobs)) {
+      for(t in (startInd + 1):nrow(allprobs)) {
         # foo = phi %*% Gamma_sparse %*% Matrix::Diagonal(x = rep(allprobs[t,], times = agsizes))
-        foo = phi %*% Gamma_sparse[[t-maxag]] %*% diag(rep(allprobs[t,], times = agsizes))
+        foo = phi %*% Gamma_sparse[[t - maxag]] %*% diag(rep(allprobs[t,], times = agsizes))
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -417,12 +428,12 @@ forward_ihsmm <- function(dm, omega, allprobs,
         Gamma_i = Gamma_sparse[[i]]
         
         # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-        foo = delta_i %*% diag(rep(allprobs[ind[maxag],], times = agsizes))
+        foo = delta_i %*% diag(rep(allprobs[ind[startInd],], times = agsizes))
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l_i = log(sumfoo)
         
-        for(t in (maxag + 1):length(ind)) {
+        for(t in (startInd + 1):length(ind)) {
           foo = phi %*% Gamma_i[[t-maxag]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
           sumfoo = sum(foo)
           phi = foo / sumfoo

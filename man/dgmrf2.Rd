@@ -4,7 +4,7 @@
 \alias{dgmrf2}
 \title{Reparametrized multivariate Gaussian distribution}
 \usage{
-dgmrf2(x, mu = 0, S, lambda, log = FALSE)
+dgmrf2(x, mu = 0, S, lambda, logdetS = NULL, log = FALSE)
 }
 \arguments{
 \item{x}{Density evaluation point. Either a vector or a matrix.}
@@ -15,6 +15,8 @@ dgmrf2(x, mu = 0, S, lambda, log = FALSE)
 
 \item{lambda}{Precision scaling parameter. Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
 This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.}
+
+\item{logdetS}{Optional precomputed log determinant of the precision matrix \code{S}. If the precision matrix does not depend on parameters, it can be precomputed and passed to the function.}
 
 \item{log}{logical; if TRUE, densities are returned on the log scale.}
 }

@@ -94,6 +94,7 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 #' @param S Unscaled precision matrix.
 #' @param lambda Precision scaling parameter. Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
 #' This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.
+#' @param logdetS Optional precomputed log determinant of the precision matrix \code{S}. If the precision matrix does not depend on parameters, it can be precomputed and passed to the function.
 #' @param log logical; if TRUE, densities are returned on the log scale.
 #'
 #' @return Vector of densities
@@ -114,8 +115,16 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 #' S = t(L) %*% L
 #' lambda = c(1,2,3)
 #' dgmrf2(x, 0, S, lambda, log = TRUE)
-dgmrf2 = function(x, mu = 0, S, lambda, log = FALSE) {
-  logdetS = as.numeric(determinant(S, logarithm = TRUE)$modulus)
+dgmrf2 = function(x, 
+                  mu = 0, 
+                  S, 
+                  lambda, 
+                  logdetS = NULL,
+                  log = FALSE) {
+  # if logdet not specified, compute generalised determinant
+  if(is.null(logdetS)){
+    logdetS = as.numeric(gdeterminant(S))
+  }
   k = nrow(S)
   
   x_centered = x - mu

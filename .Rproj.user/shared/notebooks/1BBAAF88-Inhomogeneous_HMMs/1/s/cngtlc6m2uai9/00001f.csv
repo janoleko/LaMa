@@ -1,0 +1,7 @@
+"0","Gamma_hat_reg = tpm(mod_reg$estimate[1:2]) # calculating all tpms"
+"0","delta_hat_reg = stationary(Gamma_hat_reg)"
+"0","beta_hat_reg = matrix(mod_reg$estimate[2+1:(2*2+2)], nrow = 2)"
+"0","sigma_hat_reg = exp(mod_reg$estimate[2+2*2+2 +1:2])"
+"0",""
+"0","# we have some label switching"
+"0","plot(z, x, pch = 16, bty = ""n"", xlab = ""z"", ylab = ""x"", col = color[s])"

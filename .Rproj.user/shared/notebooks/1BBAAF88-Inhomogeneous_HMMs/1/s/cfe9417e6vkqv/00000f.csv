@@ -1,0 +1,1 @@
+"0","Z = splines::bs(x = z, df = 6) ## B-spline design matrix"

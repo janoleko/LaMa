@@ -1,0 +1,2 @@
+"0","legend(""topright"", col = color, pch = 20, "
+"0","       legend = paste(""state"", 1:3), box.lwd = 0)"

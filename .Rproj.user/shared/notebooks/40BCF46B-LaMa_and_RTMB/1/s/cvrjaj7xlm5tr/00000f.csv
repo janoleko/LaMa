@@ -1,0 +1,2 @@
+"0","obj2 = MakeADFun(mllk2, par, silent = TRUE) # creating the objective function"
+"0","opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimization"

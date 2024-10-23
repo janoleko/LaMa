@@ -1,0 +1,2 @@
+"0","curve(delta[1]*dvm(x, 0, kappa[1]) + delta[2]*dvm(x, 0, kappa[2]), "
+"0","      lwd = 2, lty = 2, add = T)"

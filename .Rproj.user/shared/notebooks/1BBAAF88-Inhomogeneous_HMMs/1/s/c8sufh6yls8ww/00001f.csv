@@ -1,0 +1,1 @@
+"0","points(z[which(s==2)], x[which(s==2)], pch = 16, col = color[2])"

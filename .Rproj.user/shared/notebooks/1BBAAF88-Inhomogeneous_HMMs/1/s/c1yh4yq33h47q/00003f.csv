@@ -1,0 +1,4 @@
+"0","Delta = matrix(nrow = length(zseq), ncol = 2)"
+"0","for(i in 1:length(zseq)){ Delta[i,] = stationary(Gamma_seq[,,i]) }"
+"0",""
+"0","par(mfrow = c(1,1))"

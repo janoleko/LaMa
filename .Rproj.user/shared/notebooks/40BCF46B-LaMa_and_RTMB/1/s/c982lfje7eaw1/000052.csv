@@ -1,0 +1,7 @@
+"0","mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)"
+"0",""
+"0","# defining color vector"
+"0","color = c(""orange"", ""deepskyblue"")"
+"0",""
+"0","plot(elephant$step[1:200], type = ""h"", xlab = ""time"", ylab = ""step length"", "
+"0","     col = color[mod$states[1:200]], bty = ""n"")"

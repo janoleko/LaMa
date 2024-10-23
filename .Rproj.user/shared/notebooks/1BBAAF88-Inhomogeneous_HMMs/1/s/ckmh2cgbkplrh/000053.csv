@@ -1,0 +1,2 @@
+"0","curve(prob[2]*dnorm(x, mu_hat[2], sigma_hat[2]), add = TRUE, lwd = 3, "
+"0","      col = color[2], n=500)"

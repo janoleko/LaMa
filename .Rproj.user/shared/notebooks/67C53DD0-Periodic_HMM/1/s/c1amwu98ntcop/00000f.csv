@@ -1,0 +1,8 @@
+"0","# transform parameters to working"
+"0","beta_hat_np = matrix(mod_np$estimate[1:(2+2*nk)], nrow = 2)"
+"0","Gamma_hat_np = tpm_p(tod = 1:48, L = 48, beta = beta_hat_np, Z = Z)"
+"0","Delta_hat_np = stationary_p(Gamma_hat_np)"
+"0",""
+"0","# comparing the two fits"
+"0","plot(Delta_hat_np[,1], type = ""l"", lwd = 3, col = ""purple"", bty = ""n"", "
+"0","     xlab = ""time of day"", ylab = ""Pr(state 1)"")"

@@ -1,0 +1,3 @@
+"0","curve(prob[1]*dnorm(x, mu_hat[1], sigma_hat[1])+"
+"0","        prob[2]*dnorm(x, mu[2], sigma_hat[2]),"
+"0","      add = TRUE, lwd = 3, lty = ""dashed"", n = 500)"

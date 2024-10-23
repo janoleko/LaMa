@@ -1,0 +1,4 @@
+"0","# building trigonometric basis desing matrix (in this case no intercept column)"
+"0","Z = trigBasisExp(1:24, degree = 2) # convenience function from LaMa"
+"0","dat$Z = Z # adding design matrix to dat"
+"0","dat$tod = elephant$tod # adding time of day to dat"

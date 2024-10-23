@@ -1,0 +1,26 @@
+{
+    "id": "7E4DBB13",
+    "path": "~/R/Packages_on_Git/LaMa/.github/workflows/R-CMD-check.yaml",
+    "project_path": ".github/workflows/R-CMD-check.yaml",
+    "type": "yaml",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1729698404317.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "48,32",
+        "scrollLine": "10"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1712067098,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1729698423723,
+    "read_only": false,
+    "read_only_alternatives": []
+}

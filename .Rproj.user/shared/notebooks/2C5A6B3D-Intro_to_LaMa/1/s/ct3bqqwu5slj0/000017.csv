@@ -1,0 +1,2 @@
+"0","legend(""topright"", col = c(color, ""black""), lwd = 2, bty = ""n"","
+"0","       lty = c(1,1,2), legend = c(""state 1"", ""state 2"", ""marginal""))"

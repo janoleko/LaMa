@@ -1,0 +1,26 @@
+{
+    "id": "7B3A38D7",
+    "path": "~/R/Packages_on_Git/LaMa/.github/workflows/pkgdown.yaml",
+    "project_path": ".github/workflows/pkgdown.yaml",
+    "type": "yaml",
+    "hash": "1098119947",
+    "contents": "",
+    "dirty": false,
+    "created": 1729698801681.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "55,27",
+        "scrollLine": "18"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1729699012,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1729699012763,
+    "read_only": false,
+    "read_only_alternatives": []
+}

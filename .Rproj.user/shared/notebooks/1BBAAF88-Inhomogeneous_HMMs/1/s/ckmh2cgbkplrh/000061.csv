@@ -1,0 +1,2 @@
+"0","plot(zseq, Prob[,1], type = ""l"", lwd = 3, bty = ""n"", ylim = c(0,1), xlab = ""z"", "
+"0","     ylab = ""Pr(state 1)"", col = color[1])"

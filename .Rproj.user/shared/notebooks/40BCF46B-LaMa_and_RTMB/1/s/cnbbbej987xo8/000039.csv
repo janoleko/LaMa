@@ -1,0 +1,2 @@
+"0","plot(Delta[,2], type = ""b"", lwd = 2, xlab = ""time of day"", ylab = ""Pr(active)"", "
+"0","     col = ""deepskyblue"", bty = ""n"", xaxt = ""n"")"

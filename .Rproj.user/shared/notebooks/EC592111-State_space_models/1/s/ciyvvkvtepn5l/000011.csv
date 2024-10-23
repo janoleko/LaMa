@@ -1,0 +1,2 @@
+"0","# true underlying standard deviation"
+"0","lines(beta*exp(g)/7 - 40, col = ""deepskyblue"", lwd = 2)"

@@ -1,0 +1,2 @@
+"0","curve(beta_hat_reg[1,1] + beta_hat_reg[1,2]*x + beta_hat_reg[1,3]*x^2, "
+"0","      add = T, lwd = 4, col = color[2])"

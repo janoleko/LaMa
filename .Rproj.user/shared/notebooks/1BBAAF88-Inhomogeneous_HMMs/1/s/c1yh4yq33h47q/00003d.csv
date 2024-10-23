@@ -1,0 +1,2 @@
+"0","plot(zseq, Gamma_seq[2,1,], type = ""l"", lwd = 3, bty = ""n"", ylim = c(0,1),"
+"0","     xlab = ""z"", ylab = ""gamma_21"", col = color[2])"

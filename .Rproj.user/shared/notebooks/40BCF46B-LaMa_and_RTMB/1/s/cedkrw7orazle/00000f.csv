@@ -1,0 +1,7 @@
+"0","par = list(logmu = log(c(0.3, 2.5)), "
+"0","           logsigma = log(c(0.2, 1.5)),"
+"0","           logkappa = log(c(0.2, 1.5)),"
+"0","           beta0 = c(-2, 2), # intercept now separated!"
+"0","           betaspline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2))"
+"0",""
+"0","dat$lambda = rep(100, 2)"

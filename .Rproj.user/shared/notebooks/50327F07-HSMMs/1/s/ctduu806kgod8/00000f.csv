@@ -1,0 +1,6 @@
+"0","par(mfrow = c(1,3))"
+"0","for(j in 1:N){"
+"0","  plot(1:agsizes[j], dnbinom(1:agsizes[j]-1, mu=mu_dwell[j], size = 1/phi[j]),"
+"0","       type = ""h"", lwd = 2, col = color[j], xlab = ""dwell time (hours)"","
+"0","       ylab = ""probabilities"", main = paste(""state"",j), bty = ""n"", ylim = c(0,0.25))"
+"0","}"

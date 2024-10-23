@@ -1,0 +1,4 @@
+"0","obj4 = MakeADFun(jnll, par, random = ""betaspline"")"
+"0","system.time("
+"0","  opt4 <- nlminb(obj4$par, obj4$fn, obj4$gr)"
+"0",")"

@@ -17,7 +17,7 @@ and **Markov-modulated marked Poisson processes** (MMMPPs) can be
 formulated and estimated within the same framework via directly
 maximizing the (approximate) likelihood using the so-called **forward
 algorithm** (for details see
-<a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">Zucchini
+<a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">Zucchini
 et al. 2016</a>). Researchers using these models in applied work often
 need to build highly customized models for which standard software
 implementation is lacking, or the construction of such models in said
@@ -115,22 +115,22 @@ When using LaMa, please cite the package as follows:
 
 ``` r
 citation(package = "LaMa")
+#> Warning in citation(package = "LaMa"): could not determine year for 'LaMa' from
+#> package DESCRIPTION file
 #> To cite package 'LaMa' in publications use:
 #> 
-#>   Koslik J (2024). _LaMa: Fast Numerical Maximum Likelihood Estimation
-#>   for Latent Markov Models_. R package version 2.0.0, commit
-#>   300cd3dbfe01236a4a9c0a1e714151255b60760d,
-#>   <https://github.com/janoleko/LaMa>.
+#>   Koslik J (????). _LaMa: Fast Numerical Maximum Likelihood Estimation
+#>   for Latent Markov Models_. R package version 2.0.0,
+#>   https://github.com/janoleko/LaMa,
+#>   <https://janoleko.github.io/software/>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov
-#> Models},
+#>     title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov Models},
 #>     author = {Jan-Ole Koslik},
-#>     year = {2024},
-#>     note = {R package version 2.0.0, commit 300cd3dbfe01236a4a9c0a1e714151255b60760d},
-#>     url = {https://github.com/janoleko/LaMa},
+#>     note = {R package version 2.0.0, https://github.com/janoleko/LaMa},
+#>     url = {https://janoleko.github.io/software/},
 #>   }
 ```
 
@@ -199,7 +199,7 @@ theta.star = c(-1,-1,1,4,log(1),log(3))
 s = Sys.time()
 mod = nlm(mllk, theta.star, x = x)
 Sys.time()-s
-#> Time difference of 0.1359401 secs
+#> Time difference of 0.1120961 secs
 ```
 
 Really fast for 10.000 data points!

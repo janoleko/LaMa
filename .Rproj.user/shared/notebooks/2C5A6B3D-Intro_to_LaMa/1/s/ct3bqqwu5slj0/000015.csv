@@ -1,2 +1,0 @@
-"0","curve(delta[1]*dnorm(x, mu[1], sigma[1])+delta[2]*dnorm(x, mu[2], sigma[2]),"
-"0","      add = TRUE, lwd = 2, lty = ""dashed"", n=500)"

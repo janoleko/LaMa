@@ -1,7 +1,0 @@
-"0","# transform parameters to working"
-"0","Gamma = tpm(mod$estimate[1:2])"
-"0","delta = stationary(Gamma) # stationary HMM"
-"0","mu = mod$estimate[3:4]"
-"0","sigma = exp(mod$estimate[5:6])"
-"0",""
-"0","hist(x, prob = TRUE, bor = ""white"", breaks = 40, main = """")"

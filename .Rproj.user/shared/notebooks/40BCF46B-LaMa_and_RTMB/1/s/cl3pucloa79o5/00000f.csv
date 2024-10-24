@@ -1,4 +1,4 @@
-"0","mllk = function(par) {"
+"0","nll = function(par) {"
 "0","  getAll(par, dat) # makes everything contained available without $"
 "0","  Gamma = tpm(eta) # computes transition probability matrix from unconstrained eta"
 "0","  delta = stationary(Gamma) # computes stationary distribution"

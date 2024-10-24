@@ -1,1 +1,0 @@
-"0","curve(delta[2]*dnorm(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = ""deepskyblue"", n=500)"

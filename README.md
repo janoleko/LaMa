@@ -100,30 +100,11 @@ package:
 - [LaMa and
   RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa%20and%20RTMB.html)
 
-## Citation
-
-When using LaMa, please cite the package as follows:
-
-``` r
-citation(package = "LaMa")
-#> Warning in citation(package = "LaMa"): could not determine year for 'LaMa' from
-#> package DESCRIPTION file
-#> To cite package 'LaMa' in publications use:
-#> 
-#>   Koslik J (????). _LaMa: Fast Numerical Maximum Likelihood Estimation
-#>   for Latent Markov Models_. R package version 2.0.0,
-#>   https://github.com/janoleko/LaMa,
-#>   <https://janoleko.github.io/software/>.
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov Models},
-#>     author = {Jan-Ole Koslik},
-#>     note = {R package version 2.0.0, https://github.com/janoleko/LaMa},
-#>     url = {https://janoleko.github.io/software/},
-#>   }
-```
+<!-- ## Citation -->
+<!-- When using LaMa, please cite the package as follows: -->
+<!-- ```{r citation} -->
+<!-- citation(package = "LaMa") -->
+<!-- ``` -->
 
 ## Introductory example: Homogeneous HMM
 
@@ -131,7 +112,6 @@ citation(package = "LaMa")
 
 ``` r
 library(LaMa)
-#> Loading required package: RTMB
 ```
 
 #### Generating data from a 2-state HMM
@@ -190,7 +170,7 @@ system.time(
   mod <- nlm(nll, theta.star, x = x)
 )
 #>    user  system elapsed 
-#>   0.131   0.008   0.139
+#>   0.101   0.007   0.109
 ```
 
 Really fast for 10.000 data points!

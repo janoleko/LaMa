@@ -74,12 +74,12 @@ To aid in building fully custom likelihood functions, this package contains seve
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
 * [LaMa and RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa and RTMB.html)
 
-## Citation
+<!-- ## Citation -->
 
-When using LaMa, please cite the package as follows:
-```{r citation}
-citation(package = "LaMa")
-```
+<!-- When using LaMa, please cite the package as follows: -->
+<!-- ```{r citation} -->
+<!-- citation(package = "LaMa") -->
+<!-- ``` -->
 
 
 ## Introductory example: Homogeneous HMM

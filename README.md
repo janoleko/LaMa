@@ -123,7 +123,11 @@ head(elephant, 3)
 #> 3  11 0.2173252 -2.262418     1
 ```
 
-We start by defining the negative log-likelihood function:
+We start by defining the negative log-likelihood function. This is made
+really convenient by the functions `tpm()` which computes the transition
+probability matrix via the multinomial logit link, `stationary()` which
+computes the stationary distribution of the Markov chain and `forward()`
+which calculates the log-likelihood via the forward algorithm.
 
 ``` r
 nll = function(par, step){
@@ -154,7 +158,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.454   0.012   0.466
+#>   0.457   0.013   0.470
 ```
 
 Really fast for 10.000 data points!

@@ -91,7 +91,7 @@ library(LaMa)
 
 head(elephant, 3)
 ```
-We start by defining the negative log-likelihood function:
+We start by defining the negative log-likelihood function. This is made really convenient by the functions `tpm()` which computes the transition probability matrix via the multinomial logit link, `stationary()` which computes the stationary distribution of the Markov chain and `forward()` which calculates the log-likelihood via the forward algorithm.
 
 ```{r nll}
 nll = function(par, step){

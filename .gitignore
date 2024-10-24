@@ -1,11 +1,15 @@
-use.Rproj.user
+# Ignore RStudio project files
+.Rproj.user/
+*.Rproj
 .Rhistory
 .RData
 .Ruserdata
+
+# Ignore compiled source files
 src/*.o
 src/*.so
 src/*.dll
+
+# Ignore documentation files
 inst/doc
-docs
-.Rproj.user*
-.Rproj.user/
+docs/

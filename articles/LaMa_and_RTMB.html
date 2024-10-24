@@ -594,7 +594,7 @@ column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</l
 <span><span class="co">#&gt; outer 12 - lambda: 0.175 0.078 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   5.090   0.092   5.073</span></span></code></pre></div>
+<span><span class="co">#&gt;   5.059   0.112   5.061</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -719,7 +719,7 @@ course.</p>
 <span>  <span class="va">opt4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj4</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj4</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj4</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  53.949  16.541  50.980</span></span></code></pre></div>
+<span><span class="co">#&gt;  53.349  16.749  50.648</span></span></code></pre></div>
 <p>As we can see, the results are basically identical while the model
 fit took more than ten times as long.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">

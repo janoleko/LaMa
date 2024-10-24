@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=170>
+# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=150>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)

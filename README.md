@@ -1,5 +1,5 @@
 
-# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=170>
+# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=150>
 
 <!-- badges: start -->
 
@@ -158,7 +158,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.457   0.013   0.470
+#>   0.456   0.012   0.468
 ```
 
 Really fast for 10.000 data points!

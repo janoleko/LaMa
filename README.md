@@ -1,5 +1,5 @@
 
-# {LaMa}: Latent Markov model likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
+# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=170>
 
 <!-- badges: start -->
 
@@ -10,42 +10,33 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-pr
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-A plethora of latent Markov models, including **hidden Markov models**
+A variety of latent Markov models, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
-(SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**,
-and **Markov-modulated marked Poisson processes** (MMMPPs) can be
-formulated and estimated within the same framework via directly
-maximizing the (approximate) likelihood using the so-called **forward
-algorithm** (for details see
+(SSMs) and **continuous-time** variants can be formulated and estimated
+within the same framework via directly maximizing the (approximate)
+likelihood using the so-called **forward algorithm** (for details see
 <a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">Zucchini
-et al. 2016</a>). Researchers using these models in applied work often
-need to build highly customized models for which standard software
-implementation is lacking, or the construction of such models in said
-software is as complicated as writing fully tailored **R** code. The
-latter provides great flexibility and control, but suffers from slow
-estimation speeds that make custom solutions inconvenient. This **R**
-package addresses the above issues in two ways. Standard blocks of code
-common to all these model classes, most importantly the forward
-algorithm, are implemented as simple-to-use functions. These can be
-added like Lego blocks to an otherwise fully custom likelihood function,
-making building fully custom models much easier. Moreover, under the
-hood, these functions are written in **C++**, allowing for 10-20 times
-faster evaluation time, and thus drastically speeding up estimation by
-numerical optimizers like `nlm()` or `optim()`.
+et al. 2016</a>). Applied researchers often need custom models that
+standard software does not easily support. Writing tailored `R` code
+offers flexibility but suffers from slow estimation speeds. This `R`
+package solves these issues by providing easy-to-use functions (written
+in C++ for speed) for common tasks like the forward algorithm. These
+functions can be combined into custom models, offering up to 10-20 times
+faster estimation via standard numerical optimizers like `nlminb()` or
+`optim()`. The development version now also allows for automatic
+differentiation with the `RTMB` package which drastically increases
+speed and accuracy.
 
-The development version now also allows for automatic differentiation
-with the `RTMB` package which drastically increases speed and accuracy.
-
-Current implementations of the forward algorithm are:
+The most important implementations of the forward algorithm are:
 
 - `forward()` for models with **homogeneous** transition probabilities,
+  and
 - `forward_g()` for general (pre-calculated) **inhomogeneous**
   transition probabilities (including **continuous-time** HMMs and
-  points processes), and
-- `forward_s()` for fitting **HSMMs**.
+  points processes)
 
 The functions are built to be included in the **negative log-likelihood
-function**, after parameters have been transformed and the *allprobs*
+function**, after parameters have been transformed and the `allprobs`
 matrix (containing all state-dependent probabilities) has been
 calculated.
 
@@ -57,7 +48,7 @@ auxiliary functions like
   <!-- + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices,  -->
   <!-- + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs, -->
   <!-- + `tpm_cont()` for calculating the transition probabilites of a continuous-time Markov chain, -->
-  <!-- + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, -->
+  <!-- + `tpm_emb()` for calculating the embedded transition matrix of an HSMM, -->
 
 - the `stationary` family to compute stationary and periodically
   stationary distributions
@@ -134,12 +125,13 @@ citation(package = "LaMa")
 #>   }
 ```
 
-## Example: Homogeneous HMM
+## Introductory example: Homogeneous HMM
 
 #### Loading the package
 
 ``` r
 library(LaMa)
+#> Loading required package: RTMB
 ```
 
 #### Generating data from a 2-state HMM
@@ -158,12 +150,10 @@ n = 10000 # rather large
 set.seed(123)
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
-
+x = rnorm(n, mu[s], sigma[s])
 plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
      col = c("orange","deepskyblue")[s[1:200]])
 ```
@@ -177,7 +167,7 @@ function, compute the stationary distribution using `stationary()` and
 calculate the log-likelihood using `forward()` in the last line.
 
 ``` r
-mllk = function(theta.star, x){
+nll = function(theta.star, x){
   # parameter transformations for unconstraint optimization
   Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma) # stationary HMM
@@ -185,7 +175,7 @@ mllk = function(theta.star, x){
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
   -forward(delta, Gamma, allprobs)
 }
@@ -196,10 +186,11 @@ mllk = function(theta.star, x){
 ``` r
 theta.star = c(-1,-1,1,4,log(1),log(3)) 
 # initial transformed parameters: not chosen too well
-s = Sys.time()
-mod = nlm(mllk, theta.star, x = x)
-Sys.time()-s
-#> Time difference of 0.1120961 secs
+system.time(
+  mod <- nlm(nll, theta.star, x = x)
+)
+#>    user  system elapsed 
+#>   0.130   0.006   0.137
 ```
 
 Really fast for 10.000 data points!

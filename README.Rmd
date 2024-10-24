@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# {LaMa}: Latent Markov model likelihood evaluation in C++ <img src="man/figures/Logo_LaMa.png" align="right" height=170>
+# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=170>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)
@@ -20,19 +20,17 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-A plethora of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) as well as **continuous-time HMMs**, **continuous-time SSMs**, and **Markov-modulated marked Poisson processes** (MMMPPs) can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood using the so-called **forward algorithm** (for details see
+A variety of latent Markov models, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) 
+and **continuous-time** variants can be formulated and estimated within the same framework via directly maximizing the (approximate) likelihood using the so-called **forward algorithm** (for details see
 <a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">Zucchini et al. 2016</a>).
-Researchers using these models in applied work often need to build highly customized models for which standard software implementation is lacking, or the construction of such models in said software is as complicated as writing fully tailored **R** code. The latter provides great flexibility and control, but suffers from slow estimation speeds that make custom solutions inconvenient. This **R** package addresses the above issues in two ways. Standard blocks of code common to all these model classes, most importantly the forward algorithm, are implemented as simple-to-use functions. These can be added like Lego blocks to an otherwise fully custom likelihood function, making building fully custom models much easier. Moreover, under the hood, these functions are written in **C++**, allowing for 10-20 times faster evaluation time, and thus drastically speeding up estimation by numerical optimizers like `nlm()` or `optim()`.
+Applied researchers often need custom models that standard software does not easily support. Writing tailored `R` code offers flexibility but suffers from slow estimation speeds. This `R` package solves these issues by providing easy-to-use functions (written in C++ for speed) for common tasks like the forward algorithm. These functions can be combined into custom models, offering up to 10-20 times faster estimation via standard numerical optimizers like `nlminb()` or `optim()`. The development version now also allows for automatic differentiation with the `RTMB` package which drastically increases speed and accuracy.
 
-The development version now also allows for automatic differentiation with the `RTMB` package which drastically increases speed and accuracy.
+The most important implementations of the forward algorithm are:
 
-Current implementations of the forward algorithm are:
+* `forward()` for models with **homogeneous** transition probabilities, and
+* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs and points processes)
 
-* `forward()` for models with **homogeneous** transition probabilities,
-* `forward_g()` for general (pre-calculated) **inhomogeneous** transition probabilities (including **continuous-time** HMMs and points processes), and
-* `forward_s()` for fitting **HSMMs**.
-
-The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the *allprobs* matrix (containing all state-dependent probabilities) has been calculated. 
+The functions are built to be included in the **negative log-likelihood function**, after parameters have been transformed and the `allprobs` matrix (containing all state-dependent probabilities) has been calculated. 
 
 To serve as a powerful toolbox, this package also includes many auxiliary functions like
 
@@ -41,7 +39,7 @@ To serve as a powerful toolbox, this package also includes many auxiliary functi
   <!-- + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices,  -->
   <!-- + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs, -->
   <!-- + `tpm_cont()` for calculating the transition probabilites of a continuous-time Markov chain, -->
-  <!-- + `tpm_hsmm()` for calculating the transition matrix of an HSMM-approximating HMM, -->
+  <!-- + `tpm_emb()` for calculating the embedded transition matrix of an HSMM, -->
 
 * the `stationary` family to compute stationary and periodically stationary distributions
 
@@ -84,7 +82,7 @@ citation(package = "LaMa")
 ```
 
 
-## Example: Homogeneous HMM
+## Introductory example: Homogeneous HMM
 
 #### Loading the package
 ```{r package}
@@ -106,12 +104,10 @@ n = 10000 # rather large
 set.seed(123)
 s = x = rep(NA, n)
 s[1] = sample(1:2, 1, prob = delta)
-x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
 for(t in 2:n){
   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
 }
-
+x = rnorm(n, mu[s], sigma[s])
 plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
      col = c("orange","deepskyblue")[s[1:200]])
 ```
@@ -119,7 +115,7 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
 #### Writing the negative log-likelihood function
 Here, we build the transition probability matrix using the `tpm()` function, compute the stationary distribution using `stationary()` and calculate the log-likelihood using `forward()` in the last line.
 ```{r mllk}
-mllk = function(theta.star, x){
+nll = function(theta.star, x){
   # parameter transformations for unconstraint optimization
   Gamma = tpm(theta.star[1:2])
   delta = stationary(Gamma) # stationary HMM
@@ -127,7 +123,7 @@ mllk = function(theta.star, x){
   sigma = exp(theta.star[5:6])
   # calculate all state-dependent probabilities
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
   # return negative for minimization
   -forward(delta, Gamma, allprobs)
 }
@@ -137,9 +133,9 @@ mllk = function(theta.star, x){
 ```{r model, warning=FALSE}
 theta.star = c(-1,-1,1,4,log(1),log(3)) 
 # initial transformed parameters: not chosen too well
-s = Sys.time()
-mod = nlm(mllk, theta.star, x = x)
-Sys.time()-s
+system.time(
+  mod <- nlm(nll, theta.star, x = x)
+)
 ```
 Really fast for 10.000 data points!
 

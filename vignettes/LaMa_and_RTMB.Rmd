@@ -436,16 +436,16 @@ f(x) = \int f(x, b) \,db,
 $$
 actually its negative log of course.
 
-```{r refit, message = FALSE, cache = TRUE}
+```{r refit, message = FALSE, eval = FALSE}
 obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE)
 system.time(
   opt4 <- nlminb(obj4$par, obj4$fn, obj4$gr)
 )
 ```
 
-As we can see, the results are basically identical while the model fit took more than ten times as long.
+This more general algorithm takes more than ten times model as long to fit the model. Hence, the above code is not evaluated. The results however are very similar.
 
-```{r results refit, fig.width = 8, fig.height = 5}
+<!-- ```{r results refit, fig.width = 8, fig.height = 5}
 mod4 = obj4$report()
 mod4$Gamma = tpm_g(Z, mod4$beta) # calculating 24 tpms
 
@@ -455,7 +455,7 @@ plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
 lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
 legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
        legend = c(expression(gamma[12]^(t)), expression(gamma[21]^(t))))
-```
+``` -->
 
 ### Common issues with `RTMB`
 

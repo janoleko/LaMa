@@ -1,4 +1,4 @@
-.Rproj.user/
+
 use.Rproj.user
 .Rhistory
 .RData
@@ -8,4 +8,5 @@ src/*.so
 src/*.dll
 inst/doc
 docs
+.Rproj.user*
 .Rproj.user

@@ -1,0 +1,17 @@
+pandoc: 3.1.11
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  Continuous_time_HMMs: Continuous_time_HMMs.html
+  HSMMs: HSMMs.html
+  Inhomogeneous_HMMs: Inhomogeneous_HMMs.html
+  Intro_to_LaMa: Intro_to_LaMa.html
+  LaMa_and_RTMB: LaMa_and_RTMB.html
+  Longitudinal_data: Longitudinal_data.html
+  MMMPPs: MMMPPs.html
+  Periodic_HMM: Periodic_HMM.html
+  State_space_models: State_space_models.html
+last_built: 2024-10-24T12:10Z
+urls:
+  reference: https://janoleko.github.io/reference
+  article: https://janoleko.github.io/articles

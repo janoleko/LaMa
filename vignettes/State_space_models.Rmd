@@ -87,7 +87,6 @@ mllk = function(theta.star, y, bm, m){
   bstar = (b[-1] + b[-(m+1)])/2 # interval midpoints
   # approximation resulting from midpoint quadrature
   Gamma = sapply(bstar, dnorm, mean = phi*bstar, sd = sigma) * h
-  Gamma = Gamma / rowSums(Gamma) # normalizing out approximation errors
   delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
   # approximating state-dependent density based on midpoints
   allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))

@@ -19,6 +19,8 @@
 #' In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
 #' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
+#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
+#' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,length(tod))
 #' @export
@@ -55,22 +57,48 @@
 #' beta = matrix(c(-1, runif(8, -2, 2), # 9 parameters per off-diagonal element
 #'                  -2, runif(8, -2, 2)), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_p(tod, L, beta, Z = Z)
-tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE){
+tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad = NULL, report = TRUE){
   K = nrow(beta)
+  p = ncol(beta) - 1 # number of covariates
   # for N > 1: K = N*(N-1) is bijective with solution
   N = as.integer(0.5 + sqrt(0.25+K), 0)
   
-  if(is.null(Z)){
+  # check wheter design matrix is provided
+  if(is.null(Z)){ # if not, build trigonometric design matrix
     Z = cbind(1, trigBasisExp(tod, L, degree))
   } else{
-    Z = cbind(1, Z)
+    if(ncol(Z) == p){ # intercept column is missing
+      Z = cbind(1, Z) # adding intercept column
+    } else if(ncol(Z) != p + 1){
+      stop("The dimensions of Z and beta do not match.")
+    }
   }
   
-  p = ncol(beta)-1
-  if(ncol(Z)!=p+1){
-    stop("The dimensions of the design matrix Z and beta do not match - you may have included an intercept column or chosen the wrong degree.")
-  } else{
-    Gamma = tpm_g_cpp(Z, beta, N, byrow)
-    return(Gamma)
+  # report quantities for easy use later
+  if(report) {
+    RTMB::REPORT(beta)
   }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(beta) %in% c("advector", "numeric", "matrix", "array"))){
+      stop("beta needs to be either a matrix or advector.")
+    }
+    
+    # if delta is advector, run ad version of the function
+    ad = inherits(beta, "advector")
+  }
+  
+  if(!ad){
+    Gamma = tpm_g_cpp(Z, beta, N, byrow)
+  } else if(ad) {
+    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
+    
+    Gamma = tpm_g(Z, beta, byrow, ad = TRUE, report = FALSE)
+  }
+  
+  Gamma
 }

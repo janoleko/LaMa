@@ -64,15 +64,15 @@ devtools::install_github("janoleko/LaMa")
 
 To aid in building fully custom likelihood functions, this package contains several vignettes that demonstrate how to simulate data from and estimate a wide range of models using the functions included in this package:
 
-* [Introduction to LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
-* [Inhomogeneous HMMs with covariate effects](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
-* [Longitudinal data](https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf)
-* [Periodic HMMs](https://janoleko.github.io/files/vignettes/LaMa/Periodic_HMM.pdf)
-* [State space models](https://janoleko.github.io/files/vignettes/LaMa/State_space_models.pdf)
-* [Continuous-time HMMs](https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf)
-* [Hidden semi-Markov models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
-* [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
-* [LaMa and RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa and RTMB.html)
+* [Introduction to LaMa](https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html)
+* [Inhomogeneous HMMs with covariate effects](https://janoleko.github.io/LaMa/articles/Inhomogeneous_HMMs.html)
+* [Longitudinal data](https://janoleko.github.io/LaMa/articles/Longitudinal_data.html)
+* [Periodic HMMs](https://janoleko.github.io/LaMa/articles/Periodic_HMM.html)
+* [State space models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
+* [Continuous-time HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
+* [Hidden semi-Markov models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
+* [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
+* [LaMa and RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 
 <!-- ## Citation -->
 

@@ -82,23 +82,23 @@ and estimate a wide range of models using the functions included in this
 package:
 
 - [Introduction to
-  LaMa](https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf)
+  LaMa](https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html)
 - [Inhomogeneous HMMs with covariate
-  effects](https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf)
+  effects](https://janoleko.github.io/LaMa/articles/Inhomogeneous_HMMs.html)
 - [Longitudinal
-  data](https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf)
+  data](https://janoleko.github.io/LaMa/articles/Longitudinal_data.html)
 - [Periodic
-  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Periodic_HMM.pdf)
+  HMMs](https://janoleko.github.io/LaMa/articles/Periodic_HMM.html)
 - [State space
-  models](https://janoleko.github.io/files/vignettes/LaMa/State_space_models.pdf)
+  models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 - [Continuous-time
-  HMMs](https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf)
+  HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
 - [Hidden semi-Markov
-  models](https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf)
+  models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 - [Markov-modulated (marked) Poisson
-  processes](https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf)
+  processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
 - [LaMa and
-  RTMB](https://janoleko.github.io/files/vignettes/LaMa/LaMa%20and%20RTMB.html)
+  RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 
 <!-- ## Citation -->
 <!-- When using LaMa, please cite the package as follows: -->
@@ -112,6 +112,7 @@ package:
 
 ``` r
 library(LaMa)
+#> Loading required package: RTMB
 ```
 
 #### Generating data from a 2-state HMM
@@ -170,7 +171,7 @@ system.time(
   mod <- nlm(nll, theta.star, x = x)
 )
 #>    user  system elapsed 
-#>   0.101   0.007   0.109
+#>   0.129   0.008   0.137
 ```
 
 Really fast for 10.000 data points!

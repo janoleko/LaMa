@@ -108,93 +108,71 @@ package:
 
 ## Introductory example: Homogeneous HMM
 
-#### Loading the package
+We analyze the `elephant` data set contained in the package using a
+simple 2-state HMM with state-dependent gamma distributions. We fit the
+model to the hourly step lengths.
 
 ``` r
 library(LaMa)
 #> Loading required package: RTMB
+
+head(elephant, 3)
+#>   tod      step     angle state
+#> 1   9 0.3252437        NA     1
+#> 2  10 0.2458265  2.234562     1
+#> 3  11 0.2173252 -2.262418     1
 ```
 
-#### Generating data from a 2-state HMM
-
-Here we can use `stationary()` to compute the stationary distribution.
+We start by defining the negative log-likelihood function:
 
 ``` r
-# parameters
-mu = c(0, 6)
-sigma = c(2, 4)
-Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-delta = stationary(Gamma) # stationary HMM
-
-# simulation
-n = 10000 # rather large
-set.seed(123)
-s = x = rep(NA, n)
-s[1] = sample(1:2, 1, prob = delta)
-for(t in 2:n){
-  s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-}
-x = rnorm(n, mu[s], sigma[s])
-plot(x[1:200], bty = "n", pch = 20, ylab = "x", 
-     col = c("orange","deepskyblue")[s[1:200]])
-```
-
-<img src="man/figures/README-data-1.png" width="75%" style="display: block; margin: auto;" />
-
-#### Writing the negative log-likelihood function
-
-Here, we build the transition probability matrix using the `tpm()`
-function, compute the stationary distribution using `stationary()` and
-calculate the log-likelihood using `forward()` in the last line.
-
-``` r
-nll = function(theta.star, x){
+nll = function(par, step){
   # parameter transformations for unconstraint optimization
-  Gamma = tpm(theta.star[1:2])
+  Gamma = tpm(par[1:2]) # multinomial logit link
   delta = stationary(Gamma) # stationary HMM
-  mu = theta.star[3:4]
-  sigma = exp(theta.star[5:6])
+  mu = exp(par[3:4])
+  sigma = exp(par[5:6])
   # calculate all state-dependent probabilities
-  allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-  # return negative for minimization
+  allprobs = matrix(1, length(step), 2)
+  ind = which(!is.na(step))
+  for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+  # simple forward algorithm to calculate log-likelihood
   -forward(delta, Gamma, allprobs)
 }
 ```
 
-#### Fitting an HMM to the data
+To fit the model, we define the intial parameter vector and numerically
+optimize the above function using `nlm()`:
 
 ``` r
-theta.star = c(-1,-1,1,4,log(1),log(3)) 
+par = c(-2,-2,             # initial tpm params (logit-scale)
+        log(c(0.3, 1)),    # initial means for step length (log-transformed)
+        log(c(0.2, 0.7)))  # initial sds for step length (log-transformed)
+
 # initial transformed parameters: not chosen too well
 system.time(
-  mod <- nlm(nll, theta.star, x = x)
+  mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.129   0.008   0.137
+#>   0.454   0.012   0.466
 ```
 
 Really fast for 10.000 data points!
 
-#### Visualizing results
-
-Again, we use `tpm()` and `stationary()` to tranform the unconstraint
-parameters to working parameters.
+After tranforming the unconstrained parameters to working parameters
+using `tpm()` and `stationary()`, we can visualize the results:
 
 ``` r
 # transform parameters to working
 Gamma = tpm(mod$estimate[1:2])
 delta = stationary(Gamma) # stationary HMM
-mu = mod$estimate[3:4]
+mu = exp(mod$estimate[3:4])
 sigma = exp(mod$estimate[5:6])
 
-hist(x, prob = TRUE, bor = "white", breaks = 40, main = "")
-curve(delta[1]*dnorm(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)
-curve(delta[2]*dnorm(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = "deepskyblue", n=500)
-curve(delta[1]*dnorm(x, mu[1], sigma[1])+delta[2]*dnorm(x, mu[2], sigma[2]),
-      add = TRUE, lwd = 2, lty = "dashed", n=500)
-legend("topright", col = c("orange", "deepskyblue", "black"), lwd = 2, bty = "n",
-       lty = c(1,1,2), legend = c("state 1", "state 2", "marginal"))
+hist(elephant$step, prob = TRUE, bor = "white", breaks = 40, main = "", xlab = "step length")
+curve(delta[1] * dgamma2(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)
+curve(delta[2] * dgamma2(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = "deepskyblue", n=500)
+legend("topright", col = c("orange", "deepskyblue"), lwd = 2, bty = "n", legend = c("state 1", "state 2"))
 ```
 
 <img src="man/figures/README-visualization-1.png" width="75%" style="display: block; margin: auto;" />

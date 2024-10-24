@@ -1,6 +1,0 @@
-"0","allprobs = matrix(1, length(x), 2)"
-"0","for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }"
-"0",""
-"0","states = viterbi(delta, Gamma, allprobs)"
-"0",""
-"0","plot(x, pch = 20, bty = ""n"", col = color[states])"

@@ -1,3 +1,0 @@
-"0","for(i in 2:(ncol(Zseq)-1)){"
-"0","  lines(zseq, Zseq[,i], lwd = 3, col = i)"
-"0","} "

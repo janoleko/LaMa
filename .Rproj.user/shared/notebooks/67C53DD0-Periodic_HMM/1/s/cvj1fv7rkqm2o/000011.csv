@@ -1,2 +1,0 @@
-"0","curve(delta_hat[1]*dnorm(x, mu_hat[1], sigma_hat[1]), add = TRUE, lwd = 2, "
-"0","      col = color[1], n=500)"

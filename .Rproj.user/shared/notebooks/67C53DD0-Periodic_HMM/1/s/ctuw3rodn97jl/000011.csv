@@ -1,3 +1,0 @@
-"0","for(i in 2:nk){"
-"0","  lines(Z[,i], lwd = 2, col = i)"
-"0","} "

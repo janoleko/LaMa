@@ -1,5 +1,0 @@
-"0","for(j in 1:2){"
-"0","  for(i in 1:ncol(Zplot)){ "
-"0","  lines(zseq, beta_hat_npreg[j,1] + Zplot[,i]*beta_hat_npreg[j,1+i], lwd = 0.3, col = color[j]) "
-"0","  }"
-"0","}"

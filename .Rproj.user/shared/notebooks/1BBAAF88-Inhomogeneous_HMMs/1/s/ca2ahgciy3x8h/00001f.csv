@@ -1,8 +1,0 @@
-"0","Z = splines::bs(x = z, df = 8) ## B-spline design matrix"
-"0",""
-"0","# visualizing the splines"
-"0","zseq = seq(min(z), max(z), length = 200)"
-"0","Zseq = splines::bs(x = zseq, df = 8)"
-"0",""
-"0","plot(zseq, Zseq[,1], type = ""l"", lwd = 3, bty = ""n"", "
-"0","     xlim = c(zseq[1], zseq[200]), ylim = c(0,0.7), xlab = ""z"", ylab = ""basis function"")"

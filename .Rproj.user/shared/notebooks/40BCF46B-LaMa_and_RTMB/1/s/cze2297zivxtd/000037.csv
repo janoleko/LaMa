@@ -1,3 +1,0 @@
-"0",""
-"0","hist(elephant$angle, prob = TRUE, breaks = 40, "
-"0","     bor = ""white"", main = """", xlab = ""turning angle"")"

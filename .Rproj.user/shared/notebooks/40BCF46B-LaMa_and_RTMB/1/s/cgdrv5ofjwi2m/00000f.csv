@@ -1,7 +1,0 @@
-"0","modmat = make_matrices(~ s(tod, bs = ""cp""), "
-"0","                       data = data.frame(tod = 1:24),"
-"0","                       knots = list(tod = c(0,24))) # where to wrap the cyclic basis"
-"0","Z = modmat$Z # spline design matrix"
-"0","S = modmat$S # penalty matrix"
-"0","dat$Z = Z"
-"0","dat$S = S[[1]] # mgcv returns a list "

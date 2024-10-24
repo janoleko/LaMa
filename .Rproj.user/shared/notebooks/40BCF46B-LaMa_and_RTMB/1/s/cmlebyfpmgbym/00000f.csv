@@ -1,6 +1,0 @@
-"0","par = list(logmu = log(c(0.3, 1)), "
-"0","           logsigma = log(c(0.2, 0.7)),"
-"0","           logkappa = log(c(0.2, 0.7)),"
-"0","           beta = matrix(c(rep(-2, 2), "
-"0","                           rep(0, 2*ncol(Z))), nrow = 2)) # 2 times 4+1 matrix"
-"0","# replacing eta with regression parameter matrix, initializing slopes at zero"

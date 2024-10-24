@@ -1,5 +1,0 @@
-"0","color = c(""orange"", ""deepskyblue"")"
-"0",""
-"0","n = length(obs_times)"
-"0","plot(obs_times[1:50], x[1:50], pch = 16, bty = ""n"", xlab = ""observation times"", "
-"0","     ylab = ""x"", ylim = c(-5,25))"

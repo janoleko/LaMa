@@ -1,1 +1,0 @@
-{"frames":[{"func":"tpm_g(z, beta)","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error in if (!(ncol(Z) %in% c(p, p - 1))) { : argument is of length zero\n"}

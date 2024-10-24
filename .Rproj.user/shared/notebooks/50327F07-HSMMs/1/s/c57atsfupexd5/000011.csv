@@ -1,3 +1,0 @@
-"0","# install.packages(""PHSMM"")"
-"0","data = PHSMM::muskox[1:1000,] # only using first 1000 observations for speed"
-"0","head(data)"

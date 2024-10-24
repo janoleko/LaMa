@@ -1,3 +1,0 @@
-"0",""
-"0","plot(z[which(s==1)], x[which(s==1)], pch = 16, col = color[1], bty = ""n"", "
-"0","     ylim = c(0,15), xlab = ""z"", ylab = ""x"")"

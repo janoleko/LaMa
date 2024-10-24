@@ -1,6 +1,0 @@
-"0","mod4 = obj4$report()"
-"0","mod4$Gamma = tpm_g(Z, mod4$beta) # calculating 24 tpms"
-"0",""
-"0","Gamma_plot = tpm_g(Z_pred, mod4$beta)"
-"0","plot(tod_seq, Gamma_plot[1,2,], type = ""l"", lwd = 2, ylim = c(0,1),"
-"0","     xlab = ""time of day"", ylab = ""transition probability"", bty = ""n"")"

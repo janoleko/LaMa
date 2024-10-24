@@ -1,2 +1,0 @@
-"0","segments(x0 = 1:24, y0 = Delta[,2]-1.96*Deltasd[,2], lwd = 2,"
-"0","         y1 = Delta[,2]+1.96*Deltasd[,2], col = ""deepskyblue"")"

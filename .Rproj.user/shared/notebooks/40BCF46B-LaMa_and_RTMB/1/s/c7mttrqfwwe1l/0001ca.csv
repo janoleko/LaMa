@@ -1,2 +1,0 @@
-"0","for(j in 1:2) curve(delta[j] * dvm(x, 0, kappa[j]), "
-"0","                    lwd = 2, add = T, col = color[j])"

@@ -594,7 +594,7 @@ column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</l
 <span><span class="co">#&gt; outer 12 - lambda: 0.175 0.078 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   5.019   0.112   5.022</span></span></code></pre></div>
+<span><span class="co">#&gt;   5.049   0.092   5.033</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -717,22 +717,21 @@ course.</p>
 <code class="sourceCode R"><span><span class="va">obj4</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">jnll</span>, <span class="va">par</span>, random <span class="op">=</span> <span class="st">"betaspline"</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">opt4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj4</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj4</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj4</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  55.282  16.477  52.251</span></span></code></pre></div>
-<p>As we can see, the results are basically identical while the model
-fit took more than ten times as long.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mod4</span> <span class="op">=</span> <span class="va">obj4</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mod4</span><span class="op">$</span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z</span>, <span class="va">mod4</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># calculating 24 tpms</span></span>
-<span></span>
-<span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_pred</span>, <span class="va">mod4</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"transition probability"</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
-<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/results%20refit-1.png" width="85%" style="display: block; margin: auto;"></p>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This more general algorithm takes more than ten times model as long
+to fit the model. Hence, the above code is not evaluated. The results
+however are very similar.</p>
+<!-- ```{r results refit, fig.width = 8, fig.height = 5}
+mod4 = obj4$report()
+mod4$Gamma = tpm_g(Z, mod4$beta) # calculating 24 tpms
+
+Gamma_plot = tpm_g(Z_pred, mod4$beta)
+plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
+     xlab = "time of day", ylab = "transition probability", bty = "n")
+lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
+legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
+       legend = c(expression(gamma[12]^(t)), expression(gamma[21]^(t))))
+``` -->
 </div>
 <div class="section level3">
 <h3 id="common-issues-with-rtmb">Common issues with <code>RTMB</code><a class="anchor" aria-label="anchor" href="#common-issues-with-rtmb"></a>
@@ -747,14 +746,14 @@ need to be overloaded to allow for automatic differentiation which
 cannot be done by default. In typical model setups <code>LaMa</code>
 functions do this themselves, but if you go a very individualistic route
 and get an error like</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid argument to 'advector' (lost class attribute?)"</span><span class="op">)</span></span></code></pre></div>
 <p>you might have to overload the operator yourself. To do this put</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"[&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"[&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>as the first line of your likelihood function. If the error still
 prevails also add</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"c"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span></span>
 <span><span class="st">"diag&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"diag&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>which should hopefully fix the error.</p>
@@ -764,12 +763,12 @@ prevails also add</p>
 which screws up the automatic differentiation due to the mismatching
 types. To avoid this, always initiate with <code>numeric</code> or
 <code>NaN</code> values. For example, don’t do</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># which is the same as</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>but rather</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NaN</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -777,7 +776,7 @@ types. To avoid this, always initiate with <code>numeric</code> or
 <p>Furthermore, there are some unfortunate side effects of R’s ‘byte
 compiler’ (enabled by default in R). So if you encounter an error not
 matching the previous ones, try disabling the byte compiler with</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">compiler</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/compiler/compile.html" class="external-link">enableJIT</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>and see if the error is resolved.</p>

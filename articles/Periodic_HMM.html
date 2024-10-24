@@ -179,7 +179,7 @@ additional argument that specifies which time point to compute.</p>
 <span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, z <span class="op">=</span> <span class="va">z</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">s</span></span>
-<span><span class="co">#&gt; Time difference of 0.5202293 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 0.5030618 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
@@ -278,7 +278,7 @@ last lines.</p>
 <span><span class="va">mod_np</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_np</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, z <span class="op">=</span> <span class="va">z</span>, Z <span class="op">=</span> <span class="va">Z</span>, lambda <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co"># in this case we don't seem to need a lot of penalization</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">s</span></span>
-<span><span class="co">#&gt; Time difference of 1.365564 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 1.358832 secs</span></span></code></pre></div>
 <p>The model fit is still quite fast for non-parametric modeling.</p>
 </div>
 <div class="section level3">

@@ -96,15 +96,15 @@
 </h2>
 <p>To aid in building fully custom likelihood functions, this package contains several vignettes that demonstrate how to simulate data from and estimate a wide range of models using the functions included in this package:</p>
 <ul>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/Intro_to_LaMa.pdf">Introduction to LaMa</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/Inhomogeneous_HMMs.pdf">Inhomogeneous HMMs with covariate effects</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/Longitudinal_data.pdf">Longitudinal data</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/Periodic_HMM.pdf">Periodic HMMs</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/State_space_models.pdf">State space models</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/Continuous_time_HMMs.pdf">Continuous-time HMMs</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/HSMMs.pdf">Hidden semi-Markov models</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf">Markov-modulated (marked) Poisson processes</a></li>
-<li><a href="https://janoleko.github.io/files/vignettes/LaMa/LaMa%20and%20RTMB.html">LaMa and RTMB</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html">Introduction to LaMa</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Inhomogeneous_HMMs.html">Inhomogeneous HMMs with covariate effects</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Longitudinal_data.html">Longitudinal data</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Periodic_HMM.html">Periodic HMMs</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/State_space_models.html">State space models</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html">Continuous-time HMMs</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/HSMMs.html">Hidden semi-Markov models</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/MMMPPs.html">Markov-modulated (marked) Poisson processes</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html">LaMa and RTMB</a></li>
 </ul>
 <!-- ## Citation --><!-- When using LaMa, please cite the package as follows: --><!-- ```{r citation} --><!-- citation(package = "LaMa") --><!-- ``` -->
 </div>
@@ -115,7 +115,8 @@
 <h4 id="loading-the-package">Loading the package<a class="anchor" aria-label="anchor" href="#loading-the-package"></a>
 </h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="generating-data-from-a-2-state-hmm">Generating data from a 2-state HMM<a class="anchor" aria-label="anchor" href="#generating-data-from-a-2-state-hmm"></a>
@@ -169,7 +170,7 @@
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.101   0.007   0.109</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.129   0.008   0.137</span></span></code></pre></div>
 <p>Really fast for 10.000 data points!</p>
 </div>
 <div class="section level4">

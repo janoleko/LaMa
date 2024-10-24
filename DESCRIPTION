@@ -24,7 +24,6 @@ Encoding: UTF-8
 Imports: 
     Rcpp,
     mgcv,
-    RTMB,
     Matrix,
     stats,
     utils,
@@ -35,7 +34,7 @@ Imports:
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.5.0), RTMB
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,

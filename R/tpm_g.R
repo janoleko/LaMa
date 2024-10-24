@@ -12,7 +12,7 @@
 #' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
 #' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
 #' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
-#' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
+#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
 #' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'
 #' @return Array of transition probability matrices of dimension c(N,N,n)
@@ -24,7 +24,7 @@
 #' Z = matrix(runif(n*2), ncol = 2)
 #' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_g(Z, beta)
-tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE){
+tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
   
   K = nrow(beta)
   p = ncol(beta) - 1
@@ -38,18 +38,34 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE){
     stop("The dimensions of Z and beta do not match.")
   }
   
-  if(!ad) {
+  # report quantities for easy use later
+  if(report) {
+    RTMB::REPORT(beta)
+  }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(beta) %in% c("advector", "numeric", "matrix", "array"))){
+      stop("beta needs to be either a matrix or advector.")
+    }
     
+    # if delta is advector, run ad version of the function
+    ad = inherits(beta, "advector")
+  }
+  
+  if(!ad) {
+
     Gamma = tpm_g_cpp(Z, beta, N, byrow) # C++ version
     
   } else if(ad) {
-    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
     
-    if(report) {
-      RTMB::REPORT(beta) # reporting coefficient matrix
-    }
+    # if(report) {
+    #   RTMB::REPORT(beta) # reporting coefficient matrix
+    # }
     
     expEta = exp(Z %*% t(beta))
     Gamma = array(NaN, dim = c(N, N, nrow(expEta)))

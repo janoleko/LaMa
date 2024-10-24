@@ -16,7 +16,7 @@
 #' @param trackID Optional vector of length n containing IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' In this case, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
 #' Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
-#' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
+#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
 #' @param report Logical, indicating whether delta, Gamma and allprobs should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
 #'
 #' @return Log-likelihood for given data and parameters
@@ -63,7 +63,28 @@
 #' mod = nlm(mllk, theta.star, x = x, z = z)
 #'
 forward_g = function(delta, Gamma, allprobs, 
-                     trackID = NULL, ad = FALSE, report = TRUE) {
+                     trackID = NULL, ad = NULL, report = TRUE) {
+  
+  # report quantities for easy use later
+  if(report) {
+    RTMB::REPORT(delta)
+    RTMB::REPORT(Gamma)
+    RTMB::REPORT(allprobs)
+    if(!is.null(trackID)){
+      RTMB::REPORT(trackID)
+    }
+  }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(delta) %in% c("advector", "numeric", "matrix", "array"))){
+      stop("delta needs to be either a vector, matrix or advector.")
+    }
+    
+    # if delta is advector, run ad version of the function
+    ad = inherits(delta, "advector")
+  }
   
   if(!ad) {
     

@@ -9,7 +9,7 @@
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,L). 
 #' @param t Integer index of the time point in the cycle, for which to calculate the stationary distribution
 #' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
-#' @param ad Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.
+#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
 #'
 #' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
@@ -25,10 +25,21 @@
 #'
 #' # All periodically stationary distributions
 #' Delta = stationary_p(Gamma)
-stationary_p = function(Gamma, t = NULL, ad = FALSE){
+stationary_p = function(Gamma, t = NULL, ad = NULL){
   
   N = dim(Gamma)[2]
   L = dim(Gamma)[3]
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(Gamma) %in% c("advector", "array"))){
+      stop("Gamma needs to be either an array or advector.")
+    }
+    
+    # if delta is advector, run ad version of the function
+    ad = inherits(Gamma, "advector")
+  }
   
   if(!ad) {
     if(is.null(t)){

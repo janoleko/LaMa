@@ -49,7 +49,26 @@
 forward = function(delta, Gamma, allprobs, 
                    trackID = NULL, ad = FALSE, report = TRUE){
   
+  # if ad is not explicitly provided, check if delta is an advector
+  # if(is.null(ad)){
+  #   # check if delta has any of the allowed classes
+  #   if(!any(class(delta) %in% c("advector", "numeric", "matrix", "array"))){
+  #     stop("delta needs to be either a vector, matrix or advector.")
+  #   }
+  #   
+  #   # if delta is advector, run ad version of the function
+  #   ad = inherits(delta, "advector")
+  #   print(ad)
+  #   #ad = class(delta) == "advector"
+  # }
+  
+  # non-ad version in C++
   if(!ad) {
+    
+    if(inherits(delta, "advector")){
+      stop("It seems you forgot to set ad = TRUE.")
+    }
+    
     if(is.null(trackID)) {
       l = forward_cpp_h(allprobs, delta, Gamma)
     } else {
@@ -75,7 +94,7 @@ forward = function(delta, Gamma, allprobs,
       
       l = forward_cpp_h_tracks(allprobs, delta, Gamma, trackInd)
     }
-  } else if(ad) {
+  } else if(ad) { # ad version
     
     "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
     "c" <- ADoverload("c")

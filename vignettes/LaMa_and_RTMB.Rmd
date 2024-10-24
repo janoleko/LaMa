@@ -84,7 +84,7 @@ nll = function(par) {
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  -forward(delta, Gamma, allprobs, ad = TRUE) # simple forward algorithm
+  -forward(delta, Gamma, allprobs) # simple forward algorithm
 }
 ```
 
@@ -93,7 +93,6 @@ but a few points should be made here:
 -   Most prominently, the negative log-likelihood is a function of the parameters to be estimated *only* while data and other parameters are not passed as an argument at this stage. This is something to get used to (I know), but just the way `RTMB` works.
 -   The `getAll()` function is very useful and you should use it in the first line to unpack both the `par` and the `dat` list, making all elements available without the `$` operator. At this stage, `nll` just takes the dat object from the global environment.
 -   Parameter transformations are of course still necessary, i.e. all parameters in `par` should be unconstrained.
--   Simple `LaMa` functions (like `tpm()` or `stationary()`) work for both automatic differentiation and standard optimization. For the more complicated functions like `forward()` you currently need to specify `ad = TRUE` to get automatic differentiation. I would like to make this smoother in the future, but that's where we're at at the moment. Whenever you are not sure if you need `ad = TRUE`, check the documentation.
 -   You might wonder how on earth `RTMB` can calculate the gradient of parameters in distributions like the gamma or von Mises distribution. The answer is: It can't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions (`dgamma2()` is actually just a convenience function that reparametrizes the gamma distribution in terms of mean and standard deviation).
 - Actually, most of the standard functions (e.g. `sum()`), operators (e.g. `%*%`) and methods (e.g. `matrix`) are "overwritten" when called inside `MakeADFun()` but you typically don't notice that and should not care -- but this is how the magic works.
 -   the `REPORT()` function offered by `RTMB` is really convenient as any quantities calculated in the likelihood function (for which you have written the code anyway), if reported, will be available after optimization, while the report statements are ignored during optimization. So no annoying backtransformations anymore, wohoo!
@@ -236,10 +235,10 @@ We can now define a more general likelihood function with the main difference be
 ```{r mllk2}
 nll2 = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, beta, ad = TRUE) # covariate-dependent tpms (in this case only 24 unique)
+  Gamma = tpm_g(Z, beta) # covariate-dependent tpms (in this case only 24 unique)
   # tpm_g() automatically checks if intercept column is included
   ADREPORT(Gamma) # adreporting
-  Delta = stationary_p(Gamma, ad = TRUE) # periodically stationary distribution
+  Delta = stationary_p(Gamma) # periodically stationary distribution
   ADREPORT(Delta)
   delta = Delta[tod[1],] # initial periodically stationary distribution
   # exponentiating because all parameters strictly positive
@@ -252,7 +251,7 @@ nll2 = function(par) {
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) # indexing 24 unique tpms by tod in data
+  -forward_g(delta, Gamma[,,tod], allprobs) # indexing 24 unique tpms by tod in data
 }
 ```
 
@@ -321,8 +320,8 @@ Importantly, we now have to separate the non-penalized intercept `beta0` from th
 ```{r mllk3}
 pnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE); ADREPORT(Gamma)
-  Delta = stationary_p(Gamma, ad = TRUE); ADREPORT(Delta)
+  Gamma = tpm_g(Z, cbind(beta0, betaspline)); ADREPORT(Gamma)
+  Delta = stationary_p(Gamma); ADREPORT(Delta)
   delta = Delta[tod[1],]
   # exponentiating because all parameters strictly positive
   mu = exp(logmu); REPORT(mu)
@@ -334,7 +333,7 @@ pnll = function(par) {
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) +
+  -forward_g(delta, Gamma[,,tod], allprobs) +
     penalty(betaspline, S, lambda) # this does all the penalization work
 }
 ```
@@ -407,8 +406,8 @@ Most conveniently this is done by using the `dgmrf2()` function included in `LaM
 ```{r mllk4}
 jnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE); ADREPORT(Gamma)
-  Delta = stationary_p(Gamma, ad = TRUE); ADREPORT(Delta)
+  Gamma = tpm_g(Z, cbind(beta0, betaspline)); ADREPORT(Gamma)
+  Delta = stationary_p(Gamma); ADREPORT(Delta)
   delta = Delta[tod[1],]
   # exponentiating because all parameters strictly positive
   mu = exp(logmu); REPORT(mu)
@@ -420,7 +419,7 @@ jnll = function(par) {
   for(j in 1:N){
     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
   }
-  -forward_g(delta, Gamma[,,tod], allprobs, ad = TRUE) -
+  -forward_g(delta, Gamma[,,tod], allprobs) -
     sum(dgmrf2(betaspline, 0, S, exp(loglambda), log = TRUE)) # just like any other density in R
 }
 ```

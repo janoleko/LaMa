@@ -190,7 +190,7 @@ system.time(
   mod <- nlm(nll, theta.star, x = x)
 )
 #>    user  system elapsed 
-#>   0.136   0.008   0.144
+#>   0.132   0.008   0.141
 ```
 
 Really fast for 10.000 data points!

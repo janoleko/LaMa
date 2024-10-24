@@ -119,7 +119,7 @@ mllk = function(theta.star, timediff, x, N=2){
   Q[!Q] = exp(theta.star[2*N+1:(N*(N-1))])
   diag(Q) = 0
   diag(Q) = -rowSums(Q)
-  delta = solve(t(Q+1), rep(1,N), tol = 1e-20) # stationary distribution of the
+  delta = solve(t(Q+1), rep(1,N)) # stationary distribution of the
   # continuous-time Markov chain
   Qube = tpm_cont(Q, timediff) # this computes exp(Q*timediff)
   allprobs = matrix(1, nrow = length(x), ncol = N)

@@ -15,6 +15,11 @@
 #' ID = rep(uniqueID, c(100, 200, 300))
 #' trackInd = calc_trackInd(ID)
 calc_trackInd = function(ID){
+  
+  if(is.factor(ID)){
+    ID = as.vector(ID)
+  }
+  
   if(!is.vector(ID)){
     stop("ID must be a vector")
   }

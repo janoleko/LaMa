@@ -4,7 +4,7 @@
 \alias{tpm_g}
 \title{Build all transition probability matrices of an inhomogeneous HMM}
 \usage{
-tpm_g(Z, beta, byrow = FALSE, ad = FALSE, report = TRUE)
+tpm_g(Z, beta, byrow = FALSE, ad = NULL, report = TRUE)
 }
 \arguments{
 \item{Z}{Covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1).
@@ -16,7 +16,7 @@ Needs to be of dimension c(N*(N-1), p+1), where the first column contains the in
 \item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
 Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 
-\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
+\item{ad}{Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.}
 
 \item{report}{Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
 }

@@ -4,7 +4,16 @@
 \alias{tpm_p}
 \title{Build all transition probability matrices of a periodically inhomogeneous HMM}
 \usage{
-tpm_p(tod = 1:24, L = 24, beta, degree = 1, Z = NULL, byrow = FALSE)
+tpm_p(
+  tod = 1:24,
+  L = 24,
+  beta,
+  degree = 1,
+  Z = NULL,
+  byrow = FALSE,
+  ad = NULL,
+  report = TRUE
+)
 }
 \arguments{
 \item{tod}{Equidistant (generalized) time of day sequence, denoting the time point in a cycle.
@@ -24,6 +33,10 @@ In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty te
 
 \item{byrow}{Logical that indicates if each transition probability matrix should be filled by row. 
 Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
+
+\item{ad}{Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.}
+
+\item{report}{Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
 }
 \value{
 Array of transition probability matrices of dimension c(N,N,length(tod))

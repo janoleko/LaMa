@@ -4,7 +4,7 @@
 \alias{forward}
 \title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix}
 \usage{
-forward(delta, Gamma, allprobs, trackID = NULL, ad = FALSE, report = TRUE)
+forward(delta, Gamma, allprobs, trackID = NULL, ad = NULL, report = TRUE)
 }
 \arguments{
 \item{delta}{Initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if trackInd is provided}
@@ -17,7 +17,7 @@ forward(delta, Gamma, allprobs, trackID = NULL, ad = FALSE, report = TRUE)
 In this case, Gamma can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
 Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
 
-\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
+\item{ad}{Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.}
 
 \item{report}{Logical, indicating whether delta, Gamma and allprobs should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
 }

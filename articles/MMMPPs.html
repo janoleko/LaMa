@@ -202,7 +202,7 @@ one and all other matrices of state-dependent density matrices to be
 <span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, timediff<span class="op">=</span><span class="va">timediff</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co"># we often need the stepmax, as the matrix exponential can be numerically unstable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 0.2648377 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 0.2740989 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -346,7 +346,7 @@ one element-wise with the state-dependent rates.</p>
 <span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, y <span class="op">=</span> <span class="va">marks</span>, timediff<span class="op">=</span><span class="va">timediff</span>, N<span class="op">=</span><span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 2.824602 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 1.893405 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>

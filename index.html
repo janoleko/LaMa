@@ -106,30 +106,7 @@
 <li><a href="https://janoleko.github.io/files/vignettes/LaMa/MMMPPs.pdf">Markov-modulated (marked) Poisson processes</a></li>
 <li><a href="https://janoleko.github.io/files/vignettes/LaMa/LaMa%20and%20RTMB.html">LaMa and RTMB</a></li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
-</h2>
-<p>When using LaMa, please cite the package as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"LaMa"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in citation(package = "LaMa"): could not determine year for 'LaMa' from</span></span>
-<span><span class="co">#&gt; package DESCRIPTION file</span></span>
-<span><span class="co">#&gt; To cite package 'LaMa' in publications use:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Koslik J (????). _LaMa: Fast Numerical Maximum Likelihood Estimation</span></span>
-<span><span class="co">#&gt;   for Latent Markov Models_. R package version 2.0.0,</span></span>
-<span><span class="co">#&gt;   https://github.com/janoleko/LaMa,</span></span>
-<span><span class="co">#&gt;   &lt;https://janoleko.github.io/software/&gt;.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   @Manual{,</span></span>
-<span><span class="co">#&gt;     title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov Models},</span></span>
-<span><span class="co">#&gt;     author = {Jan-Ole Koslik},</span></span>
-<span><span class="co">#&gt;     note = {R package version 2.0.0, https://github.com/janoleko/LaMa},</span></span>
-<span><span class="co">#&gt;     url = {https://janoleko.github.io/software/},</span></span>
-<span><span class="co">#&gt;   }</span></span></code></pre></div>
+<!-- ## Citation --><!-- When using LaMa, please cite the package as follows: --><!-- ```{r citation} --><!-- citation(package = "LaMa") --><!-- ``` -->
 </div>
 <div class="section level2">
 <h2 id="introductory-example-homogeneous-hmm">Introductory example: Homogeneous HMM<a class="anchor" aria-label="anchor" href="#introductory-example-homogeneous-hmm"></a>
@@ -137,15 +114,14 @@
 <div class="section level4">
 <h4 id="loading-the-package">Loading the package<a class="anchor" aria-label="anchor" href="#loading-the-package"></a>
 </h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="generating-data-from-a-2-state-hmm">Generating data from a 2-state HMM<a class="anchor" aria-label="anchor" href="#generating-data-from-a-2-state-hmm"></a>
 </h4>
 <p>Here we can use <code><a href="reference/stationary.html">stationary()</a></code> to compute the stationary distribution.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># parameters</span></span>
 <span><span class="va">mu</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span></span>
@@ -169,7 +145,7 @@
 <h4 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
 </h4>
 <p>Here, we build the transition probability matrix using the <code><a href="reference/tpm.html">tpm()</a></code> function, compute the stationary distribution using <code><a href="reference/stationary.html">stationary()</a></code> and calculate the log-likelihood using <code><a href="reference/forward.html">forward()</a></code> in the last line.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta.star</span>, <span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># parameter transformations for unconstraint optimization</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
@@ -186,21 +162,21 @@
 <div class="section level4">
 <h4 id="fitting-an-hmm-to-the-data">Fitting an HMM to the data<a class="anchor" aria-label="anchor" href="#fitting-an-hmm-to-the-data"></a>
 </h4>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">theta.star</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">4</span>,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span> </span>
 <span><span class="co"># initial transformed parameters: not chosen too well</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.131   0.008   0.139</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.101   0.007   0.109</span></span></code></pre></div>
 <p>Really fast for 10.000 data points!</p>
 </div>
 <div class="section level4">
 <h4 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
 </h4>
 <p>Again, we use <code><a href="reference/tpm.html">tpm()</a></code> and <code><a href="reference/stationary.html">stationary()</a></code> to tranform the unconstraint parameters to working parameters.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># transform parameters to working</span></span>
 <span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="reference/stationary.html">stationary</a></span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span> <span class="co"># stationary HMM</span></span>

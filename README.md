@@ -22,28 +22,16 @@ offers flexibility but suffers from slow estimation speeds. This `R`
 package solves these issues by providing easy-to-use functions (written
 in C++ for speed) for common tasks like the forward algorithm. These
 functions can be combined into custom models, offering up to 10-20 times
-faster estimation via standard numerical optimizers like `nlminb()` or
-`optim()`. The development version now also allows for automatic
-differentiation with the `RTMB` package which drastically increases
-speed and accuracy.
+faster estimation via standard numerical optimizers. The development
+version now also allows for automatic differentiation with the `RTMB`
+package which drastically increases speed and accuracy.
 
-The most important implementations of the forward algorithm are:
+The most important families of functions are
 
-- `forward()` for models with **homogeneous** transition probabilities,
-  and
-- `forward_g()` for general (pre-calculated) **inhomogeneous**
-  transition probabilities (including **continuous-time** HMMs and
-  points processes)
+- the `forward` family that calculates the log-likelihood for various
+  different models,
 
-The functions are built to be included in the **negative log-likelihood
-function**, after parameters have been transformed and the `allprobs`
-matrix (containing all state-dependent probabilities) has been
-calculated.
-
-To serve as a powerful toolbox, this package also includes many
-auxiliary functions like
-
-- the `tpm` family with for calculating transition probability matrices,
+- the `tpm` family for calculating transition probability matrices,
   <!-- + `tpm()` for calculating a homogeneous transition probability matrix via the multinomial logistic link,  -->
   <!-- + `tpm_g()` for calculating general inhomogeneous transition probabilty matrices,  -->
   <!-- + `tpm_p()` for calculating transition matrices of periodically inhomogeneous HMMs, -->
@@ -158,7 +146,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.456   0.012   0.468
+#>   0.479   0.012   0.494
 ```
 
 Really fast for 10.000 data points!

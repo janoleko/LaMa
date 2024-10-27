@@ -141,12 +141,11 @@ par = c(-2,-2,             # initial tpm params (logit-scale)
         log(c(0.3, 1)),    # initial means for step length (log-transformed)
         log(c(0.2, 0.7)))  # initial sds for step length (log-transformed)
 
-# initial transformed parameters: not chosen too well
 system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.479   0.012   0.494
+#>   0.459   0.012   0.473
 ```
 
 Really fast for 10.000 data points!

@@ -110,7 +110,6 @@ par = c(-2,-2,             # initial tpm params (logit-scale)
         log(c(0.3, 1)),    # initial means for step length (log-transformed)
         log(c(0.2, 0.7)))  # initial sds for step length (log-transformed)
 
-# initial transformed parameters: not chosen too well
 system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )

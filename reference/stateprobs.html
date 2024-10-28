@@ -53,7 +53,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, trackID <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,15 +61,19 @@
 
 
 <dl><dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
-<dd><p>Initial or stationary distribution of length N</p></dd>
+<dd><p>Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if <code>trackID</code> is provided</p></dd>
 
 
 <dt id="arg-gamma">Gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p>Transition probability matrix of dimension c(N,N)</p></dd>
+<dd><p>Transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if <code>trackID</code> is provided.</p></dd>
 
 
 <dt id="arg-allprobs">allprobs<a class="anchor" aria-label="anchor" href="#arg-allprobs"></a></dt>
 <dd><p>Matrix of state-dependent probabilities/ density values of dimension c(n, N)</p></dd>
+
+
+<dt id="arg-trackid">trackID<a class="anchor" aria-label="anchor" href="#arg-trackid"></a></dt>
+<dd><p>Optional vector of k track IDs, if multiple tracks need to be decoded separately</p></dd>
 
 </dl></div>
     <div class="section level2">

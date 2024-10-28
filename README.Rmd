@@ -107,8 +107,8 @@ nll = function(par, step){
 To fit the model, we define the intial parameter vector and numerically optimize the above function using `nlm()`:
 ```{r model, warning=FALSE}
 par = c(-2,-2,             # initial tpm params (logit-scale)
-        log(c(0.3, 1)),    # initial means for step length (log-transformed)
-        log(c(0.2, 0.7)))  # initial sds for step length (log-transformed)
+        log(c(0.3, 2.5)),    # initial means for step length (log-transformed)
+        log(c(0.2, 1.5)))  # initial sds for step length (log-transformed)
 
 system.time(
   mod <- nlm(nll, par, step = elephant$step)

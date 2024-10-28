@@ -138,14 +138,14 @@ optimize the above function using `nlm()`:
 
 ``` r
 par = c(-2,-2,             # initial tpm params (logit-scale)
-        log(c(0.3, 1)),    # initial means for step length (log-transformed)
-        log(c(0.2, 0.7)))  # initial sds for step length (log-transformed)
+        log(c(0.3, 2.5)),    # initial means for step length (log-transformed)
+        log(c(0.2, 1.5)))  # initial sds for step length (log-transformed)
 
 system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.459   0.012   0.473
+#>   0.363   0.010   0.374
 ```
 
 Really fast for 10.000 data points!

@@ -4,14 +4,16 @@
 \alias{stateprobs}
 \title{Calculate conditional local state probabilities for homogeneous HMMs}
 \usage{
-stateprobs(delta, Gamma, allprobs)
+stateprobs(delta, Gamma, allprobs, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution of length N}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Transition probability matrix of dimension c(N,N)}
+\item{Gamma}{Transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
 Matrix of conditional state probabilities of dimension c(n,N)

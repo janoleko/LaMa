@@ -4,19 +4,19 @@
 \alias{stateprobs_p}
 \title{Calculate conditional local state probabilities for periodically inhomogeneous HMMs}
 \usage{
-stateprobs_p(delta, Gamma, allprobs, tod)
+stateprobs_p(delta, Gamma, allprobs, tod, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial or periodically stationary distribution of length N}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L) where L is the cycle length. \cr \cr
-Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
+\item{Gamma}{Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
 \item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
 For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
+
+\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
 Matrix of conditional state probabilities of dimension c(n,N)

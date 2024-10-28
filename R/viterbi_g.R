@@ -1,9 +1,11 @@
 #' Viterbi algorithm for decoding states of inhomogeneous HMMs
 #'
-#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if ID is provided
+#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
-#' If you provide an array of dimension c(N,N,n), the first slice will be ignored. \cr
-#' If you provide an ID vector, Gamma needs to be an array of dimension c(N,N,n), where n is the number of rows in allprobs. Then for each track the first transition matrix will be ignored.
+#' 
+#' If you provide an array of dimension c(N,N,n) for a single track, the first slice will be ignored. \cr
+#' 
+#' If you provide \code{trackID}, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
 #'

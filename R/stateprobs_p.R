@@ -3,13 +3,12 @@
 #' Computes \cr \cr
 #' \eqn{\Pr(S_t = j \mid X_1, ..., X_T)} \cr \cr
 #'
-#' @param delta Initial or periodically stationary distribution of length N
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L) where L is the cycle length. \cr \cr
-#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-#' such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
+#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).
+#' @param Gamma Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
+#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
 #' 
 #' @return Matrix of conditional state probabilities of dimension c(n,N)
 #' @export
@@ -24,26 +23,15 @@
 #' 
 #' probs = stateprobs_p(delta, Gamma, allprobs, tod)
 
-stateprobs_p = function(delta, Gamma, allprobs, tod){
+stateprobs_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
   n = nrow(allprobs)
   N = ncol(allprobs)
   
-  Gammanew = array(dim = c(N,N,n-1))
+  Gammanew = Gamma[,,tod] # select the transition matrix for the current time of day
   
-  # creating repeating Gamma array from L unique tpms
-  for(t in unique(tod)){
-    ind = which(tod[-1]==t)
-    Gammanew[,,ind] = Gamma[,,t]
+  if(is.null(trackID)){
+    Gammanew = Gammanew[,,-1]
   }
   
-  lalpha = logalpha_cpp(allprobs, delta, Gammanew)
-  lbeta = logbeta_cpp(allprobs, Gammanew)
-  
-  c = max(lalpha[n,])
-  llk = c + log(sum(exp(lalpha[n,]-c)))
-  
-  probs = exp(lalpha + lbeta - llk)
-  # rowsums should already be one
-  probs = probs / rowSums(probs)
-  return(probs)
+  stateprobs_g(delta, Gammanew, allprobs, trackID)
 }

@@ -4,14 +4,18 @@
 \alias{stateprobs_g}
 \title{Calculate conditional local state probabilities for inhomogeneous HMMs}
 \usage{
-stateprobs_g(delta, Gamma, allprobs)
+stateprobs_g(delta, Gamma, allprobs, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions.}
+\item{Gamma}{Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
+If you provide an array of dimension c(N,N,n) for a single track, the first slice will be ignored. \cr
+If you provide \code{trackID}, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
 Matrix of conditional state probabilities of dimension c(n,N)

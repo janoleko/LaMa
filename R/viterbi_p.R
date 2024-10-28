@@ -1,9 +1,10 @@
 #' Viterbi algorithm for decoding states of periodically inhomogeneous HMMs
 #'
-#' @param delta Initial or periodically statioanary distribution of length N
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L), where L is the cycle length.
+#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).
+#' @param Gamma Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.
 #' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param tod Integer valued cyclic variable to index the transition probability matrix. 
+#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
 #'
 #' @return Vector of decoded states of length n
 #' @export
@@ -19,16 +20,17 @@
 #' 
 #' allprobs = matrix(runif(2*n), nrow = n, ncol = 2)
 #' states = viterbi_p(delta, Gamma, allprobs, tod)
-viterbi_p = function(delta, Gamma, allprobs, tod){
+viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
   n = nrow(allprobs)
   N = ncol(allprobs)
   
   # creating repeating Gamma array from L unique tpms
-  Gammanew = array(dim = c(N,N,n-1))
-  for(t in unique(tod)){
-    ind = which(tod[-1]==t)
-    Gammanew[,,ind] = Gamma[,,t]
+  Gammanew = Gamma[,,tod]
+  
+  if(is.null(trackID)){
+    Gammanew = Gammanew[,,-1]
   }
-
-  as.integer(viterbi_g_cpp(allprobs, delta, Gammanew))
+  
+  # as.integer(viterbi_g_cpp(allprobs, delta, Gammanew))  
+  viterbi_g(delta, Gammanew, allprobs, trackID) 
 }

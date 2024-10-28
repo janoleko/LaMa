@@ -4,16 +4,18 @@
 \alias{viterbi_p}
 \title{Viterbi algorithm for decoding states of periodically inhomogeneous HMMs}
 \usage{
-viterbi_p(delta, Gamma, allprobs, tod)
+viterbi_p(delta, Gamma, allprobs, tod, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial or periodically statioanary distribution of length N}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L), where L is the cycle length.}
+\item{Gamma}{Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
 \item{tod}{Integer valued cyclic variable to index the transition probability matrix.}
+
+\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
 Vector of decoded states of length n

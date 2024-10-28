@@ -7,9 +7,9 @@
 viterbi(delta, Gamma, allprobs, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if ID is provided}
+\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Transition probability matrix of dimension c(N,N)}
+\item{Gamma}{Transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided.}
 
 \item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 

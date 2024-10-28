@@ -254,7 +254,7 @@ on the transition probabilities.</p>
 <span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 1.003006 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 1.02913 secs</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -368,7 +368,7 @@ in the last lines.</p>
 <span><span class="va">mod_np</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_np</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span>, lambda <span class="op">=</span> <span class="fl">70</span><span class="op">)</span></span>
 <span><span class="co"># in this case we don't seem to need a lot of penalization</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 2.386633 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 2.421956 secs</span></span></code></pre></div>
 <p>The model fit is still quite fast for non-parametric modeling.</p>
 </div>
 <div class="section level3">
@@ -485,7 +485,7 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod_reg</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_reg</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 0.2526588 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 0.2467906 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-results-2">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results-2"></a>
@@ -549,7 +549,7 @@ examples.</p>
 <span><span class="va">mod_npreg</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_npreg</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span>, lambda <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co"># small penalty</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 0.9830945 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 0.9884357 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-results-3">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results-3"></a>

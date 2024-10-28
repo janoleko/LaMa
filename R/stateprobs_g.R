@@ -78,7 +78,7 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
       
         c = max(lalpha[2, ])
         llk = c + log(sum(exp(lalpha[2, ] - c)))
-        stateprobs[id_i, ] = exp(log(alpha) + lbeta - llk)
+        stateprobs[id_i, ] = exp(lalpha + lbeta - llk)
         
       } else{
         # regurlar local decoding
@@ -106,12 +106,12 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
     lalpha = logalpha_cpp(allprobs, delta, Gamma)
     lbeta = logbeta_cpp(allprobs, Gamma)
     
-    c = max(lalpha[length(lalpha),])
-    llk = c + log(sum(exp(lalpha[length(lalpha),] - c)))
+    c = max(lalpha[nrow(lalpha),])
+    llk = c + log(sum(exp(lalpha[nrow(lalpha),] - c)))
     
     stateprobs = exp(lalpha + lbeta - llk)
   }
   
   # rowSums should already be one, but just to be safe
-  stateprobs / rowSums(statprobs)
+  stateprobs / rowSums(stateprobs)
 }

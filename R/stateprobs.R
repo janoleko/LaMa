@@ -31,7 +31,7 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL){
     if(dim(Gamma)[3] != k) stop("Number of distinct transition matrices does not match the number of tracks.")
     
     ## construct integer trackID
-    integer_ID = match(trackID, uID)
+    integerID = match(trackID, uID)
     
     Gammanew = Gamma[,,integerID]
   }

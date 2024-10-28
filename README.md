@@ -145,7 +145,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.363   0.010   0.374
+#>   0.364   0.008   0.372
 ```
 
 Really fast for 10.000 data points!

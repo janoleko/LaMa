@@ -22,12 +22,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows how to fit state space models which can be interpreted as generalization of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very general state space models can be fitted via approximate maximum likelihood estimation, when the continous state space is finely discretized. Here, we will showcase this approach for a basic stochastic volatily model, which can be used to describe fincancial markets. In this model the unobserved marked volatility is described by an AR(1) process:
+This vignette shows how to fit state space models which can be interpreted as generalisation of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very general state space models can be fitted via approximate maximum likelihood estimation, when the continous state space is finely discretised. This is equivalent to numerical integration over the state process using midpoint quadrature.
+
+Here, we will showcase this approach for a basic stochastic volatily model, which can be used to describe fincancial markets. In this model the unobserved marked volatility is described by an AR(1) process:
 
 $$
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
 $$
-with autoregression parameter $\phi < 1$ a dispersion parameter $\sigma$. We could then model share returns $y_t$ as
+with autoregression parameter $\phi < 1$ a dispersion parameter $\sigma$. Share returns $y_t$ can then be modelled as
 $$
 y_t = \beta \epsilon_t \exp(g_t / 2),
 $$
@@ -42,7 +44,7 @@ We start by simulating data from the above specified model:
 
 ```{r, setup}
 # loading the package
-library("LaMa")
+library(LaMa)
 ```
 
 ```{r data}
@@ -52,15 +54,14 @@ sigma = 0.5 # variability of the AR process
 
 n = 1000
 set.seed(123)
-g = y = rep(NA, n)
+g = rep(NA, n)
 g[1] = rnorm(1, 0, sigma / sqrt(1-phi^2)) # stationary distribution of AR process
-y[1] = stats::rnorm(1, 0, beta*exp(g[1]/2)) 
-# conditional distribution of y_1 given underlying volatility
 for(t in 2:n){
-  g[t] = rnorm(1, phi*g[t-1] , sigma) # transition density
-  y[t] = stats::rnorm(1, 0, beta*exp(g[t]/2)) 
-  # conditional distribution of y_t given underlying volatility
+  # sampling next state based on previous state and AR(1) equation
+  g[t] = rnorm(1, phi*g[t-1], sigma)
 }
+# sampling zero-mean observations with standard deviation given by latent process
+y = rnorm(n, 0, beta * exp(g/2)) 
 
 # share returns
 oldpar = par(mar = c(5,4,3,4.5)+0.1)
@@ -78,19 +79,19 @@ par(oldpar)
 This likelihood formulation corresponds to a fine discretization of the continuous state space into the intervals `b` with width `h` and midpoints `bstar`.
 
 ```{r mllk}
-mllk = function(theta.star, y, bm, m){
-  phi = plogis(theta.star[1])
-  sigma = exp(theta.star[2])
-  beta = exp(theta.star[3])
+nll = function(par, y, bm, m){
+  phi = plogis(par[1])
+  sigma = exp(par[2])
+  beta = exp(par[3])
   b = seq(-bm, bm, length = m+1) # intervals for midpoint quadrature
-  h = b[2]-b[1] # interval width
-  bstar = (b[-1] + b[-(m+1)])/2 # interval midpoints
-  # approximation resulting from midpoint quadrature
-  Gamma = sapply(bstar, dnorm, mean = phi*bstar, sd = sigma) * h
-  delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
+  h = b[2] - b[1] # interval width
+  bstar = (b[-1] + b[-(m+1)]) / 2 # interval midpoints
+  # approximating t.p.m. resulting from midpoint quadrature
+  Gamma = sapply(bstar, dnorm, mean = phi * bstar, sd = sigma) * h
+  delta = h * dnorm(bstar, 0, sigma / sqrt(1-phi^2)) # stationary distribution
   # approximating state-dependent density based on midpoints
   allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
-  # return negative for minimization
+  # forward algorithm
   -forward(delta, Gamma, allprobs)
 }
 ```
@@ -98,33 +99,33 @@ mllk = function(theta.star, y, bm, m){
 ### Fitting an SSM to the data
 
 ```{r model, warning=FALSE}
-theta.star = c(qlogis(0.95), log(0.3), log(1))
+par = c(qlogis(0.95), log(0.3), log(1))
 bm = 5 # relevant range of underlying volatility (-5,5)
 m = 50 # number of approximating states
 
-t1 = Sys.time()
-mod = stats::nlm(mllk, theta.star, y = y, bm = bm, m = m)
-Sys.time()-t1
+system.time(
+  mod <- nlm(nll, par, y = y, bm = bm, m = m)
+)
 ```
 
 ### Results
 
 ```{r results}
-# parameter estimates
+## parameter estimates
 (phi = plogis(mod$estimate[1]))
 (sigma = exp(mod$estimate[2]))
 (beta = exp(mod$estimate[3]))
 
-# decoding states
+## decoding states
 b = seq(-bm, bm, length = m+1) # intervals for midpoint quadrature
 h = b[2]-b[1] # interval width
 bstar = (b[-1] + b[-(m+1)])/2 # interval midpoints
 Gamma = sapply(bstar, dnorm, mean = phi*bstar, sd = sigma) * h
-Gamma = Gamma / rowSums(Gamma) # normalizing out approximation errors
 delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
 # approximating state-dependent density based on midpoints
 allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
 
+# actual decoding
 probs = stateprobs(delta, Gamma, allprobs)
 states = viterbi(delta, Gamma, allprobs)
 

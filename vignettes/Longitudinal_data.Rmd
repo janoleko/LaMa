@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
-In real-data applications, one will often be faced by a data set consisting of several measurement tracks, that can reasonably be assumed to be mutually independent. Examples for such a longitudinal structure include GPS tracks of several individuals (or several tracks (e.g. days) of one individual), or when analyzing sports data, one will often be faced by time series for separate games. In such settings, the researcher of course has to decide whether to pool parameters across tracks or not. Here, we will provide brief examples for complete and partial pooling.
+In real-data applications, one will often be faced by a data set consisting of several measurement tracks, that can reasonably be assumed to be mutually independent. Examples for such a longitudinal structure include GPS tracks of several individuals (or several tracks (e.g. days) of one individual), or when analysing sports data, one will often be faced by time series for separate games. In such settings, the researcher of course has to decide whether to pool parameters across tracks or not. Here, we will provide brief examples for complete and partial pooling.
 
 In the situations above, the likelihood function will look slightly different. In case of $K$ independent tracks, we have
 $$
@@ -40,15 +40,15 @@ We generate $K$ separate tracks, all from the exact same model:
 
 ```{r, setup}
 # loading the package
-library("LaMa")
+library(LaMa)
 ```
 
 ```{r data_pooling}
 # parameters are shared across individuals
-mu = c(15, 60)
-sigma = c(10, 40)
-Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-delta = stationary(Gamma) # stationary HMM
+mu = c(15, 60) # state-dependent means
+sigma = c(10, 40) # state-dependent standard deviations
+Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE) # t.p.m.
+delta = stationary(Gamma) # stationary distribution
 
 # simulation of all tracks
 set.seed(123)
@@ -73,31 +73,31 @@ trackID = rep(1:K, each = n)
 
 ### Writing the negative log-likelihood function
 
-To calculate the joint log-likelihood of the independent tracks, we slightly modify the standard negative log-likelihood function by adding the additional argument `trackInd`. This is a vector containing all the indices at which a new track begins. `forward()` now calculates the sum of indivual likelihood contributions, each starting in the respective initial distribution (which we pool here).
+To calculate the joint log-likelihood of the independent tracks, we slightly modify the standard negative log-likelihood function by adding the additional argument `trackID`. `forward()` now calculates the sum of indivual likelihood contributions, each starting in the respective initial distribution (which we pool here).
 
 ```{r mllk_pool}
 # fast version using trackInd in forward()
-mllk_pool = function(theta.star, x, trackID){
-  Gamma = tpm(theta.star[1:2])
+nll_pool = function(par, x, trackID){
+  Gamma = tpm(par[1:2])
   delta = stationary(Gamma)
-  mu = theta.star[3:4]
-  sigma = exp(theta.star[5:6])
+  mu = par[3:4]
+  sigma = exp(par[5:6])
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
   
   # here we add trackInd as an argument to forward()
   -forward(delta, Gamma, allprobs, trackID)
 }
 
 # slow alternative looping over individuals in R
-mllk_pool_slow = function(theta.star, x, K){
+nll_pool_slow = function(par, x, K){
   n = length(x) / K
-  Gamma = tpm(theta.star[1:2])
+  Gamma = tpm(par[1:2])
   delta = stationary(Gamma)
-  mu = theta.star[3:4]
-  sigma = exp(theta.star[5:6])
+  mu = par[3:4]
+  sigma = exp(par[5:6])
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
   
   # here we just loop over individuals in R
   l = 0
@@ -113,21 +113,22 @@ mllk_pool_slow = function(theta.star, x, K){
 Now we estimate the model with complete pooling. We compare the fast version using `forward()` with `trackID` with the slow version also using `forward()` but looping over individuals in `R`.
 ```{r model_pool, warning=FALSE}
 # initial parameter vector
-theta.star = c(-1,-1, # off-diagonals of Gamma (on logit scale)
-               15,60,log(10),log(40)) # mu and sigma
+par = c(logitgamma = c(-1,-1), # off-diagonals of Gamma (on logit scale)
+        mu = c(15, 60), # state-dependent means
+        logsigma = c(log(10),log(40))) # state-dependent sds
 
 # fast version:
-s = Sys.time()
-mod = nlm(mllk_pool, theta.star, x = x, trackID = trackID)
-Sys.time()-s
+system.time(
+  mod <- nlm(nll_pool, par, x = x, trackID = trackID)
+)
 
 # slow version
-s = Sys.time()
-mod = nlm(mllk_pool_slow, theta.star, x = x, K = K)
-Sys.time()-s
+system.time(
+  mod <- nlm(nll_pool_slow, par, x = x, K = K)
+)
 ```
 
-In this example, looping over individuals in `R` doubles the evaluation time, but this can be much more severe for more complicated models.
+In this example, looping over individuals in `R` already leads to five times longer the estimation time, but this can be much more severe for more complicated models.
 
 ## Partial pooling
 
@@ -171,21 +172,19 @@ for(k in 1:K){
 
 ### Writing the negative log-likelihood function
 
-Now we write the corresponding negative log-likehood function that incorporates the above structure:
+Now we write the corresponding negative log-likehood function that incorporates the above structure. As each track has a fixed t.p.m., we can assume stationarity and compute the stationary initial distribution for each track respectively.
 
 ```{r mllk_partial}
 # fast version using trackInd in forward()
-mllk_partial = function(theta.star, x, z, trackID){
+nll_partial = function(par, x, z, trackID){
   # individual-specific tpms
-  beta = matrix(theta.star[1:4], nrow = 2)
+  beta = matrix(par[1:4], nrow = 2)
   Gamma = tpm_g(z, beta)
-  Delta = matrix(NA, length(z), 2)
-  for(k in 1:length(z)) Delta[k,] = stationary(Gamma[,,k])
-  mu = theta.star[5:6]
-  sigma = exp(theta.star[7:8])
+  Delta = t(sapply(1:k, function(k) stationary(Gamma[,,k])))
+  mu = par[5:6]
+  sigma = exp(par[7:8])
   allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-  
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
   # just handing a Delta matrix and Gamma array for all individuals to forward()
   -forward(Delta, Gamma, allprobs, trackID)
 }
@@ -198,10 +197,11 @@ mllk_partial = function(theta.star, x, z, trackID){
 trackID = rep(1:K, each = n)
 
 # initial parameter vector
-theta.star = c(-2,-2,0,0, # beta
-               15,60,log(10),log(40)) # mu and sigma
+par = c(beta = c(-2, -2, 0, 0), # beta
+        mu = c(15, 60), # state-dependent means
+        log(10), log(40)) # state-dependent sds
 
-s = Sys.time()
-mod_partial = nlm(mllk_partial, theta.star, x = x, z = z, trackID = trackID)
-Sys.time()-s
+system.time(
+  mod_partial <- nlm(nll_partial, par, x = x, z = z, trackID = trackID)
+)
 ```

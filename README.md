@@ -10,7 +10,9 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-pr
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-A variety of latent Markov models, including **hidden Markov models**
+A variety of **latent Markov models**
+<a href="https://arxiv.org/abs/2406.19157" target="_blank">(Mews,
+Koslik, and Langrock 2024)</a>, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
 (SSMs) and **continuous-time** variants can be formulated and estimated
 within the same framework via directly maximizing the (approximate)
@@ -145,7 +147,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.364   0.008   0.372
+#>   0.365   0.008   0.375
 ```
 
 Really fast for 10.000 data points!
@@ -167,3 +169,16 @@ legend("topright", col = c("orange", "deepskyblue"), lwd = 2, bty = "n", legend 
 ```
 
 <img src="man/figures/README-visualization-1.png" width="75%" style="display: block; margin: auto;" />
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-mews2024build" class="csl-entry">
+
+Mews, Sina, Jan-Ole Koslik, and Roland Langrock. 2024. “How to Build
+Your Latent Markov Model - the Role of Time and Space.” *arXiv Preprint
+arXiv:2406.19157*.
+
+</div>
+
+</div>

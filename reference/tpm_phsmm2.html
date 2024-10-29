@@ -61,22 +61,22 @@ This function computes the transition matrices of a periodically inhomogeneos HS
 
 
 <dl><dt id="arg-omega">omega<a class="anchor" aria-label="anchor" href="#arg-omega"></a></dt>
-<dd><p>Embedded transition probability matrix.
-Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.</p></dd>
+<dd><p>embedded transition probability matrix</p>
+<p>Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.</p></dd>
 
 
 <dt id="arg-dm">dm<a class="anchor" aria-label="anchor" href="#arg-dm"></a></dt>
-<dd><p>State dwell-time distributions arranged in a list of length(N).
-Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.</p></dd>
+<dd><p>state dwell-time distributions arranged in a list of length(N)</p>
+<p>Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.</p></dd>
 
 
 <dt id="arg-eps">eps<a class="anchor" aria-label="anchor" href="#arg-eps"></a></dt>
-<dd><p>Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.</p></dd>
+<dd><p>rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.</p>
+    <p>array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.</p>
     </div>
 
     <div class="section level2">

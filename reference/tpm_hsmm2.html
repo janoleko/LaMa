@@ -64,20 +64,20 @@ This function computes the transition matrix of an HSMM.</p>
 
 
 <dl><dt id="arg-omega">omega<a class="anchor" aria-label="anchor" href="#arg-omega"></a></dt>
-<dd><p>Embedded transition probability matrix of dimension c(N,N)</p></dd>
+<dd><p>embedded transition probability matrix of dimension c(N,N)</p></dd>
 
 
 <dt id="arg-dm">dm<a class="anchor" aria-label="anchor" href="#arg-dm"></a></dt>
-<dd><p>State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.</p></dd>
+<dd><p>state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.</p></dd>
 
 
 <dt id="arg-eps">eps<a class="anchor" aria-label="anchor" href="#arg-eps"></a></dt>
-<dd><p>Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.</p></dd>
+<dd><p>rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The extended-state-space transition probability matrix of the approximating HMM</p>
+    <p>extended-state-space transition probability matrix of the approximating HMM</p>
     </div>
 
     <div class="section level2">

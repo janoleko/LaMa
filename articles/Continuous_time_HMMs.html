@@ -225,14 +225,14 @@ exponentials.</p>
 <span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span></span>
 <span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="co"># generator matrix</span></span>
-<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="co"># stationary dist of CT Markov chain</span></span>
+<span>  <span class="va">Pi</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="co"># stationary dist of CT Markov chain</span></span>
 <span>  <span class="va">Qube</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_cont.html">tpm_cont</a></span><span class="op">(</span><span class="va">Q</span>, <span class="va">timediff</span><span class="op">)</span> <span class="co"># this computes exp(Q*timediff)</span></span>
 <span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">N</span><span class="op">)</span></span>
 <span>  <span class="va">ind</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="va">allprobs</span><span class="op">[</span><span class="va">ind</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">ind</span><span class="op">]</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
-<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
+<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">Pi</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -249,7 +249,7 @@ exponentials.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.272   0.211   0.248</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.258   0.221   0.246</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -327,7 +327,7 @@ state to transition to, as explained in the beginning.</p>
 <span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.920   2.665   1.530</span></span>
+<span><span class="co">#&gt;   2.037   2.730   1.589</span></span>
 <span><span class="co"># without restricting stepmax, we run into numerical problems</span></span></code></pre></div>
 </div>
 <div class="section level3">

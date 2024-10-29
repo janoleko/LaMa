@@ -74,7 +74,7 @@ Koslik</h4>
 
     
     
-<p>This vignette shows how to fit an HMM, with the state process being a
+<p>This vignette shows how to fit HMMs where the state process is a
 periodically inhomogeneous Markov chain. Formally, this means that for
 all
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math></p>
@@ -86,24 +86,38 @@ is the transition probability matrix at time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
-is the cycle length. This can conveniently modeled by letting the
-off-diagonal elements be trigonometric functions of a cyclic variable
-such as time of day.</p>
+is the cycle length. Such a setting can conveniently modelled by letting
+the off-diagonal elements be trigonometric functions of a cyclic
+variable such as time of day. While this model is a special case of the
+general, inhomogeneous HMM, it is often more interpretable and very
+important in statistical ecology, hence we discuss it separately.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># loading the package</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="setting-parameters-for-simulation">Setting parameters for simulation<a class="anchor" aria-label="anchor" href="#setting-parameters-for-simulation"></a>
 </h3>
-<p>We choose a bimodal activity pattern here. We can conveniently
-calculate the transition probability matrices and all periodically
-stationary distributions using <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and
+<p>We simulate a 2-state HMM with Gaussian state-dependent
+distributions. For the periodic inhomogeneity, we choose a bimodal
+activity pattern. All
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+transition probability matrices can conveniently be calculated using
+<code><a href="../reference/tpm_p.html">tpm_p()</a></code>. Under the hood, this performs a basis expansion
+using <code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> into sine and cosine terms and uses
+linear predictos of the form
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>η</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>K</mi></munderover><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><msubsup><mi>β</mi><mrow><mn>1</mn><mi>k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>k</mi><mi>t</mi></mrow><mi>L</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msubsup><mi>β</mi><mrow><mn>2</mn><mi>k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>cos</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>k</mi><mi>t</mi></mrow><mi>L</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+\eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L}) \bigr)
+</annotation></semantics></math> for the off-diagonal entries of the
+transition probability matrix. The special case of periodically
+inhomogeneous Markov chains also allows the derivation of a so-called
+<strong>periodically stationary distribution</strong> <span class="citation">(<a href="#ref-koslik2023inference">Koslik et al.
+2023</a>)</span> which we can compute this distribution using
 <code><a href="../reference/stationary_p.html">stationary_p()</a></code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># loading the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://janoleko.github.io/software/">"LaMa"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># parameters</span></span>
-<span><span class="va">mu</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">14</span><span class="op">)</span></span>
-<span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">mu</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">14</span><span class="op">)</span>   <span class="co"># state-dependent means</span></span>
+<span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span> <span class="co"># state-dependent standard deviations</span></span>
 <span></span>
 <span><span class="va">L</span> <span class="op">=</span> <span class="fl">48</span> <span class="co"># half-hourly data: 48 observations per day</span></span>
 <span><span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>,</span>
@@ -113,9 +127,8 @@ stationary distributions using <code><a href="../reference/tpm_p.html">tpm_p()</
 <span></span>
 <span><span class="co"># having a look at the periodically stationary distribution</span></span>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
-<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">19</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
+<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Periodic_HMM_files/figure-html/parameters-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># only plotting one state, as the other probability is just 1-delta</span></span></code></pre></div>
@@ -125,21 +138,22 @@ stationary distributions using <code><a href="../reference/tpm_p.html">tpm_p()</
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># simulation</span></span>
-<span><span class="va">z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, <span class="fl">50</span><span class="op">)</span> <span class="co"># time of day variable, 50 days</span></span>
-<span><span class="va">n</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span>
+<span><span class="va">tod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, <span class="fl">50</span><span class="op">)</span> <span class="co"># time of day variable, 50 days</span></span>
+<span><span class="va">n</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">s</span> <span class="op">=</span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">n</span><span class="op">)</span></span>
-<span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span><span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span><span class="va">tod</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="op">]</span><span class="op">)</span> <span class="co"># initial state from stationary dist</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">n</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,,<span class="va">z</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="co"># sampling next state conditional on previous one and the periodic t.p.m.</span></span>
+<span>  <span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,,<span class="va">tod</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
+<span><span class="co"># sampling observations conditional on the states</span></span>
+<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">s</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
-<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">z</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span><span class="op">)</span></span></code></pre></div>
+<span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">tod</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Periodic_HMM_files/figure-html/data-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># we see a periodic pattern in the data</span></span>
@@ -151,38 +165,40 @@ stationary distributions using <code><a href="../reference/tpm_p.html">tpm_p()</
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
 </h3>
-<p>Here we specify the likelihood function and pretend we know the
-degree of the trigonometric link which, in practice, is never the case.
-Again we use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and we compute the periodically
-stationary start by using <code><a href="../reference/stationary_p.html">stationary_p()</a></code> with the
-additional argument that specifies which time point to compute.</p>
+<p>We specify the likelihood function and pretend we know the degree of
+the trigonometric link which, in practice, is never the case. Again we
+use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and we compute the periodically stationary
+start by using <code><a href="../reference/stationary_p.html">stationary_p()</a></code> with the additional argument
+that specifies which time point to compute.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mllk</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta.star</span>, <span class="va">x</span>, <span class="va">z</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># matrix of coefficients</span></span>
+<code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">x</span>, <span class="va">tod</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># matrix of coefficients</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_p.html">tpm_p</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, L <span class="op">=</span> <span class="fl">48</span>, beta <span class="op">=</span> <span class="va">beta</span>, degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># calculating all L tpms</span></span>
-<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma</span>, t <span class="op">=</span> <span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="co"># periodically stationary start</span></span>
-<span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">theta.star</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span></span>
-<span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">13</span><span class="op">:</span><span class="fl">14</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma</span>, t <span class="op">=</span> <span class="va">tod</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="co"># periodically stationary start</span></span>
+<span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">par</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span></span>
+<span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">13</span><span class="op">:</span><span class="fl">14</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="co"># calculate all state-dependent probabilities</span></span>
 <span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span> <span class="va">allprobs</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span> <span class="op">}</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="va">allprobs</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="co"># return negative for minimization</span></span>
-<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_p.html">forward_p</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, <span class="va">z</span><span class="op">)</span></span>
+<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_p.html">forward_p</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fitting-an-hmm-to-the-data">Fitting an HMM to the data<a class="anchor" aria-label="anchor" href="#fitting-an-hmm-to-the-data"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta.star</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span><span class="op">)</span>, <span class="co"># starting values state process</span></span>
-<span>               <span class="fl">4</span>, <span class="fl">14</span> ,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="co"># starting values state-dependent process</span></span>
-<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, z <span class="op">=</span> <span class="va">z</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">s</span></span>
-<span><span class="co">#&gt; Time difference of 0.5123947 secs</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, <span class="co"># starting values state process</span></span>
+<span>        mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">14</span><span class="op">)</span>, <span class="co"># initial state-dependent means</span></span>
+<span>        logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial state-dependent sds</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.519   0.016   0.534</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
+<h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>
 </h3>
 <p>Again, we use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and <code><a href="../reference/stationary_p.html">stationary_p()</a></code> to
 tranform the parameters.</p>
@@ -208,107 +224,81 @@ tranform the parameters.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="st">"black"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span>, <span class="st">"marginal"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
-<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">19</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
+<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Periodic_HMM_files/figure-html/visualization-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="non-parametric-modeling-of-the-transition-probalities">Non-parametric modeling of the transition probalities<a class="anchor" aria-label="anchor" href="#non-parametric-modeling-of-the-transition-probalities"></a>
-</h2>
-<p><code>Lcpp</code> also makes non-parametric modeling trivially easy.
-Here we model the transition probabilities using cyclic P-splines
-similar to <span class="citation">Feldmann et al. (<a href="#ref-feldmann2023">2023</a>)</span>. We do so in first calculating
-the design matrix using <code>mgcv</code> which we can easily be handled
-by <code><a href="../reference/tpm_p.html">tpm_p()</a></code>.</p>
-<div class="section level3">
-<h3 id="building-the-cyclic-spline-design-matrix">Building the cyclic spline design matrix<a class="anchor" aria-label="anchor" href="#building-the-cyclic-spline-design-matrix"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nk</span> <span class="op">=</span> <span class="fl">8</span> <span class="co"># number of basis functions</span></span>
-<span><span class="va">tod</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span></span>
-<span><span class="va">L</span> <span class="op">=</span> <span class="fl">48</span></span>
-<span><span class="va">k</span> <span class="op">=</span> <span class="va">L</span> <span class="op">*</span> <span class="fl">0</span><span class="op">:</span><span class="va">nk</span> <span class="op">/</span> <span class="va">nk</span> <span class="co"># equidistant knots</span></span>
-<span><span class="va">Z</span> <span class="op">=</span> <span class="fu">mgcv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/cSplineDes.html" class="external-link">cSplineDes</a></span><span class="op">(</span><span class="va">tod</span>, <span class="va">k</span><span class="op">)</span> <span class="co">## cyclic spline design matrix</span></span>
-<span></span>
-<span><span class="co"># plotting the B-Spline basis functions</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fl">1</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"basis functions"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">nk</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">Z</span><span class="op">[</span>,<span class="va">i</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">i</span><span class="op">)</span></span>
-<span><span class="op">}</span> </span></code></pre></div>
-<p><img src="Periodic_HMM_files/figure-html/cSpline-1.png" width="85%" style="display: block; margin: auto;"></p>
-</div>
-<div class="section level3">
-<h3 id="writing-the-negative-log-likelihood-function-1">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function-1"></a>
-</h3>
-<p>We only need to make small changes to the likelihood function. Most
-importantly we use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> with the additional argument
-<code>Z</code>, which allows using a bespoke design matrix. In general,
-a penalty for the curvature should also be added, which is done in the
-last lines.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mllk_np</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta.star</span>, <span class="va">x</span>, <span class="va">z</span>, <span class="va">Z</span>, <span class="va">lambda</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fl">2</span><span class="op">+</span><span class="fl">2</span><span class="op">*</span><span class="va">nk</span><span class="op">)</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># nk params per off-diagonal element</span></span>
-<span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_p.html">tpm_p</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, L <span class="op">=</span> <span class="fl">48</span>, beta <span class="op">=</span> <span class="va">beta</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span> <span class="co"># calculating all L tpms</span></span>
-<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma</span>, t <span class="op">=</span> <span class="va">z</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="co"># periodically stationary HMM</span></span>
-<span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">theta.star</span><span class="op">[</span><span class="fl">2</span><span class="op">+</span><span class="fl">2</span><span class="op">*</span><span class="va">nk</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span>
-<span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">2</span><span class="op">+</span><span class="fl">2</span><span class="op">*</span><span class="va">nk</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="co"># calculate all state-dependent probabilities</span></span>
-<span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span> <span class="va">allprobs</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span> <span class="op">}</span></span>
-<span>  <span class="co"># return negative for minimization</span></span>
-<span>  <span class="va">l</span> <span class="op">=</span> <span class="fu"><a href="../reference/forward_p.html">forward_p</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, <span class="va">z</span><span class="op">)</span></span>
-<span>  <span class="co"># penalize curvature</span></span>
-<span>  <span class="va">penalty</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">beta</span><span class="op">[</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span>, differences <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">beta</span><span class="op">[</span><span class="fl">2</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span>, differences <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">-</span><span class="va">l</span> <span class="op">+</span> <span class="va">lambda</span><span class="op">*</span><span class="va">penalty</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="fitting-a-non-parametric-hmm">Fitting a non-parametric HMM<a class="anchor" aria-label="anchor" href="#fitting-a-non-parametric-hmm"></a>
-</h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta.star</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">*</span><span class="va">nk</span><span class="op">)</span>, <span class="co"># starting values state process</span></span>
-<span>               <span class="fl">4</span>, <span class="fl">14</span> ,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="co"># starting values state-dependent process</span></span>
-<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mod_np</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_np</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, z <span class="op">=</span> <span class="va">z</span>, Z <span class="op">=</span> <span class="va">Z</span>, lambda <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="co"># in this case we don't seem to need a lot of penalization</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">s</span></span>
-<span><span class="co">#&gt; Time difference of 1.369772 secs</span></span></code></pre></div>
-<p>The model fit is still quite fast for non-parametric modeling.</p>
-</div>
-<div class="section level3">
-<h3 id="visualizing-results-1">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results-1"></a>
-</h3>
-<p>Again, we use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and <code><a href="../reference/stationary_p.html">stationary_p()</a></code> to
-tranform the unconstraint parameters to working parameters.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># transform parameters to working</span></span>
-<span><span class="va">beta_hat_np</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">mod_np</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fl">2</span><span class="op">+</span><span class="fl">2</span><span class="op">*</span><span class="va">nk</span><span class="op">)</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">Gamma_hat_np</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_p.html">tpm_p</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">48</span>, L <span class="op">=</span> <span class="fl">48</span>, beta <span class="op">=</span> <span class="va">beta_hat_np</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
-<span><span class="va">Delta_hat_np</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma_hat_np</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># comparing the two fits</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta_hat_np</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="st">"purple"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
-<span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span>
-<span><span class="co"># parametric fit</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMM_files/figure-html/visualization2-1.png" width="85%" style="display: block; margin: auto;"></p>
+<!-- ## Nonparametric modeling of the transition probalities -->
+<!-- `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`. -->
+<!-- ### Building the cyclic spline design matrix -->
+<!-- ```{r cSpline} -->
+<!-- nk = 8 # number of basis functions -->
+<!-- tod = 1:48 -->
+<!-- L = 48 -->
+<!-- k = L * 0:nk / nk # equidistant knots -->
+<!-- Z = mgcv::cSplineDes(tod, k) ## cyclic spline design matrix -->
+<!-- # plotting the B-Spline basis functions -->
+<!-- plot(Z[,1], type = "l", lwd = 2, col = 1, bty = "n", -->
+<!--      xlab = "time of day", ylab = "basis functions", ylim = c(0,0.8)) -->
+<!-- for(i in 2:nk){ -->
+<!--   lines(Z[,i], lwd = 2, col = i) -->
+<!-- }  -->
+<!-- ``` -->
+<!-- ### Writing the negative log-likelihood function -->
+<!-- We only need to make small changes to the likelihood function. Most importantly we use `tpm_p()` with the additional argument `Z`, which allows using a bespoke design matrix. In general, a penalty for the curvature should also be added, which is done in the last lines. -->
+<!-- ```{r mllk2} -->
+<!-- mllk_np = function(theta.star, x, z, Z, lambda){ -->
+<!--   beta = matrix(theta.star[1:(2+2*nk)], nrow = 2) # nk params per off-diagonal element -->
+<!--   Gamma = tpm_p(tod = 1:48, L = 48, beta = beta, Z = Z) # calculating all L tpms -->
+<!--   delta = stationary_p(Gamma, t = z[1]) # periodically stationary HMM -->
+<!--   mu = theta.star[2+2*nk + 1:2] -->
+<!--   sigma = exp(theta.star[2+2*nk + 2 + 1:2]) -->
+<!--   # calculate all state-dependent probabilities -->
+<!--   allprobs = matrix(1, length(x), 2) -->
+<!--   for(j in 1:2){ allprobs[,j] = stats::dnorm(x, mu[j], sigma[j]) } -->
+<!--   # return negative for minimization -->
+<!--   l = forward_p(delta, Gamma, allprobs, z) -->
+<!--   # penalize curvature -->
+<!--   penalty = sum(diff(beta[1,-1], differences = 2)^2)+ -->
+<!--     sum(diff(beta[2,-1], differences = 2)^2) -->
+<!--   return(-l + lambda*penalty) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ### Fitting a non-parametric HMM -->
+<!-- ```{r model2, warning=FALSE} -->
+<!-- theta.star = c(-1,-2, rep(0, 2*nk), # starting values state process -->
+<!--                4, 14 ,log(3),log(5)) # starting values state-dependent process -->
+<!-- s = Sys.time() -->
+<!-- mod_np = nlm(mllk_np, theta.star, x = x, z = z, Z = Z, lambda = 0) -->
+<!-- # in this case we don't seem to need a lot of penalization -->
+<!-- Sys.time()-s -->
+<!-- ``` -->
+<!-- The model fit is still quite fast for non-parametric modeling. -->
+<!-- ### Visualizing results -->
+<!-- Again, we use `tpm_p()` and `stationary_p()` to tranform the unconstraint parameters to working parameters. -->
+<!-- ```{r visualization2} -->
+<!-- # transform parameters to working -->
+<!-- beta_hat_np = matrix(mod_np$estimate[1:(2+2*nk)], nrow = 2) -->
+<!-- Gamma_hat_np = tpm_p(tod = 1:48, L = 48, beta = beta_hat_np, Z = Z) -->
+<!-- Delta_hat_np = stationary_p(Gamma_hat_np) -->
+<!-- # comparing the two fits -->
+<!-- plot(Delta_hat_np[,1], type = "l", lwd = 3, col = "purple", bty = "n",  -->
+<!--      xlab = "time of day", ylab = "Pr(state 1)") -->
+<!-- # parametric fit -->
+<!-- lines(Delta_hat[,1], lwd = 3, col = color[1]) -->
+<!-- ``` -->
 </div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-feldmann2023" class="csl-entry">
-Feldmann, Carlina C, S Mews, A Coculla, R Stanewsky, and R Langrock.
-2023. <span>“Flexible Modelling of Diel and Other Periodic Variation in
-Hidden <span>M</span>arkov Models.”</span> <em>Journal of Statistical
-Theory and Practice</em> 17 (45): 1–15.
+<div id="ref-koslik2023inference" class="csl-entry">
+Koslik, Jan-Ole, Carlina C Feldmann, Sina Mews, Rouven Michels, and
+Roland Langrock. 2023. <span>“Inference on the State Process of
+Periodically Inhomogeneous Hidden Markov Models for Animal
+Behavior.”</span> <em>arXiv Preprint arXiv:2312.14583</em>.
 </div>
 </div>
 </div>

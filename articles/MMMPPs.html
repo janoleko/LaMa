@@ -74,20 +74,24 @@ Koslik</h4>
 
     
     
-<p>The functionalities of <code>LaMa</code> can also be called to fit
-so-called <strong>Markov-modulated Poisson processes</strong>. These are
-doubly stochastic Poisson point processes where the intensity is
-directed by an underlying continuous-time Markov chain. Such processes
-are useful for modeling arrival times, for example of calls in a call
+<p><code>LaMa</code> can also be used to fit so-called
+<strong>Markov-modulated Poisson processes</strong>. These are doubly
+stochastic Poisson point processes where the intensity is directed by an
+underlying continuous-time Markov chain. Such processes are useful for
+modelling <strong>arrival times</strong>, for example of calls in a call
 center, or patients in the hospital. The main difference compared to
-continuous-time HMMs is that we explicitely model the arrival times as
-random-variables, i.e. we assign probabilities to them. A homogeneous
-Poisson process is mainly characterized by the fact that the number of
-arrivals in a fixed time interval is Poisson distributed with a mean
-that is proporional to the length of the interval. The waiting times
-between arrivals are exponentially distributed. While the latter is not
-true for non-homogeneous Poisson processes in general, we can interpret
-a Markov modulated Poisson process as alternating between homogeneous
+continuous-time HMMs is the arrival or observation
+<strong>times</strong> themselves <strong>carry information</strong> on
+the <strong>latent state process</strong>. To capture this information,
+we need to model them explicitely as random-variables.</p>
+<p>A homogeneous Poisson process is mainly characterised by the fact
+that the <strong>number of arrivals</strong> within a fixed time
+interval is <strong>Poisson distributed</strong> with a mean that is
+proporional to the length of the interval. The <strong>waiting
+times</strong> between arrivals are <strong>exponentially
+distributed</strong>. While the latter is not true for non-homogeneous
+Poisson processes in general, we can interpret a Markov modulated
+Poisson process as <strong>alternating</strong> between homogeneous
 Poisson processes, i.e. when the unobserved continuous-time Markov chain
 stays in a particular state for some interval, the associated Poisson
 rate in that interval is homogeneous and state-specific. To learn more
@@ -97,7 +101,7 @@ about Poisson processes, see <span class="citation">Dobrow (<a href="#ref-dobrow
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># loading the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://janoleko.github.io/software/">"LaMa"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="setting-parameters">Setting parameters<a class="anchor" aria-label="anchor" href="#setting-parameters"></a>
@@ -137,7 +141,7 @@ underlying Markov chain in state 2, i.e. state 2 is
 <span>                    <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n_arrivals</span>, <span class="va">trans_times</span><span class="op">[</span><span class="va">t</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">trans_times</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">arrival_times</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span></code></pre></div>
-<p>Let’s visualize the simulated MMPP</p>
+<p>Let’s visualise the simulated MMPP</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
@@ -156,60 +160,66 @@ second state.</p>
 </h3>
 <p>The likelihood of a stationary MMPP for waiting times
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">x_1, \dots, x_n</annotation></semantics></math>
-is (<span class="citation">Meier-Hellstern (<a href="#ref-meier1987fitting">1987</a>)</span>, <span class="citation">Langrock, Borchers, and Skaug (<a href="#ref-langrock2013markov">2013</a>)</span>)
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>δ</mi><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>Q</mi><mo>−</mo><mi>Λ</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>Λ</mi><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mn>1</mn><mo>,</mo></mrow><annotation encoding="application/x-tex">
-L(\theta) = \delta \bigl(\prod_{i=1}^n \exp((Q-\Lambda)x_i)\Lambda\bigr)1,
-</annotation></semantics></math> where
+is (<span class="citation">Meier-Hellstern (<a href="#ref-meier1987fitting">1987</a>)</span>, <span class="citation">Langrock, Borchers, and Skaug (<a href="#ref-langrock2013markov">2013</a>)</span>) <span class="math display">$$
+L(\theta) = \pi \Bigl(\prod_{i=1}^n
+\exp\bigl((Q-\Lambda)x_i\bigr)\Lambda \Bigr)1,
+$$</span> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
 is the generator matrix of the continuous-time Markov chain,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>
 is a diagonal matrix of state-dependent Poisson intensities,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
 is the stationary distribution of the continuous-time Markov chain, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
 is a column vector of ones. For more details on continuous-time Markov
-chains, see the vignette <em>continuous-time HMMs</em> or also <span class="citation">Dobrow (<a href="#ref-dobrow2016introduction">2016</a>)</span>. We can easily
-calculate the log of the above expression using the standard
-implementation of the general forward algorithm <code><a href="../reference/forward_g.html">forward_g()</a></code>
-when choosing the first matrix of state-dependent densities to be the
-identity (i.e.) the first row of the <code>allprobs</code> matrix to be
-one and all other matrices of state-dependent density matrices to be
+chains, see the vignette <em>continuous-time HMMs</em> or also <span class="citation">Dobrow (<a href="#ref-dobrow2016introduction">2016</a>)</span>.</p>
+<p>We can easily calculate the log of the above expression using the
+standard implementation of the general forward algorithm
+<code><a href="../reference/forward_g.html">forward_g()</a></code> when choosing the first matrix of
+state-dependent densities to be the identity (i.e.) the first row of the
+<code>allprobs</code> matrix to be one and all other matrices of
+state-dependent density matrices to be
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mllk</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta.star</span>, <span class="va">timediff</span>, <span class="va">N</span><span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span> <span class="co"># state specific rates</span></span>
-<span>  <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span> <span class="co"># generator matrix</span></span>
-<span>  <span class="va">Q</span><span class="op">[</span><span class="op">!</span><span class="va">Q</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="fl">0</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
-<span>  <span class="va">Qube</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_cont.html">tpm_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span>, <span class="va">timediff</span><span class="op">)</span> <span class="co"># exp((Q-Lambda)*deltat)</span></span>
-<span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">lambda</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">timediff</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">N</span>, byrow <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">timediff</span>, <span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span> <span class="co"># state specific rates</span></span>
+<span>  <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">Pi</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
+<span>  <span class="va">Qube</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_cont.html">tpm_cont</a></span><span class="op">(</span><span class="va">Q</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span>, <span class="va">timediff</span><span class="op">)</span> <span class="co"># exp((Q-Lambda) * dt)</span></span>
+<span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">lambda</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">timediff</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="va">N</span>, byrow <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span>  <span class="va">allprobs</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">=</span> <span class="fl">1</span></span>
-<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">Q</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="va">N</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">-</span><span class="fu">LaMa</span><span class="fu">::</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
+<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">Pi</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fitting-an-mmpp-to-the-data">Fitting an MMPP to the data<a class="anchor" aria-label="anchor" href="#fitting-an-mmpp-to-the-data"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta.star</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">15</span>, <span class="co"># lambda</span></span>
-<span>                   <span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span> <span class="co"># off-diagonals of Q</span></span>
+<code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">15</span>, <span class="co"># lambda</span></span>
+<span>            <span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span> <span class="co"># off-diagonals of Q</span></span>
 <span></span>
 <span><span class="va">timediff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, timediff<span class="op">=</span><span class="va">timediff</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co"># we often need the stepmax, as the matrix exponential can be numerically unstable</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 0.2689133 secs</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">2</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   0.268   0.231   0.255</span></span>
+<span><span class="co"># we often need the stepmax, as the matrix exponential can be numerically unstable</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]  1.9496892 15.0831216  1.8998849  0.4003955</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1.949689 15.083122</span></span>
+<span><span class="op">(</span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            [,1]       [,2]</span></span>
+<span><span class="co">#&gt; [1,] -0.4003955  0.4003955</span></span>
+<span><span class="co">#&gt; [2,]  1.8998849 -1.8998849</span></span>
+<span><span class="op">(</span><span class="va">Pi</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   state 1   state 2 </span></span>
+<span><span class="co">#&gt; 0.8259362 0.1740638</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -217,19 +227,20 @@ one and all other matrices of state-dependent density matrices to be
 </h2>
 <p>Such processes can also carry additional information, so called
 <strong>marks</strong>, at every arrival time when we also observe the
-realization of a different random variable that only depends on the
+realisation of a different random variable that only depends on the
 underlying states of the continuous-time Markov chain. For example for
 patient arrivals in the hospital we could observe a biomarker at every
-arrival time. Information on the underlying health status is then
-present in both, the arrival times (because sick patients visit more
-often) and the biomarkers.</p>
+arrival time. <strong>Information</strong> on the <strong>underlying
+health status</strong> is then present in both the <strong>arrival
+times</strong> (because sick patients visit more often) and the
+<strong>biomarkers</strong>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># state-dependent rates</span></span>
 <span><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co"># generator matrix of the underlying Markov chain</span></span>
-<span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>,<span class="fl">0.3</span>,<span class="fl">0.2</span>,</span>
+<span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>,</span>
 <span>             <span class="fl">0.7</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0.3</span>,</span>
-<span>             <span class="fl">1</span> ,<span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>             <span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># parmeters for distributions of state-dependent marks</span></span>
 <span><span class="co"># (here normally distributed)</span></span>
 <span><span class="va">mu</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span></span>
@@ -245,7 +256,7 @@ often) and the biomarkers.</p>
 <h3 id="simulating-an-mmmpp">Simulating an MMMPP<a class="anchor" aria-label="anchor" href="#simulating-an-mmmpp"></a>
 </h3>
 <p>We now show how to simulate an MMMPP and additionally how to
-generalize to more than two hidden states.</p>
+generalise to more than two hidden states.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">k</span> <span class="op">=</span> <span class="fl">200</span> <span class="co"># number of state switches</span></span>
@@ -275,7 +286,7 @@ generalize to more than two hidden states.</p>
 <span>  <span class="va">marks</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">marks</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_arrivals</span>, <span class="va">mu</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">arrival_times</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span></code></pre></div>
-<p>Let’s visualize the simulated MM<strong>M</strong>PP</p>
+<p>Let’s visualise the simulated MM<strong>M</strong>PP</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span>, <span class="va">marks</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">16</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
@@ -296,14 +307,14 @@ between marks
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>0</mn></msub><mo>,</mo><msub><mi>y</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>y</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">y_0, y_1, \dotsc, y_n</annotation></semantics></math>
 only changes slightly from the MMPP likelihood, as we include the matrix
 of state-specific densities (<span class="citation">Lu (<a href="#ref-lu2012markov">2012</a>)</span>, <span class="citation">Mews
-et al. (<a href="#ref-mews2023markov">2023</a>)</span>):
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>δ</mi><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>Q</mi><mo>−</mo><mi>Λ</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>Λ</mi><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mn>1</mn><mo>,</mo></mrow><annotation encoding="application/x-tex">
-L(\theta) = \delta P(y_0) \bigl(\prod_{i=1}^n \exp((Q-\Lambda) x_i)\Lambda P(y_i) \bigr)1,
-</annotation></semantics></math> where
+et al. (<a href="#ref-mews2023markov">2023</a>)</span>): <span class="math display">$$
+L(\theta) = \pi P(y_0) \Bigl(\prod_{i=1}^n \exp\bigl((Q-\Lambda)
+x_i\bigr)\Lambda P(y_i) \Bigr)1,
+$$</span> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>
 and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
 are as above and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(y_i)</annotation></semantics></math>
 is a diagonal matrix with state-dependent densites for the observation
@@ -316,60 +327,54 @@ standard implementation of the general forward algorithm
 marks (as usual for HMMs) and then multiplying each row except the first
 one element-wise with the state-dependent rates.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mllk</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta.star</span>, <span class="va">y</span>, <span class="va">timediff</span>, <span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span> <span class="co"># state specific rates</span></span>
-<span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">theta.star</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span></span>
-<span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span> <span class="co"># generator matrix</span></span>
-<span>  <span class="va">Q</span><span class="op">[</span><span class="op">!</span><span class="va">Q</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta.star</span><span class="op">[</span><span class="fl">3</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="fl">0</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
-<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">Q</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>,<span class="va">N</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">nllMark</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">y</span>, <span class="va">timediff</span>, <span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span> <span class="co"># state specific rates</span></span>
+<span>  <span class="va">mu</span> <span class="op">=</span> <span class="va">par</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span></span>
+<span>  <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">3</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">Pi</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
 <span>  <span class="va">Qube</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_cont.html">tpm_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span>, <span class="va">timediff</span><span class="op">)</span> <span class="co"># exp((Q-Lambda)*deltat)</span></span>
 <span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>, <span class="va">N</span><span class="op">)</span></span>
-<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
-<span>    <span class="va">allprobs</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="va">allprobs</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">=</span> <span class="va">allprobs</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">lambda</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span>, <span class="va">N</span>, byrow <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span> <span class="va">allprobs</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">allprobs</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">=</span> <span class="va">allprobs</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">lambda</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">N</span>, byrow <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">Pi</span>, <span class="va">Qube</span>, <span class="va">allprobs</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="fitting-an-mmpp-to-the-data-1">Fitting an MMPP to the data<a class="anchor" aria-label="anchor" href="#fitting-an-mmpp-to-the-data-1"></a>
+<h3 id="fitting-an-mmmpp-to-the-data">Fitting an MM<strong>M</strong>PP to the data<a class="anchor" aria-label="anchor" href="#fitting-an-mmmpp-to-the-data"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">theta.star</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>, <span class="co"># lambda</span></span>
-<span>                   <span class="op">-</span><span class="fl">5</span>, <span class="fl">0</span>, <span class="fl">5</span>, <span class="co"># mu</span></span>
-<span>               <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>, <span class="co"># sigma</span></span>
-<span>               <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">1</span>, <span class="fl">0.3</span>, <span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># Q</span></span>
+<code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>loglambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span>, <span class="co"># lambda</span></span>
+<span>        mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>, <span class="co"># mu</span></span>
+<span>        logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>, <span class="co"># sigma</span></span>
+<span>        qs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">1</span>, <span class="fl">0.3</span>, <span class="fl">1</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># Q</span></span>
 <span><span class="va">timediff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">arrival_times</span><span class="op">)</span></span>
-<span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mod2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, y <span class="op">=</span> <span class="va">marks</span>, timediff<span class="op">=</span><span class="va">timediff</span>, N<span class="op">=</span><span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 2.323014 secs</span></span></code></pre></div>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMark</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">marks</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   3.648   4.558   2.745</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">N</span> <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1]  0.96  4.86 19.50</span></span>
-<span><span class="co"># mu</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] -5.19 -0.09  4.81</span></span>
-<span><span class="co"># sigma</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1.79 0.96 2.01</span></span>
-<span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span></span>
-<span><span class="va">Q</span><span class="op">[</span><span class="op">!</span><span class="va">Q</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">3</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Q</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        [,1]   [,2]   [,3]</span></span>
-<span><span class="co">#&gt; [1,] -0.591  0.279  0.312</span></span>
-<span><span class="co">#&gt; [2,]  0.926 -1.180  0.254</span></span>
-<span><span class="co">#&gt; [3,]  1.193  1.210 -2.403</span></span></code></pre></div>
+<span><span class="op">(</span><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  0.9646715  4.8640550 19.5008965</span></span>
+<span><span class="op">(</span><span class="va">mu</span> <span class="op">=</span> <span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -5.18540512 -0.09097057  4.80538782</span></span>
+<span><span class="op">(</span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1.7931062 0.9644485 2.0093266</span></span>
+<span><span class="op">(</span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">3</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            [,1]       [,2]       [,3]</span></span>
+<span><span class="co">#&gt; [1,] -0.5909290  0.2788642  0.3120648</span></span>
+<span><span class="co">#&gt; [2,]  0.9258937 -1.1798375  0.2539438</span></span>
+<span><span class="co">#&gt; [3,]  1.1933697  1.2097185 -2.4030882</span></span>
+<span><span class="op">(</span><span class="va">Pi</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_cont.html">stationary_cont</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   state 1   state 2   state 3 </span></span>
+<span><span class="co">#&gt; 0.6296990 0.2609524 0.1093485</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">

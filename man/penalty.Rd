@@ -7,25 +7,30 @@
 penalty(re_coef, S, lambda)
 }
 \arguments{
-\item{re_coef}{Coefficient vector/ matrix or list of coefficient vectors/ matrices.\cr\cr
+\item{re_coef}{coefficient vector/ matrix or list of coefficient vectors/ matrices
+
 Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
 When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
-Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
+
+\strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
 If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.}
 
-\item{S}{Fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.}
+\item{S}{fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects}
 
-\item{lambda}{Penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}. E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.}
+\item{lambda}{penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}
+
+E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.}
 }
 \value{
-Returns the penalty value and reports to \code{\link{qreml}}.
+returns the penalty value and reports to \code{\link{qreml}}.
 }
 \description{
 This function computes quadratic penalties of the form
 \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
-with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
-It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
+with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.
+
+It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
 For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
 }
 \examples{

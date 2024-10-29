@@ -6,7 +6,7 @@
 \alias{pgamma2}
 \alias{qgamma2}
 \alias{rgamma2}
-\title{Reparametrized gamma distribution}
+\title{Reparametrised gamma distribution}
 \usage{
 dgamma2(x, mu = 1, sigma = 1, log = FALSE)
 
@@ -23,9 +23,9 @@ rgamma2(n, mu = 1, sigma = 1)
 
 \item{sigma}{standard deviation parameter, must be positive scalar.}
 
-\item{log, log.p}{logical; if TRUE, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.}
+\item{log, log.p}{logical; if \code{TRUE}, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.}
 
-\item{lower.tail}{logical; if TRUE (default), probabilities are \eqn{P[X <= x]}, otherwise, \eqn{P[X > x]}.}
+\item{lower.tail}{logical; if \code{TRUE}, probabilities are \eqn{P[X <= x]}, otherwise, \eqn{P[X > x]}.}
 
 \item{p}{vector of probabilities}
 
@@ -35,12 +35,11 @@ rgamma2(n, mu = 1, sigma = 1)
 \code{dgamma2} gives the density, \code{pgamma2} gives the distribution function, \code{qgamma2} gives the quantile function, and \code{rgamma2} generates random deviates.
 }
 \description{
-Density, distribution function, quantile function and random generation for 
-the reparametrized gamma distribution in terms of mean and standard deviation.\cr\cr
-This implementation allows for automatic differentiation with RTMB.
+Density, distribution function, quantile function and random generation for
+the gamma distribution reparametrised in terms of mean and standard deviation.
 }
 \details{
-For \code{rgamma2} defaults back to the stats implementation.
+This implementation allows for automatic differentiation with \code{RTMB}.
 }
 \examples{
 x = rgamma2(1)

@@ -3,13 +3,15 @@
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
 #'
-#' @param omega Embedded transition probability matrix.
+#' @param omega embedded transition probability matrix
+#' 
 #' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.
-#' @param dm State dwell-time distributions arranged in a list of length(N).
+#' @param dm state dwell-time distributions arranged in a list of length(N)
+#' 
 #' Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
+#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
 #'
-#' @return An array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
+#' @return array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
 #' @export
 #'
 #' @examples

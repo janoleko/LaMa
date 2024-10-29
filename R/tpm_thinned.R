@@ -5,10 +5,10 @@
 #' \deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}
 #' This function calculates the matrix above efficiently as a preliminery step to calculating the periodically stationary distribution.
 #'
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L).
-#' @param t Integer index of the time point in the cycle, for which to calculate the thinned transition probility matrix
+#' @param Gamma array of transition probability matrices of dimension c(N,N,L).
+#' @param t integer index of the time point in the cycle, for which to calculate the thinned transition probility matrix
 #'
-#' @return Thinned transition probabilty matrix of dimension c(N,N)
+#' @return thinned transition probabilty matrix of dimension c(N,N)
 #' @export
 #'
 #' @examples

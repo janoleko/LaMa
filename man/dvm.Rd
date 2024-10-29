@@ -13,14 +13,16 @@ dvm(x, mu, kappa, log = FALSE)
 
 \item{kappa}{non-negative numeric value for the concentration parameter of the distribution.}
 
-\item{log}{logical; if TRUE, densities are returned on the log scale.}
+\item{log}{logical; if \code{TRUE}, densities are returned on the log scale.}
 }
 \value{
 Returns the density function of the von Mises density distribution evaluated at x.
 }
 \description{
-Returns the density function of the van Mises distribution evaluated at a particular value.\cr\cr
-This implementation allows for automatic differentiation with RTMB.
+Returns the density function of the van Mises distribution evaluated at a particular value.
+}
+\details{
+This implementation allows for automatic differentiation with \code{RTMB}.
 }
 \examples{
 x = c(0, pi/2, pi)

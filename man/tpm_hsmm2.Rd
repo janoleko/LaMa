@@ -7,14 +7,14 @@
 tpm_hsmm2(omega, dm, eps = 1e-10)
 }
 \arguments{
-\item{omega}{Embedded transition probability matrix of dimension c(N,N)}
+\item{omega}{embedded transition probability matrix of dimension c(N,N)}
 
-\item{dm}{State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.}
+\item{dm}{state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
+\item{eps}{rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
 }
 \value{
-The extended-state-space transition probability matrix of the approximating HMM
+extended-state-space transition probability matrix of the approximating HMM
 }
 \description{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 

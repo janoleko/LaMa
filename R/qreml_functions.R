@@ -28,22 +28,28 @@ gdeterminant <- function(x,
 
 #' Computes penalty based on quadratic form
 #'
+#' @description
 #' This function computes quadratic penalties of the form
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
-#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
-#' It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalized splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
+#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.
+#' 
+#' It is intended to be used inside the \strong{negative penalized log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
 #' For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
 #'
-#' @param re_coef Coefficient vector/ matrix or list of coefficient vectors/ matrices.\cr\cr
+#' @param re_coef coefficient vector/ matrix or list of coefficient vectors/ matrices
+#'
 #' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
 #' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
-#' Caution: The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
+#' 
+#' \strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
 #' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
 #' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.
-#' @param S Fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects.
-#' @param lambda Penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}. E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.
+#' @param S fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects
+#' @param lambda penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}
 #'
-#' @return Returns the penalty value and reports to \code{\link{qreml}}.
+#' E.g. if \code{re_coef} contains one vector and one matrix with 4 rows, then \code{lambda} needs to be of length 5.
+#'
+#' @return returns the penalty value and reports to \code{\link{qreml}}.
 #' @export
 #' 
 #' @import RTMB
@@ -157,34 +163,44 @@ penalty = function(re_coef, S, lambda) {
   0.5 * pen
 }
 
-#' Quasi restricted maximum likelihood (qREML) algorithm for models with penalized splines or simple i.i.d. random effects
+#' Quasi restricted maximum likelihood (qREML) algorithm for models with penalised splines or simple i.i.d. random effects
 #'
-#' This algorithm can be used very flexibly to fit statistical models that involve \strong{penalized splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
+#' @description
+#' This algorithm can be used very flexibly to fit statistical models that involve \strong{penalised splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
-#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
-#' The \strong{qREML} algorithm is typically much faster than REML or marginal ML using the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
-#' Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimization.
-#' The user has to specify the \strong{penalized negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function contained in \code{LaMa} to compute the quadratic-form penalty inside the likelihood.
+#' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.
 #'
-#' @param pnll Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty.
+#' The \strong{qREML} algorithm is typically much faster than REML or marginal ML using the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
+#'
+#' Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimisation.
+#' The user has to specify the \strong{penalised negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function to compute the quadratic-form penalty inside the likelihood.
+#'
+#' @param pnll penalised negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty
+#'
 #' Needs to be a function of the named list of initial parameters \code{par} only.
-#' @param par Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
-#' @param dat Initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
+#' @param par named list of initial parameters
+#'
+#' The random effects/ spline coefficients can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
+#' @param dat initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength
+#'
+#' If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
 #' Its length needs to match the to the total number of random effects.
-#' @param random Vector of names of the random effects in \code{par} that are penalized.
+#' @param random vector of names of the random effects in \code{par} that are penalised.
 #' 
-#' Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
-#' @param penalty Optional, name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
-#' @param alpha Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations. Defaults to no smoothing.
-#' @param maxiter Maximum number of iterations in the outer optimization over the penalty strength parameters.
+#' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
+#' @param penalty optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
+#' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths
+#'
+#' For larger values smoother convergence is to be expected but the algorithm may need more iterations.
+#' @param maxiter maximum number of iterations in the outer optimisation over the penalty strength parameters.
 #' @param tol Convergence tolerance for the penalty strength parameters.
-#' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimization. Here, \code{optim} uses the BFGS method which cannot be changed.
+#' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
-#' @param silent Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.
-#' @param saveall Logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.
+#' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
+#' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #'
-#' @return Returns a model list influenced by the users report statements in \code{pnll}
+#' @return returns a model list influenced by the users report statements in \code{pnll}
 #' @export
 #'
 #' @import RTMB

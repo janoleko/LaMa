@@ -1,28 +1,39 @@
 #' Build all transition probability matrices of a periodically inhomogeneous HMM
 #'
+#' @description
 #' Given a periodically varying variable such as time of day or day of year and the associated cycle length, 
-#' this function calculates the transition probability matrices by applying the inverse multinomial logistic link to linear predictors of the form
+#' this function calculates the transition probability matrices by applying the inverse multinomial logistic link (also known as softmax) to linear predictors of the form
 #' \deqn{ 
 #'  \eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L}) \bigr) }
-#' for the off-diagonal elements (\eqn{i \neq j}).
+#' for the off-diagonal elements (\eqn{i \neq j}) of the transition probability matrix.
 #' This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing \eqn{K}).
+#' 
+#' @details
+#' Note that using this function inside the negative log-likelihood function is convenient, but it performs the basis expansion into sine and cosine terms each time it is called. 
+#' As these do not change during the optimisation, using \code{\link{tpm_g}} with a pre-calculated (by \code{\link{trigBasisExp}}) design matrix would be more efficient.
 #'
-#' @param tod Equidistant (generalized) time of day sequence, denoting the time point in a cycle.
+#' @param tod equidistant sequence of a cyclic variable
+#' 
 #' For time of day and e.g. half-hourly data, this could be 1, ..., L and L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.
-#' @param L Length of one full cycle, on the scale of tod
-#' @param beta Matrix of coefficients for the off-diagonal elements of the transition probability matrix.
-#' Needs to be of dimension c(N*(N-1), 2*degree+1), where the first column contains the intercepts.
-#' @param degree Degree of the trigonometric link function. For each additional degree, one sine and one cosine frequency are added.
-#' @param Z Pre-calculated design matrix (excluding intercept column). Defaults to NULL if trigonometric link should be calculated. 
-#' From an efficiency perspective, Z should be pre-calculated within the likelhood function, as the basis expansion should not be redundantly calculated. This can be done by using trigBasisExpansion(). \cr \cr
-#' Furthermore, Z can also be a pre-calculated design matrix from mgcv::cSplineDes() (with p columns), when one wants to use cyclic P-splines, or it can be any other basis expansion of the cyclic variable.
-#' In that case, the dimension of beta needs to be c(N*(N-1), p+1) and a penalty term should be added at the end of the negative log-likelihood.
-#' @param byrow Logical that indicates if each transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
-#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
-#' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
+#' @param L length of one full cycle, on the scale of tod
+#' 
+#' @param beta matrix of coefficients for the off-diagonal elements of the transition probability matrix
+#' 
+#' Needs to be of dimension c(N *(N-1), 2*degree+1), where the first column contains the intercepts.
+#' @param degree degree of the trigonometric link function
+#' 
+#' For each additional degree, one sine and one cosine frequency are added.
+#' @param Z pre-calculated design matrix (excluding intercept column)
+#' 
+#' Defaults to \code{NULL} if trigonometric link should be calculated. 
+#' From an efficiency perspective, Z should be pre-calculated within the likelihood function, as the basis expansion should not be redundantly calculated. This can be done by using \code{\link{trigBasisExp}}.
+#' @param byrow logical indicating if each transition probability matrix should be filled by row
+#'  
+#' Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of \code{beta} parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
+#' @param ad optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function determines this itself.
+#' @param report logical, indicating whether the coefficient matrix \code{beta} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
 #'
-#' @return Array of transition probability matrices of dimension c(N,N,length(tod))
+#' @return array of transition probability matrices of dimension c(N,N,length(tod))
 #' @export
 #'
 #' @examples

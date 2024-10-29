@@ -1,18 +1,19 @@
-#' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with (only) periodically varying transition probability matrix
+#' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with for periodically varying transition probability matrices
 #'
 #' When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
 #' Thus, it is much more efficient to only calculate these \eqn{L} matrices and index them by a time variable (e.g. time of day or day of year) instead of calculating such a matrix for each index in the data set (which would be redundant).
 #' This function allows for that, by only expecting a transition probability matrix for each time point in a period, and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
 #'
-#' @param delta Initial or periodically stationary distribution of length N
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L). \cr \cr
-#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-#' such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma array of transition probability matrices of dimension c(N,N,L).
+#' 
+#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}} such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n)
+#' 
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
 #'
-#' @return Log-likelihood for given data and parameters
+#' @return log-likelihood for given data and parameters
 #' @export
 #'
 #' @examples

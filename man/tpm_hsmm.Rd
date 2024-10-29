@@ -2,27 +2,28 @@
 % Please edit documentation in R/hsmm_functions.R
 \name{tpm_hsmm}
 \alias{tpm_hsmm}
-\title{Build the transition probability matrix of an HSMM-approximating HMM}
+\title{Builds the transition probability matrix of an HSMM-approximating HMM}
 \usage{
 tpm_hsmm(omega, dm, Fm = NULL, sparse = TRUE, eps = 1e-10)
 }
 \arguments{
-\item{omega}{Embedded transition probability matrix of dimension c(N,N)}
+\item{omega}{embedded transition probability matrix of dimension c(N,N) as computed by \code{\link{tpm_emb}}.}
 
-\item{dm}{State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.}
+\item{dm}{state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.}
 
-\item{Fm}{Optional list of length N containing the cumulative distribution functions of the dwell-time distributions.}
+\item{Fm}{optional list of length N containing the cumulative distribution functions of the dwell-time distributions.}
 
-\item{sparse}{Logical, indicating whether the output should be a sparse matrix. Defaults to TRUE.}
+\item{sparse}{logical, indicating whether the output should be a \strong{sparse} matrix. Defaults to \code{TRUE}.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
+\item{eps}{rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
 }
 \value{
-The extended-state-space transition probability matrix of the approximating HMM
+extended-state-space transition probability matrix of the approximating HMM
 }
 \description{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled.
 For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+
 This function computes the transition matrix to approximate a given HSMM by an HMM with a larger state space.
 }
 \examples{

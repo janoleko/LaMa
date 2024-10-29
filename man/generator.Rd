@@ -7,20 +7,17 @@
 generator(param, byrow = FALSE, report = TRUE)
 }
 \arguments{
-\item{param}{Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
+\item{param}{unconstrained parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
 
-\item{byrow}{Logical that indicates if the transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.}
+\item{byrow}{logical indicating if the transition probability matrix should be filled by row}
 
-\item{report}{Logical, indicating whether the generator matrix Q should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
+\item{report}{logical, indicating whether the generator matrix Q should be reported from the fitted model. Defaults to \code{TRUE}, but only works if when automatic differentiation with \code{RTMB} is used.}
 }
 \value{
-Infinitesimal generator matrix of dimension c(N,N)
+infinitesimal generator matrix of dimension c(N,N)
 }
 \description{
-This function builds the infinitesimal generator matrix for a continuous-time Markov chain from an unconstraint parameter vector.\cr
-
-Compatible with automatic differentiation by RTMB
+This function builds the \strong{infinitesimal generator matrix} for a \strong{continuous-time Markov chain} from an unconstrained parameter vector.
 }
 \examples{
 # 2 states: 2 free off-diagonal elements

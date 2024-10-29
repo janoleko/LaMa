@@ -1,12 +1,13 @@
 #' von Mises Density Function
 #' 
-#' Returns the density function of the van Mises distribution evaluated at a particular value.\cr\cr
-#' This implementation allows for automatic differentiation with RTMB.
+#' Returns the density function of the van Mises distribution evaluated at a particular value.
+#' 
+#' This implementation allows for automatic differentiation with \code{RTMB}.
 #'
 #' @param x vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
 #' @param kappa non-negative numeric value for the concentration parameter of the distribution.
-#' @param log logical; if TRUE, densities are returned on the log scale.
+#' @param log logical; if \code{TRUE}, densities are returned on the log scale.
 #'
 #' @return Returns the density function of the von Mises density distribution evaluated at x.
 #' @export
@@ -20,21 +21,20 @@ dvm = function(x, mu, kappa, log = FALSE) {
   res
 }
 
-#' Reparametrized gamma distribution
+#' Reparametrised gamma distribution
 #' 
-#' Density, distribution function, quantile function and random generation for 
-#' the reparametrized gamma distribution in terms of mean and standard deviation.\cr\cr
-#' This implementation allows for automatic differentiation with RTMB.
+#' Density, distribution function, quantile function and random generation for
+#' the gamma distribution reparametrised in terms of mean and standard deviation.
 #' 
-#' For \code{rgamma2} defaults back to the stats implementation.
+#' This implementation allows for automatic differentiation with \code{RTMB}.
 #'
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
 #' @param mu mean parameter, must be positive scalar.
 #' @param sigma standard deviation parameter, must be positive scalar.
-#' @param log,log.p logical; if TRUE, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.
-#' @param lower.tail logical; if TRUE (default), probabilities are \eqn{P[X <= x]}, otherwise, \eqn{P[X > x]}.
+#' @param log,log.p logical; if \code{TRUE}, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.
+#' @param lower.tail logical; if \code{TRUE}, probabilities are \eqn{P[X <= x]}, otherwise, \eqn{P[X > x]}.
 #'
 #' @return
 #' \code{dgamma2} gives the density, \code{pgamma2} gives the distribution function, \code{qgamma2} gives the quantile function, and \code{rgamma2} generates random deviates.
@@ -80,22 +80,24 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 }
 
 
-#' Reparametrized multivariate Gaussian distribution
+#' Reparametrised multivariate Gaussian distribution
 #'
-#' Density function of a multivariate Gaussian distribution reparametrized in terms of its precision matrix (inverse variance).
-#' This is particularly useful for marginal ML with penalized splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is the penalty matrix.
+#' Density function of the multivariate Gaussian distribution reparametrised in terms of its precision matrix (inverse variance).
+#' This implementation is particularly useful for marginal ML with penalised splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is a fixed penalty matrix.
 #' As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalization constant) and only scale the quadratic form by \eqn{\lambda}
 #' when multiple spline parameters/ random effects with different \eqn{\lambda}'s but the same penalty matrix \eqn{S} are evaluated.
 #'
-#' This implementation allows for automatic differentiation with RTMB.
+#' This implementation allows for automatic differentiation with \code{RTMB}.
 #'
-#' @param x Density evaluation point. Either a vector or a matrix.
-#' @param mu Mean parameter. Either scalar or vector.
-#' @param S Unscaled precision matrix.
-#' @param lambda Precision scaling parameter. Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
+#' @param x density evaluation point, either a vector or a matrix
+#' @param mu mean parameter. Either scalar or vector
+#' @param S unscaled precision matrix
+#' @param lambda precision scaling parameter
+#' 
+#' Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
 #' This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.
 #' @param logdetS Optional precomputed log determinant of the precision matrix \code{S}. If the precision matrix does not depend on parameters, it can be precomputed and passed to the function.
-#' @param log logical; if TRUE, densities are returned on the log scale.
+#' @param log logical; if \code{TRUE}, densities are returned on the log scale.
 #'
 #' @return Vector of densities
 #' @export

@@ -1,12 +1,18 @@
-#' Viterbi algorithm for decoding states of periodically inhomogeneous HMMs
+#' Viterbi algorithm for state decoding in periodically inhomogeneous HMMs
+#' 
+#' The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
 #'
-#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).
-#' @param Gamma Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param tod Integer valued cyclic variable to index the transition probability matrix. 
-#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param delta initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' 
+#' This could e.g. be the periodically stationary distribution (for each track).
+#' @param Gamma array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n)
+#' 
+#' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
+#' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
 #'
-#' @return Vector of decoded states of length n
+#' @return vector of decoded states of length n
 #' @export
 #'
 #' @examples

@@ -2,25 +2,27 @@
 % Please edit documentation in R/tpm_cont.R
 \name{tpm_cont}
 \alias{tpm_cont}
-\title{Calculation of continuous time transition probabilities}
+\title{Calculate continuous time transition probabilities}
 \usage{
-tpm_cont(Q, timediff, ad = FALSE)
+tpm_cont(Q, timediff, ad = NULL, report = TRUE)
 }
 \arguments{
-\item{Q}{Infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)}
+\item{Q}{infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)}
 
-\item{timediff}{Time differences between observations of length n-1 when based on n observations}
+\item{timediff}{time differences between observations of length n-1 when based on n observations}
 
-\item{ad}{Logical, indicating whether automatic differentiation with RTMB should be used. Defaults to FALSE.}
+\item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
+
+\item{report}{logical, indicating whether \code{Q} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.}
 }
 \value{
-An array of transition matrices of dimension c(N,N,n-1)
+array of continuous-time transition matrices of dimension c(N,N,n-1)
 }
 \description{
 A continuous-time Markov chain is described by an infinitesimal generator matrix \eqn{Q}. 
 When observing data at time points \eqn{t_1, \dots, t_n} the transition probabilites between \eqn{t_i} and \eqn{t_{i+1}} are caluclated as
 \deqn{\Gamma(\Delta t_i) = \exp(Q \Delta t_i),}
-where \eqn{\exp()} is the matrix exponential. The mapping \eqn{\Gamma(\Delta t)} is also called the Markov semigroup.
+where \eqn{\exp()} is the matrix exponential. The mapping \eqn{\Gamma(\Delta t)} is also called the \strong{Markov semigroup}.
 This function calculates all transition matrices based on a given generator and time differences.
 }
 \examples{

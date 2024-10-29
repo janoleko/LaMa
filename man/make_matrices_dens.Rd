@@ -2,7 +2,7 @@
 % Please edit documentation in R/matrix_functions.R
 \name{make_matrices_dens}
 \alias{make_matrices_dens}
-\title{Build a standardized P-Spline design matrix and the associated P-Spline penalty matrix}
+\title{Build a standardised P-Spline design matrix and the associated P-Spline penalty matrix}
 \usage{
 make_matrices_dens(
   x,
@@ -19,22 +19,24 @@ make_matrices_dens(
 
 \item{k}{number of basis functions}
 
-\item{type}{type of the data, either "real" for data on the reals, "positive" for data on the positive reals or "circular" for angular data}
+\item{type}{type of the data, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for circular data like angles.}
 
-\item{degree}{degree of the B-spline basis functions, defaults to cubic B-Splines}
+\item{degree}{degree of the B-spline basis functions, defaults to cubic B-splines}
 
 \item{npoints}{number of points used in the numerical integration for normalizing the B-spline basis functions}
 
-\item{diff_order}{order of the difference used for the penalty matrix. Defaults to second-order differences.}
+\item{diff_order}{order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.}
 
-\item{pow}{power for polynomial knot spacing. Non-equidistant knot spacing is only used for type = "positive"}
+\item{pow}{power for polynomial knot spacing
+
+Such non-equidistant knot spacing is only used for \code{type = "positive"}.}
 }
 \value{
-a list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
+list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
 }
 \description{
 This function builds the B-spline design matrix for a given data vector x. 
-The B-spline basis functions are normalized such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation.
+Importantly, the B-spline basis functions are normalised such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation, when the basis functions are weighted by non-negative weights summing to one.
 }
 \examples{
 modmat = make_matrices_dens(x = (-50):50, k = 20)

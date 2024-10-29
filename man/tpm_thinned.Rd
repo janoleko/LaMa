@@ -7,12 +7,12 @@
 tpm_thinned(Gamma, t)
 }
 \arguments{
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L).}
+\item{Gamma}{array of transition probability matrices of dimension c(N,N,L).}
 
-\item{t}{Integer index of the time point in the cycle, for which to calculate the thinned transition probility matrix}
+\item{t}{integer index of the time point in the cycle, for which to calculate the thinned transition probility matrix}
 }
 \value{
-Thinned transition probabilty matrix of dimension c(N,N)
+thinned transition probabilty matrix of dimension c(N,N)
 }
 \description{
 If the transition probability matrix of an inhomogeneous Markov chain varies only periodically (with period length \eqn{L}), it converges to a so-called periodically stationary distribution. 

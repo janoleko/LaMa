@@ -7,22 +7,24 @@
 forward(delta, Gamma, allprobs, trackID = NULL, ad = NULL, report = TRUE)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if trackInd is provided}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if trackInd is provided.}
+\item{Gamma}{transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided}
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
-\item{trackID}{Optional vector of length n containing IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
-In this case, Gamma can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
-Furthermore, instead of a single vector delta corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
+\item{trackID}{optional vector of length n containing IDs
 
-\item{ad}{Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.}
+If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
+Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
 
-\item{report}{Logical, indicating whether delta, Gamma and allprobs should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.}
+\item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
+
+\item{report}{logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.}
 }
 \value{
-Log-likelihood for given data and parameters
+log-likelihood for given data and parameters
 }
 \description{
 \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix

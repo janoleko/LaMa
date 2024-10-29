@@ -5,13 +5,11 @@
 #' As it is stationary, this distribution satisfies
 #' \deqn{\delta \Gamma = \delta,} subject to \eqn{\sum_{j=1}^N \delta_j = 1},
 #' where \eqn{\Gamma} is the transition probability matrix. 
-#' This function solves the linear system of equations above.\cr
-#' 
-#' Compatible with automatic differentiation by RTMB
+#' This function solves the linear system of equations above.
 #
-#' @param Gamma Transition probability matrix of dimension c(N,N)
+#' @param Gamma transition probability matrix of dimension c(N,N)
 #'
-#' @return Stationary distribution of the Markov chain with the given transition probability matrix
+#' @return stationary distribution of the Markov chain with the given transition probability matrix
 #' @export
 #' @import RTMB
 #'

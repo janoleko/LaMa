@@ -7,23 +7,26 @@
 stateprobs_p(delta, Gamma, allprobs, tod, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 
-\item{Gamma}{Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.}
+This could e.g. be the periodically stationary distribution (for each track) as computed by \code{\link{stationary_p}}.}
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+\item{Gamma}{array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.}
 
-\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{tod}{(Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n).
 For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
 
-\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
+\item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
-Matrix of conditional state probabilities of dimension c(n,N)
+matrix of conditional state probabilities of dimension c(n,N)
 }
 \description{
-Computes \cr \cr
-\eqn{\Pr(S_t = j \mid X_1, ..., X_T)} \cr \cr
+Computes
+\deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
+for periodically inhomogeneous HMMs
 }
 \examples{
 L = 24

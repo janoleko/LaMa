@@ -9,24 +9,25 @@ buildSmoothDens(data, type = "real", par, k = 20, degree = 3, diff_order = 2)
 \arguments{
 \item{data}{named data frame of different data streams}
 
-\item{type}{type of each data stream, either "real" for data on the reals, "positive" for data on the positive reals or "circular" for angular data}
+\item{type}{type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data}
 
 \item{par}{nested named list of initial means and sds/concentrations for each data stream}
 
 \item{k}{number of basis functions for each data stream}
 
-\item{degree}{degree of the B-spline basis functions for each data stream, defaults to cubic B-Splines}
+\item{degree}{degree of the B-spline basis functions for each data stream, defaults to cubic B-splines}
 
-\item{diff_order}{order of differencing used for the P-spline penalty matrix for each data stream. Defaults to second-order differences.}
+\item{diff_order}{order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.}
 }
 \value{
-a list containing the design matrices Z, the penalty matrices S, the initial coefficients betastart, the prediction design matrices Z_predict, the prediction grids xseq, and details for the basis expansion for each data stream.
+a nested list containing the design matrices Z, the penalty matrices S, the initial coefficients betastart, the prediction design matrices Z_predict, the prediction grids xseq, and details for the basis expansion for each data stream.
 }
 \description{
-This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-splines.
-You can provide one or multiple data streams of different types (real, positive, circular) and specify the initial means and sds/concentrations for each data stream.
+This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+
+You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and sds/concentrations for each data stream. This information is the converted into suitable spline coefficients.
 \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
-For types "real" and "circular" the knots are placed equidistant in the range of the data, for type "positive" the knots are placed using polynomial spacing.
+For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 }
 \examples{
 ## 3 data streams, each with one distribution

@@ -7,21 +7,19 @@
 forward_s(delta, Gamma, allprobs, sizes)
 }
 \arguments{
-\item{delta}{Initial or stationary distribution of length M (where M is the number of approximating states)}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Transition probability matrix of dimension c(M,M)}
+\item{Gamma}{transition probability matrix of dimension c(M,M)}
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N), where N is the number of semi-Markovian states.
-This will automatically be converted to the appropriate dimension.}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N) which will automatically be converted to the appropriate dimension.}
 
-\item{sizes}{State aggregate sizes that are used for the approximation of the semi-Markov chain.}
+\item{sizes}{state aggregate sizes that are used for the approximation of the semi-Markov chain.}
 }
 \value{
-Log-likelihood for given data and parameters
+log-likelihood for given data and parameters
 }
 \description{
-Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 
-For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs that can be approximated by HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 }
 \examples{
 ## generating data from homogeneous 2-state HSMM

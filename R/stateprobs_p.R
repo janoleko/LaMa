@@ -1,16 +1,19 @@
 #' Calculate conditional local state probabilities for periodically inhomogeneous HMMs
 #' 
-#' Computes \cr \cr
-#' \eqn{\Pr(S_t = j \mid X_1, ..., X_T)} \cr \cr
+#' Computes
+#' \deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
+#' for periodically inhomogeneous HMMs
 #'
-#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).
-#' @param Gamma Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#'
+#' This could e.g. be the periodically stationary distribution (for each track) as computed by \code{\link{stationary_p}}.
+#' @param Gamma array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n).
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
-#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
 #' 
-#' @return Matrix of conditional state probabilities of dimension c(n,N)
+#' @return matrix of conditional state probabilities of dimension c(n,N)
 #' @export
 #'
 #' @examples

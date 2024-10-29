@@ -1,16 +1,12 @@
 #' Build the generator matrix of a continuous-time Markov chain
 #' 
-#' @description
-#' This function builds the infinitesimal generator matrix for a continuous-time Markov chain from an unconstraint parameter vector.\cr
+#' This function builds the \strong{infinitesimal generator matrix} for a \strong{continuous-time Markov chain} from an unconstrained parameter vector.
 #' 
-#' Compatible with automatic differentiation by RTMB
+#' @param param unconstrained parameter vector of length N*(N-1) where N is the number of states of the Markov chain
+#' @param byrow logical indicating if the transition probability matrix should be filled by row
+#' @param report logical, indicating whether the generator matrix Q should be reported from the fitted model. Defaults to \code{TRUE}, but only works if when automatic differentiation with \code{RTMB} is used.
 #'
-#' @param param Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain
-#' @param byrow Logical that indicates if the transition probability matrix should be filled by row. 
-#' Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like moveHMM, momentuHMM, or hmmTMB.
-#' @param report Logical, indicating whether the generator matrix Q should be reported from the fitted model. Defaults to TRUE, but only works if ad = TRUE.
-#'
-#' @return Infinitesimal generator matrix of dimension c(N,N)
+#' @return infinitesimal generator matrix of dimension c(N,N)
 #' @export
 #' @import RTMB
 #'

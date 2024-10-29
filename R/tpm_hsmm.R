@@ -5,11 +5,11 @@
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' This function computes the transition matrix of an HSMM.
 #'
-#' @param omega Embedded transition probability matrix of dimension c(N,N)
-#' @param dm State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
+#' @param omega embedded transition probability matrix of dimension c(N,N)
+#' @param dm state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
+#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.
 #'
-#' @return The extended-state-space transition probability matrix of the approximating HMM
+#' @return extended-state-space transition probability matrix of the approximating HMM
 #' @export
 #'
 #' @examples

@@ -7,22 +7,25 @@
 stateprobs_g(delta, Gamma, allprobs, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
-If you provide an array of dimension c(N,N,n) for a single track, the first slice will be ignored. \cr
-If you provide \code{trackID}, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.}
+\item{Gamma}{array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+If an array of dimension c(N,N,n) for a single track is provided, the first slice will be ignored.
 
-\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
+If \code{trackID} is provided, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.}
+
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
-Matrix of conditional state probabilities of dimension c(n,N)
+matrix of conditional state probabilities of dimension c(n,N)
 }
 \description{
-Computes \cr \cr
-\eqn{\Pr(S_t = j \mid X_1, ..., X_T)} \cr \cr
+Computes
+\deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
+for inhomogeneous HMMs
 }
 \examples{
 Gamma = tpm_g(runif(99), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))

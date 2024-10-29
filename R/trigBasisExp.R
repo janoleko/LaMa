@@ -1,4 +1,4 @@
-#' Trigonometric Basis Expansion
+#' Compute the design matrix for a trigonometric basis expansion
 #'
 #' Given a periodically varying variable such as time of day or day of year and the associated cycle length, this function performs a basis expansion to efficiently calculate a linear predictor of the form
 #' \deqn{ 
@@ -6,11 +6,13 @@
 #'  }
 #'  This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing \eqn{K}).
 #'  
-#' @param tod Time variable, describing the time point in a cycle. Could for example be time of day (between 0 and 24) or day of year.
-#' @param L Length of one cycle on the scale of the time variable. For time of day, this would be 24.
-#' @param degree Degree K of the trigonometric link above. Increasing K increases the flexibility.
+#' @param tod equidistant sequence of a cyclic variable
+#' 
+#' For time of day and e.g. half-hourly data, this could be 1, ..., L and L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.
+#' @param L length of one cycle on the scale of the time variable. For time of day, this would be 24.
+#' @param degree degree K of the trigonometric link above. Increasing K increases the flexibility.
 #'
-#' @return A design matrix (without intercept column of ones), ordered as sin1, cos1, sin2, cos2, ...
+#' @return design matrix (without intercept column), ordered as sin1, cos1, sin2, cos2, ...
 #' @export
 #'
 #' @examples

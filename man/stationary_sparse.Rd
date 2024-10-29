@@ -7,10 +7,10 @@
 stationary_sparse(Gamma)
 }
 \arguments{
-\item{Gamma}{Sparse transition probability matrix of dimension c(N,N)}
+\item{Gamma}{sparse transition probability matrix of dimension c(N,N)}
 }
 \value{
-Stationary distribution of the Markov chain with the given transition probability matrix
+stationary distribution of the Markov chain with the given transition probability matrix
 }
 \description{
 This is function computes the stationary distribution of a Markov chain with a given \strong{sparse} transition probability matrix.

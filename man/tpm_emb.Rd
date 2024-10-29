@@ -7,18 +7,21 @@
 tpm_emb(param = NULL)
 }
 \arguments{
-\item{param}{Unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
+\item{param}{unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
+
 If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.}
 }
 \value{
-Embedded/ conditional transition probability matrix of dimension c(N,N)
+embedded/ conditional transition probability matrix of dimension c(N,N)
 }
 \description{
-Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left.
-This function builds the embedded/ conditional transition probability matrix from an unconstraint parameter vector. 
+Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+
+This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector. 
 For each row of the matrix, the inverse multinomial logistic link is applied.
 
 For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2), hence also the length of \code{param}.
+This means, for 2 states, the function needs to be called without any arguments, for 3-states with a vector of length 3, for 4 states with a vector of length 8, etc.
 
 Compatible with automatic differentiation by \code{RTMB}
 }

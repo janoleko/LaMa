@@ -2,7 +2,7 @@
 % Please edit documentation in R/qreml_functions.R
 \name{qreml}
 \alias{qreml}
-\title{Quasi restricted maximum likelihood (qREML) algorithm for models with penalized splines or simple i.i.d. random effects}
+\title{Quasi restricted maximum likelihood (qREML) algorithm for models with penalised splines or simple i.i.d. random effects}
 \usage{
 qreml(
   pnll,
@@ -19,44 +19,53 @@ qreml(
 )
 }
 \arguments{
-\item{pnll}{Penalized negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty.
+\item{pnll}{penalised negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty
+
 Needs to be a function of the named list of initial parameters \code{par} only.}
 
-\item{par}{Named list of initial parameters. The random effects can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.}
+\item{par}{named list of initial parameters
 
-\item{dat}{Initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength. If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
+The random effects/ spline coefficients can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.}
+
+\item{dat}{initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength
+
+If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
 Its length needs to match the to the total number of random effects.}
 
-\item{random}{Vector of names of the random effects in \code{par} that are penalized.
+\item{random}{vector of names of the random effects in \code{par} that are penalised.
 
-Caution: The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
+\strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
 
-\item{penalty}{Optional, name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
+\item{penalty}{optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
-\item{alpha}{Optional hyperparamater for exponential smoothing of the penalty strengths. For larger values smoother convergence is to be expected but the algorithm may need more iterations. Defaults to no smoothing.}
+\item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths
 
-\item{maxiter}{Maximum number of iterations in the outer optimization over the penalty strength parameters.}
+For larger values smoother convergence is to be expected but the algorithm may need more iterations.}
+
+\item{maxiter}{maximum number of iterations in the outer optimisation over the penalty strength parameters.}
 
 \item{tol}{Convergence tolerance for the penalty strength parameters.}
 
-\item{control}{list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimization. Here, \code{optim} uses the BFGS method which cannot be changed.
+\item{control}{list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 
 We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
 
-\item{silent}{Integer silencing level: 0 corresponds to full printing of inner and outer iteratinos, 1 to printing of outer iterations only, and 2 to no printing.}
+\item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
 
-\item{saveall}{Logical, if TRUE, then all model objects from each iteration are saved in the final model object. Defaults to FALSE.}
+\item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
 }
 \value{
-Returns a model list influenced by the users report statements in \code{pnll}
+returns a model list influenced by the users report statements in \code{pnll}
 }
 \description{
-This algorithm can be used very flexibly to fit statistical models that involve \strong{penalized splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
+This algorithm can be used very flexibly to fit statistical models that involve \strong{penalised splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
 \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
-with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.\cr
+with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.
+
 The \strong{qREML} algorithm is typically much faster than REML or marginal ML using the full Laplace approximation method, but may be slightly less accurate regarding the estimation of the penalty strength parameters.
-Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimization.
-The user has to specify the \strong{penalized negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function contained in \code{LaMa} to compute the quadratic-form penalty inside the likelihood.
+
+Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimisation.
+The user has to specify the \strong{penalised negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function to compute the quadratic-form penalty inside the likelihood.
 }
 \examples{
 data = elephant[1:1000,] # subset

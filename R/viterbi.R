@@ -1,11 +1,13 @@
-#' Viterbi algorithm for decoding states
+#' Viterbi algorithm for state decoding in homogeneous HMMs
+#' 
+#' The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
 #'
-#' @param delta Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
-#' @param Gamma Transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackID Optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param delta initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
 #'
-#' @return Vector of decoded states of length n
+#' @return vector of decoded states of length n
 #' @export
 #'
 #' @examples

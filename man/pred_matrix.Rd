@@ -2,12 +2,12 @@
 % Please edit documentation in R/matrix_functions.R
 \name{pred_matrix}
 \alias{pred_matrix}
-\title{Build the prediction design matrix based on new data and model_matrices object created by \code{make_matrices()}}
+\title{Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}}
 \usage{
 pred_matrix(model_matrices, newdata)
 }
 \arguments{
-\item{model_matrices}{model_matrices object as returned from \code{make_matrices()}}
+\item{model_matrices}{model_matrices object as returned from \code{\link{make_matrices}}}
 
 \item{newdata}{data frame containing the variables in the formula and new data for which to evaluate the basis}
 }
@@ -15,7 +15,7 @@ pred_matrix(model_matrices, newdata)
 prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 }
 \description{
-Build the prediction design matrix based on new data and model_matrices object created by \code{make_matrices()}
+Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 }
 \examples{
 modmat = make_matrices(~ s(x), data.frame(x = 1:10))

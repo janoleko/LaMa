@@ -1,17 +1,20 @@
 #' Compute the periodically stationary distribution of a periodically inhomogeneous Markov chain
 #'
+#' @description
 #' If the transition probability matrix of an inhomogeneous Markov chain varies only periodically (with period length \eqn{L}), it converges to a so-called periodically stationary distribution. 
 #' This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix
 #' \deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}
-#' The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t = \delta^{(t)}}. \cr
-#' This function calculates the periodically stationary distribution.
+#' The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t = \delta^{(t)}}.
 #' 
-#' @param Gamma Array of transition probability matrices of dimension c(N,N,L). 
-#' @param t Integer index of the time point in the cycle, for which to calculate the stationary distribution
+#' This function calculates said periodically stationary distribution.
+#' 
+#' @param Gamma array of transition probability matrices of dimension c(N,N,L)
+#' @param t integer index of the time point in the cycle, for which to calculate the stationary distribution
+#' 
 #' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
-#' @param ad Optional logical, indicating whether automatic differentiation with RTMB should be used. By default, the function checks whether it is called with an advector.
+#' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
 #'
-#' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
+#' @return either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
 #' @import RTMB
 #'

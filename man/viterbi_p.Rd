@@ -2,26 +2,30 @@
 % Please edit documentation in R/viterbi_p.R
 \name{viterbi_p}
 \alias{viterbi_p}
-\title{Viterbi algorithm for decoding states of periodically inhomogeneous HMMs}
+\title{Viterbi algorithm for state decoding in periodically inhomogeneous HMMs}
 \usage{
 viterbi_p(delta, Gamma, allprobs, tod, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided. This could e.g. be the periodically stationary distribution (for each track).}
+\item{delta}{initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 
-\item{Gamma}{Array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle.}
+This could e.g. be the periodically stationary distribution (for each track).}
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+\item{Gamma}{array of transition probability matrices for each time point in the cycle of dimension c(N,N,L), where L is the length of the cycle}
 
-\item{tod}{Integer valued cyclic variable to index the transition probability matrix.}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
-\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
+\item{tod}{(Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n)
+
+For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
+
+\item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
-Vector of decoded states of length n
+vector of decoded states of length n
 }
 \description{
-Viterbi algorithm for decoding states of periodically inhomogeneous HMMs
+The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
 }
 \examples{
 delta = c(0.5, 0.5)

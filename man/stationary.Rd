@@ -7,19 +7,17 @@
 stationary(Gamma)
 }
 \arguments{
-\item{Gamma}{Transition probability matrix of dimension c(N,N)}
+\item{Gamma}{transition probability matrix of dimension c(N,N)}
 }
 \value{
-Stationary distribution of the Markov chain with the given transition probability matrix
+stationary distribution of the Markov chain with the given transition probability matrix
 }
 \description{
 A homogeneous, finite state Markov chain that is irreducible and aperiodic converges to a unique stationary distribution, here called \eqn{\delta}.
 As it is stationary, this distribution satisfies
 \deqn{\delta \Gamma = \delta,} subject to \eqn{\sum_{j=1}^N \delta_j = 1},
 where \eqn{\Gamma} is the transition probability matrix. 
-This function solves the linear system of equations above.\cr
-
-Compatible with automatic differentiation by RTMB
+This function solves the linear system of equations above.
 }
 \examples{
 Gamma = tpm(c(rep(-2,3), rep(-3,3)))

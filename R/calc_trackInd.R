@@ -1,11 +1,8 @@
 #' Calculate the index of the first observation of each track based on an ID variable
 #' 
-#' Function to conveniently calculate the trackInd variable that is needed when fitting a model to longitudinal data with multiple tracks.
-#' 
-#' Preferably, this function should not be used inside the likelihood function, as it may slow down the computation speed.
-#' Instead, it can be called once and the result can then be passed as an argument to the likelihood function.
+#' Function to conveniently calculate the trackInd variable that is needed internally when fitting a model to longitudinal data with multiple tracks.
 #'
-#' @param ID ID variable of track IDs that is of the same length as the data to be analyzed
+#' @param ID ID variable of track IDs that is of the same length as the data to be analysed
 #'
 #' @return A vector of indices of the first observation of each track which can be passed to the forward and forward_g to sum likelihood contributions of each track
 #' @export

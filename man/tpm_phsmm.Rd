@@ -2,24 +2,27 @@
 % Please edit documentation in R/hsmm_functions.R
 \name{tpm_phsmm}
 \alias{tpm_phsmm}
-\title{Build all transition probability matrices of an periodic-HSMM-approximating HMM}
+\title{Builds all transition probability matrices of an periodic-HSMM-approximating HMM}
 \usage{
 tpm_phsmm(omega, dm, eps = 1e-10)
 }
 \arguments{
-\item{omega}{Embedded transition probability matrix
-Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.}
+\item{omega}{embedded transition probability matrix
 
-\item{dm}{State dwell-time distributions arranged in a list of length(N).
+Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb}}), or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb_g}}).}
+
+\item{dm}{state dwell-time distributions arranged in a list of length N
+
 Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
+\item{eps}{rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.}
 }
 \value{
-A list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
+list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
 }
 \description{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+
 This function computes the transition matrices of a periodically inhomogeneos HSMMs.
 }
 \examples{

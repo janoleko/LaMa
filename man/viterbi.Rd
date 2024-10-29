@@ -2,24 +2,24 @@
 % Please edit documentation in R/viterbi.R
 \name{viterbi}
 \alias{viterbi}
-\title{Viterbi algorithm for decoding states}
+\title{Viterbi algorithm for state decoding in homogeneous HMMs}
 \usage{
 viterbi(delta, Gamma, allprobs, trackID = NULL)
 }
 \arguments{
-\item{delta}{Initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
+\item{delta}{initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided.}
+\item{Gamma}{transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided}
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
-\item{trackID}{Optional vector of k track IDs, if multiple tracks need to be decoded separately}
+\item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
 }
 \value{
-Vector of decoded states of length n
+vector of decoded states of length n
 }
 \description{
-Viterbi algorithm for decoding states
+The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
 }
 \examples{
 delta = c(0.5, 0.5)

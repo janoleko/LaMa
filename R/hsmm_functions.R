@@ -4,19 +4,25 @@
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
-#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it.
+#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
 #'
-#' @param dm List of length N containing vectors of dwell-time probability mass functions (PMFs) for each state. The vector lengths correspond to the approximating state aggregate sizes, hence there should be little probablity mass not covered by these.
-#' @param omega Matrix of dimension c(N,N) of conditional transition probabilites. This contains the transition probabilities given the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' @param dm list of length N containing vectors of dwell-time probability mass functions (PMFs) for each state. The vector lengths correspond to the approximating state aggregate sizes, hence there should be little probablity mass not covered by these.
+#' @param omega matrix of dimension c(N,N) of conditional transition probabilites, also called embedded transition probability matrix. 
+#' 
+#' Contains the transition probabilities given that the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one. Can be constructed using \code{\link{tpm_emb}}.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N) which will automatically be converted to the appropriate dimension.
+#' @param trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' In this case, \code{dm} can be a nested list, where the top layer contains k \code{dm} lists as described above. \code{omega} can then also be an array of dimension c(N,N,k) with one conditional transition probability matrix for each track.
-#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a delta matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
-#' @param delta Optional vector of initial state probabilities of length N. By default, the stationary distribution is computed (which is typically recommended).
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
-#' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
+#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param delta optional vector of initial state probabilities of length N
+#' 
+#' By default, the stationary distribution is computed (which is typically recommended).
+#' @param eps small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
+#' @param report logical, indicating whether initial distribution, approximating transition probability matrix and \code{allprobs} matrix should be reported from the fitted model. Defaults to \code{TRUE}.
 #'
-#' @return Log-likelihood for given data and parameters
+#' @return log-likelihood for given data and parameters
 #' @export
 #' @import RTMB
 #'
@@ -219,26 +225,34 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers. This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary with covariates.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
-#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it.
+#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
 #'
-#' @param dm List of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
+#' @param dm list of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
 #' 
 #' If the dwell-time PMFs are constant, the vectors are the PMF of the dwell-time distribution fixed in time. The vector lengths correspond to the approximating state aggregate sizes, hence there should be little probablity mass not covered by these.
 #' 
 #' If the dwell-time PMFs are inhomogeneous, the matrices need to have n rows, where n is the number of observations. The number of columns again correponds to the size of the approximating state aggregates.
 #' 
-#' In the latter case, the first \code{max(sapply(dm, ncol)) - 1} observations will not be used because the first t.p.m. needs to be computed based on the first \code{max(sapply(dm, ncol))} covariate values (represented by \code{dm}).
-#' @param omega matrix of dimension c(N,N) or array of dimension c(N,N,n) of conditional transition probabilites. This contains the transition probabilities given the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' In the latter case, the first \code{max(sapply(dm, ncol)) - 1} observations will not be used because the first approximating transition probability matrix needs to be computed based on the first \code{max(sapply(dm, ncol))} covariate values (represented by \code{dm}).
+#' @param omega matrix of dimension c(N,N) or array of dimension c(N,N,n) of conditional transition probabilites, also called embedded transition probability matrix.
+#' 
+#' It contains the transition probabilities given the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one. Such a matrix can be constructed using \code{\link{tpm_emb}} and an array using \code{\link{tpm_emb_g}}.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param trackID trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
-#' @param delta Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
-#' @param startInd Optional integer index at which the forward algorithm starts. When approximating inhomogeneous HSMMs by inhomogeneous HMMs, the first t.p.m. that can be constructed is at time max(aggregate sizes) (as it depends on the previous covariate values).
-#' Hence, when not provided, \code{startInd} is chosen to be max(aggregate sizes). Fixing \code{startInd} at a value \strong{larger} than max(aggregate sizes) is useful when models with different aggregate sizes are fitted to the same data and are supposed to be compared. In that case it is important that all models use the same number of observations.
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
-#' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
+#' @param delta optional vector of initial state probabilities of length N
+#' 
+#' By default, instead of this, the stationary distribution is computed corresponding to the first approximating transition probability matrix of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
+#' @param startInd optional integer index at which the forward algorithm starts. 
+#' 
+#' When approximating inhomogeneous HSMMs by inhomogeneous HMMs, the first transition probability matrix that can be constructed is at time \code{max(sapply(dm, ncol))} (as it depends on the previous covariate values).
+#' Hence, when not provided, \code{startInd} is chosen to be \code{max(sapply(dm, ncol))}. Fixing \code{startInd} at a value \strong{larger} than max(aggregate sizes) is useful when models with different aggregate sizes are fitted to the same data and are supposed to be compared. In that case it is important that all models use the same number of observations.
+#' @param eps small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
+#' @param report logical, indicating whether initial distribution, approximating transition probability matrix and \code{allprobs} matrix should be reported from the fitted model. Defaults to \code{TRUE}.
 #'
-#' @return Log-likelihood for given data and parameters
+#' @return log-likelihood for given data and parameters
 #' @export
 #' @import RTMB
 #'
@@ -535,30 +549,34 @@ forward_ihsmm <- function(dm, omega, allprobs,
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with periodically inhomogeneous state durations and/ or conditional transition probabilities
 #'
 #' @description
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers.
-#'
-#' This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary periodically.
-#' In the special case of periodic variation (as compared to arbitrary covariate influence), this version is to be preferred over \code{\link{forward_ihsmm}} because it computes the correct periodically stationary distribution and no observations are lost for the approximation.
+#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers. This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary with covariates.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
-#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it.
+#' This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary periodically.
+#' In the special case of periodic variation (as compared to arbitrary covariate influence), this version is to be preferred over \code{\link{forward_ihsmm}} because it computes the \strong{correct periodically stationary distribution} and no observations are lost for the approximation.
+#' 
+#' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
 #'
-#' @param dm List of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
+#' @param dm list of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
 #'
 #' If the dwell-time PMFs are constant, the vectors are the PMF of the dwell-time distribution fixed in time. The vector lengths correspond to the approximating state aggregate sizes, hence there should be little probablity mass not covered by these.
 #' 
 #' If the dwell-time PMFs are inhomogeneous, the matrices need to have L rows, where L is the cycle length. The number of columns again correpond to the size of the approximating state aggregates.
-#' @param omega Matrix of dimension c(N,N) or array of dimension c(N,N,L) of conditional transition probabilites. This contains the transition probabilities given the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one.
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param tod (Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+#' @param omega matrix of dimension c(N,N) or array of dimension c(N,N,L) of conditional transition probabilites, also called embedded transition probability matrix
+#' 
+#' It contains the transition probabilities given the current state is left. Hence, the diagonal elements need to be zero and the rows need to sum to one. Such a matrix can be constructed using \code{\link{tpm_emb}} and an array using \code{\link{tpm_emb_g}}.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n).
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
-#' @param trackID Optional vector of length n containing k unique IDs. If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' @param trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param delta Optional vector of initial state probabilities of length N. By default, instead of this, the stationary distribution is computed corresponding to the first approximating t.p.m. of each track is computed. Contrary to the homogeneous case, this is not theoretically motivated but just for convenience.
-#' @param eps Small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
-#' @param report Logical, indicating whether initial distribution, approximating t.p.m. and allprobs matrix should be reported from the fitted model. Defaults to TRUE.
+#' @param eps small value to avoid numerical issues in the approximating transition matrix construction. Usually, this should not be changed.
+#' @param report logical, indicating whether initial distribution, approximating transition probability matrix and \code{allprobs} matrix should be reported from the fitted model. Defaults to \code{TRUE}.
 #'
-#' @return Log-likelihood for given data and parameters
+#' @return log-likelihood for given data and parameters
 #' @export
 #' @import RTMB
 #'
@@ -844,20 +862,21 @@ max2 = function(x,y){
   (x + y + abs(x - y)) / 2
 }
 
-#' Build the transition probability matrix of an HSMM-approximating HMM
+#' Builds the transition probability matrix of an HSMM-approximating HMM
 #'
 #' @description
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+#' 
 #' This function computes the transition matrix to approximate a given HSMM by an HMM with a larger state space.
 #'
-#' @param omega Embedded transition probability matrix of dimension c(N,N)
-#' @param dm State dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
-#' @param Fm Optional list of length N containing the cumulative distribution functions of the dwell-time distributions.
-#' @param sparse Logical, indicating whether the output should be a sparse matrix. Defaults to TRUE.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
+#' @param omega embedded transition probability matrix of dimension c(N,N) as computed by \code{\link{tpm_emb}}.
+#' @param dm state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
+#' @param Fm optional list of length N containing the cumulative distribution functions of the dwell-time distributions.
+#' @param sparse logical, indicating whether the output should be a \strong{sparse} matrix. Defaults to \code{TRUE}.
+#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
 #'
-#' @return The extended-state-space transition probability matrix of the approximating HMM
+#' @return extended-state-space transition probability matrix of the approximating HMM
 #' @export
 #'
 #' @examples
@@ -927,18 +946,22 @@ tpm_hsmm <- function(omega, dm,
   G
 }
 
-#' Build all transition probability matrices of an inhomogeneous-HSMM-approximating HMM
+#' Builds all transition probability matrices of an inhomogeneous-HSMM-approximating HMM
 #'
+#' @description
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+#' 
 #' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
 #'
-#' @param omega Embedded transition probability matrix
-#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,n) for inhomogeneous conditional transition probabilities.
-#' @param dm State dwell-time distributions arranged in a list of length(N).
-#' Each list element needs to be a matrix of dimension c(n, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
+#' @param omega embedded transition probability matrix
 #'
-#' @return A list of dimension length \code{n - max(sapply(dm, ncol))}, containing sparse extended-state-space transition probability matrices for each time point (except the first \code{max(sapply(dm, ncol)) - 1}).
+#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb}}), or an array of dimension c(N,N,n) for inhomogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb_g}}).
+#' @param dm state dwell-time distributions arranged in a list of length N
+#'
+#' Each list element needs to be a matrix of dimension c(n, N_i), where each row t is the (approximate) probability mass function of state i at time t.
+#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
+#'
+#' @return list of dimension length \code{n - max(sapply(dm, ncol))}, containing sparse extended-state-space transition probability matrices for each time point (except the first \code{max(sapply(dm, ncol)) - 1}).
 #' @export
 #'
 #' @examples
@@ -999,18 +1022,22 @@ tpm_ihsmm = function(omega, dm,
   Gamma
 }
 
-#' Build all transition probability matrices of an periodic-HSMM-approximating HMM
+#' Builds all transition probability matrices of an periodic-HSMM-approximating HMM
 #'
+#' @description
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+#' 
 #' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
 #'
-#' @param omega Embedded transition probability matrix
-#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.
-#' @param dm State dwell-time distributions arranged in a list of length(N).
-#' Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
+#' @param omega embedded transition probability matrix
 #'
-#' @return A list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
+#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb}}), or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb_g}}).
+#' @param dm state dwell-time distributions arranged in a list of length N
+#'
+#' Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.
+#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
+#'
+#' @return list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
 #' @export
 #'
 #' @examples
@@ -1077,9 +1104,9 @@ tpm_phsmm = function(omega, dm,
 #' This is function computes the stationary distribution of a Markov chain with a given \strong{sparse} transition probability matrix.
 #' Compatible with automatic differentiation by \code{RTMB}
 #
-#' @param Gamma Sparse transition probability matrix of dimension c(N,N)
+#' @param Gamma sparse transition probability matrix of dimension c(N,N)
 #'
-#' @return Stationary distribution of the Markov chain with the given transition probability matrix
+#' @return stationary distribution of the Markov chain with the given transition probability matrix
 #' @export
 #' @import RTMB
 #'
@@ -1116,11 +1143,11 @@ stationary_sparse = function(Gamma)
 #' This is function computes the periodically stationary distribution of a Markov chain given a list of L \strong{sparse} transition probability matrices.
 #' Compatible with automatic differentiation by \code{RTMB}
 #' 
-#' @param Gamma List of length L containing sparse transition probability matrices for one cycle.
-#' @param t Integer index of the time point in the cycle, for which to calculate the stationary distribution
+#' @param Gamma sist of length L containing sparse transition probability matrices for one cycle.
+#' @param t integer index of the time point in the cycle, for which to calculate the stationary distribution
 #' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
 #'
-#' @return Either the periodically stationary distribution at time t or all periodically stationary distributions.
+#' @return either the periodically stationary distribution at time t or all periodically stationary distributions.
 #' @export
 #' @import RTMB
 #'
@@ -1183,18 +1210,21 @@ stationary_p_sparse = function(Gamma, t = NULL){
 #' Build the embedded transition probability matrix of an HSMM from unconstrained parameter vector
 #'
 #' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left.
-#' This function builds the embedded/ conditional transition probability matrix from an unconstraint parameter vector. 
+#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+#' 
+#' This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector. 
 #' For each row of the matrix, the inverse multinomial logistic link is applied.
 #' 
 #' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2), hence also the length of \code{param}.
+#' This means, for 2 states, the function needs to be called without any arguments, for 3-states with a vector of length 3, for 4 states with a vector of length 8, etc.
 #'
 #' Compatible with automatic differentiation by \code{RTMB}
 #'
-#' @param param Unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
+#' @param param unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
+#'
 #' If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.
 #'
-#' @return Embedded/ conditional transition probability matrix of dimension c(N,N)
+#' @return embedded/ conditional transition probability matrix of dimension c(N,N)
 #' @export
 #' @import RTMB
 #'
@@ -1232,22 +1262,26 @@ tpm_emb = function(param = NULL){
 #' Build all embedded transition probability matrices of an inhomogeneous HSMM
 #'
 #' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left.
-#' This function builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
+#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+#' We can allow this matrix to vary with covariates, which is the purpose of this function.
+#'
+#' It builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
 #' For each row of the matrix, the inverse multinomial logistic link is applied.
 #' 
 #' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2) which determines the number of rows of the parameter matrix.
 #'
 #' Compatible with automatic differentiation by \code{RTMB}
-#' @param Z Covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1).
+#' @param Z covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
+#'
 #' If Z has only p columns, an intercept column of ones will be added automatically.
-#' @param beta Matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix.
+#' @param beta matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix
+#'
 #' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
 #' p can be 0, in which case the model is homogeneous.
-#' @param report Logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to TRUE.
+#' @param report logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to \code{TRUE}.
 #'
 #'
-#' @return Array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
+#' @return array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
 #' @export
 #' @import RTMB
 #'

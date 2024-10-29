@@ -1,15 +1,13 @@
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with homogeneous transition probability matrix
 #'
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 
-#' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs that can be approximated by HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #'
-#' @param delta Initial or stationary distribution of length M (where M is the number of approximating states)
-#' @param Gamma Transition probability matrix of dimension c(M,M)
-#' @param allprobs Matrix of state-dependent probabilities/ density values of dimension c(n, N), where N is the number of semi-Markovian states.
-#' This will automatically be converted to the appropriate dimension.
-#' @param sizes State aggregate sizes that are used for the approximation of the semi-Markov chain.
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma transition probability matrix of dimension c(M,M)
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N) which will automatically be converted to the appropriate dimension.
+#' @param sizes state aggregate sizes that are used for the approximation of the semi-Markov chain.
 #'
-#' @return Log-likelihood for given data and parameters
+#' @return log-likelihood for given data and parameters
 #' @export
 #'
 #' @examples

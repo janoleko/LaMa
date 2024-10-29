@@ -7,16 +7,18 @@
 tpm_phsmm2(omega, dm, eps = 1e-10)
 }
 \arguments{
-\item{omega}{Embedded transition probability matrix.
+\item{omega}{embedded transition probability matrix
+
 Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities, or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities.}
 
-\item{dm}{State dwell-time distributions arranged in a list of length(N).
+\item{dm}{state dwell-time distributions arranged in a list of length(N)
+
 Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.}
 
-\item{eps}{Rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
+\item{eps}{rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero.}
 }
 \value{
-An array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
+array of dimension c(N,N,L), containing the extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
 }
 \description{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.

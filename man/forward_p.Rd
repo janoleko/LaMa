@@ -2,24 +2,25 @@
 % Please edit documentation in R/forward_p.R
 \name{forward_p}
 \alias{forward_p}
-\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with (only) periodically varying transition probability matrix}
+\title{\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with for periodically varying transition probability matrices}
 \usage{
 forward_p(delta, Gamma, allprobs, tod)
 }
 \arguments{
-\item{delta}{Initial or periodically stationary distribution of length N}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(N,N,L). \cr \cr
-Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
+\item{Gamma}{array of transition probability matrices of dimension c(N,N,L).
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}} such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
 
-\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+
+\item{tod}{(Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n)
+
 For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
 }
 \value{
-Log-likelihood for given data and parameters
+log-likelihood for given data and parameters
 }
 \description{
 When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).

@@ -7,27 +7,25 @@
 forward_sp(delta, Gamma, allprobs, sizes, tod)
 }
 \arguments{
-\item{delta}{Initial or periodically stationary distribution of length M (where M is the number of approximating states)}
+\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{Array of transition probability matrices of dimension c(M,M,L). \cr \cr
-Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}}
-such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
+\item{Gamma}{array of transition probability matrices of dimension c(M,M,L).
 
-\item{allprobs}{Matrix of state-dependent probabilities/ density values of dimension c(n, N), where N is the number of semi-Markovian states.
-This will automatically be converted to the appropriate dimension.}
+Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}} such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.}
 
-\item{sizes}{State aggregate sizes that are used for the approximation of the semi-Markov chain.}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N) which will automatically be converted to the appropriate dimension.}
 
-\item{tod}{(Integer valued) time variable in 1, ..., L, mapping the data index to a generalized time of day (length n).
+\item{sizes}{state aggregate sizes that are used for the approximation of the semi-Markov chain.}
+
+\item{tod}{(Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n).
 For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
 }
 \value{
-Log-likelihood for given data and parameters
+log-likelihood for given data and parameters
 }
 \description{
-Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. 
-For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities such that approximate inference is possible.
-Recently, this inference procedure has been generalized to allow either the dwell-time distributions or the conditional transition probabilities to depend on external covariates such as the time of day. This special case is implemented here.
+Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs that can be approximated by HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
+Recently, this inference procedure has been generalised to allow either the dwell-time distributions or the conditional transition probabilities to depend on external covariates such as the time of day. This special case is implemented here.
 This function allows for that, by expecting a transition probability matrix for each time point in a period, and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
 }
 \examples{

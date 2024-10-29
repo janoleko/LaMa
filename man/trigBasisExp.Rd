@@ -2,19 +2,21 @@
 % Please edit documentation in R/trigBasisExp.R
 \name{trigBasisExp}
 \alias{trigBasisExp}
-\title{Trigonometric Basis Expansion}
+\title{Compute the design matrix for a trigonometric basis expansion}
 \usage{
 trigBasisExp(tod, L = 24, degree = 1)
 }
 \arguments{
-\item{tod}{Time variable, describing the time point in a cycle. Could for example be time of day (between 0 and 24) or day of year.}
+\item{tod}{equidistant sequence of a cyclic variable
 
-\item{L}{Length of one cycle on the scale of the time variable. For time of day, this would be 24.}
+For time of day and e.g. half-hourly data, this could be 1, ..., L and L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.}
 
-\item{degree}{Degree K of the trigonometric link above. Increasing K increases the flexibility.}
+\item{L}{length of one cycle on the scale of the time variable. For time of day, this would be 24.}
+
+\item{degree}{degree K of the trigonometric link above. Increasing K increases the flexibility.}
 }
 \value{
-A design matrix (without intercept column of ones), ordered as sin1, cos1, sin2, cos2, ...
+design matrix (without intercept column), ordered as sin1, cos1, sin2, cos2, ...
 }
 \description{
 Given a periodically varying variable such as time of day or day of year and the associated cycle length, this function performs a basis expansion to efficiently calculate a linear predictor of the form

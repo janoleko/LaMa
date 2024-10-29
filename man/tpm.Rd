@@ -7,19 +7,20 @@
 tpm(param, byrow = FALSE)
 }
 \arguments{
-\item{param}{Unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
+\item{param}{unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
 
-\item{byrow}{Logical that indicates if the transition probability matrix should be filled by row. 
-Defaults to FALSE, but should be set to TRUE if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
+\item{byrow}{logical indicating if the transition probability matrix should be filled by row
+
+Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
 }
 \value{
 Transition probability matrix of dimension c(N,N)
 }
 \description{
-This function builds the transition probability matrix from an unconstrained parameter vector. 
-For each row of the matrix, the inverse multinomial logistic link is applied.\cr
+Markov chains are parametrised in terms of a transition probability matrix \eqn{\Gamma}, for which each row contains a conditional probability distribution of the next state given the current state.
+Hence, each row has entries between 0 and 1 that need to sum to one. 
 
-Compatible with automatic differentiation by RTMB
+For numerical optimisation, we parametrise in terms of unconstrained parameters, thus this function computes said matrix from an unconstrained paramter vector via the inverse multinomial logistic link (also known as softmax) applied to each row.
 }
 \examples{
 # 2 states: 2 free off-diagonal elements

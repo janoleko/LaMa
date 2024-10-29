@@ -1,10 +1,11 @@
-#' Build the design matrix and the penalty matrix based on a formula and a data set
+#' Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set
 #'
-#' @param formula right side of a formula as used in mgcv
+#' @param formula right side of a formula as used in \code{mgcv}
 #' @param data data frame containing the variables in the formula
-#' @param knots optional list containing user specified knot values to be used for basis construction. 
+#' @param knots optional list containing user specified knot values to be used for basis construction
+#' 
 #' For most bases the user simply supplies the knots to be used, which must match up with the k value supplied (note that the number of knots is not always just k).
-#' See mgcv documentation for more details.
+#' See \code{mgcv} documentation for more details.
 #'
 #' @return a list containing the design matrix Z, the penalty matrix S, the formula, the data and the knots
 #' @export
@@ -27,9 +28,9 @@ make_matrices = function(formula, data, knots = NULL){
   return(list(Z = Z, S = S, formula = formula, data = data, knots = knots))
 }
 
-#' Build the prediction design matrix based on new data and model_matrices object created by \code{make_matrices()}
+#' Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 #'
-#' @param model_matrices model_matrices object as returned from \code{make_matrices()}
+#' @param model_matrices model_matrices object as returned from \code{\link{make_matrices}}
 #' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
 #'
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
@@ -50,20 +51,22 @@ pred_matrix = function(model_matrices, newdata) {
 }
 
 
-#' Build a standardized P-Spline design matrix and the associated P-Spline penalty matrix
+#' Build a standardised P-Spline design matrix and the associated P-Spline penalty matrix
 #' 
 #' This function builds the B-spline design matrix for a given data vector x. 
-#' The B-spline basis functions are normalized such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation.
+#' Importantly, the B-spline basis functions are normalised such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation, when the basis functions are weighted by non-negative weights summing to one.
 #'
 #' @param x data vector
 #' @param k number of basis functions
-#' @param type type of the data, either "real" for data on the reals, "positive" for data on the positive reals or "circular" for angular data
-#' @param degree degree of the B-spline basis functions, defaults to cubic B-Splines
+#' @param type type of the data, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for circular data like angles.
+#' @param degree degree of the B-spline basis functions, defaults to cubic B-splines
 #' @param npoints number of points used in the numerical integration for normalizing the B-spline basis functions
-#' @param diff_order order of the difference used for the penalty matrix. Defaults to second-order differences.
-#' @param pow power for polynomial knot spacing. Non-equidistant knot spacing is only used for type = "positive"
+#' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
+#' @param pow power for polynomial knot spacing
+#' 
+#' Such non-equidistant knot spacing is only used for \code{type = "positive"}.
 #'
-#' @return a list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
+#' @return list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
 #' @export
 #'
 #' @examples
@@ -222,19 +225,21 @@ make_splinecoef = function(model_matrices,
 
 #' Build the design and penalty matrices for smooth density estimation
 #' 
-#' This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-splines.
-#' You can provide one or multiple data streams of different types (real, positive, circular) and specify the initial means and sds/concentrations for each data stream.
+#' @description
+#' This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+#'
+#' You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and sds/concentrations for each data stream. This information is the converted into suitable spline coefficients.
 #' \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
-#' For types "real" and "circular" the knots are placed equidistant in the range of the data, for type "positive" the knots are placed using polynomial spacing.
+#' For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 #'
 #' @param data named data frame of different data streams
-#' @param type type of each data stream, either "real" for data on the reals, "positive" for data on the positive reals or "circular" for angular data
+#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data
 #' @param par nested named list of initial means and sds/concentrations for each data stream
 #' @param k number of basis functions for each data stream
-#' @param degree degree of the B-spline basis functions for each data stream, defaults to cubic B-Splines
-#' @param diff_order order of differencing used for the P-spline penalty matrix for each data stream. Defaults to second-order differences.
+#' @param degree degree of the B-spline basis functions for each data stream, defaults to cubic B-splines
+#' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #'
-#' @return a list containing the design matrices Z, the penalty matrices S, the initial coefficients betastart, the prediction design matrices Z_predict, the prediction grids xseq, and details for the basis expansion for each data stream.
+#' @return a nested list containing the design matrices Z, the penalty matrices S, the initial coefficients betastart, the prediction design matrices Z_predict, the prediction grids xseq, and details for the basis expansion for each data stream.
 #' @export
 #'
 #' @examples

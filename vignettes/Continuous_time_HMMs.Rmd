@@ -111,14 +111,14 @@ nll = function(par, timediff, x, N){
   mu = par[1:N]
   sigma = exp(par[N+1:N])
   Q = generator(par[2*N+1:(N*(N-1))]) # generator matrix
-  delta = stationary_cont(Q) # stationary dist of CT Markov chain
+  Pi = stationary_cont(Q) # stationary dist of CT Markov chain
   Qube = tpm_cont(Q, timediff) # this computes exp(Q*timediff)
   allprobs = matrix(1, nrow = length(x), ncol = N)
   ind = which(!is.na(x))
   for(j in 1:N){
     allprobs[ind,j] = dnorm(x[ind], mu[j], sigma[j])
   }
-  -forward_g(delta, Qube, allprobs)
+  -forward_g(Pi, Qube, allprobs)
 }
 ```
 

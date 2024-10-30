@@ -214,13 +214,9 @@ parameter matrix such that the t.p.m. needs to be filled by row.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Inhomogeneous_HMMs_files/figure-html/data-1.png" width="85%" style="display: block; margin: auto;"></p>
-</div>
-<div class="section level3">
-<h3 id="parametric-modeling-of-the-transition-probabilities">Parametric modeling of the transition probabilities<a class="anchor" aria-label="anchor" href="#parametric-modeling-of-the-transition-probabilities"></a>
-</h3>
-<p>We begin by modeling the transition probabilities parametrically,
-where we have a paramter for the intercept, the linear effect and the
-quadratic effect for each off-diagonal element of the t.p.m.</p>
+<p>We now model the transition probabilities parametrically, where we
+have a paramter for the intercept, the linear effect and the quadratic
+effect for each off-diagonal element of the t.p.m.</p>
 </div>
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
@@ -257,7 +253,7 @@ on the transition probabilities.</p>
 <span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.537   0.006   0.923</span></span></code></pre></div>
+<span><span class="co">#&gt;   3.330   0.011   0.850</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -389,6 +385,9 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <div class="section level3">
 <h3 id="simulation-example-1">Simulation example<a class="anchor" aria-label="anchor" href="#simulation-example-1"></a>
 </h3>
+<p>First we specify parameters for the simulation. The important change
+here is that <code>beta</code> now contains the regression coefficients
+for the state-dependent regressions.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># state-dependent standard deviations (homoscedasticity)</span></span>
 <span></span>
@@ -409,6 +408,9 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <div class="section level3">
 <h3 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a>
 </h3>
+<p>In the simulation code, the state-dependent mean now is not fixed
+anymore, but changes accoring to the covariate values in
+<code>Z</code>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">s</span> <span class="op">=</span> <span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">n</span><span class="op">)</span></span>
 <span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span>, prob <span class="op">=</span> <span class="va">delta</span><span class="op">)</span></span>
@@ -434,6 +436,12 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function-1">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function-1"></a>
 </h3>
+<p>In the likelihood function, we also add the state-dependent
+regression in the loop calculating the state-dependent probabilities.
+The code <code>cbind(1,Z) %*% beta[j,]</code> computes the linear
+predictor for the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>-th
+state.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nllMSR</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">x</span>, <span class="va">Z</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="co"># homogeneous tpm</span></span>
@@ -459,11 +467,14 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <span>  <span class="va">mod_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMSR</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.251   0.000   0.251</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.231   0.008   0.239</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
+<h3 id="visualising-results-1">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results-1"></a>
 </h3>
+<p>To visualise the results, be transform the parameters to working
+parameters and add the two estimated state-specific regressions to the
+scatter plot.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Gamma_hat_reg</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">mod_reg</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="co"># calculating all tpms</span></span>
 <span><span class="va">delta_hat_reg</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary.html">stationary</a></span><span class="op">(</span><span class="va">Gamma_hat_reg</span><span class="op">)</span></span>

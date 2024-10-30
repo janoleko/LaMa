@@ -69,7 +69,9 @@ devtools::install_github("janoleko/LaMa")
 To aid in building fully custom likelihood functions, this package
 contains several vignettes that demonstrate how to simulate data from
 and estimate a wide range of models using the functions included in this
-package:
+package.
+
+HMMs, from simple to complex:
 
 - [Introduction to
   LaMa](https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html)
@@ -79,18 +81,21 @@ package:
   data](https://janoleko.github.io/LaMa/articles/Longitudinal_data.html)
 - [Periodic
   HMMs](https://janoleko.github.io/LaMa/articles/Periodic_HMM.html)
-- [State space
-  models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 - [LaMa and
   RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
+- [Penalised
+  splines](https://janoleko.github.io/LaMa/articles/Penalised_splines.html)
+
+Other, latent Markov model classes:
+
+- [State space
+  models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 - [Continuous-time
   HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
 - [Hidden semi-Markov
   models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
-- [Penalised
-  splines](https://janoleko.github.io/LaMa/articles/Penalised_splines.html)
 
 <!-- ## Citation -->
 <!-- When using LaMa, please cite the package as follows: -->
@@ -149,7 +154,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.388   0.009   0.401
+#>   0.368   0.011   0.380
 ```
 
 Really fast for 10.000 data points!

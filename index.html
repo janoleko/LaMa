@@ -99,6 +99,7 @@
 <li><a href="https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html">Continuous-time HMMs</a></li>
 <li><a href="https://janoleko.github.io/LaMa/articles/HSMMs.html">Hidden semi-Markov models</a></li>
 <li><a href="https://janoleko.github.io/LaMa/articles/MMMPPs.html">Markov-modulated (marked) Poisson processes</a></li>
+<li><a href="https://janoleko.github.io/LaMa/articles/Penalised_splines.html">Penalised splines</a></li>
 </ul>
 <!-- ## Citation --><!-- When using LaMa, please cite the package as follows: --><!-- ```{r citation} --><!-- citation(package = "LaMa") --><!-- ``` -->
 </div>
@@ -140,7 +141,7 @@
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, step <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">step</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.363   0.010   0.373</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.388   0.009   0.401</span></span></code></pre></div>
 <p>Really fast for 10.000 data points!</p>
 <p>After tranforming the unconstrained parameters to working parameters using <code><a href="reference/tpm.html">tpm()</a></code> and <code><a href="reference/stationary.html">stationary()</a></code>, we can visualize the results:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">

@@ -81,14 +81,14 @@ package:
   HMMs](https://janoleko.github.io/LaMa/articles/Periodic_HMM.html)
 - [State space
   models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
+- [LaMa and
+  RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 - [Continuous-time
   HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
 - [Hidden semi-Markov
   models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
-- [LaMa and
-  RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 
 <!-- ## Citation -->
 <!-- When using LaMa, please cite the package as follows: -->
@@ -147,7 +147,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.365   0.008   0.375
+#>   0.363   0.010   0.373
 ```
 
 Really fast for 10.000 data points!

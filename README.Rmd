@@ -65,10 +65,10 @@ To aid in building fully custom likelihood functions, this package contains seve
 * [Longitudinal data](https://janoleko.github.io/LaMa/articles/Longitudinal_data.html)
 * [Periodic HMMs](https://janoleko.github.io/LaMa/articles/Periodic_HMM.html)
 * [State space models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
+* [LaMa and RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 * [Continuous-time HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
 * [Hidden semi-Markov models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
-* [LaMa and RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 
 <!-- ## Citation -->
 

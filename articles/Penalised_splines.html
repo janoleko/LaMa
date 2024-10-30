@@ -231,7 +231,7 @@ arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> w
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.829   0.203   6.923</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.864   0.163   6.921</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -305,6 +305,7 @@ RTMB</em>.</p>
 <span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4.5</span>, <span class="op">-</span><span class="fl">3.5</span>, <span class="op">-</span><span class="fl">2.5</span><span class="op">)</span>,</span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># data and hyperparameters</span></span>
 <span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, N <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -326,13 +327,14 @@ RTMB</em>.</p>
 <p><img src="Penalised_splines_files/figure-html/Gaussian%20fit-1.png" width="85%" style="display: block; margin: auto;"></p>
 <p>We see a clear lack-of-fit due to the inflexibility of the Gaussian
 state-dependent densities. Thus, we now fit a model with state-dependent
-densities based on P-Splines. In a first step, this requires us to
-prepare the <strong>design</strong> and <strong>penalty
-matrices</strong> needed using <code><a href="../reference/buildSmoothDens.html">buildSmoothDens()</a></code>. This
-function can take multiple data streams and a set of initial parameters
-(specifying initial means and standard deviations) for each data stream.
-It then builds the <strong>P-Spline</strong> design and penalty matrices
-for each data stream as well as a matrix of <strong>initial spline
+densities based on P-Splines.</p>
+<p>In a first step, this requires us to prepare the
+<strong>design</strong> and <strong>penalty matrices</strong> needed
+using <code><a href="../reference/buildSmoothDens.html">buildSmoothDens()</a></code>. This function can take multiple
+data streams and a set of initial parameters (specifying initial means
+and standard deviations) for each data stream. It then builds the
+<strong>P-Spline</strong> design and penalty matrices for each data
+stream as well as a matrix of <strong>initial spline
 coefficients</strong> based on the provided parameters. The basis
 functions are standardised such that they integrate to one, which is
 needed for density estimation.</p>
@@ -415,7 +417,7 @@ model</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.821   2.469  17.324</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.974   2.460  17.421</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the

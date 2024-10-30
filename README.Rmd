@@ -69,7 +69,7 @@ HMMs, from simple to complex:
 * [LaMa and RTMB](https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html)
 * [Penalised splines](https://janoleko.github.io/LaMa/articles/Penalised_splines.html)
 
-Other, latent Markov model classes:
+Other latent Markov model classes:
 
 * [State space models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 * [Continuous-time HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)

@@ -86,7 +86,7 @@ HMMs, from simple to complex:
 - [Penalised
   splines](https://janoleko.github.io/LaMa/articles/Penalised_splines.html)
 
-Other, latent Markov model classes:
+Other latent Markov model classes:
 
 - [State space
   models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
@@ -154,7 +154,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.368   0.011   0.380
+#>   0.372   0.010   0.387
 ```
 
 Really fast for 10.000 data points!

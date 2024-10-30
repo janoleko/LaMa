@@ -22,6 +22,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+> Before diving into this vignette, we recommend reading the vignette **Introduction to LaMa**.
+
 This vignette explains how to fit inhomogeneous HMMs, i.e. models that depend on external covariates with `LaMa`. Such inhomogeneity in HMMs can result from covariates affecting the transition probabilities of the underlying Markov chain, or covariates affecting the state-dependent distributions, which would then be called Markov-switching regression. We will begin with effects in the state process
 
 ## Covariate effects in the state process

@@ -22,6 +22,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+> Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa** and **Continuous-time HMMs**.
+
 `LaMa` can also be used to fit so-called **Markov-modulated Poisson processes**. These are doubly stochastic Poisson point processes where the intensity is directed by an underlying continuous-time Markov chain. Such processes are useful for modelling **arrival times**, for example of calls in a call center, or patients in the hospital. The main difference compared to continuous-time HMMs is the arrival or observation **times** themselves **carry information** on the **latent state process**. To capture this information, we need to model them explicitely as random-variables.
 
 A homogeneous Poisson process is mainly characterised by the fact that the **number of arrivals** within a fixed time interval is **Poisson distributed** with a mean that is proporional to the length of the interval. The **waiting times** between arrivals are **exponentially distributed**. While the latter is not true for non-homogeneous Poisson processes in general, we can interpret a Markov modulated Poisson process as **alternating** between homogeneous Poisson processes, i.e. when the unobserved continuous-time Markov chain stays in a particular state for some interval, the associated Poisson rate in that interval is homogeneous and state-specific. To learn more about Poisson processes, see @dobrow2016introduction.

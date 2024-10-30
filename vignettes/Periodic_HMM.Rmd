@@ -22,6 +22,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+> Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa** and **Inhomogeneous HMMs**.
+
 This vignette shows how to fit HMMs where the state process is a periodically inhomogeneous Markov chain. Formally, this means that for all $t$
 
 $$

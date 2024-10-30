@@ -85,9 +85,8 @@ the estimation of very complicated models, potentially with complex
 random effect structures. The process feels like magic because you have
 access to analytic gradients – <em>drastically</em> increasing accuracy
 and speed – without doing any calculations!</p>
-<p><code>LaMa</code> now also allows for automatic differentiation with
-<code>RTMB</code> for most of its functions when you set
-<code>ad = TRUE</code>. Hence, estimation of latent Markov models is now
+<p><code>LaMa</code> is now also fully compatible with AD provided by
+<code>RTMB</code>. Hence, estimation of latent Markov models is now
 faster and more convenient, while model specification is very smooth and
 less prone to errors – which at the current state tend to happen when
 one is not experienced with <code>RTMB</code>.</p>
@@ -98,7 +97,7 @@ always start by loading both packages.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span> <span class="co"># development version</span></span>
 <span><span class="co">#&gt; Loading required package: RTMB</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kaskr/RTMB" class="external-link">RTMB</a></span><span class="op">)</span></span></code></pre></div>
-<p>For the purpose of this vignette, we will analyze the
+<p>For the purpose of this vignette, we will analyse the
 <code>elephant</code> data set contained in the <code>LaMa</code>
 package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -118,7 +117,7 @@ need to</p>
 <li>define the negative log-likelihood function,</li>
 <li>create an automatically differentiable objective function from it
 and</li>
-<li>fit the model by numerical minimization of the latter.</li>
+<li>fit the model by numerical minimisation of the latter.</li>
 </ul>
 <p><code>RTMB</code> also provides many functions that make this process
 very convenient.</p>
@@ -140,7 +139,8 @@ the number of hidden states. The names <code>par</code> and
 <span>  logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>, <span class="co"># initial sds for step length (log-transformed)</span></span>
 <span>  logkappa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>, <span class="co"># initial concentration for turning angle (log-transformed)</span></span>
 <span>  eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>             <span class="co"># initial t.p.m. parameters (on logit scale)</span></span>
-<span>  <span class="op">)</span>            </span>
+<span>  <span class="op">)</span>    </span>
+<span></span>
 <span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  step <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">]</span>, <span class="co"># only using a subset of the data for faster computation</span></span>
 <span>  angle <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">angle</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">]</span>, </span>
@@ -194,18 +194,17 @@ all standard distributions like <code><a href="https://rdrr.io/r/stats/Normal.ht
 <code><a href="../reference/dvm.html">dvm()</a></code> come from <code>LaMa</code> as these are
 non-standard, but under the hood build on <code>RTMB</code> functions
 (<code><a href="../reference/gamma2.html">dgamma2()</a></code> is actually just a convenience function that
-reparametrizes the gamma distribution in terms of mean and standard
+reparametrises the gamma distribution in terms of mean and standard
 deviation).</li>
 <li>Actually, most of the standard functions (e.g. <code><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum()</a></code>),
 operators (e.g. <code>%*%</code>) and methods (e.g. <code>matrix</code>)
 are “overwritten” when called inside <code>MakeADFun()</code> but you
-typically don’t notice that and should not care – but this is how the
-magic works.</li>
+typically don’t notice that and should not care.</li>
 <li>the <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code> function offered by <code>RTMB</code> is
 really convenient as any quantities calculated in the likelihood
 function (for which you have written the code anyway), if reported, will
-be available after optimization, while the report statements are ignored
-during optimization. So no annoying backtransformations anymore,
+be available after optimisation, while the report statements are ignored
+during optimisation. So no annoying backtransformations anymore,
 wohoo!</li>
 <li>for simple parameter transformations, <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code> is
 also great, because it calculates standard deviations for
@@ -216,13 +215,13 @@ multivariate transformations.</li>
 <p>Having defined the negative log-likelihood, we can now create the
 autmatically differentiable objective function and fit the model. This
 needs a little explanation: At this point, <code>RTMB</code> takes the
-negative log-likelihood function and generates its own version of it,
-including a gradient. <code>MakeADFun()</code> now also grabs whatever
-is saved as <code>dat</code> in the global environment and
-<em>bakes</em> it into the objective function. Therefore, changes to
+negative log-likelihood function and generates its own (very fast)
+version of it, including a gradient. <code>MakeADFun()</code> now also
+grabs whatever is saved as <code>dat</code> in the global environment
+and <em>bakes</em> it into the objective function. Therefore, changes to
 <code>dat</code> after this point will have no effect on the
-optimization result. We set <code>silent = TRUE</code> to suppress
-printing of the optimization process.</p>
+optimisation result. We set <code>silent = TRUE</code> to suppress
+printing of the optimisation process.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span></code></pre></div>
 <p>Let’s check out <code>obj</code>:</p>
@@ -247,14 +246,14 @@ corresponding values at the initial parameter vector.</p>
 <span><span class="va">obj</span><span class="op">$</span><span class="fu">gr</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          [,1]     [,2]     [,3]      [,4]     [,5]      [,6]     [,7]      [,8]</span></span>
 <span><span class="co">#&gt; [1,] 230.5857 -1218.71 56.12643 -5906.308 30.71142 -408.9433 63.43363 -95.75145</span></span></code></pre></div>
-<p>We are now ready to optimize the objective function. The optimization
+<p>We are now ready to optimise the objective function. The optimisation
 routine <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> is very robust and conveniently allows us
 to provide a gradient function. Alternatively, you can also use
-<code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim()</a></code> or any other optimizer you like that allows you to
+<code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim()</a></code> or any other optimiser you like that allows you to
 pass a gradient function.</p>
 <p>Indeed, we do not provide the Hessian to <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code>
-because while evaluating the Hessian is very fast with
-<code>RTMB</code>, optimization is still much faster if we use a
+because, while evaluating the Hessian is very fast with
+<code>RTMB</code>, optimisation is still much faster if we use a
 quasi-Newton algorithm that approximates the current Hessian based on
 previous gradient evaluations, compared to using full
 Newton-Raphson.</p>
@@ -270,10 +269,10 @@ Newton-Raphson.</p>
 <span><span class="va">opt</span><span class="op">$</span><span class="va">objective</span></span>
 <span><span class="co">#&gt; [1] 13617.45</span></span></code></pre></div>
 <p>Note that the naming here is determined by <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code>. If
-you use a different optimizer, these may be called differently.</p>
+you use a different optimiser, these may be called differently.</p>
 <p>Much nicer however, is that <code>obj</code> (yes <code>obj</code>
-not <code>opt</code>) is automatically updated after the optimization.
-Note that calling <code>obj$gr()</code> after optimization now gives the
+not <code>opt</code>) is automatically updated after the optimisation.
+Note that calling <code>obj$gr()</code> after optimisation now gives the
 gradient at the optimum, while <code>obj$fn()</code> still gives the
 objective at the starting value and <code>obj$par</code> is not updated
 but still the initial parameter vector (kind of confusing).</p>
@@ -377,16 +376,17 @@ format, type</p>
 <div class="section level3">
 <h3 id="covariate-effects">Covariate effects<a class="anchor" aria-label="anchor" href="#covariate-effects"></a>
 </h3>
-<p>Generalizing to covariate effects is also straightforward. For
+<p>Generalising to covariate effects is also straightforward. For
 example, we can add time of day variation to the state process. In this
 case we want to obtain a state process model of the form
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">logit</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>sin</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>24</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>cos</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>24</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>3</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>sin</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>12</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>4</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>cos</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>12</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + \beta_1^{(ij)} \sin \bigl(\frac{2 \pi t}{24}\bigr) + \beta_2^{(ij)} \cos \bigl(\frac{2 \pi t}{24}\bigr) + \beta_3^{(ij)} \sin \bigl(\frac{2 \pi t}{12}\bigr) + \beta_4^{(ij)} \cos \bigl(\frac{2 \pi t}{12}\bigr),
 </annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-is the time of day. For this we compute the trigonometric basis design
-matrix <code>Z</code> corresponding to above predictor and add the time
-of day to the <code>dat</code> list. The <code>LaMa</code> function
+is the time of day.</p>
+<p>For this we compute the trigonometric basis design matrix
+<code>Z</code> corresponding to above predictor and add the time of day
+to the <code>dat</code> list. The <code>LaMa</code> function
 <code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> does this very conveniently.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># building trigonometric basis desing matrix (in this case no intercept column)</span></span>

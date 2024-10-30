@@ -156,7 +156,7 @@ nll = function(par){
 }
 ```
 
-The fit the model as explained in the vignettte *LaMa and RTMB*.
+We then fit the model as explained in the vignettte *LaMa and RTMB*.
 
 ```{r Gaussian fit, fig.width = 8, fig.height = 5}
 # initial parameter list

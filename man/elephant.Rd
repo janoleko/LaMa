@@ -3,7 +3,7 @@
 \docType{data}
 \name{elephant}
 \alias{elephant}
-\title{Elephant data set}
+\title{Elephant Movement Data}
 \format{
 A data frame with 10.000 rows and 4 variables:
 \describe{

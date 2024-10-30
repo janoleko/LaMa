@@ -1,4 +1,4 @@
-#' Elephant data set
+#' Elephant Movement Data
 #'
 #' Synthetic data set of hourly step lengths and turning angles of an elephant.
 #'
@@ -11,3 +11,16 @@
 #' }
 #' @source Generated for example purposes.
 "elephant"
+
+#' Shark Acceleration Data
+#'
+#' Synthetic data set of minutely overall dynamic body acceleration (ODBA) of a shark.
+#'
+#' @format A data frame with 5.000 rows and 3 variables:
+#' \describe{
+#'   \item{ODBA}{overall dynamci body acceleration}
+#'   \item{logODBA}{logarithm of overall dynamic body acceleration}
+#'   \item{state}{hidden state variable}
+#' }
+#' @source Generated for example purposes.
+"shark"

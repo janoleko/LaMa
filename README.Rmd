@@ -87,7 +87,7 @@ Other latent Markov model classes:
 
 ## Introductory example: Homogeneous HMM
 
-We analyze the `elephant` data set contained in the package using a simple 2-state HMM with state-dependent gamma distributions. We fit the model to the hourly step lengths.
+We analyse the `elephant` data set contained in the package using a simple 2-state HMM with state-dependent gamma distributions. We fit the model to the hourly step lengths.
 
 ```{r package}
 library(LaMa)
@@ -112,7 +112,7 @@ nll = function(par, step){
 }
 ```
 
-To fit the model, we define the intial parameter vector and numerically optimize the above function using `nlm()`:
+To fit the model, we define the intial parameter vector and numerically optimise the above function using `nlm()`:
 ```{r model, warning=FALSE}
 par = c(-2,-2,             # initial tpm params (logit-scale)
         log(c(0.3, 2.5)),    # initial means for step length (log-transformed)
@@ -124,8 +124,7 @@ system.time(
 ```
 Really fast for 10.000 data points!
 
-
-After tranforming the unconstrained parameters to working parameters using `tpm()` and `stationary()`, we can visualize the results:
+After tranforming the unconstrained parameters to working parameters using `tpm()` and `stationary()`, we can visualise the results:
 
 ```{r visualization}
 # transform parameters to working

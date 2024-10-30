@@ -185,7 +185,9 @@ for(j in 1:3) curve(mod$delta[j] * dnorm(x, mod$mu[j], mod$sigma[j]),
 
 ```
 
-We see a clear lack-of-fit due to the inflexibility of the Gaussian state-dependent densities. Thus, we now fit a model with state-dependent densities based on P-Splines. In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `buildSmoothDens()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
+We see a clear lack-of-fit due to the inflexibility of the Gaussian state-dependent densities. Thus, we now fit a model with state-dependent densities based on P-Splines. 
+
+In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `buildSmoothDens()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
 
 ```{r smooth prep}
 modmat = buildSmoothDens(shark["logODBA"], # only one data stream here

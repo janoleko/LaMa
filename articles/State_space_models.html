@@ -74,6 +74,10 @@ Koslik</h4>
 
     
     
+<blockquote>
+<p>Before diving into this vignette, we recommend reading the vignette
+<strong>Introduction to LaMa</strong>.</p>
+</blockquote>
 <p>This vignette shows how to fit state space models which can be
 interpreted as generalisation of HMMs to continuous state spaces.
 Several approaches exist to fitting such models, but <span class="citation">Langrock (<a href="#ref-langrock2011some">2011</a>)</span> showed that very general
@@ -176,7 +180,7 @@ the continuous state space into the intervals <code>b</code> with width
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">y</span>, bm <span class="op">=</span> <span class="va">bm</span>, m <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.423   0.019   0.443</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.428   0.027   0.456</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>

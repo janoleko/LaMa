@@ -9,9 +9,10 @@ articles:
   LaMa_and_RTMB: LaMa_and_RTMB.html
   Longitudinal_data: Longitudinal_data.html
   MMMPPs: MMMPPs.html
+  Penalised_splines: Penalised_splines.html
   Periodic_HMM: Periodic_HMM.html
   State_space_models: State_space_models.html
-last_built: 2024-10-30T09:41Z
+last_built: 2024-10-30T10:09Z
 urls:
   reference: https://janoleko.github.io/reference
   article: https://janoleko.github.io/articles

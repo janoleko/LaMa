@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/LaMa_and_RTMB.html">LaMa and RTMB</a></li>
     <li><a class="dropdown-item" href="../articles/Longitudinal_data.html">Longitudinal data</a></li>
     <li><a class="dropdown-item" href="../articles/MMMPPs.html">Markov-modulated (marked) Poisson processes</a></li>
+    <li><a class="dropdown-item" href="../articles/Penalised_splines.html">Penalised splines</a></li>
     <li><a class="dropdown-item" href="../articles/Periodic_HMM.html">Periodic HMMs</a></li>
     <li><a class="dropdown-item" href="../articles/State_space_models.html">State space models</a></li>
   </ul>
@@ -256,7 +257,7 @@ on the transition probabilities.</p>
 <span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.297   0.023   0.846</span></span></code></pre></div>
+<span><span class="co">#&gt;   3.339   0.015   0.854</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -458,7 +459,7 @@ X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
 <span>  <span class="va">mod_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMSR</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.233   0.004   0.237</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.233   0.012   0.246</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualizing-results">Visualizing results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>

@@ -89,6 +89,8 @@ package:
   models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 - [Markov-modulated (marked) Poisson
   processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
+- [Penalised
+  splines](https://janoleko.github.io/LaMa/articles/Penalised_splines.html)
 
 <!-- ## Citation -->
 <!-- When using LaMa, please cite the package as follows: -->
@@ -147,7 +149,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.363   0.010   0.373
+#>   0.388   0.009   0.401
 ```
 
 Really fast for 10.000 data points!

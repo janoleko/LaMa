@@ -15,8 +15,8 @@ A variety of **latent Markov models**
 Koslik, and Langrock 2024)</a>, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
 (SSMs) and **continuous-time** variants can be formulated and estimated
-within the same framework via directly maximizing the (approximate)
-likelihood using the so-called **forward algorithm** (for details see
+within the same framework via directly maximising the likelihood
+function using the so-called **forward algorithm** (for details see
 <a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">Zucchini
 et al. 2016</a>). Applied researchers often need custom models that
 standard software does not easily support. Writing tailored `R` code
@@ -24,7 +24,7 @@ offers flexibility but suffers from slow estimation speeds. This `R`
 package solves these issues by providing easy-to-use functions (written
 in C++ for speed) for common tasks like the forward algorithm. These
 functions can be combined into custom models, offering up to 10-20 times
-faster estimation via standard numerical optimizers. The development
+faster estimation via standard numerical optimisers. The development
 version now also allows for automatic differentiation with the `RTMB`
 package which drastically increases speed and accuracy.
 
@@ -154,7 +154,7 @@ system.time(
   mod <- nlm(nll, par, step = elephant$step)
 )
 #>    user  system elapsed 
-#>   0.372   0.010   0.387
+#>   0.365   0.012   0.382
 ```
 
 Really fast for 10.000 data points!

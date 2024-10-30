@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 The recently introduced `R` package `RTMB` conveniently allows for automatic differentiation for non-standard statistical models written in plain `R` code. This enables the estimation of very complicated models, potentially with complex random effect structures. The process feels like magic because you have access to analytic gradients -- *drastically* increasing accuracy and speed -- without doing any calculations!
 
-`LaMa` now also allows for automatic differentiation with `RTMB` for most of its functions when you set `ad = TRUE`. Hence, estimation of latent Markov models is now faster and more convenient, while model specification is very smooth and less prone to errors -- which at the current state tend to happen when one is not experienced with `RTMB`.
+`LaMa` is now also fully compatible with AD provided by `RTMB`. Hence, estimation of latent Markov models is now faster and more convenient, while model specification is very smooth and less prone to errors -- which at the current state tend to happen when one is not experienced with `RTMB`.
 
 Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We always start by loading both packages.
 
@@ -31,17 +31,18 @@ library(LaMa) # development version
 library(RTMB)
 ```
 
-For the purpose of this vignette, we will analyze the `elephant` data set contained in the `LaMa` package:
+For the purpose of this vignette, we will analyse the `elephant` data set contained in the `LaMa` package:
 ```{r data}
 head(elephant, 5)
 ```
+
 ### Basic workflow
 
 The workflow with `RTMB` is basically always the same. We need to 
 
 * define the negative log-likelihood function, 
 * create an automatically differentiable objective function from it and 
-* fit the model by numerical minimization of the latter. 
+* fit the model by numerical minimisation of the latter. 
 
 `RTMB` also provides many functions that make this process very convenient.
 
@@ -55,7 +56,8 @@ par = list(
   logsigma = log(c(0.2, 0.7)), # initial sds for step length (log-transformed)
   logkappa = log(c(0.2, 0.7)), # initial concentration for turning angle (log-transformed)
   eta = rep(-2, 2)             # initial t.p.m. parameters (on logit scale)
-  )            
+  )    
+
 dat = list(
   step = elephant$step[1:5000], # only using a subset of the data for faster computation
   angle = elephant$angle[1:5000], 
@@ -95,12 +97,12 @@ but a few points should be made here:
 -   Most prominently, the negative log-likelihood is a function of the parameters to be estimated *only* while data and other parameters are not passed as an argument at this stage. This is something to get used to (I know), but just the way `RTMB` works.
 -   The `getAll()` function is very useful and you should use it in the first line to unpack both the `par` and the `dat` list, making all elements available without the `$` operator. At this stage, `nll` just takes the dat object from the global environment.
 -   Parameter transformations are of course still necessary, i.e. all parameters in `par` should be unconstrained.
--   You might wonder how on earth `RTMB` can calculate the gradient of parameters in distributions like the gamma or von Mises distribution. The answer is: It can't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions (`dgamma2()` is actually just a convenience function that reparametrizes the gamma distribution in terms of mean and standard deviation).
-- Actually, most of the standard functions (e.g. `sum()`), operators (e.g. `%*%`) and methods (e.g. `matrix`) are "overwritten" when called inside `MakeADFun()` but you typically don't notice that and should not care -- but this is how the magic works.
--   the `REPORT()` function offered by `RTMB` is really convenient as any quantities calculated in the likelihood function (for which you have written the code anyway), if reported, will be available after optimization, while the report statements are ignored during optimization. So no annoying backtransformations anymore, wohoo!
+-   You might wonder how on earth `RTMB` can calculate the gradient of parameters in distributions like the gamma or von Mises distribution. The answer is: It can't but provides its own version of all standard distributions like `dnorm()`, `dbinom()`, etc. In this case both `dgamma2()` and `dvm()` come from `LaMa` as these are non-standard, but under the hood build on `RTMB` functions (`dgamma2()` is actually just a convenience function that reparametrises the gamma distribution in terms of mean and standard deviation).
+- Actually, most of the standard functions (e.g. `sum()`), operators (e.g. `%*%`) and methods (e.g. `matrix`) are "overwritten" when called inside `MakeADFun()` but you typically don't notice that and should not care.
+-   the `REPORT()` function offered by `RTMB` is really convenient as any quantities calculated in the likelihood function (for which you have written the code anyway), if reported, will be available after optimisation, while the report statements are ignored during optimisation. So no annoying backtransformations anymore, wohoo!
 - for simple parameter transformations, `ADREPORT()` is also great, because it calculates standard deviations for `ADREPORT()`ed quantities, based on the delta method. Just note that the delta method is not advisable for complex non-linear and multivariate transformations.
 
-Having defined the negative log-likelihood, we can now create the autmatically differentiable objective function and fit the model. This needs a little explanation: At this point, `RTMB` takes the negative log-likelihood function and generates its own version of it, including a gradient. `MakeADFun()` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will have no effect on the optimization result. We set `silent = TRUE` to suppress printing of the optimization process.
+Having defined the negative log-likelihood, we can now create the autmatically differentiable objective function and fit the model. This needs a little explanation: At this point, `RTMB` takes the negative log-likelihood function and generates its own (very fast) version of it, including a gradient. `MakeADFun()` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will have no effect on the optimisation result. We set `silent = TRUE` to suppress printing of the optimisation process.
 
 ```{r ADfunction}
 obj = MakeADFun(nll, par, silent = TRUE) # creating the objective function
@@ -119,9 +121,10 @@ obj$fn()
 obj$gr()
 ```
 
-We are now ready to optimize the objective function. The optimization routine `nlminb()` is very robust and conveniently allows us to provide a gradient function. Alternatively, you can also use `optim()` or any other optimizer you like that allows you to pass a gradient function. 
+We are now ready to optimise the objective function. The optimisation routine `nlminb()` is very robust and conveniently allows us to provide a gradient function. Alternatively, you can also use `optim()` or any other optimiser you like that allows you to pass a gradient function. 
 
-Indeed, we do not provide the Hessian to `nlminb()` because while evaluating the Hessian is very fast with `RTMB`, optimization is still much faster if we use a quasi-Newton algorithm that approximates the current Hessian based on previous gradient evaluations, compared to using full Newton-Raphson.
+Indeed, we do not provide the Hessian to `nlminb()` because, while evaluating the Hessian is very fast with `RTMB`, optimisation is still much faster if we use a quasi-Newton algorithm that approximates the current Hessian based on previous gradient evaluations, compared to using full Newton-Raphson.
+
 ```{r modelfit}
 opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
 ```
@@ -131,9 +134,9 @@ We can check out the estimated parameter and function value by
 opt$par
 opt$objective
 ```
-Note that the naming here is determined by `nlminb()`. If you use a different optimizer, these may be called differently.
+Note that the naming here is determined by `nlminb()`. If you use a different optimiser, these may be called differently.
 
-Much nicer however, is that `obj` (yes `obj` not `opt`) is automatically updated after the optimization. Note that calling `obj$gr()` after optimization now gives the gradient at the optimum, while `obj$fn()` still gives the objective at the starting value and `obj$par` is not updated but still the initial parameter vector (kind of confusing).
+Much nicer however, is that `obj` (yes `obj` not `opt`) is automatically updated after the optimisation. Note that calling `obj$gr()` after optimisation now gives the gradient at the optimum, while `obj$fn()` still gives the objective at the starting value and `obj$par` is not updated but still the initial parameter vector (kind of confusing).
 
 To get our estimated parameters on their natural scale, we don't have to do the backtransformation manually. We can just run the reporting:
 
@@ -145,6 +148,7 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 (sigma = mod$sigma)
 (kappa = mod$kappa)
 ```
+
 which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs. As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having all the parameters, we can plot the decoded time series
 
 ```{r decoding, fig.width = 7, fig.height = 4}
@@ -206,11 +210,12 @@ as.list(sdr, "Std", report = TRUE)
 
 ### Covariate effects
 
-Generalizing to covariate effects is also straightforward. For example, we can add time of day variation to the state process. In this case we want to obtain a state process model of the form
+Generalising to covariate effects is also straightforward. For example, we can add time of day variation to the state process. In this case we want to obtain a state process model of the form
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + \beta_1^{(ij)} \sin \bigl(\frac{2 \pi t}{24}\bigr) + \beta_2^{(ij)} \cos \bigl(\frac{2 \pi t}{24}\bigr) + \beta_3^{(ij)} \sin \bigl(\frac{2 \pi t}{12}\bigr) + \beta_4^{(ij)} \cos \bigl(\frac{2 \pi t}{12}\bigr),
 $$
 where $t$ is the time of day.
+
 For this we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list. The `LaMa` function `trigBasisExp()` does this very conveniently.
 
 ```{r tod}

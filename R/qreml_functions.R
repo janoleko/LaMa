@@ -251,7 +251,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  penalty = "lambda", # name given to the penalty parameter in dat
                  alpha = 0, # exponential smoothing parameter
                  maxiter = 100, # maximum number of iterations
-                 tol = 1e-5, # tolerance for convergence
+                 tol = 1e-4, # tolerance for convergence
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                  silent = 1, # print level
                  saveall = FALSE) # save all intermediate models?

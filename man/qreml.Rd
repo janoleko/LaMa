@@ -12,7 +12,7 @@ qreml(
   penalty = "lambda",
   alpha = 0,
   maxiter = 100,
-  tol = 1e-05,
+  tol = 1e-04,
   control = list(reltol = 1e-10, maxit = 1000),
   silent = 1,
   saveall = FALSE

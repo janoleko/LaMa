@@ -210,7 +210,7 @@ make_splinecoef = function(model_matrices,
     scale = par$sd^2 / par$mean
     beta = sapply(basis_pos[-k], dgamma, shape = shape, scale = scale, log = TRUE)
     # rescaling to account for non-equidistant knot spacing
-    beta - log(apply(model_matrices$Z, 2, max)[-k])
+    beta = beta - log(apply(model_matrices$Z, 2, max)[-k])
   } else if(type == "circular") {
     beta = sapply(basis_pos[-k], LaMa::dvm, mu = par$mean, kappa = par$concentration, log = TRUE)
   }

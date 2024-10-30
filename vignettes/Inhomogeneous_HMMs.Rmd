@@ -101,9 +101,7 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
      col = c(color[1], color[2])[s[1:200]])
 ```
 
-### Parametric modeling of the transition probabilities
-
-We begin by modeling the transition probabilities parametrically, where we have a paramter for the intercept, the linear effect and the quadratic effect for each off-diagonal element of the t.p.m.
+We now model the transition probabilities parametrically, where we have a paramter for the intercept, the linear effect and the quadratic effect for each off-diagonal element of the t.p.m.
 
 ### Writing the negative log-likelihood function
 
@@ -274,6 +272,8 @@ $$
 
 ### Simulation example
 
+First we specify parameters for the simulation. The important change here is that `beta` now contains the regression coefficients for the state-dependent regressions.
+
 ```{r parameters2}
 sigma = c(1, 1) # state-dependent standard deviations (homoscedasticity)
 
@@ -293,6 +293,8 @@ delta = stationary(Gamma) # stationary Markov chain
 ```
 
 ### Simulation
+
+In the simulation code, the state-dependent mean now is not fixed anymore, but changes accoring to the covariate values in `Z`.
 
 ```{r data2}
 s = x = rep(NA, n)
@@ -316,6 +318,8 @@ par(oldpar)
 ```
 
 ### Writing the negative log-likelihood function
+
+In the likelihood function, we also add the state-dependent regression in the loop calculating the state-dependent probabilities. The code `cbind(1,Z) %*% beta[j,]` computes the linear predictor for the $j$-th state.
 
 ```{r mllk3}
 nllMSR = function(par, x, Z){
@@ -342,7 +346,9 @@ system.time(
 )
 ```
 
-### Visualizing results
+### Visualising results
+
+To visualise the results, be transform the parameters to working parameters and add the two estimated state-specific regressions to the scatter plot.
 
 ```{r visualization3}
 Gamma_hat_reg = tpm(mod_reg$estimate[1:2]) # calculating all tpms

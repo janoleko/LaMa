@@ -163,6 +163,7 @@ We then fit the model as explained in the vignettte *LaMa and RTMB*.
 par = list(mu = c(-4.5, -3.5, -2.5),
            logsigma = log(rep(0.5, 3)),
            eta = rep(-2, 6))
+
 # data and hyperparameters
 dat = list(logODBA = shark$logODBA, N = 3)
 

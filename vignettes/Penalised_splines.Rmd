@@ -1,0 +1,322 @@
+---
+title: "Penalised splines"
+output: rmarkdown::html_vignette
+# output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{LaMa_and_RTMB}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "85%",
+  fig.align = "center",
+  error = TRUE
+)
+```
+
+<!-- *Before reading this vignette, it is advised that you read the vignettes "Introduction to LaMa", "Inhomogeneous HMMs", "periodic HMMs" and "LaMa and RTMB".* -->
+
+> Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa**, **Inhomogeneous HMMs**, **Periodic HMMs** and **LaMa and RTMB**.
+
+This vignette explores how `LaMa` can be used to fit models involving nonparameteric components, represented by **penalised splines**. The main idea here is that it may be useful to represent some relationships in our model by smooth functions for which the functional form is not pre-specified, but flexibly estimated from the data. For HMM-like models, this is particularly valuable, as the latent nature of the state process makes modelling choices more difficult. For example, choosing an appropriate **parametric family** for the **state-dependent distributions** may be difficult, as we cannot do state-specific EDA before fitting the model. Also very difficult is the dependence of transition probabilities on covariates, as the **transitions** are **not** directly **observed**. Hence, the obvious alternative is to model these kind of relationships flexibly using splines but imposing a penalty on the smoothness of the estimated functions. This leads us to **penalised splines**.
+
+`LaMa` contains helper functions that build **design** and **penalty matrices** for given formulas (using `mgcv` under the hood) and also functions to estimate models involving penalised splines in a **random effects framework**. For the latter to work, the **penalised negative log-likelihood** needs to be compatible with the R package `RTMB` to allow for **automatic differentiation (AD)**. For more information on `RTMB`, see the vignette *LaMa and RTMB* or check out its [documentation](https://cran.r-project.org/web/packages/RTMB/index.html). For more information on penalised splines, we recommend @wood2017generalized.
+
+### Smooth transition probabilites
+
+We will start by investigating a 2-state HMM for the `elephant` data set where the transition probabilities are expressed as smooth functions of the time of day using **cyclic P-Splines**. The relationship can then be summarised as
+
+$$
+\text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
+$$
+where $s_{ij}(t)$ is a smooth periodic function of time of day. We model the elephant's **step lengths** and **turning angles** using state-dependent **gamma** and **von Mises** distributions.
+
+To ease with model specification, `LaMa` provides the function `make_matrices()` which creates **design** and **penalty** matrices for regression settings based on the R package `mgcv`. The user only needs to specify the right side of a formula using `mgcv` syntax and provide data. Here, we use `s(tod, by = "cp")` to create the matrices for cyclic P-splines (`cp`). This results in a cubic B-Spline basis, that is wrapped at boundary of the support (0 and 24). We then append both resulting matrices to the `dat` list.
+
+```{r LaMa}
+library(LaMa)
+```
+
+```{r tod2}
+modmat = make_matrices(~ s(tod, bs = "cp"), # formula
+                       data = data.frame(tod = 1:24), # data
+                       knots = list(tod = c(0, 24))) # where to wrap the cyclic basis
+Z = modmat$Z # spline design matrix
+S = modmat$S # penalty matrix
+```
+
+We can now specify the **penalised negative log-likelihood function**. We can compute the transition probability matrix the regular way using `tpm_g()`. In the last line we need to add the curvature penalty based on `S`, which we can conveniently do using `penalty()`.
+
+```{r mllk3}
+pnll = function(par) {
+  getAll(par, dat)
+  # cbinding intercept and spline coefs, because intercept is not penalised
+  Gamma = tpm_g(Z, cbind(beta0, betaSpline))
+  # computing all periodically stationary distributions for easy access later
+  Delta = stationary_p(Gamma); REPORT(Delta)
+  # parameter transformations
+  mu = exp(logmu); REPORT(mu)
+  sigma = exp(logsigma); REPORT(sigma)
+  kappa = exp(logkappa); REPORT(kappa)
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
+  for(j in 1:N){
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j]) * dvm(angle[ind],0,kappa[j])
+  }
+  -forward_g(Delta[tod[1],], Gamma[,,tod], allprobs) + # regular forward algorithm
+    penalty(betaSpline, S, lambda) # this does all the penalisation work
+}
+```
+
+We also have to append a `lambda` vector to our `dat` list which is the initial **penalty strength** parameter vector. In this case it is of length two because our coefficient matrix has two rows.
+
+```{r todpar2}
+par = list(logmu = log(c(0.3, 2.5)), # state-dependent mean step
+           logsigma = log(c(0.2, 1.5)), # state-dependent sd step
+           logkappa = log(c(0.2, 1.5)), # state-dependent concentration angle
+           beta0 = c(-2, 2), # state process intercepts
+           betaSpline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2)) # spline coefs
+
+dat = list(step = elephant$step, # observed steps
+           angle = elephant$angle, # observed angle
+           N = 2, # number of states
+           tod = elephant$tod, # time of day (used for indexing)
+           Z = Z, # spline design matrix
+           S = S, # penalty matrix
+           lambda = rep(100, 2)) # initial penalty strength
+```
+
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+
+There are some rules to follow when using `qreml()`:
+
+1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as all the likelihood functions in our vignette -- most importantly, it should be a function of the parameter list only.
+3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of betaspline, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
+4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
+5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail.
+
+```{r qreml, message = FALSE}
+system.time(
+  mod <- qreml(pnll, par, dat, random = "betaSpline")
+)
+```
+The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day.
+
+```{r results qreml, fig.width = 8, fig.height = 5}
+Gamma = mod$Gamma
+Delta = mod$Delta
+
+tod_seq = seq(0,24, length=200)
+Z_pred = pred_matrix(modmat, data.frame(tod = tod_seq))
+
+Gamma_plot = tpm_g(Z_pred, mod$beta) # interpolating transition probs
+
+plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
+     xlab = "time of day", ylab = "transition probability", bty = "n")
+lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
+legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
+       legend = c(expression(gamma[12]^(t)), expression(gamma[21]^(t))))
+plot(Delta[,2], type = "b", lwd = 2, pch = 16, xlab = "time of day", ylab = "Pr(active)", 
+     col = "deepskyblue", bty = "n", xaxt = "n")
+axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
+
+```
+
+
+### Smooth density estimation
+
+To demonstrate nonparametric estimation of the state-dependent densities, we will consider the `shark` data set. It contains acceleration data, specifically the **overall dynamic body acceleartion (ODBA)**. ODBA is strictily positive with some very extreme values, making direct analysis difficult. Hence, for our analysis we consider the logarithm of ODBA as our observed process.
+
+```{r shark_data, fig.width = 8, fig.height = 5}
+head(shark)
+hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white", 
+     main = "", xlab = "log(ODBA)")
+```
+
+Clearly, there are at least three behavioural states in the data, and we start by fitting a simple 3-state Gaussian HMM with likelihood function:
+
+```{r nll Gaussian}
+nll = function(par){
+    getAll(par, dat)
+    sigma = exp(logsigma)
+    REPORT(mu); REPORT(sigma)
+    Gamma = tpm(eta)
+    delta = stationary(Gamma)
+    allprobs = matrix(1, length(logODBA), N)
+    ind = which(!is.na(logODBA))
+    for(j in 1:N) allprobs[ind,j] = dnorm(logODBA[ind], mu[j], sigma[j])
+    -forward(delta, Gamma, allprobs)
+}
+```
+
+The fit the model as explained in the vignettte *LaMa and RTMB*.
+
+```{r Gaussian fit, fig.width = 8, fig.height = 5}
+# initial parameter list
+par = list(mu = c(-4.5, -3.5, -2.5),
+           logsigma = log(rep(0.5, 3)),
+           eta = rep(-2, 6))
+# data and hyperparameters
+dat = list(logODBA = shark$logODBA, N = 3)
+
+# creating automatically differentiable objective function
+obj = MakeADFun(nll, par, silent = TRUE)
+
+# fitting the model
+opt = nlminb(obj$par, obj$fn, obj$gr)
+
+# reporting to get calculated quantities
+mod = obj$report()
+
+# visualising the results
+color = c("orange", "deepskyblue", "seagreen3")
+hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white",
+     main = "", xlab = "log(ODBA)")
+for(j in 1:3) curve(mod$delta[j] * dnorm(x, mod$mu[j], mod$sigma[j]), 
+                    add = TRUE, col = color[j], lwd = 2, n = 500)
+
+```
+
+We see a clear lack-of-fit due to the inflexibility of the Gaussian state-dependent densities. Thus, we now fit a model with state-dependent densities based on P-Splines. In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `buildSmoothDens()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
+
+```{r smooth prep}
+modmat = buildSmoothDens(shark["logODBA"], # only one data stream here
+                         k = 25, # number of basis functions
+                         par = list(logODBA = list(mean = c(-4, -3.3, -2.8),
+                                                   sd = c(0.3, 0.2, 0.5))))
+
+# par is nested named list: top layer: each data stream
+# for each data stream: initial means and standard deviations for each state
+
+# objects for model fitting
+Z = modmat$Z$logODBA # spline design matrix for logODBA
+S = modmat$S$logODBA # penalty matrix for logODBA
+beta = modmat$coef$logODBA # initial spline coefficients
+
+# objects for prediction
+Z_pred = modmat$Z_predict$logODBA # prediction design matrix
+xseq = modmat$xseq$logODBA # prediction sequence of logODBA values
+```
+
+Then, we can specify the penalised negative log-likelihood function. The six lines in the middle are needed for P-Spline-based density estimation. The coefficient matrix `beta` provided by `buildSmoothDens()` also has one column less than the number of basis functions which is also printed when calling `buildSmoothDens()`. This is because the last column, i.e. the last coefficient for each state, needs to be fixed to zero for **identifiability**. We do this below by using `cbind(beta, 0)`. 
+Then, we transform the unconstrained parameter matrix to non-negative weights that sum to one (called `alpha`) for each state using the inverse multinomial logistic link (softmax). 
+The columnns of the `allprobs` are then computed as linear combinations of the columns of `Z` and the weights `alpha`. Lastly, we penalise the unconstrained coefficients `beta` (not the constrained `alpha`'s) using the `penalty()` function.
+
+```{r pnll2}
+pnll = function(par){
+  getAll(par, dat)
+  # regular stationary HMM stuff
+  Gamma = tpm(eta)
+  delta = stationary(Gamma)
+  # smooth state-dependent densities
+  alpha = exp(cbind(beta, 0))
+  alpha = alpha / rowSums(alpha) # multinomial logit link
+  REPORT(alpha)
+  allprobs = matrix(1, nrow(Z), N)
+  ind = which(!is.na(logODBA))
+  allprobs[ind,] = Z[ind,] %*% t(alpha)
+  # forward algorithm + penalty
+  -forward(delta, Gamma, allprobs) + 
+    penalty(beta, S, lambda)
+}
+```
+
+Now we specify the initial parameter and data list and fit the model
+```{r shark_spline_fit}
+par = list(beta = beta, # spline coefficients prepared by buildSmoothDens()
+           eta = rep(-2, 6)) # initial transition matrix on logit scale
+dat = list(logODBA = shark$logODBA, N = 3,
+           Z = Z, # spline design matrix
+           S = S, # spline penalty matrix
+           lambda = rep(10, 3)) # initial penalty strength vector
+
+# fitting the model using qREML
+system.time(
+  mod2 <- qreml(pnll, par, dat, random = "beta")
+)
+```
+
+After fitting the model, we can easily visualise the smooth densities using the prepared prediction objects. We already have access to all reported quanitites because `qreml()` automatically runs the reporting after model fitting.
+
+```{r shark_smooth_results, fig.width = 8, fig.height = 5}
+sDens = Z_pred %*% t(mod2$alpha) # all three state-dependent densities on a grid
+
+hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white", main = "", xlab = "log(ODBA)")
+for(j in 1:3) lines(xseq, mod2$delta[j] * sDens[,j], col = color[j], lwd = 2)
+lines(xseq, colSums(mod2$delta * t(sDens)), col = "black", lwd = 2, lty = 2)
+```
+The P-Spline model results in a very good fit to the empirical distribution. This is beause the first state has a skewed distribution, the second state has a high kurtosis and the third state has a funny right tail. The P-Spline model can capture all of these features where the parametric model failed to do so.
+
+<!-- ### Full Laplace method -->
+
+<!-- Lastly, we could have achieved a similar fit as above using the slightly more accurate full Laplace approximation method, which can be used to fit models via marginal maximum likelihood estimation by integrating out the random effects. This is natively supported by `RTMB` -- and actually one of its core selling points -- and the standard way we can now deal with all kinds of random effects.  -->
+
+<!-- Indeed, the **qREML** algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yiedling a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects. -->
+
+<!-- We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihoot that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as -->
+<!-- $$ -->
+<!-- f(x, b) = f(x \mid b) f_{\lambda}(b) -->
+<!-- $$ -->
+<!-- and the joint negative log-likelihood becomes $- \log f(x \mid b) - \log f_{\lambda}(b)$ and this is what we implement below. -->
+
+<!-- Most conveniently this is done by using the `dgmrf2()` function included in `LaMa` which provides the density function of the multivariate normal distribution reparametrized in terms of the (scaled) precision matrix, i.e. inverse covariance matrix, which in our case is $\lambda_i S$ for spline $i$. It allows evaluating at multiple points at once, each one possibly with its own penalty strength parameter `lambda`. It differs from `RTMB`'s `dgmrf()` by not expecting a *sparse* precision matrix and being more robust for rank-deficient penalty matrices, which are typical for penalized splines. -->
+
+<!-- ```{r mllk4} -->
+<!-- jnll = function(par) { -->
+<!--   getAll(par, dat) # makes everything contained available without $ -->
+<!--   Gamma = tpm_g(Z, cbind(beta0, betaspline)); ADREPORT(Gamma) -->
+<!--   Delta = stationary_p(Gamma); ADREPORT(Delta) -->
+<!--   delta = Delta[tod[1],] -->
+<!--   # exponentiating because all parameters strictly positive -->
+<!--   mu = exp(logmu); REPORT(mu) -->
+<!--   sigma = exp(logsigma); REPORT(sigma) -->
+<!--   kappa = exp(logkappa); REPORT(kappa) -->
+<!--   # calculating all state-dependent densities -->
+<!--   allprobs = matrix(1, nrow = length(step), ncol = N) -->
+<!--   ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs. -->
+<!--   for(j in 1:N){ -->
+<!--     allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j]) -->
+<!--   } -->
+<!--   -forward_g(delta, Gamma[,,tod], allprobs) - -->
+<!--     sum(dgmrf2(betaspline, 0, S, exp(loglambda), log = TRUE)) # just like any other density in R -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- We also have to include the log of our penalty strength as a parameter now. -->
+
+<!-- ```{r todpar3} -->
+<!-- par$loglambda = log(rep(100, 2)) -->
+<!-- ``` -->
+
+<!-- To create the objective function, we need to tell `RTMB` that `betaspline` is a random effect such that it is integrated out and as our objective function we have the marginal likelihood -->
+<!-- $$ -->
+<!-- f(x) = \int f(x, b) \,db, -->
+<!-- $$ -->
+<!-- actually its negative log of course. -->
+
+<!-- ```{r refit, message = FALSE, eval = FALSE} -->
+<!-- obj4 = MakeADFun(jnll, par, random = "betaspline", silent = TRUE) -->
+<!-- system.time( -->
+<!--   opt4 <- nlminb(obj4$par, obj4$fn, obj4$gr) -->
+<!-- ) -->
+<!-- ``` -->
+
+<!-- This more general algorithm takes more than ten times model as long to fit the model. Hence, the above code is not evaluated. The results however are very similar. -->
+
+<!-- ```{r results refit, fig.width = 8, fig.height = 5}
+mod4 = obj4$report()
+mod4$Gamma = tpm_g(Z, mod4$beta) # calculating 24 tpms
+
+Gamma_plot = tpm_g(Z_pred, mod4$beta)
+plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
+     xlab = "time of day", ylab = "transition probability", bty = "n")
+lines(tod_seq, Gamma_plot[2,1,], lwd = 2, lty = 3)
+legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
+       legend = c(expression(gamma[12]^(t)), expression(gamma[21]^(t))))
+``` -->
+

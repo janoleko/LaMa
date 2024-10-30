@@ -108,7 +108,10 @@ gdeterminant <- function(x,
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
 penalty = function(re_coef, S, lambda) {
-
+  # getting the argname of the penalty strength parameter
+  # argname_lambda = as.character(substitute(lambda))
+  # RTMB::REPORT(argname_lambda) # Report the name of the penalty strength parameter
+  
   # Convert re_coef to a list of matrices (even if originally a vector)
   if (!is.list(re_coef)) {
     re_coef = list(re_coef)
@@ -262,7 +265,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   argname_dat = as.character(substitute(dat))
   
   # setting the environment for mllk to be the local environment such that it pull the right lambda
-  environment(pnll) = environment() 
+  # environment(pnll) = environment() 
   
   # number of random effects, each one can be a matrix where each row is a random effect, but then they have the same penalty structure
   n_re = length(random) 
@@ -270,13 +273,22 @@ qreml = function(pnll, # penalized negative log-likelihood function
   # list to save all model objects
   allmods = list() 
   
+  # if name of penalty strength parameter is not specified, determine automatically
+  # if(is.null(penalty)){
+  #   # create inital obj to run reporting and get the argname of lambda
+  #   assign(argname_dat, dat, envir = environment())
+  #   obj_ini = MakeADFun(pnll, par)
+  #   report_ini = obj_ini$report()
+  #   penalty = report_ini$argname_lambda
+  # }
+  
   # initial lambda locally
   lambda = dat[[penalty]]
   
   # experimentally, changing the name of the data object in pnll to dat
-  if(argname_dat != "dat"){
-    body(pnll) <- parse(text=gsub(argname_dat, "dat", deparse(body(pnll))))
-  }
+  # if(argname_dat != "dat"){
+  #   body(pnll) <- parse(text=gsub(argname_dat, "dat", deparse(body(pnll))))
+  # }
   
   # creating the objective function as wrapper around pnll to pull lambda from local
   f = function(par){
@@ -289,6 +301,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
     getLambda = function(x) lambda
     
     dat[[penalty]] = DataEval(getLambda, rep(advector(1), 0))
+    
+    # assigning dat to whatever it is called in pnll() (hopefully)
+    assign(argname_dat, dat, envir = environment())
     
     pnll(par)
   }

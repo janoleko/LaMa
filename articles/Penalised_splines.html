@@ -231,7 +231,7 @@ arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> w
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.777   0.192   6.864</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.838   0.152   6.880</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -361,18 +361,18 @@ needed for density estimation.</p>
 <p>Then, we can specify the penalised negative log-likelihood function.
 The six lines in the middle are needed for P-Spline-based density
 estimation. The coefficient matrix <code>beta</code> provided by
-<code><a href="../reference/buildSmoothDens.html">buildSmoothDens()</a></code> also has one column less than the number
-of basis functions which is also printed when calling
+<code><a href="../reference/buildSmoothDens.html">buildSmoothDens()</a></code> has one column less than the number of
+basis functions, which is also printed when calling
 <code><a href="../reference/buildSmoothDens.html">buildSmoothDens()</a></code>. This is because the last column,
 i.e. the last coefficient for each state, needs to be fixed to zero for
-<strong>identifiability</strong>. We do this below by using
+<strong>identifiability</strong> which we do by using
 <code>cbind(beta, 0)</code>. Then, we transform the unconstrained
 parameter matrix to non-negative weights that sum to one (called
 <code>alpha</code>) for each state using the inverse multinomial
-logistic link (softmax). The columnns of the <code>allprobs</code> are
-then computed as linear combinations of the columns of <code>Z</code>
-and the weights <code>alpha</code>. Lastly, we penalise the
-unconstrained coefficients <code>beta</code> (not the constrained
+logistic link (softmax). The columnns of the <code>allprobs</code>
+matrix are then computed as linear combinations of the columns of
+<code>Z</code> and the weights <code>alpha</code>. Lastly, we penalise
+the unconstrained coefficients <code>beta</code> (not the constrained
 <code>alpha</code>’s) using the <code><a href="../reference/penalty.html">penalty()</a></code> function.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pnll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span><span class="op">{</span></span>
@@ -417,7 +417,7 @@ model</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.600   2.579  17.184</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.680   2.495  17.273</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the

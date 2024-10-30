@@ -6,6 +6,8 @@ vignette: >
   %\VignetteIndexEntry{Penalised_splines}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: refs.bib
+link-citations: yes
 ---
 
 ```{r, include = FALSE}
@@ -252,6 +254,8 @@ lines(xseq, colSums(mod2$delta * t(sDens)), col = "black", lwd = 2, lty = 2)
 ```
 
 The P-Spline model results in a very good fit to the empirical distribution. This is beause the first state has a skewed distribution, the second state has a high kurtosis and the third state has a funny right tail. The P-Spline model can capture all of these features where the parametric model failed to do so.
+
+## References
 
 <!-- ### Full Laplace method -->
 

@@ -209,7 +209,7 @@ xseq = modmat$xseq$logODBA # prediction sequence of logODBA values
 ```
 
 Then, we can specify the penalised negative log-likelihood function. The six lines in the middle are needed for P-Spline-based density estimation. 
-The coefficient matrix `beta` provided by `buildSmoothDens()` has one column less than the number of basis functions, which is also printed when calling `buildSmoothDens()`. This is because the last column, i.e. the last coefficient for each state, needs to be fixed to zero for **identifiability**. We do this below by using `cbind(beta, 0)`. 
+The coefficient matrix `beta` provided by `buildSmoothDens()` has one column less than the number of basis functions, which is also printed when calling `buildSmoothDens()`. This is because the last column, i.e. the last coefficient for each state, needs to be fixed to zero for **identifiability** which we do by using `cbind(beta, 0)`. 
 Then, we transform the unconstrained parameter matrix to non-negative weights that sum to one (called `alpha`) for each state using the inverse multinomial logistic link (softmax). 
 The columnns of the `allprobs` are then computed as linear combinations of the columns of `Z` and the weights `alpha`. Lastly, we penalise the unconstrained coefficients `beta` (not the constrained `alpha`'s) using the `penalty()` function.
 

@@ -176,9 +176,16 @@ do using <code><a href="../reference/penalty.html">penalty()</a></code>.</p>
 <span>    <span class="fu"><a href="../reference/penalty.html">penalty</a></span><span class="op">(</span><span class="va">betaSpline</span>, <span class="va">S</span>, <span class="va">lambda</span><span class="op">)</span> <span class="co"># this does all the penalisation work</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>We also have to append a <code>lambda</code> vector to our
-<code>dat</code> list which is the initial <strong>penalty
+<code>dat</code> list which is the <strong>initial penalty
 strength</strong> parameter vector. In this case it is of length two
 because our coefficient matrix has two rows.</p>
+<p>If you are wondering why <code>lambda</code> is not added to the
+<code>par</code> list, this is because for penalised likelihood
+estimation, it is a <strong>hyperparameter</strong>, hence not a true
+parameter in the sense of the other parameters in <code>par</code>. One
+could, at his point, just use the above penalised likelihood function to
+do penalised ML for a <strong>fixed</strong> penalty strength
+<code>lambda</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logmu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>, <span class="co"># state-dependent mean step</span></span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span>, <span class="co"># state-dependent sd step</span></span>
@@ -195,40 +202,48 @@ because our coefficient matrix has two rows.</p>
 <span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial penalty strength</span></span></code></pre></div>
 <p>The model fit can then be conducted by using the <code><a href="../reference/qreml.html">qreml()</a></code>
 function contained in <code>LaMa</code>. The <strong>quasi restricted
-maximum likelihood</strong> algorithm finds a good penalty strength by
-treating the spline coefficients as random effects. Under the hood,
-<code><a href="../reference/qreml.html">qreml()</a></code> also constructs an AD function with
-<code>RTMB</code> but uses the <strong>qREML</strong> algorithm
-described in Koslik (2024) to fit the model. We have to tell the
-<code><a href="../reference/qreml.html">qreml()</a></code> function which parameters are spline coefficients
-by providing the name of the corresponding list element of
+maximum likelihood</strong> algorithm finds a good penalty strength
+paramter <code>lambda</code> by treating the spline coefficients as
+random effects. Under the hood, <code><a href="../reference/qreml.html">qreml()</a></code> also constructs an
+AD function with <code>RTMB</code> but uses the <strong>qREML</strong>
+algorithm described in Koslik (2024) to fit the model. We have to tell
+the <code><a href="../reference/qreml.html">qreml()</a></code> function which parameters are spline
+coefficients by providing the name of the corresponding list element of
 <code>par</code>.</p>
 <p>There are some rules to follow when using <code><a href="../reference/qreml.html">qreml()</a></code>:</p>
 <ol style="list-style-type: decimal">
-<li>The likelihood function needs to be <code>RTMB</code>-compatible,
-i.e. have the same structure as all the likelihood functions in our
-vignette – most importantly, it should be a function of the parameter
-list only.</li>
-<li>The penalty strength vector <code>lambda</code> needs its length to
-correspond to the <em>total</em> number of spline coefficient vectors
+<li><p>The likelihood function needs to be <code>RTMB</code>-compatible,
+i.e. have the same structure as the likelihood functions in the vignette
+<em>LaMa and RTMB</em>. Most importantly, it should be a function of the
+parameter list only.</p></li>
+<li><p>The penalty strength vector <code>lambda</code> needs its length
+to correspond to the <em>total</em> number of spline coefficient vectors
 used. In our case, this is the number of rows of betaspline, but if we
 additionally had a different spline coefficient (with a different name)
 in our parameter list, possibly with a different length and a different
 penalty matrix, we would have needed more elements in
-<code>lambda</code>.</li>
-<li>The <code><a href="../reference/penalty.html">penalty()</a></code> function can only be called <em>once</em>
-in the likelihood. If several spline coefficients are penalised,
-<code><a href="../reference/penalty.html">penalty()</a></code> expects a list of coefficient matrices or vectors
-and a list of penalty matrices.</li>
-<li>When we summarise multiple spline coefficients in a matrix in our
+<code>lambda</code>.</p></li>
+<li><p>The <code><a href="../reference/penalty.html">penalty()</a></code> function can only be called
+<em>once</em> in the likelihood. If several spline coefficients are
+penalised, <code><a href="../reference/penalty.html">penalty()</a></code> expects a list of coefficient matrices
+or vectors and a list of penalty matrices. This is shown in the third
+example in this vignette.</p></li>
+<li><p>When we summarise multiple spline coefficients in a matrix in our
 parameter list – which is very useful when these are of same lengths and
 have the same penalty matrix – this matrix must be arranged <strong>by
 row</strong>, i.e. each row is one spline coefficient vector. If it is
-arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</li>
+arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</p></li>
+<li><p>By default, <code><a href="../reference/qreml.html">qreml()</a></code> assmes that the penalisation
+hyperparamter in the <code>dat</code> object is called
+<code>lambda</code>. You can use a different name for <code>dat</code>
+(of course than changing it in your <code>pnll</code> as well), but if
+you want to use a different name for the penalisation hyperparamter, you
+have to specify it as a character string in the <code><a href="../reference/qreml.html">qreml()</a></code>
+call using the <code>penalty</code> argument.</p></li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
-<span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qreml.html">qreml</a></span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="st">"betaSpline"</span><span class="op">)</span></span>
+<span>  <span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qreml.html">qreml</a></span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="st">"betaSpline"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
 <span><span class="co">#&gt; Initializing with lambda: 100 100 </span></span>
@@ -240,7 +255,7 @@ arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> w
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.807   0.161   6.862</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.763   0.182   6.835</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -251,13 +266,13 @@ exact same basis expansion specified above. This allows us to plot the
 estimated transition probabilities as a smooth function of time of
 day.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">Gamma</span></span>
-<span><span class="va">Delta</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">Delta</span></span>
+<code class="sourceCode R"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="va">mod1</span><span class="op">$</span><span class="va">Gamma</span></span>
+<span><span class="va">Delta</span> <span class="op">=</span> <span class="va">mod1</span><span class="op">$</span><span class="va">Delta</span></span>
 <span></span>
-<span><span class="va">tod_seq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>, length<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
+<span><span class="va">tod_seq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/pred_matrix.html">pred_matrix</a></span><span class="op">(</span><span class="va">modmat</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="va">tod_seq</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_pred</span>, <span class="va">mod</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># interpolating transition probs</span></span>
+<span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_pred</span>, <span class="va">mod1</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># interpolating transition probs</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"transition probability"</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
@@ -277,7 +292,7 @@ day.</p>
 <p>To demonstrate nonparametric estimation of the state-dependent
 densities, we will consider the <code>nessi</code> data set. It contains
 acceleration data of the Loch Ness Monster, specifically the
-<strong>overall dynamic body acceleartion (ODBA)</strong>. ODBA is
+<strong>overall dynamic body acceleration (ODBA)</strong>. ODBA is
 strictily positive with some very extreme values, making direct analysis
 difficult. Hence, for our analysis we consider the logarithm of ODBA as
 our observed process.</p>
@@ -430,7 +445,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.772   2.599  17.341</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.721   2.547  17.220</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -447,6 +462,146 @@ distribution. This is beause the first state has a skewed distribution,
 the second state has a high kurtosis and the third state has a funny
 right tail. The P-Spline model can capture all of these features where
 the parametric model failed to do so.</p>
+</div>
+<div class="section level3">
+<h3 id="markov-switching-gamlss">Markov-switching GAMLSS<a class="anchor" aria-label="anchor" href="#markov-switching-gamlss"></a>
+</h3>
+<p>Lastly, we want to demonstrate how one can easily fit
+Markov-switching regression models where the state-dependent means and
+potentially other paramters depend on covariates via smooth functions.
+For this, we consider the <code>energy</code> data set contained in the
+R package <code>MSwM</code>. It comprises 1784 daily observations of
+energy prices (in Cents per kWh) in Spain which we want to explain using
+the daily oil prices (in Euros per barrel) also provided in the data.
+Specifically, we consider a 2-state MS-GAMLSS defined by
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">price</mtext><mi>t</mi></msub><mo>∣</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><mi>i</mi><mo stretchy="false" form="postfix">}</mo><mo>∼</mo><mi>N</mi><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><msubsup><mi>μ</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>,</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\text{price}_t \mid \{ S_t = i \} \sim N \bigl(\mu_t^{(i)}, (\sigma_t^{(i)})^2 \bigr),
+</annotation></semantics></math><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>μ</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><msubsup><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mi>μ</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>s</mi><mi>μ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="normal">oil</mtext><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mtext mathvariant="normal">log</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>σ</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mi>β</mi><mrow><mn>0</mn><mo>,</mo><mi>σ</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>s</mi><mi>σ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="normal">oil</mtext><mi>t</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\mu_t^{(i)} = \beta_{0,\mu}^{(i)} + s_{\mu}^{(i)}(\text{oil}_t), \quad \text{log}(\sigma_t^{(i)}) = \beta_{0, \sigma}^{(i)} + s_{\sigma}^{(i)}(\text{oil}_t), \quad i = 1,2,
+</annotation></semantics></math> not covering other potential
+explanatory covariates for the sake of simplicity.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">MSwM</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in library(MSwM): there is no package called 'MSwM'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">energy</span>, package <span class="op">=</span> <span class="st">"MSwM"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in find.package(package, lib.loc, verbose = verbose): there is no package called 'MSwM'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span></code></pre></div>
+<p>Similar to the first example, we can prepare the model matrices using
+<code><a href="../reference/make_matrices.html">make_matrices()</a></code>:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">Oil</span>, k <span class="op">=</span> <span class="fl">12</span>, bs <span class="op">=</span> <span class="st">"ps"</span><span class="op">)</span>, <span class="va">energy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span> <span class="co"># design matrix</span></span>
+<span><span class="va">S</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">S</span> <span class="co"># penalty matrix (list)</span></span></code></pre></div>
+<p>Then, we specify the penalised negative log-likelihood function. It
+differs from the first example as the state-dependent distributions, as
+opposed to the state process parameters, depend on the covariate.
+Additionally, we now have two completely seperated spline-coefficient
+matrices/ random effects called <code>betaSpline</code> and
+<code>alphaSpline</code> for the state-dependent means and standard
+deviations respectively. Thus, we need to pass them as a list to the
+<code><a href="../reference/penalty.html">penalty()</a></code> function.</p>
+<p>We also pass the penalty matrix list <code>S</code> that is provided
+by <code><a href="../reference/make_matrices.html">make_matrices()</a></code>. This could potentially be a list of
+length two if the two spline coefficient matrices were penalised
+differently (e.g. by us using a different spline basis). In this case,
+however, they are the same and we only pass the list of length one. It
+does not matter to <code><a href="../reference/penalty.html">penalty()</a></code> if we pass a list of length
+one or just one matrix.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pnll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span></span>
+<span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span> <span class="co"># computing the tpm</span></span>
+<span>  <span class="va">delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary.html">stationary</a></span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span> <span class="co"># stationary distribution</span></span>
+<span></span>
+<span>  <span class="co"># regression parameters for mean and sd</span></span>
+<span>  <span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">beta0</span>, <span class="va">betaSpline</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT</a></span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="co"># mean parameter matrix</span></span>
+<span>  <span class="va">alpha</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">alpha0</span>, <span class="va">alphaSpline</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span> <span class="co"># sd parameter matrix</span></span>
+<span></span>
+<span>  <span class="co"># calculating all covariate-dependent means and sds</span></span>
+<span>  <span class="va">Mu</span> <span class="op">=</span> <span class="va">Z</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="co"># mean</span></span>
+<span>  <span class="va">Sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">Z</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span> <span class="co"># sd</span></span>
+<span></span>
+<span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">price</span>, <span class="va">Mu</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, <span class="va">Sigma</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">price</span>, <span class="va">Mu</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, <span class="va">Sigma</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># state-dependent densities</span></span>
+<span>  </span>
+<span>  <span class="op">-</span> <span class="fu"><a href="../reference/forward.html">forward</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/penalty.html">penalty</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">betaSpline</span>, <span class="va">alphaSpline</span><span class="op">)</span>, <span class="va">S</span>, <span class="va">lambda</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>From this point on, the model fit is now basically identical to the
+previous two examples. We specify initial parameters and include an
+inital penalty strength parameter in the <code>dat</code> list.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># initial parameter list</span></span>
+<span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, <span class="co"># state process intercepts</span></span>
+<span>           beta0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, <span class="co"># state-dependent mean intercepts</span></span>
+<span>           betaSpline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, <span class="co"># mean spline coef</span></span>
+<span>           alpha0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="co"># state-dependent sd intercepts</span></span>
+<span>           alphaSpline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">11</span><span class="op">)</span><span class="op">)</span> <span class="co"># sd spline coef</span></span>
+<span></span>
+<span><span class="co"># data, model matrices and initial penalty strength</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>price <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span>, </span>
+<span>           Z <span class="op">=</span> <span class="va">Z</span>, </span>
+<span>           S <span class="op">=</span> <span class="va">S</span>, </span>
+<span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span></span>
+<span><span class="co"># model fit</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">mod3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qreml.html">qreml</a></span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"betaSpline"</span>, <span class="st">"alphaSpline"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating AD function</span></span>
+<span><span class="co">#&gt; Error: non-conformable arguments</span></span>
+<span><span class="co">#&gt; Timing stopped at: 0.007 0 0.006</span></span></code></pre></div>
+<p>Having fitted the model, we can visualise the results. We first
+decode the most probable state sequence and then plot the estimated
+state-dependent densities as a function of the oil price, as well as the
+decoded time series. For the former, we create a fine grid of oil price
+values and use the <code>pred_matric()</code> function to build the
+associated interpolating design matrix.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">xseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="co"># sequence for prediction</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/pred_matrix.html">pred_matrix</a></span><span class="op">(</span><span class="va">modmat</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Oil <span class="op">=</span> <span class="va">xseq</span><span class="op">)</span><span class="op">)</span> <span class="co"># prediction design matrix</span></span>
+<span><span class="co">#&gt; Error in terms.formula(gf, specials = c("s", "te", "ti", "t2", extra.special)): argument is not a valid model</span></span>
+<span></span>
+<span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">delta</span>, <span class="va">mod3</span><span class="op">$</span><span class="va">Gamma</span>, <span class="va">mod3</span><span class="op">$</span><span class="va">allprobs</span><span class="op">)</span> <span class="co"># decoding most probable state sequence</span></span>
+<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
+<span></span>
+<span><span class="va">Mu_plot</span> <span class="op">=</span> <span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
+<span><span class="va">Sigma_plot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org" class="external-link">scales</a></span><span class="op">)</span> <span class="co"># to make colors semi-transparent</span></span>
+<span><span class="co">#&gt; Error in library(scales): there is no package called 'scales'</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># state-dependent distribution as a function of oil price</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span>, <span class="va">energy</span><span class="op">$</span><span class="va">Price</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">]</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"oil price"</span>, ylab <span class="op">=</span> <span class="st">"energy price"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="co"># means</span></span>
+<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
+<span><span class="va">qseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.95</span>, length <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># sequence of quantiles</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">qseq</span><span class="op">)</span><span class="op">{</span> <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">+</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">-</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">}</span></span>
+<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"state"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL, : plot.new has not been called yet</span></span>
+<span></span>
+<span><span class="co"># decoded time series</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="cn">NA</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"energy price"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, x1 <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span>,</span>
+<span>         y0 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">]</span>, y1 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, </span>
+<span>         col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'energy' not found</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

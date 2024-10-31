@@ -41,7 +41,7 @@
     <li><a class="dropdown-item" href="../articles/Longitudinal_data.html">Longitudinal data</a></li>
     <li><a class="dropdown-item" href="../articles/MMMPPs.html">Markov-modulated (marked) Poisson processes</a></li>
     <li><a class="dropdown-item" href="../articles/Penalised_splines.html">Penalised splines</a></li>
-    <li><a class="dropdown-item" href="../articles/Periodic_HMM.html">Periodic HMMs</a></li>
+    <li><a class="dropdown-item" href="../articles/Periodic_HMMs.html">Periodic HMMs</a></li>
     <li><a class="dropdown-item" href="../articles/State_space_models.html">State space models</a></li>
   </ul>
 </li>
@@ -210,7 +210,7 @@ state-dependent density matrices to be
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">2</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.242   0.268   0.261</span></span>
+<span><span class="co">#&gt;   0.285   0.232   0.264</span></span>
 <span><span class="co"># we often need the stepmax, as the matrix exponential can be numerically unstable</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -360,7 +360,7 @@ one element-wise with the state-dependent rates.</p>
 <span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMark</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">marks</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.281   4.116   2.476</span></span></code></pre></div>
+<span><span class="co">#&gt;   3.467   4.736   2.745</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>

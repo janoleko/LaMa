@@ -143,8 +143,7 @@ Its length needs to match the to the total number of random effects.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">=</span> <span class="va">elephant</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span> <span class="co"># subset</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'elephant' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">=</span> <span class="va">trex</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,<span class="op">]</span> <span class="co"># subset</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># initial parameter list</span></span></span>
 <span class="r-in"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logmu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="co"># step mean</span></span></span>
@@ -157,16 +156,13 @@ Its length needs to match the to the total number of random effects.</p></dd>
 <span class="r-in"><span>           tod <span class="op">=</span> <span class="va">data</span><span class="op">$</span><span class="va">tod</span>, <span class="co"># time of day covariate</span></span></span>
 <span class="r-in"><span>           N <span class="op">=</span> <span class="fl">2</span>, <span class="co"># number of states</span></span></span>
 <span class="r-in"><span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial penalty strength</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in data$step:</span> object of type 'closure' is not subsettable</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># building model matrices</span></span></span>
 <span class="r-in"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tod</span>, bs <span class="op">=</span> <span class="st">"cp"</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                       data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                       knots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># wrapping points</span></span></span>
 <span class="r-in"><span><span class="va">dat</span><span class="op">$</span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span> <span class="co"># spline design matrix</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'dat' not found</span>
 <span class="r-in"><span><span class="va">dat</span><span class="op">$</span><span class="va">S</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">S</span> <span class="co"># penalty matrix</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'dat' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># penalized negative log-likelihood function</span></span></span>
 <span class="r-in"><span><span class="va">pnll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -185,7 +181,38 @@ Its length needs to match the to the total number of random effects.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># model fitting</span></span></span>
 <span class="r-in"><span><span class="va">mod</span> <span class="op">=</span> <span class="fu">qreml</span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="st">"betaspline"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'dat' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Creating AD function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing with lambda: 10 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 1 - lambda: 3.636 2.859 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 2 - lambda: 1.691 1.652 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 3 - lambda: 0.967 1.184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 4 - lambda: 0.671 0.919 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 5 - lambda: 0.546 0.739 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 6 - lambda: 0.493 0.603 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 7 - lambda: 0.472 0.494 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 8 - lambda: 0.464 0.406 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 9 - lambda: 0.463 0.334 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 10 - lambda: 0.464 0.276 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 11 - lambda: 0.467 0.23 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 12 - lambda: 0.471 0.194 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 13 - lambda: 0.474 0.166 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 14 - lambda: 0.477 0.146 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 15 - lambda: 0.48 0.131 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 16 - lambda: 0.483 0.12 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 17 - lambda: 0.484 0.112 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 18 - lambda: 0.486 0.106 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 19 - lambda: 0.487 0.102 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 20 - lambda: 0.488 0.099 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 21 - lambda: 0.489 0.097 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 22 - lambda: 0.489 0.095 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 23 - lambda: 0.49 0.094 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 24 - lambda: 0.49 0.093 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 25 - lambda: 0.49 0.093 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 26 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 27 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 28 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 29 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Converged</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

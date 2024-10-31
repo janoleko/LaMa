@@ -1,3 +1,7 @@
+
+# Regression setting ------------------------------------------------------
+
+
 #' Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set
 #'
 #' @param formula right side of a formula as used in \code{mgcv}
@@ -28,6 +32,7 @@ make_matrices = function(formula, data, knots = NULL){
   return(list(Z = Z, S = S, formula = formula, data = data, knots = knots))
 }
 
+
 #' Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 #'
 #' @param model_matrices model_matrices object as returned from \code{\link{make_matrices}}
@@ -49,6 +54,10 @@ pred_matrix = function(model_matrices, newdata) {
   
   predict(gam_setup0, newdata = cbind(dummy = 1, newdata), type = "lpmatrix")
 }
+
+
+
+# Density estimation setting ----------------------------------------------
 
 
 #' Build a standardised P-Spline design matrix and the associated P-Spline penalty matrix
@@ -341,4 +350,48 @@ buildSmoothDens = function(data, # data frame of data streams
     xseq = xseq,
     basis = basis
   ))
+}
+
+
+
+#' Compute the design matrix for a trigonometric basis expansion
+#'
+#' Given a periodically varying variable such as time of day or day of year and the associated cycle length, this function performs a basis expansion to efficiently calculate a linear predictor of the form
+#' \deqn{ 
+#'  \eta^{(t)} = \beta_0 + \sum_{k=1}^K \bigl( \beta_{1k} \sin(\frac{2 \pi k t}{L}) + \beta_{2k} \cos(\frac{2 \pi k t}{L}) \bigr). 
+#'  }
+#'  This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing \eqn{K}).
+#'  
+#' @param tod equidistant sequence of a cyclic variable
+#' 
+#' For time of day and e.g. half-hourly data, this could be 1, ..., L and L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.
+#' @param L length of one cycle on the scale of the time variable. For time of day, this would be 24.
+#' @param degree degree K of the trigonometric link above. Increasing K increases the flexibility.
+#'
+#' @return design matrix (without intercept column), ordered as sin1, cos1, sin2, cos2, ...
+#' @export
+#'
+#' @examples
+#' ## hourly data
+#' tod = rep(1:24, 10)
+#' Z = trigBasisExp(tod, L = 24, degree = 2)
+#' 
+#' ## half-hourly data
+#' tod = rep(1:48/2, 10) # in [0,24] -> L = 24
+#' Z1 = trigBasisExp(tod, L = 24, degree = 3)
+#' 
+#' tod = rep(1:48, 10) # in [1,48] -> L = 48
+#' Z2 = trigBasisExp(tod, L = 48, degree = 3)
+#' 
+#' Z1 - Z2
+#' # The latter two are equivalent specifications!
+trigBasisExp = function(tod, L = 24, degree = 1){
+  n = length(tod)
+  Z = matrix(nrow = n, ncol = 2*degree)
+  inner = 2*pi*tod/L
+  for(k in 1:degree){
+    Z[,2*(k-1)+1:2] = cbind(sin(inner*k), cos(inner*k))
+  }
+  colnames(Z) = paste0(c("sin_", "cos_"), rep(1:degree, each = 2))
+  Z
 }

@@ -41,10 +41,6 @@ viterbi_g_cpp <- function(allprobs, delta, Gamma) {
     .Call(`_LaMa_viterbi_g_cpp`, allprobs, delta, Gamma)
 }
 
-forward_cpp_flies <- function(allprobs, delta, Gamma1, Gamma2, startDD, tod) {
-    .Call(`_LaMa_forward_cpp_flies`, allprobs, delta, Gamma1, Gamma2, startDD, tod)
-}
-
 rep_times <- function(x, times) {
     .Call(`_LaMa_rep_times`, x, times)
 }

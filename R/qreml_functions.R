@@ -1,29 +1,29 @@
-# helper function for penalty and qreml
-reshape_lambda <- function(num_elements, lambda) {
-  start <- 1
-  result <- lapply(num_elements, function(len) {
-    # Extract sub-vector from lambda based on the number of elements
-    sub_vector <- lambda[start:(start + len - 1)]
-    start <<- start + len
-    return(sub_vector)
-  })
-  return(result)
-}
-# helper function to compute generalized determinant
-gdeterminant <- function(x, 
-                         eps = 1e-10, # eigenvalues smaller than this will be treated as zero
-                         log = TRUE){
-  svd = eigen(x)
-  values = svd$values
-  
-  logdet = sum(log(values[values > eps]))
-  
-  if(!log){
-    return(exp(logdet))
-  } else{
-    return(logdet)
-  }
-}
+# # helper function for penalty and qreml
+# reshape_lambda <- function(num_elements, lambda) {
+#   start <- 1
+#   result <- lapply(num_elements, function(len) {
+#     # Extract sub-vector from lambda based on the number of elements
+#     sub_vector <- lambda[start:(start + len - 1)]
+#     start <<- start + len
+#     return(sub_vector)
+#   })
+#   return(result)
+# }
+# # helper function to compute generalized determinant
+# gdeterminant <- function(x, 
+#                          eps = 1e-10, # eigenvalues smaller than this will be treated as zero
+#                          log = TRUE){
+#   svd = eigen(x)
+#   values = svd$values
+#   
+#   logdet = sum(log(values[values > eps]))
+#   
+#   if(!log){
+#     return(exp(logdet))
+#   } else{
+#     return(logdet)
+#   }
+# }
 
 
 #' Computes penalty based on quadratic form

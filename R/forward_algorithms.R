@@ -1,3 +1,520 @@
+
+
+# HMMs, ct-HMMs and MMPPs -------------------------------------------------
+
+
+#' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix
+#'
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
+#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
+#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#'
+#' @return log-likelihood for given data and parameters
+#' @export
+#' @import RTMB
+#'
+#' @examples
+#' ## generating data from homogeneous 2-state HMM
+#' mu = c(0, 6)
+#' sigma = c(2, 4)
+#' Gamma = matrix(c(0.5, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
+#' delta = c(0.5, 0.5)
+#' # simulation
+#' s = x = rep(NA, 500)
+#' s[1] = sample(1:2, 1, prob = delta)
+#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
+#' for(t in 2:500){
+#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
+#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
+#' }
+#' 
+#' ## negative log likelihood function
+#' mllk = function(theta.star, x){
+#'   # parameter transformations for unconstraint optimization
+#'   Gamma = tpm(theta.star[1:2])
+#'   delta = stationary(Gamma) # stationary HMM
+#'   mu = theta.star[3:4]
+#'   sigma = exp(theta.star[5:6])
+#'   # calculate all state-dependent probabilities
+#'   allprobs = matrix(1, length(x), 2)
+#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
+#'   # return negative for minimization
+#'   -forward(delta, Gamma, allprobs)
+#' }
+#' 
+#' ## fitting an HMM to the data
+#' theta.star = c(-2,-2,0,5,log(2),log(3))
+#' mod = stats::nlm(mllk, theta.star, x = x)
+#'
+forward = function(delta, Gamma, allprobs, 
+                   trackID = NULL, ad = NULL, report = TRUE){
+  
+  # report quantities for easy use later
+  if(report) {
+    RTMB::REPORT(delta)
+    RTMB::REPORT(Gamma)
+    RTMB::REPORT(allprobs)
+    if(!is.null(trackID)){
+      RTMB::REPORT(trackID)
+    }
+  }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(delta) %in% c("advector", "numeric", "matrix", "array"))){
+      stop("delta needs to be either a vector, matrix or advector.")
+    }
+    
+    # if delta is advector, run ad version of the function
+    ad = inherits(delta, "advector")
+  }
+  
+  # non-ad version in C++
+  if(!ad) {
+    
+    if(inherits(delta, "advector")){
+      stop("It seems you forgot to set ad = TRUE.")
+    }
+    
+    if(is.null(trackID)) {
+      l = forward_cpp_h(allprobs, delta, Gamma)
+    } else {
+      trackInd = calc_trackInd(trackID)
+      
+      k = length(trackInd) # number of tracks
+      
+      if(is.vector(delta)){
+        delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
+      } else if(dim(delta)[1] != k){
+        stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+      }
+      
+      if(length(dim(Gamma)) == 3){
+        if(dim(Gamma)[3]!= k){
+          stop("Gamma needs to be either a matrix of dimension c(N,N) or an array of dimension c(N,N,k), matching the number tracks.")
+        }
+      } else if(is.matrix(Gamma)){
+        Gamma = array(Gamma, dim = c(dim(Gamma), k))
+      } else{
+        stop("Gamma needs to be either a matrix of dimension c(N,N) or an array of dimension c(N,N,k), matching the number tracks.")
+      }
+      
+      l = forward_cpp_h_tracks(allprobs, delta, Gamma, trackInd)
+    }
+  } else if(ad) { # ad version
+    
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
+    
+    # if(report) {
+    #   RTMB::REPORT(delta)
+    #   RTMB::REPORT(Gamma)
+    #   RTMB::REPORT(allprobs)
+    # }
+    
+    if(is.null(trackID)) {
+      
+      delta = matrix(delta, nrow = 1, ncol = length(delta), byrow = TRUE) # reshape to matrix
+      
+      # forward algorithm
+      foo = delta %*% RTMB::diag(allprobs[1,])
+      sumfoo = sum(foo)
+      phi = foo / sumfoo
+      l = log(sumfoo)
+      
+      for(t in 2:nrow(allprobs)) {
+        foo = phi %*% Gamma %*% RTMB::diag(allprobs[t,])
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+      }
+      
+    } else if(!is.null(trackID)) {
+      
+      # RTMB::REPORT(trackID)
+      
+      uID = unique(trackID) # unique track IDs
+      k = length(uID) # number of tracks
+      N = ncol(allprobs) # number of states
+      
+      ## dealing with the initial distribution, either a vector of length N 
+      # or a matrix of dimension c(k,N) for k tracks
+      # if(is.vector(delta)){
+      #   Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      # } else if(is.matrix(delta)){
+      #   if(nrow(delta) == 1){
+      #     Delta = matrix(c(delta), nrow = k, ncol = N, byrow = TRUE)
+      #   } else if(nrow(delta) == k){
+      #     Delta = delta
+      #   } else {
+      #     stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+      #   }
+      # }
+      
+      delta = as.matrix(delta) # reshape to matrix for easier handling
+      
+      if(ncol(delta) != N) delta = t(delta) # transpose if necessary
+      
+      if(nrow(delta) == 1) {
+        Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      } else {
+        Delta = delta
+      }
+      
+      ## dealing with Gamma, 
+      # either a matrix of dimension c(N,N) or an array of dimension c(N,N,k)
+      
+      if(length(dim(Gamma)) == 3) {
+        if(dim(Gamma)[3] != k) stop("Gamma needs to be either a matrix of dimension c(N,N) or an array of dimension c(N,N,k), matching the number tracks.")
+      } else if(is.matrix(Gamma)) {
+        Gamma = array(Gamma, dim = c(dim(Gamma), k))
+      } else {
+        stop("Gamma needs to be either a matrix of dimension c(N,N) or an array of dimension c(N,N,k), matching the number tracks.")
+      }
+      
+      ## forward algorithm
+      l = 0 # initialize log-likelihood
+      for(i in 1:k) {
+        ind = which(trackID == uID[i]) # indices of track i
+        
+        deltai = RTMB::matrix(Delta[i,], nrow = 1, ncol = N)
+        
+        foo = deltai %*% RTMB::diag(allprobs[ind[1],])
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+        
+        Gamma_i = Gamma[,,i]
+        
+        for(t in 2:length(ind)) {
+          foo = phi %*% Gamma_i %*% RTMB::diag(allprobs[ind[t],])
+          sumfoo = sum(foo)
+          phi = foo / sumfoo
+          l = l + log(sumfoo)
+        }
+      }
+    }
+  }
+  
+  return(l)
+}
+
+
+#' General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
+#'
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
+#' 
+#' If an array of dimension c(N,N,n) for a single track is provided, the first slice will be ignored.
+#'  
+#' If the elements of \eqn{\Gamma^{(t)}} depend on covariate values at t or covariates t+1 is your choice in the calculation of the array, prior to using this function.
+#' When conducting the calculation by using tpm_g(), the choice comes down to including the covariate matrix Z[-1,] oder Z[-n,].
+#' 
+#' If trackInd is provided, Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning will be ignored.
+#' If the parameters for Gamma are pooled across tracks or not, depends on your calculation of Gamma. If pooled, you can use tpm_g(Z, beta) to calculate the entire array of transition matrices when Z is of dimension c(n,p). \cr
+#' 
+#' This function can also be used to fit continuous-time HMMs, where each array entry is the Markov semigroup \eqn{\Gamma(\Delta t) = \exp(Q \Delta t)} and \eqn{Q} is the generator of the continuous-time Markov chain.
+#' 
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' In this case, \code{Gamma} needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
+#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
+#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#'
+#' @return log-likelihood for given data and parameters
+#' @export
+#' @import RTMB
+#'
+#' @examples
+#' ## generating data from inhomogeneous 2-state HMM
+#' mu = c(0, 6)
+#' sigma = c(2, 4)
+#' beta = matrix(c(-2,-2,0.5,-0.5),nrow=2)
+#' delta = c(0.5, 0.5)
+#' # simulation
+#' n = 2000
+#' s = x = rep(NA, n)
+#' z = rnorm(n, 0, 2)
+#' s[1] = sample(1:2, 1, prob = delta)
+#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
+#' for(t in 2:n){
+#'   Gamma = diag(2)
+#'   Gamma[!Gamma] = exp(beta[,1]+beta[,2]*z[t])
+#'   Gamma = Gamma / rowSums(Gamma)
+#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
+#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
+#' }
+#' 
+#' ## negative log likelihood function
+#' mllk = function(theta.star, x, z){
+#'   # parameter transformations for unconstraint optimization
+#'   beta = matrix(theta.star[1:4], 2, 2)
+#'   Gamma = tpm_g(Z = z, beta = beta)
+#'   delta = c(plogis(theta.star[5]), 1-plogis(theta.star[5]))
+#'   mu = theta.star[6:7]
+#'   sigma = exp(theta.star[8:9])
+#'   # calculate all state-dependent probabilities
+#'   allprobs = matrix(1, length(x), 2)
+#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
+#'   # return negative for minimization
+#'   -forward_g(delta, Gamma, allprobs)
+#' }
+#' 
+#' ## fitting an HMM to the data
+#' theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
+#' mod = nlm(mllk, theta.star, x = x, z = z)
+#'
+forward_g = function(delta, Gamma, allprobs, 
+                     trackID = NULL, ad = NULL, report = TRUE) {
+  
+  # report quantities for easy use later
+  if(report) {
+    RTMB::REPORT(delta)
+    RTMB::REPORT(Gamma)
+    RTMB::REPORT(allprobs)
+    if(!is.null(trackID)){
+      RTMB::REPORT(trackID)
+    }
+  }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    # check if delta has any of the allowed classes
+    if(!any(class(delta) %in% c("advector", "numeric", "matrix", "array"))){
+      stop("delta needs to be either a vector, matrix or advector.")
+    }
+    
+    # if delta is advector, run ad version of the function
+    ad = inherits(delta, "advector")
+  }
+  
+  if(!ad) {
+    
+    n = nrow(allprobs) # number of observations
+    
+    if(is.null(trackID)){ # only one track
+      
+      if(dim(Gamma)[3]==n){
+        Gamma = Gamma[,,-1]
+      }
+      l = forward_cpp_g(allprobs, delta, Gamma)
+      
+    } else{ # several tracks
+      
+      trackInd = calc_trackInd(trackID) # creating trackInd for faster C++
+      
+      k = length(trackInd) # number of tracks
+      
+      if(dim(Gamma)[3]!=n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+      
+      if(is.vector(delta)){
+        delta = matrix(delta, nrow = k, ncol = length(delta), byrow = TRUE)
+      }
+      
+      l = forward_cpp_g_tracks(allprobs, delta, Gamma, trackInd)
+    }
+    
+  } else if(ad) {
+    
+    "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    "diag<-" <- ADoverload("diag<-")
+    
+    if(report) { # report these quantities by default
+      RTMB::REPORT(delta)
+      RTMB::REPORT(Gamma)
+      RTMB::REPORT(allprobs)
+    }
+    
+    N = ncol(allprobs) # number of states
+    n = nrow(allprobs) # number of observations
+    
+    if(is.null(trackID)) { # only one track
+      
+      delta = matrix(delta, nrow = 1, ncol = N, byrow = TRUE) # reshape to matrix
+      
+      Gamma = array(Gamma, dim = dim(Gamma))
+      if(dim(Gamma)[3] == n) Gamma = Gamma[,,-1] # deleting first slice
+      
+      # forward algorithm
+      foo = delta * allprobs[1,]
+      sumfoo = sum(foo)
+      phi = foo / sumfoo
+      l = log(sumfoo)
+      
+      for(t in 2:n) {
+        foo = (phi %*% Gamma[,,t-1]) * allprobs[t,]
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+      }
+      
+    } else if(!is.null(trackID)) {
+      
+      RTMB::REPORT(trackID)
+      
+      uID = unique(trackID) # unique track IDs
+      k = length(uID) # number of tracks
+      
+      ## dealing with the initial distribution, either a vector of length N 
+      # or a matrix of dimension c(k,N) for k tracks
+      
+      # if(is.vector(delta)){
+      #   Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      # } else if(is.matrix(delta)){
+      #   if(nrow(delta) == 1){
+      #     Delta = matrix(c(delta), nrow = k, ncol = N, byrow = TRUE)
+      #   } else if(nrow(delta) == k){
+      #     Delta = delta
+      #   } else {
+      #     stop("Delta needs to be either a vector of length N or a matrix of dimension c(k,N), matching the number tracks.")
+      #   }
+      # }
+      
+      delta = as.matrix(delta) # reshape to matrix for easier handling
+      
+      if(ncol(delta) != N) delta = t(delta) # transpose if necessary
+      
+      if(nrow(delta) == 1) {
+        Delta = matrix(delta, nrow = k, ncol = N, byrow = TRUE)
+      } else {
+        Delta = delta
+      }
+      
+      ## dealing with Gamma, needs to be array of dimension c(N,N,k)
+      
+      if(dim(Gamma)[3] != n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
+      Gamma = array(Gamma, dim = dim(Gamma))
+      
+      ## forward algorithm
+      l = 0 # initialize log-likelihood
+      for(i in 1:k) {
+        ind = which(trackID == uID[i]) # indices of track i
+        
+        deltai = matrix(Delta[i,], nrow = 1, ncol = N)
+        
+        foo = deltai * allprobs[ind[1],]
+        sumfoo = sum(foo)
+        phi = foo / sumfoo
+        l = l + log(sumfoo)
+        
+        for(t in 2:length(ind)) {
+          foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
+          sumfoo = sum(foo)
+          phi = foo / sumfoo
+          l = l + log(sumfoo)
+        }
+      }
+    }
+  }
+  
+  return(l)
+}
+
+
+#' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with for periodically varying transition probability matrices
+#'
+#' When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
+#' Thus, it is much more efficient to only calculate these \eqn{L} matrices and index them by a time variable (e.g. time of day or day of year) instead of calculating such a matrix for each index in the data set (which would be redundant).
+#' This function allows for that by only expecting a transition probability matrix for each time point in a period and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
+#'
+#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
+#' @param Gamma array of transition probability matrices of dimension c(N,N,L).
+#' 
+#' Here we use the definition \eqn{\Pr(S_t=j \mid S_{t-1}=i) = \gamma_{ij}^{(t)}} such that the transition probabilities between time point \eqn{t-1} and \eqn{t} are an element of \eqn{\Gamma^{(t)}}.
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
+#' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n)
+#' 
+#' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
+#' @param trackID optional vector of length n containing IDs
+#' 
+#' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
+#' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
+#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#'
+#'
+#' @return log-likelihood for given data and parameters
+#' @export
+#'
+#' @examples
+#' ## generating data from periodic 2-state HMM
+#' mu = c(0, 6)
+#' sigma = c(2, 4)
+#' beta = matrix(c(-2,-2,1,-1, 1, -1),nrow=2)
+#' delta = c(0.5, 0.5)
+#' # simulation
+#' n = 2000
+#' s = x = rep(NA, n)
+#' tod = rep(1:24, ceiling(2000/24))
+#' s[1] = sample(1:2, 1, prob = delta)
+#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
+#' # 24 unique t.p.m.s
+#' Gamma = array(dim = c(2,2,24))
+#' for(t in 1:24){
+#'   G = diag(2)
+#'   G[!G] = exp(beta[,1]+beta[,2]*sin(2*pi*t/24)+
+#'     beta[,3]*cos(2*pi*t/24)) # trigonometric link
+#'   Gamma[,,t] = G / rowSums(G)
+#' }
+#' for(t in 2:n){
+#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,tod[t]])
+#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
+#' }
+#' # we can also use function from LaMa to make building periodic tpms much easier
+#' Gamma = tpm_p(1:24, 24, beta, degree = 1)
+#' 
+#' ## negative log likelihood function
+#' mllk = function(theta.star, x, tod){
+#'   # parameter transformations for unconstraint optimization
+#'   beta = matrix(theta.star[1:6], 2, 3)
+#'   Gamma = tpm_p(tod=1:24, L=24, beta=beta)
+#'   delta = stationary_p(Gamma, t=tod[1])
+#'   mu = theta.star[8:9]
+#'   sigma = exp(theta.star[10:11])
+#'   # calculate all state-dependent probabilities
+#'   allprobs = matrix(1, length(x), 2)
+#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
+#'   # return negative for minimization
+#'   -forward_p(delta, Gamma, allprobs, tod)
+#' }
+#' 
+#' ## fitting an HMM to the data
+#' theta.star = c(-2,-2,1,-1,1,-1,0,0,5,log(2),log(3))
+#' mod = nlm(mllk, theta.star, x = x, tod = tod)
+#'
+forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, report = TRUE){
+  utod = unique(tod) # unique time of days
+  L = length(utod) # cycle length
+  
+  if(dim(Gamma)[3] != L){
+    stop("Gamma needs to be an array of dimension c(N,N,L), matching the number of unique time points in tod.") 
+  } 
+  
+  Gammanew = Gamma[,,tod]
+  
+  forward_g(delta, Gammanew, allprobs, 
+            trackID = trackID, ad = ad, report = report)
+}
+
+
+
+
+# HSMMs -------------------------------------------------------------------
+
+
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for homogeneous hidden semi-Markov models
 #'
 #' @description
@@ -218,7 +735,6 @@ forward_hsmm <- function(dm, omega, allprobs,
 }
 
 
-
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with inhomogeneous state durations and/ or conditional transition probabilities
 #'
 #' @description
@@ -259,8 +775,8 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' @examples
 #' # currently no examples
 forward_ihsmm <- function(dm, omega, allprobs,
-                           trackID = NULL, delta = NULL, startInd = NULL,
-                           eps = 1e-10, report = TRUE){
+                          trackID = NULL, delta = NULL, startInd = NULL,
+                          eps = 1e-10, report = TRUE){
   
   # overloading assignment operators, currently necessary
   "[<-" <- ADoverload("[<-")
@@ -854,482 +1370,4 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
   }
   
   l
-}
-
-
-# differentiable max function
-max2 = function(x,y){
-  (x + y + abs(x - y)) / 2
-}
-
-#' Builds the transition probability matrix of an HSMM-approximating HMM
-#'
-#' @description
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled.
-#' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
-#' 
-#' This function computes the transition matrix to approximate a given HSMM by an HMM with a larger state space.
-#'
-#' @param omega embedded transition probability matrix of dimension c(N,N) as computed by \code{\link{tpm_emb}}.
-#' @param dm state dwell-time distributions arranged in a list of length(N). Each list element needs to be a vector of length N_i, where N_i is the state aggregate size.
-#' @param Fm optional list of length N containing the cumulative distribution functions of the dwell-time distributions.
-#' @param sparse logical, indicating whether the output should be a \strong{sparse} matrix. Defaults to \code{TRUE}.
-#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
-#'
-#' @return extended-state-space transition probability matrix of the approximating HMM
-#' @export
-#'
-#' @examples
-#' # building the t.p.m. of the embedded Markov chain
-#' omega = matrix(c(0,1,1,0), nrow = 2, byrow = TRUE)
-#' # defining state aggregate sizes
-#' sizes = c(20, 30)
-#' # defining state dwell-time distributions
-#' lambda = c(5, 11)
-#' dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
-#' # calculating extended-state-space t.p.m.
-#' Gamma = tpm_hsmm(omega, dm)
-tpm_hsmm <- function(omega, dm, 
-                     Fm = NULL, sparse = TRUE, eps = 1e-10) {
-  "[<-" <- ADoverload("[<-")
-  "c" <- ADoverload("c")
-  "diag<-" <- ADoverload("diag<-")
-  
-  Nv = sapply(dm, length)
-  N = length(Nv)
-  
-  # Pre-allocate G matrix
-  total_cols = sum(Nv)
-  G = matrix(0, total_cols, total_cols)
-  
-  # compute cdf if not provided
-  if(is.null(Fm)) Fm = lapply(1:N, function(i) cumsum(c(0, dm[[i]][-Nv[i]])))
-  
-  row_start = 1  # Track row start index for G
-  for (i in 1:N) {
-    Ni = Nv[i]
-    # ci = dm[[i]] / (1 - Fm[[i]] + eps)
-    ci = max2(dm[[i]], eps) / (1 - Fm[[i]] + eps/2)
-    cim = max2(1 - ci, 0)
-    
-    Gi = matrix(0, Ni, total_cols)  # Pre-allocate the block for Gi
-    
-    col_start = 1  # Track column start index for Gi
-    for (j in 1:N) {
-      Nj = Nv[j]
-      
-      if (i == j) {
-        if (Ni == 1) {
-          Gi[1, (col_start + Nj - 1)] = cim
-        } else {
-          diag_block = diag(cim[-Ni], Ni - 1, Ni - 1)
-          Gi[1:(Ni - 1), (col_start + 1):(col_start + Nj - 1)] = diag_block
-          Gi[Ni, (col_start + Nj - 1)] = cim[Ni]
-        }
-      } else {
-        if (Ni == 1) {
-          Gi[1, col_start:(col_start + Nj - 1)] = c(omega[i, j] * (1-cim), rep(0, Nj - 1))
-        } else {
-          Gi[, col_start] = omega[i, j] * (1-cim)
-        }
-      }
-      
-      col_start = col_start + Nj
-    }
-    
-    G[row_start:(row_start + Ni - 1), ] = Gi
-    row_start = row_start + Ni
-  }
-  if(sparse){
-    G = methods::as(G, "sparseMatrix")
-  }
-  G
-}
-
-#' Builds all transition probability matrices of an inhomogeneous-HSMM-approximating HMM
-#'
-#' @description
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
-#' 
-#' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
-#'
-#' @param omega embedded transition probability matrix
-#'
-#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb}}), or an array of dimension c(N,N,n) for inhomogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb_g}}).
-#' @param dm state dwell-time distributions arranged in a list of length N
-#'
-#' Each list element needs to be a matrix of dimension c(n, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
-#'
-#' @return list of dimension length \code{n - max(sapply(dm, ncol))}, containing sparse extended-state-space transition probability matrices for each time point (except the first \code{max(sapply(dm, ncol)) - 1}).
-#' @export
-#'
-#' @examples
-#' N = 2
-#' # time-varying mean dwell times
-#' n = 100
-#' z = runif(n)
-#' beta = matrix(c(2, 2, 0.1, -0.1), nrow = 2)
-#' Lambda = exp(cbind(1, z) %*% t(beta))
-#' sizes = c(15, 15) # approximating chain with 30 states
-#' # state dwell-time distributions
-#' dm = lapply(1:N, function(i) sapply(1:sizes[i]-1, dpois, lambda = Lambda[,i]))
-#' 
-#' ## homogeneous conditional transition probabilites
-#' # diagonal elements are zero, rowsums are one
-#' omega = matrix(c(0,1,1,0), nrow = N, byrow = TRUE)
-#' 
-#' # calculating extended-state-space t.p.m.s
-#' Gamma = tpm_ihsmm(omega, dm)
-#' 
-#' ## inhomogeneous conditional transition probabilites
-#' # omega can be an array
-#' omega = array(omega, dim = c(N,N,n))
-#' 
-#' # calculating extended-state-space t.p.m.s
-#' Gamma = tpm_ihsmm(omega, dm)
-tpm_ihsmm = function(omega, dm, 
-                     eps = 1e-10){
-  n = nrow(dm[[1]]) # length of timeseries
-  N = length(dm) # number of states
-  Ni = sapply(dm, ncol) # state aggregate sizes
-  bigN = sum(Ni) # overall number of approximating states
-  maxNi = max(Ni) # maximum state aggregate size
-  
-  ## computing all cdfs
-  Fm = lapply(1:N, function(i) cbind(0, t(apply(dm[[i]][,-Ni[i]], 1, cumsum))))
-  
-  ## if omega is just matrix, turn into array
-  if(is.matrix(omega)){
-    omega = array(omega, dim = c(N, N, n))
-  }
-  
-  # for each timepoint, use tpm_hsmm applied to shifted pmfs and cdfs
-  Gamma = vector("list", n - maxNi + 1)
-  for(k in 1:(n - maxNi + 1)){
-    t = k + maxNi - 1
-    dmt = Fmt = vector("list", N)
-    
-    for(i in 1:N){
-      ind = t:(t - Ni[i] + 1)
-      
-      dmt[[i]] = diag(dm[[i]][ind,])
-      Fmt[[i]] = diag(Fm[[i]][ind,])
-    }
-    # apply tpm_hsmm() to shifted pmfs and pdfs
-    Gamma[[k]] = tpm_hsmm(omega[,,t], dmt, Fm = Fmt, sparse = TRUE, eps = eps)
-  }
-  Gamma
-}
-
-#' Builds all transition probability matrices of an periodic-HSMM-approximating HMM
-#'
-#' @description
-#' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs. For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
-#' 
-#' This function computes the transition matrices of a periodically inhomogeneos HSMMs.
-#'
-#' @param omega embedded transition probability matrix
-#'
-#' Either a matrix of dimension c(N,N) for homogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb}}), or an array of dimension c(N,N,L) for inhomogeneous conditional transition probabilities (as computed by \code{\link{tpm_emb_g}}).
-#' @param dm state dwell-time distributions arranged in a list of length N
-#'
-#' Each list element needs to be a matrix of dimension c(L, N_i), where each row t is the (approximate) probability mass function of state i at time t.
-#' @param eps rounding value: If an entry of the transition probabily matrix is smaller, than it is rounded to zero. Usually, this should not be changed.
-#'
-#' @return list of dimension length L, containing sparse extended-state-space transition probability matrices of the approximating HMM for each time point of the cycle.
-#' @export
-#'
-#' @examples
-#' N = 2 # number of states
-#' L = 24 # cycle length
-#' # time-varying mean dwell times
-#' Z = trigBasisExp(1:L) # trigonometric basis functions design matrix
-#' beta = matrix(c(2, 2, 0.1, -0.1, -0.2, 0.2), nrow = 2)
-#' Lambda = exp(cbind(1, Z) %*% t(beta))
-#' sizes = c(20, 20) # approximating chain with 40 states
-#' # state dwell-time distributions
-#' dm = lapply(1:N, function(i) sapply(1:sizes[i]-1, dpois, lambda = Lambda[,i]))
-#' 
-#' ## homogeneous conditional transition probabilites
-#' # diagonal elements are zero, rowsums are one
-#' omega = matrix(c(0,1,1,0), nrow = N, byrow = TRUE)
-#' 
-#' # calculating extended-state-space t.p.m.s
-#' Gamma = tpm_phsmm(omega, dm)
-#' 
-#' ## inhomogeneous conditional transition probabilites
-#' # omega can be an array
-#' omega = array(omega, dim = c(N,N,L))
-#' 
-#' # calculating extended-state-space t.p.m.s
-#' Gamma = tpm_phsmm(omega, dm)
-tpm_phsmm = function(omega, dm, 
-                     eps = 1e-10){
-  L = nrow(dm[[1]]) # period length
-  N = length(dm) # number of states
-  Ni = sapply(dm, ncol) # state aggregate sizes
-  bigN = sum(Ni) # overall number of approximating states
-  
-  ## computing all cdfs
-  Fm = lapply(1:N, function(i) cbind(0, t(apply(dm[[i]][,-Ni[i]], 1, cumsum))))
-  
-  ## if omega is just matrix, turn into array
-  if(is.matrix(omega)){
-    omega = array(omega, dim = c(N, N, L))
-  }
-  
-  # for each timepoint, use tpm_hsmm applied to shifted pmfs and cdfs
-  Gamma = vector("list", L)
-  
-  for(t in 1:L){
-    dmt = Fmt = vector("list", N)
-    
-    for(i in 1:N){
-      ind = (t:(t - Ni[i] + 1)) %% L
-      ind[ind == 0] = L
-      
-      dmt[[i]] = diag(dm[[i]][ind,])
-      Fmt[[i]] = diag(Fm[[i]][ind,])
-    }
-    # apply tpm_hsmm() to shifted pmfs and pdfs
-    Gamma[[t]] = tpm_hsmm(omega[,,t], dmt, Fm = Fmt, sparse = TRUE, eps = eps)
-  }
-  Gamma
-}
-
-#' Sparse version of \code{\link{stationary}}
-#'
-#' @description
-#' This is function computes the stationary distribution of a Markov chain with a given \strong{sparse} transition probability matrix.
-#' Compatible with automatic differentiation by \code{RTMB}
-#
-#' @param Gamma sparse transition probability matrix of dimension c(N,N)
-#'
-#' @return stationary distribution of the Markov chain with the given transition probability matrix
-#' @export
-#' @import RTMB
-#'
-#' @examples
-#' ## HSMM example (here the approximating tpm is sparse)
-#' # building the t.p.m. of the embedded Markov chain
-#' omega = matrix(c(0,1,1,0), nrow = 2, byrow = TRUE)
-#' # defining state aggregate sizes
-#' sizes = c(20, 30)
-#' # defining state dwell-time distributions
-#' lambda = c(5, 11)
-#' dm = list(dpois(1:sizes[1]-1, lambda[1]), dpois(1:sizes[2]-1, lambda[2]))
-#' # calculating extended-state-space t.p.m.
-#' Gamma = tpm_hsmm(omega, dm)
-#' delta = stationary_sparse(Gamma)
-stationary_sparse = function(Gamma) 
-{
-  "[<-" <- ADoverload("[<-")
-  "c" <- ADoverload("c")
-  "diag<-" <- ADoverload("diag<-")
-  N = dim(Gamma)[1]
-  
-  if(methods::is(Gamma, "sparseMatrix")) {
-    Gamma = as.matrix(Gamma)
-  }
-  delta = Matrix::solve(t(diag(N) - Gamma + 1), rep(1, N))
-  
-  delta
-}
-
-#' Sparse version of \code{\link{stationary_p}}
-#'
-#' @description
-#' This is function computes the periodically stationary distribution of a Markov chain given a list of L \strong{sparse} transition probability matrices.
-#' Compatible with automatic differentiation by \code{RTMB}
-#' 
-#' @param Gamma sist of length L containing sparse transition probability matrices for one cycle.
-#' @param t integer index of the time point in the cycle, for which to calculate the stationary distribution
-#' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
-#'
-#' @return either the periodically stationary distribution at time t or all periodically stationary distributions.
-#' @export
-#' @import RTMB
-#'
-#' @examples
-#' ## periodic HSMM example (here the approximating tpm is sparse)
-#' N = 2 # number of states
-#' L = 24 # cycle length
-#' # time-varying mean dwell times
-#' Z = trigBasisExp(1:L) # trigonometric basis functions design matrix
-#' beta = matrix(c(2, 2, 0.1, -0.1, -0.2, 0.2), nrow = 2)
-#' Lambda = exp(cbind(1, Z) %*% t(beta))
-#' sizes = c(20, 20) # approximating chain with 40 states
-#' # state dwell-time distributions
-#' dm = lapply(1:N, function(i) sapply(1:sizes[i]-1, dpois, lambda = Lambda[,i]))
-#' omega = matrix(c(0,1,1,0), nrow = N, byrow = TRUE) # embedded t.p.m.
-#' 
-#' # calculating extended-state-space t.p.m.s
-#' Gamma = tpm_phsmm(omega, dm)
-#' # Periodically stationary distribution for specific time point
-#' delta = stationary_p_sparse(Gamma, 4)
-#'
-#' # All periodically stationary distributions
-#' Delta = stationary_p_sparse(Gamma)
-stationary_p_sparse = function(Gamma, t = NULL){
-  # overloading assignment operators, currently necessary
-  "[<-" <- RTMB::ADoverload("[<-")
-  "c" <- ADoverload("c")
-  "diag<-" <- ADoverload("diag<-")
-  
-  L = length(Gamma) # cycle length
-  N = dim(Gamma[[1]])[1] # tpm dimension
-  
-  if(is.null(t)) {
-    Delta = matrix(NaN, nrow = L, ncol = N)
-    
-    GammaT = Gamma[[1]]
-    for(k in 2:L) GammaT = GammaT %*% Gamma[[k]]
-    
-    Delta[1,] = stationary_sparse(GammaT)
-    
-    for(t in 2:L){
-      Delta[t,] = as.numeric(Delta[t-1,, drop = FALSE] %*% Gamma[[t-1]])
-    }
-    return(Delta)
-  } else{
-    GammaT = Gamma[[t]]
-    if(t < L){
-      for(k in (t+1):L) GammaT = GammaT %*% Gamma[[k]]
-      if(t > 1){
-        for(k in 1:(t-1)) GammaT = GammaT %*% Gamma[[k]]
-      }
-    } else if(t == L){
-      for(k in 1:(L-1)) GammaT = GammaT %*% Gamma[[k]]
-    }
-    delta = stationary_sparse(GammaT)
-    return(delta)
-  }
-}
-
-#' Build the embedded transition probability matrix of an HSMM from unconstrained parameter vector
-#'
-#' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
-#' 
-#' This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector. 
-#' For each row of the matrix, the inverse multinomial logistic link is applied.
-#' 
-#' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2), hence also the length of \code{param}.
-#' This means, for 2 states, the function needs to be called without any arguments, for 3-states with a vector of length 3, for 4 states with a vector of length 8, etc.
-#'
-#' Compatible with automatic differentiation by \code{RTMB}
-#'
-#' @param param unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
-#'
-#' If the function is called without \code{param}, it will return the conditional transition probability matrix for a 2-state HSMM, which is fixed with 0 diagonal entries and off-diagonal entries equal to 1.
-#'
-#' @return embedded/ conditional transition probability matrix of dimension c(N,N)
-#' @export
-#' @import RTMB
-#'
-#' @examples
-#' # 2 states: no free off-diagonal elements
-#' omega = tpm_emb()
-#' 
-#' # 3 states: 3 free off-diagonal elements
-#' param = rep(0, 3)
-#' omega = tpm_emb(param)
-#' 
-#' # 4 states: 8 free off-diagonal elements
-#' param = rep(0, 8)
-#' omega = tpm_emb(param)
-tpm_emb = function(param = NULL){
-  "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
-  "c" <- ADoverload("c")
-  "diag<-" <- ADoverload("diag<-")
-  
-  if(is.null(param)){
-    omega = matrix(c(0,1,1,0), nrow = 2, ncol = 2)
-  } else{
-    K = length(param)
-    # for N > 2: N*(N-2) is bijective with solution
-    N = as.integer(1 + sqrt(1 + K), 0)
-    
-    omega = matrix(0,N,N)
-    omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N), exp(param)), N, N-1)))
-    omega = t(omega) / apply(omega, 2, sum)
-  }
-  
-  omega
-}
-
-#' Build all embedded transition probability matrices of an inhomogeneous HSMM
-#'
-#' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
-#' We can allow this matrix to vary with covariates, which is the purpose of this function.
-#'
-#' It builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
-#' For each row of the matrix, the inverse multinomial logistic link is applied.
-#' 
-#' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2) which determines the number of rows of the parameter matrix.
-#'
-#' Compatible with automatic differentiation by \code{RTMB}
-#' @param Z covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
-#'
-#' If Z has only p columns, an intercept column of ones will be added automatically.
-#' @param beta matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix
-#'
-#' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
-#' p can be 0, in which case the model is homogeneous.
-#' @param report logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to \code{TRUE}.
-#'
-#'
-#' @return array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
-#' @export
-#' @import RTMB
-#'
-#' @examples
-#' ## parameter matrix for 3-state HSMM
-#' beta = matrix(c(rep(0, 3), -0.2, 0.2, 0.1), nrow = 3)
-#' # no intercept
-#' Z = rnorm(100)
-#' omega = tpm_emb_g(Z, beta)
-#' # intercept
-#' Z = cbind(1, Z)
-#' omega = tpm_emb_g(Z, beta)
-tpm_emb_g = function(Z, beta, report = TRUE){
-  "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
-  "c" <- ADoverload("c")
-  "diag<-" <- ADoverload("diag<-")
-  
-  beta = as.matrix(beta) # turn beta into matrix if it is a vector
-  # that way, we can have homogeneity as a special case with Z = rep(1, ...)
-  
-  p = ncol(beta) - 1 # number of parameters per state (excluding intercept)
-  K = nrow(beta) # number of rows in beta -> N*(N-2) off-diagonal elements
-  # for N > 2: N*(N-2) is bijective with solution
-  N = as.integer(1 + sqrt(1 + K))
-  
-  Z = as.matrix(Z)
-  
-  if(ncol(Z) == p){
-    Z = cbind(1, Z) # adding intercept column
-  } else if(ncol(Z) != p + 1){
-    stop("The dimensions of Z and beta do not match.")
-  }
-  
-  n = nrow(Z)
-  
-  if(report){
-    RTMB::REPORT(beta)
-  }
-  
-  expEta = exp(Z %*% t(beta))
-  
-  omega = array(NaN, dim = c(N,N,n))
-  
-  for(t in 1:n){
-    O = matrix(0, N, N)
-    O[!diag(N)] = as.vector(t(matrix(c(rep(1, N), expEta[t,]), N, N-1)))
-    omega[,,t] = t(O) / apply(O, 2, sum)
-  }
-  
-  omega
 }

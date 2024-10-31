@@ -50,7 +50,6 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/janoleko/LaMa/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -69,7 +68,7 @@
 Koslik</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/janoleko/LaMa/blob/main/vignettes/HSMMs.Rmd" class="external-link"><code>vignettes/HSMMs.Rmd</code></a></small>
+
       <div class="d-none name"><code>HSMMs.Rmd</code></div>
     </div>
 
@@ -116,7 +115,7 @@ matrix called
 and the parameters of the state-dependent process.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># loading the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://janoleko.github.io/software/">"LaMa"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://janoleko.github.io/LaMa/">"LaMa"</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span></span>
@@ -218,7 +217,7 @@ distributions is covered.</p>
 <span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, agsizes <span class="op">=</span> <span class="va">agsizes</span>, stepmax <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 2.276298 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 2.263616 secs</span></span></code></pre></div>
 <p>HSMMs are rather slow (even using C++) as we translate the additional
 model complexity into a higher computational overhead (31 states
 here).</p>
@@ -321,7 +320,7 @@ interpretability.</p>
 <span><span class="va">mod_muskox</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_muskox</span>, <span class="va">theta.star</span>, step<span class="op">=</span><span class="va">data</span><span class="op">$</span><span class="va">step</span>, N<span class="op">=</span><span class="fl">3</span>,</span>
 <span>                 agsizes<span class="op">=</span><span class="va">agsizes</span>,iterlim <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 6.210491 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 6.20968 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>

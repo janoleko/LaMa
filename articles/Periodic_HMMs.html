@@ -50,7 +50,6 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/janoleko/LaMa/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -69,7 +68,7 @@
 Koslik</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/janoleko/LaMa/blob/main/vignettes/Periodic_HMMs.Rmd" class="external-link"><code>vignettes/Periodic_HMMs.Rmd</code></a></small>
+
       <div class="d-none name"><code>Periodic_HMMs.Rmd</code></div>
     </div>
 
@@ -99,7 +98,7 @@ general, inhomogeneous HMM, it is often more interpretable and very
 important in statistical ecology, hence we discuss it separately.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># loading the package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/LaMa/">LaMa</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="setting-parameters-for-simulation">Setting parameters for simulation<a class="anchor" aria-label="anchor" href="#setting-parameters-for-simulation"></a>
@@ -201,7 +200,7 @@ that specifies which time point to compute.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.781   0.001   0.782</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.799   0.000   0.799</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>

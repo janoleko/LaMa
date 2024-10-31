@@ -105,15 +105,16 @@ Other latent Markov model classes:
 
 ## Introductory example: Homogeneous HMM
 
-We analyse the `elephant` data set contained in the package using a
-simple 2-state HMM with state-dependent gamma distributions. We fit the
-model to the hourly step lengths.
+We analyse the `trex` data set contained in the package. It contains
+hourly step lengths of a Tyrannosaurus rex, living 66 million years ago.
+To these data, we fit a simple 2-state HMM with state-dependent gamma
+distributions for the step-lengths.
 
 ``` r
 library(LaMa)
 #> Loading required package: RTMB
 
-head(elephant, 3)
+head(trex, 3)
 #>   tod      step     angle state
 #> 1   9 0.3252437        NA     1
 #> 2  10 0.2458265  2.234562     1
@@ -151,10 +152,10 @@ par = c(-2,-2,             # initial tpm params (logit-scale)
         log(c(0.2, 1.5)))  # initial sds for step length (log-transformed)
 
 system.time(
-  mod <- nlm(nll, par, step = elephant$step)
+  mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.367   0.010   0.382
+#>   0.382   0.011   0.394
 ```
 
 Really fast for 10.000 data points!
@@ -169,7 +170,7 @@ delta = stationary(Gamma) # stationary HMM
 mu = exp(mod$estimate[3:4])
 sigma = exp(mod$estimate[5:6])
 
-hist(elephant$step, prob = TRUE, bor = "white", breaks = 40, main = "", xlab = "step length")
+hist(trex$step, prob = TRUE, bor = "white", breaks = 40, main = "", xlab = "step length")
 curve(delta[1] * dgamma2(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)
 curve(delta[2] * dgamma2(x, mu[2], sigma[2]), add = TRUE, lwd = 2, col = "deepskyblue", n=500)
 legend("topright", col = c("orange", "deepskyblue"), lwd = 2, bty = "n", legend = c("state 1", "state 2"))

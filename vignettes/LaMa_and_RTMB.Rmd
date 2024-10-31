@@ -31,9 +31,9 @@ library(LaMa) # development version
 library(RTMB)
 ```
 
-For the purpose of this vignette, we will analyse the `elephant` data set contained in the `LaMa` package:
+For the purpose of this vignette, we will analyse the `trex` data set contained in the package. It contains hourly step lengths of a Tyrannosaurus rex, living 66 million years ago, and we aim to understand its behavoural process using HMMs.
 ```{r data}
-head(elephant, 5)
+head(trex, 5)
 ```
 
 ### Basic workflow
@@ -59,8 +59,8 @@ par = list(
   )    
 
 dat = list(
-  step = elephant$step[1:5000], # only using a subset of the data for faster computation
-  angle = elephant$angle[1:5000], 
+  step = trex$step,   # hourly step lengths
+  angle = trex$angle, # hourly turning angles
   N = 2
   )
 ```
@@ -157,7 +157,7 @@ mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
 # defining color vector
 color = c("orange", "deepskyblue")
 
-plot(elephant$step[1:200], type = "h", xlab = "time", ylab = "step length", 
+plot(trex$step[1:200], type = "h", xlab = "time", ylab = "step length", 
      col = color[mod$states[1:200]], bty = "n")
 legend("topright", col = color, lwd = 1, legend = c("state 1", "state 2"), bty = "n")
 ```
@@ -166,7 +166,7 @@ or the estimated state-dependent distributions.
 
 ```{r statedepdist, fig.width = 8, fig.height = 4}
 oldpar = par(mfrow = c(1,2))
-hist(elephant$step, prob = TRUE, breaks = 40, 
+hist(trex$step, prob = TRUE, breaks = 40, 
      bor = "white", main = "", xlab = "step length")
 for(j in 1:2) curve(delta[j] * dgamma2(x, mu[j], sigma[j]), 
                     lwd = 2, add = T, col = color[j])
@@ -174,7 +174,7 @@ curve(delta[1]*dgamma2(x, mu[1], sigma[1]) + delta[2]*dgamma2(x, mu[2], sigma[2]
       lwd = 2, lty = 2, add = T)
 legend("top", lwd = 2, col = color, legend = c("state 1", "state 2"), bty = "n")
 
-hist(elephant$angle, prob = TRUE, breaks = 40, 
+hist(trex$angle, prob = TRUE, breaks = 40, 
      bor = "white", main = "", xlab = "turning angle")
 for(j in 1:2) curve(delta[j] * dvm(x, 0, kappa[j]), 
                     lwd = 2, add = T, col = color[j])
@@ -210,20 +210,20 @@ as.list(sdr, "Std", report = TRUE)
 
 ### Covariate effects
 
-Generalising to covariate effects is also straightforward. For example, we can add time of day variation to the state process. In this case we want to obtain a state process model of the form
+We can now generalise the previous model to include covariate effects. In our example, we might be interested how the T-rex's behaviour varies with the time of day. Hence, we add diel variation to the state process. For example, we can model the transition probabilities as a function of the time of day using a trigonometric basis expansion to ensure diurnal continuity. The transition probabilities are given by
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + \beta_1^{(ij)} \sin \bigl(\frac{2 \pi t}{24}\bigr) + \beta_2^{(ij)} \cos \bigl(\frac{2 \pi t}{24}\bigr) + \beta_3^{(ij)} \sin \bigl(\frac{2 \pi t}{12}\bigr) + \beta_4^{(ij)} \cos \bigl(\frac{2 \pi t}{12}\bigr),
 $$
 where $t$ is the time of day.
 
-For this we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list. The `LaMa` function `trigBasisExp()` does this very conveniently.
+To practically achieve this, we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list for indexing inside the likelihood function. The `LaMa` function `trigBasisExp()` does this very conveniently.
 
 ```{r tod}
 # building trigonometric basis desing matrix (in this case no intercept column)
 Z = trigBasisExp(1:24, degree = 2) # convenience function from LaMa
 # only compute the 24 unique values and index later for entire time series
 dat$Z = Z # adding design matrix to dat
-dat$tod = elephant$tod # adding time of day to dat for indexing
+dat$tod = trex$tod # adding time of day to dat for indexing
 ```
 
 We also need to change the parameter list `par` to include the regression parameters for the time of day. The regression parameters for the state process will typically have the form of a $N (N-1) \times p+1$ matrix, where $N$ is the number of states and $p$ is the number of regressors -- this format is also expected by `tpm_g()` which computes the array of transition matrices based on the design and parameter matrix. Another lovely convenience that `RTMB` allows for is that, in our parameter list, we can have matrices, making reshaping of vectors to matrices inside the likelihood function unnessesary.

@@ -24,23 +24,25 @@ knitr::opts_chunk$set(
 
 > Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa**, **Inhomogeneous HMMs**, **Periodic HMMs** and **LaMa and RTMB**.
 
-This vignette explores how `LaMa` can be used to fit models involving nonparameteric components, represented by **penalised splines**. The main idea here is that it may be useful to represent some relationships in our model by smooth functions for which the functional form is not pre-specified, but flexibly estimated from the data. For HMM-like models, this is particularly valuable, as the latent nature of the state process makes modelling choices more difficult. For example, choosing an appropriate **parametric family** for the **state-dependent distributions** may be difficult, as we cannot do state-specific EDA before fitting the model. Also very difficult is the dependence of transition probabilities on covariates, as the **transitions** are **not** directly **observed**. Hence, the obvious alternative is to model these kind of relationships flexibly using splines but imposing a penalty on the smoothness of the estimated functions. This leads us to **penalised splines**.
+This vignette explores how `LaMa` can be used to fit models involving nonparameteric components, represented by **penalised splines**. The main idea here is that it may be useful to represent some relationships in our model by smooth functions for which the functional form is not pre-specified, but flexibly estimated from the data. For HMM-like models, this is particularly valuable, as the latent nature of the state process makes modelling choices more difficult. For example, choosing an appropriate parametric family for the state-dependent distributions may be difficult, as we cannot do state-specific EDA before fitting the model. Also very difficult is the dependence of transition probabilities on covariates, as the transitions are not directly observed. Hence, the obvious alternative is to model these kind of relationships flexibly using splines but imposing a penalty on the smoothness of the estimated functions. This leads us to **penalised splines**.
 
-`LaMa` contains helper functions that build **design** and **penalty matrices** for given formulas (using `mgcv` under the hood) and also functions to estimate models involving penalised splines in a **random effects framework**. For the latter to work, the **penalised negative log-likelihood** needs to be compatible with the R package `RTMB` to allow for **automatic differentiation (AD)**. For more information on `RTMB`, see the vignette *LaMa and RTMB* or check out its [documentation](https://cran.r-project.org/web/packages/RTMB/index.html). For more information on penalised splines, we recommend @wood2017generalized.
+`LaMa` contains helper functions that build **design** and **penalty matrices** for given formulas (using `mgcv` under the hood) and also functions to estimate models involving penalised splines in a random effects framework. For the latter to work, the **penalised negative log-likelihood** needs to be compatible with the R package `RTMB` to allow for **automatic differentiation (AD)**. For more information on `RTMB`, see the vignette *LaMa and RTMB* or check out its [documentation](https://cran.r-project.org/web/packages/RTMB/index.html). For more information on penalised splines, we recommend @wood2017generalized.
 
 ### Smooth transition probabilites
 
-We will start by investigating a 2-state HMM for the `elephant` data set where the transition probabilities are expressed as smooth functions of the time of day using **cyclic P-Splines**. The relationship can then be summarised as
+We will start by investigating a 2-state HMM for the `trex` data set, containing hourly step lengths and turning angles of a Tyrannosaurus rex living 66 million years ago. The transition probabilities are modelled as smooth functions of the time of day using **cyclic P-Splines**. The relationship can then be summarised as
 
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
 $$
-where $s_{ij}(t)$ is a smooth periodic function of time of day. We model the elephant's **step lengths** and **turning angles** using state-dependent **gamma** and **von Mises** distributions.
+where $s_{ij}(t)$ is a smooth periodic function of time of day. We model the T-rex's **step lengths** and **turning angles** using state-dependent **gamma** and **von Mises** distributions.
 
 To ease with model specification, `LaMa` provides the function `make_matrices()` which creates **design** and **penalty** matrices for regression settings based on the R package `mgcv`. The user only needs to specify the right side of a formula using `mgcv` syntax and provide data. Here, we use `s(tod, by = "cp")` to create the matrices for cyclic P-splines (`cp`). This results in a cubic B-Spline basis, that is wrapped at boundary of the support (0 and 24). We then append both resulting matrices to the `dat` list.
 
 ```{r LaMa}
 library(LaMa)
+
+head(trex)
 ```
 
 ```{r tod2}
@@ -84,10 +86,10 @@ par = list(logmu = log(c(0.3, 2.5)), # state-dependent mean step
            beta0 = c(-2, 2), # state process intercepts
            betaSpline = matrix(rep(0, 2*(ncol(Z)-1)), nrow = 2)) # spline coefs
 
-dat = list(step = elephant$step, # observed steps
-           angle = elephant$angle, # observed angle
+dat = list(step = trex$step, # observed steps
+           angle = trex$angle, # observed angle
            N = 2, # number of states
-           tod = elephant$tod, # time of day (used for indexing)
+           tod = trex$tod, # time of day (used for indexing)
            Z = Z, # spline design matrix
            S = S, # penalty matrix
            lambda = rep(100, 2)) # initial penalty strength
@@ -132,11 +134,12 @@ axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 
 ### Smooth density estimation
 
-To demonstrate nonparametric estimation of the state-dependent densities, we will consider the `shark` data set. It contains acceleration data, specifically the **overall dynamic body acceleartion (ODBA)**. ODBA is strictily positive with some very extreme values, making direct analysis difficult. Hence, for our analysis we consider the logarithm of ODBA as our observed process.
+To demonstrate nonparametric estimation of the state-dependent densities, we will consider the `nessi` data set. It contains acceleration data of the Loch Ness Monster, specifically the **overall dynamic body acceleartion (ODBA)**. 
+ODBA is strictily positive with some very extreme values, making direct analysis difficult. Hence, for our analysis we consider the logarithm of ODBA as our observed process.
 
 ```{r shark_data, fig.width = 8, fig.height = 5}
-head(shark)
-hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white", 
+head(nessi)
+hist(nessi$logODBA, prob = TRUE, breaks = 50, bor = "white", 
      main = "", xlab = "log(ODBA)")
 ```
 
@@ -165,7 +168,7 @@ par = list(mu = c(-4.5, -3.5, -2.5),
            eta = rep(-2, 6))
 
 # data and hyperparameters
-dat = list(logODBA = shark$logODBA, N = 3)
+dat = list(logODBA = nessi$logODBA, N = 3)
 
 # creating automatically differentiable objective function
 obj = MakeADFun(nll, par, silent = TRUE)
@@ -178,7 +181,7 @@ mod = obj$report()
 
 # visualising the results
 color = c("orange", "deepskyblue", "seagreen3")
-hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white",
+hist(nessi$logODBA, prob = TRUE, breaks = 50, bor = "white",
      main = "", xlab = "log(ODBA)")
 for(j in 1:3) curve(mod$delta[j] * dnorm(x, mod$mu[j], mod$sigma[j]), 
                     add = TRUE, col = color[j], lwd = 2, n = 500)
@@ -190,7 +193,7 @@ We see a clear lack-of-fit due to the inflexibility of the Gaussian state-depend
 In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `buildSmoothDens()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
 
 ```{r smooth prep}
-modmat = buildSmoothDens(shark["logODBA"], # only one data stream here
+modmat = buildSmoothDens(nessi["logODBA"], # only one data stream here
                          k = 25, # number of basis functions
                          par = list(logODBA = list(mean = c(-4, -3.3, -2.8),
                                                    sd = c(0.3, 0.2, 0.5))))
@@ -224,7 +227,7 @@ pnll = function(par){
   alpha = alpha / rowSums(alpha) # multinomial logit link
   REPORT(alpha)
   allprobs = matrix(1, nrow(Z), N)
-  ind = which(!is.na(logODBA))
+  ind = which(!is.na(Z[,1])) # only for non-NA obs.
   allprobs[ind,] = Z[ind,] %*% t(alpha)
   # forward algorithm + penalty
   -forward(delta, Gamma, allprobs) + 
@@ -232,11 +235,12 @@ pnll = function(par){
 }
 ```
 
-Now we specify the initial parameter and data list and fit the model
-```{r shark_spline_fit}
+Now we specify the initial parameter and data list and fit the model. In this case, we actually don't need to add the observations to our `dat` list anymore, as all the information is contained in the design matrix `Z`.
+```{r nessi_spline_fit}
 par = list(beta = beta, # spline coefficients prepared by buildSmoothDens()
            eta = rep(-2, 6)) # initial transition matrix on logit scale
-dat = list(logODBA = shark$logODBA, N = 3,
+
+dat = list(N = 3, # number of states
            Z = Z, # spline design matrix
            S = S, # spline penalty matrix
            lambda = rep(10, 3)) # initial penalty strength vector
@@ -252,7 +256,7 @@ After fitting the model, we can easily visualise the smooth densities using the 
 ```{r shark_smooth_results, fig.width = 8, fig.height = 5}
 sDens = Z_pred %*% t(mod2$alpha) # all three state-dependent densities on a grid
 
-hist(shark$logODBA, prob = TRUE, breaks = 50, bor = "white", main = "", xlab = "log(ODBA)")
+hist(nessi$logODBA, prob = TRUE, breaks = 50, bor = "white", main = "", xlab = "log(ODBA)")
 for(j in 1:3) lines(xseq, mod2$delta[j] * sDens[,j], col = color[j], lwd = 2)
 lines(xseq, colSums(mod2$delta * t(sDens)), col = "black", lwd = 2, lty = 2)
 ```

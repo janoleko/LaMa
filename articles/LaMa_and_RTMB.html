@@ -98,10 +98,11 @@ always start by loading both packages.</p>
 <span><span class="co">#&gt; Loading required package: RTMB</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kaskr/RTMB" class="external-link">RTMB</a></span><span class="op">)</span></span></code></pre></div>
 <p>For the purpose of this vignette, we will analyse the
-<code>elephant</code> data set contained in the <code>LaMa</code>
-package:</p>
+<code>trex</code> data set contained in the package. It contains hourly
+step lengths of a Tyrannosaurus rex, living 66 million years ago, and we
+aim to understand its behavoural process using HMMs.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">elephant</span>, <span class="fl">5</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trex</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   tod      step     angle state</span></span>
 <span><span class="co">#&gt; 1   9 0.3252437        NA     1</span></span>
 <span><span class="co">#&gt; 2  10 0.2458265  2.234562     1</span></span>
@@ -142,8 +143,8 @@ the number of hidden states. The names <code>par</code> and
 <span>  <span class="op">)</span>    </span>
 <span></span>
 <span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  step <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">]</span>, <span class="co"># only using a subset of the data for faster computation</span></span>
-<span>  angle <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">angle</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5000</span><span class="op">]</span>, </span>
+<span>  step <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">step</span>,   <span class="co"># hourly step lengths</span></span>
+<span>  angle <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="co"># hourly turning angles</span></span>
 <span>  N <span class="op">=</span> <span class="fl">2</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>As <code>par</code> is a named list of initial parameter values,
@@ -242,10 +243,12 @@ corresponding values at the initial parameter vector.</p>
 <span><span class="co">#&gt;        eta </span></span>
 <span><span class="co">#&gt; -2.0000000</span></span>
 <span><span class="va">obj</span><span class="op">$</span><span class="fu">fn</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 16584.4</span></span>
+<span><span class="co">#&gt; [1] 33293.84</span></span>
 <span><span class="va">obj</span><span class="op">$</span><span class="fu">gr</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          [,1]     [,2]     [,3]      [,4]     [,5]      [,6]     [,7]      [,8]</span></span>
-<span><span class="co">#&gt; [1,] 230.5857 -1218.71 56.12643 -5906.308 30.71142 -408.9433 63.43363 -95.75145</span></span></code></pre></div>
+<span><span class="co">#&gt;          [,1]      [,2]     [,3]      [,4]     [,5]      [,6]     [,7]</span></span>
+<span><span class="co">#&gt; [1,] 573.7198 -2467.274 95.35893 -12045.97 55.92507 -807.9504 134.0732</span></span>
+<span><span class="co">#&gt;           [,8]</span></span>
+<span><span class="co">#&gt; [1,] -181.2148</span></span></code></pre></div>
 <p>We are now ready to optimise the objective function. The optimisation
 routine <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> is very robust and conveniently allows us
 to provide a gradient function. Alternatively, you can also use
@@ -263,11 +266,11 @@ Newton-Raphson.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">opt</span><span class="op">$</span><span class="va">par</span></span>
 <span><span class="co">#&gt;      logmu      logmu   logsigma   logsigma   logkappa   logkappa        eta </span></span>
-<span><span class="co">#&gt; -1.1816492  0.9109406 -1.5899770  0.3893447 -2.5112980  0.4258548 -1.6174757 </span></span>
+<span><span class="co">#&gt; -1.1916144  0.9182131 -1.5995349  0.3999258 -2.2872716  0.4019563 -1.6621910 </span></span>
 <span><span class="co">#&gt;        eta </span></span>
-<span><span class="co">#&gt; -1.5348844</span></span>
+<span><span class="co">#&gt; -1.5735921</span></span>
 <span><span class="va">opt</span><span class="op">$</span><span class="va">objective</span></span>
-<span><span class="co">#&gt; [1] 13617.45</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 27248.59</span></span></code></pre></div>
 <p>Note that the naming here is determined by <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code>. If
 you use a different optimiser, these may be called differently.</p>
 <p>Much nicer however, is that <code>obj</code> (yes <code>obj</code>
@@ -282,18 +285,18 @@ reporting:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">=</span> <span class="va">obj</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span> <span class="co"># runs the reporting from the negative log-likelihood once</span></span>
 <span><span class="op">(</span><span class="va">delta</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   state 1   state 2 </span></span>
-<span><span class="co">#&gt; 0.4828971 0.5171029</span></span>
+<span><span class="co">#&gt;  state 1  state 2 </span></span>
+<span><span class="co">#&gt; 0.481525 0.518475</span></span>
 <span><span class="op">(</span><span class="va">Gamma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">Gamma</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           [,1]      [,2]</span></span>
-<span><span class="co">#&gt; [1,] 0.8227198 0.1772802</span></span>
-<span><span class="co">#&gt; [2,] 0.1655533 0.8344467</span></span>
+<span><span class="co">#&gt; [1,] 0.8282951 0.1717049</span></span>
+<span><span class="co">#&gt; [2,] 0.1594681 0.8405319</span></span>
 <span><span class="op">(</span><span class="va">mu</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">mu</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.3067724 2.4866604</span></span>
+<span><span class="co">#&gt; [1] 0.3037305 2.5048106</span></span>
 <span><span class="op">(</span><span class="va">sigma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">sigma</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2039303 1.4760132</span></span>
+<span><span class="co">#&gt; [1] 0.2019904 1.4917139</span></span>
 <span><span class="op">(</span><span class="va">kappa</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">kappa</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.08116282 1.53089842</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.1015431 1.4947460</span></span></code></pre></div>
 <p>which works because of the <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code> statements in the
 likelihood function. Note that <code>delta</code>, <code>Gamma</code>
 and <code>allprobs</code> are always reported by default when using
@@ -309,14 +312,14 @@ Having all the parameters, we can plot the decoded time series</p>
 <span><span class="co"># defining color vector</span></span>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">elephant</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"h"</span>, xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"step length"</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"h"</span>, xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"step length"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">1</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="LaMa_and_RTMB_files/figure-html/decoding-1.png" width="85%" style="display: block; margin: auto;"></p>
 <p>or the estimated state-dependent distributions.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">elephant</span><span class="op">$</span><span class="va">step</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
 <span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"step length"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="../reference/gamma2.html">dgamma2</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
@@ -324,7 +327,7 @@ Having all the parameters, we can plot the decoded time series</p>
 <span>      lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">elephant</span><span class="op">$</span><span class="va">angle</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
 <span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"turning angle"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="../reference/dvm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
@@ -343,21 +346,21 @@ everything we <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" cl
 by</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sdr</span><span class="op">)</span></span>
-<span><span class="co">#&gt;             Estimate  Std. Error</span></span>
-<span><span class="co">#&gt; logmu    -1.18164921 0.015816840</span></span>
-<span><span class="co">#&gt; logmu     0.91094060 0.012568349</span></span>
-<span><span class="co">#&gt; logsigma -1.58997698 0.023262636</span></span>
-<span><span class="co">#&gt; logsigma  0.38934467 0.018793398</span></span>
-<span><span class="co">#&gt; logkappa -2.51129801 0.366127132</span></span>
-<span><span class="co">#&gt; logkappa  0.42585477 0.027176879</span></span>
-<span><span class="co">#&gt; eta      -1.61747569 0.058270035</span></span>
-<span><span class="co">#&gt; eta      -1.53488440 0.056943182</span></span>
-<span><span class="co">#&gt; mu        0.30677239 0.004852170</span></span>
-<span><span class="co">#&gt; mu        2.48666039 0.031253215</span></span>
-<span><span class="co">#&gt; sigma     0.20393031 0.004743956</span></span>
-<span><span class="co">#&gt; sigma     1.47601320 0.027739303</span></span>
-<span><span class="co">#&gt; kappa     0.08116282 0.029715911</span></span>
-<span><span class="co">#&gt; kappa     1.53089842 0.041605041</span></span></code></pre></div>
+<span><span class="co">#&gt;            Estimate  Std. Error</span></span>
+<span><span class="co">#&gt; logmu    -1.1916144 0.011067932</span></span>
+<span><span class="co">#&gt; logmu     0.9182131 0.008875692</span></span>
+<span><span class="co">#&gt; logsigma -1.5995349 0.016232361</span></span>
+<span><span class="co">#&gt; logsigma  0.3999258 0.013272894</span></span>
+<span><span class="co">#&gt; logkappa -2.2872716 0.207126330</span></span>
+<span><span class="co">#&gt; logkappa  0.4019563 0.019299344</span></span>
+<span><span class="co">#&gt; eta      -1.6621910 0.041754277</span></span>
+<span><span class="co">#&gt; eta      -1.5735921 0.040795512</span></span>
+<span><span class="co">#&gt; mu        0.3037305 0.003361669</span></span>
+<span><span class="co">#&gt; mu        2.5048106 0.022231928</span></span>
+<span><span class="co">#&gt; sigma     0.2019904 0.003278782</span></span>
+<span><span class="co">#&gt; sigma     1.4917139 0.019799361</span></span>
+<span><span class="co">#&gt; kappa     0.1015431 0.021032256</span></span>
+<span><span class="co">#&gt; kappa     1.4947460 0.028847617</span></span></code></pre></div>
 <p>To get the estimated parameters or their standard errors in list
 format, type</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -376,24 +379,29 @@ format, type</p>
 <div class="section level3">
 <h3 id="covariate-effects">Covariate effects<a class="anchor" aria-label="anchor" href="#covariate-effects"></a>
 </h3>
-<p>Generalising to covariate effects is also straightforward. For
-example, we can add time of day variation to the state process. In this
-case we want to obtain a state process model of the form
+<p>We can now generalise the previous model to include covariate
+effects. In our example, we might be interested how the T-rex’s
+behaviour varies with the time of day. Hence, we add diel variation to
+the state process. For example, we can model the transition
+probabilities as a function of the time of day using a trigonometric
+basis expansion to ensure diurnal continuity. The transition
+probabilities are given by
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">logit</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msubsup><mi>β</mi><mn>1</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>sin</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>24</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>2</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>cos</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>24</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>3</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>sin</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>12</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>+</mo><msubsup><mi>β</mi><mn>4</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>cos</mo><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mfrac><mrow><mn>2</mn><mi>π</mi><mi>t</mi></mrow><mn>12</mn></mfrac><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + \beta_1^{(ij)} \sin \bigl(\frac{2 \pi t}{24}\bigr) + \beta_2^{(ij)} \cos \bigl(\frac{2 \pi t}{24}\bigr) + \beta_3^{(ij)} \sin \bigl(\frac{2 \pi t}{12}\bigr) + \beta_4^{(ij)} \cos \bigl(\frac{2 \pi t}{12}\bigr),
 </annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 is the time of day.</p>
-<p>For this we compute the trigonometric basis design matrix
-<code>Z</code> corresponding to above predictor and add the time of day
-to the <code>dat</code> list. The <code>LaMa</code> function
+<p>To practically achieve this, we compute the trigonometric basis
+design matrix <code>Z</code> corresponding to above predictor and add
+the time of day to the <code>dat</code> list for indexing inside the
+likelihood function. The <code>LaMa</code> function
 <code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> does this very conveniently.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># building trigonometric basis desing matrix (in this case no intercept column)</span></span>
 <span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/trigBasisExp.html">trigBasisExp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># convenience function from LaMa</span></span>
 <span><span class="co"># only compute the 24 unique values and index later for entire time series</span></span>
 <span><span class="va">dat</span><span class="op">$</span><span class="va">Z</span> <span class="op">=</span> <span class="va">Z</span> <span class="co"># adding design matrix to dat</span></span>
-<span><span class="va">dat</span><span class="op">$</span><span class="va">tod</span> <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">tod</span> <span class="co"># adding time of day to dat for indexing</span></span></code></pre></div>
+<span><span class="va">dat</span><span class="op">$</span><span class="va">tod</span> <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">tod</span> <span class="co"># adding time of day to dat for indexing</span></span></code></pre></div>
 <p>We also need to change the parameter list <code>par</code> to include
 the regression parameters for the time of day. The regression parameters
 for the state process will typically have the form of a

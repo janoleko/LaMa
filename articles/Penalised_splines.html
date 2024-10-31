@@ -87,23 +87,21 @@ useful to represent some relationships in our model by smooth functions
 for which the functional form is not pre-specified, but flexibly
 estimated from the data. For HMM-like models, this is particularly
 valuable, as the latent nature of the state process makes modelling
-choices more difficult. For example, choosing an appropriate
-<strong>parametric family</strong> for the <strong>state-dependent
-distributions</strong> may be difficult, as we cannot do state-specific
-EDA before fitting the model. Also very difficult is the dependence of
-transition probabilities on covariates, as the
-<strong>transitions</strong> are <strong>not</strong> directly
-<strong>observed</strong>. Hence, the obvious alternative is to model
-these kind of relationships flexibly using splines but imposing a
-penalty on the smoothness of the estimated functions. This leads us to
-<strong>penalised splines</strong>.</p>
+choices more difficult. For example, choosing an appropriate parametric
+family for the state-dependent distributions may be difficult, as we
+cannot do state-specific EDA before fitting the model. Also very
+difficult is the dependence of transition probabilities on covariates,
+as the transitions are not directly observed. Hence, the obvious
+alternative is to model these kind of relationships flexibly using
+splines but imposing a penalty on the smoothness of the estimated
+functions. This leads us to <strong>penalised splines</strong>.</p>
 <p><code>LaMa</code> contains helper functions that build
 <strong>design</strong> and <strong>penalty matrices</strong> for given
 formulas (using <code>mgcv</code> under the hood) and also functions to
-estimate models involving penalised splines in a <strong>random effects
-framework</strong>. For the latter to work, the <strong>penalised
-negative log-likelihood</strong> needs to be compatible with the R
-package <code>RTMB</code> to allow for <strong>automatic differentiation
+estimate models involving penalised splines in a random effects
+framework. For the latter to work, the <strong>penalised negative
+log-likelihood</strong> needs to be compatible with the R package
+<code>RTMB</code> to allow for <strong>automatic differentiation
 (AD)</strong>. For more information on <code>RTMB</code>, see the
 vignette <em>LaMa and RTMB</em> or check out its <a href="https://cran.r-project.org/web/packages/RTMB/index.html" class="external-link">documentation</a>.
 For more information on penalised splines, we recommend <span class="citation">Wood (<a href="#ref-wood2017generalized">2017</a>)</span>.</p>
@@ -111,14 +109,16 @@ For more information on penalised splines, we recommend <span class="citation">W
 <h3 id="smooth-transition-probabilites">Smooth transition probabilites<a class="anchor" aria-label="anchor" href="#smooth-transition-probabilites"></a>
 </h3>
 <p>We will start by investigating a 2-state HMM for the
-<code>elephant</code> data set where the transition probabilities are
-expressed as smooth functions of the time of day using <strong>cyclic
-P-Splines</strong>. The relationship can then be summarised as</p>
+<code>trex</code> data set, containing hourly step lengths and turning
+angles of a Tyrannosaurus rex living 66 million years ago. The
+transition probabilities are modelled as smooth functions of the time of
+day using <strong>cyclic P-Splines</strong>. The relationship can then
+be summarised as</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">logit</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
 </annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">s_{ij}(t)</annotation></semantics></math>
-is a smooth periodic function of time of day. We model the elephant’s
+is a smooth periodic function of time of day. We model the T-rex’s
 <strong>step lengths</strong> and <strong>turning angles</strong> using
 state-dependent <strong>gamma</strong> and <strong>von Mises</strong>
 distributions.</p>
@@ -134,7 +134,16 @@ that is wrapped at boundary of the support (0 and 24). We then append
 both resulting matrices to the <code>dat</code> list.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/software/">LaMa</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
+<span><span class="co">#&gt; Loading required package: RTMB</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trex</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   tod      step     angle state</span></span>
+<span><span class="co">#&gt; 1   9 0.3252437        NA     1</span></span>
+<span><span class="co">#&gt; 2  10 0.2458265  2.234562     1</span></span>
+<span><span class="co">#&gt; 3  11 0.2173252 -2.262418     1</span></span>
+<span><span class="co">#&gt; 4  12 0.5114665 -2.958732     1</span></span>
+<span><span class="co">#&gt; 5  13 0.3828494  1.811840     1</span></span>
+<span><span class="co">#&gt; 6  14 0.4220099  1.834668     1</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">tod</span>, bs <span class="op">=</span> <span class="st">"cp"</span><span class="op">)</span>, <span class="co"># formula</span></span>
 <span>                       data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span>, <span class="co"># data</span></span>
@@ -177,10 +186,10 @@ because our coefficient matrix has two rows.</p>
 <span>           beta0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, <span class="co"># state process intercepts</span></span>
 <span>           betaSpline <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># spline coefs</span></span>
 <span></span>
-<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>step <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">step</span>, <span class="co"># observed steps</span></span>
-<span>           angle <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">angle</span>, <span class="co"># observed angle</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>step <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">step</span>, <span class="co"># observed steps</span></span>
+<span>           angle <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="co"># observed angle</span></span>
 <span>           N <span class="op">=</span> <span class="fl">2</span>, <span class="co"># number of states</span></span>
-<span>           tod <span class="op">=</span> <span class="va">elephant</span><span class="op">$</span><span class="va">tod</span>, <span class="co"># time of day (used for indexing)</span></span>
+<span>           tod <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">tod</span>, <span class="co"># time of day (used for indexing)</span></span>
 <span>           Z <span class="op">=</span> <span class="va">Z</span>, <span class="co"># spline design matrix</span></span>
 <span>           S <span class="op">=</span> <span class="va">S</span>, <span class="co"># penalty matrix</span></span>
 <span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial penalty strength</span></span></code></pre></div>
@@ -231,7 +240,7 @@ arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> w
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.832   0.143   6.865</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.830   0.191   6.913</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -266,13 +275,14 @@ day.</p>
 <h3 id="smooth-density-estimation">Smooth density estimation<a class="anchor" aria-label="anchor" href="#smooth-density-estimation"></a>
 </h3>
 <p>To demonstrate nonparametric estimation of the state-dependent
-densities, we will consider the <code>shark</code> data set. It contains
-acceleration data, specifically the <strong>overall dynamic body
-acceleartion (ODBA)</strong>. ODBA is strictily positive with some very
-extreme values, making direct analysis difficult. Hence, for our
-analysis we consider the logarithm of ODBA as our observed process.</p>
+densities, we will consider the <code>nessi</code> data set. It contains
+acceleration data of the Loch Ness Monster, specifically the
+<strong>overall dynamic body acceleartion (ODBA)</strong>. ODBA is
+strictily positive with some very extreme values, making direct analysis
+difficult. Hence, for our analysis we consider the logarithm of ODBA as
+our observed process.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">shark</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         ODBA   logODBA state</span></span>
 <span><span class="co">#&gt; 1 0.03775025 -3.276763     2</span></span>
 <span><span class="co">#&gt; 2 0.05417830 -2.915475     2</span></span>
@@ -280,7 +290,7 @@ analysis we consider the logarithm of ODBA as our observed process.</p>
 <span><span class="co">#&gt; 4 0.01310802 -4.334531     1</span></span>
 <span><span class="co">#&gt; 5 0.05402441 -2.918319     3</span></span>
 <span><span class="co">#&gt; 6 0.06133794 -2.791357     3</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Penalised_splines_files/figure-html/shark_data-1.png" width="85%" style="display: block; margin: auto;"></p>
 <p>Clearly, there are at least three behavioural states in the data, and
@@ -307,7 +317,7 @@ RTMB</em>.</p>
 <span>           eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># data and hyperparameters</span></span>
-<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, N <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, N <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># creating automatically differentiable objective function</span></span>
 <span><span class="va">obj</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -320,7 +330,7 @@ RTMB</em>.</p>
 <span></span>
 <span><span class="co"># visualising the results</span></span>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span>, <span class="st">"seagreen3"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mod</span><span class="op">$</span><span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">mod</span><span class="op">$</span><span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>                    add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
@@ -339,7 +349,7 @@ coefficients</strong> based on the provided parameters. The basis
 functions are standardised such that they integrate to one, which is
 needed for density estimation.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/buildSmoothDens.html">buildSmoothDens</a></span><span class="op">(</span><span class="va">shark</span><span class="op">[</span><span class="st">"logODBA"</span><span class="op">]</span>, <span class="co"># only one data stream here</span></span>
+<code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/buildSmoothDens.html">buildSmoothDens</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">[</span><span class="st">"logODBA"</span><span class="op">]</span>, <span class="co"># only one data stream here</span></span>
 <span>                         k <span class="op">=</span> <span class="fl">25</span>, <span class="co"># number of basis functions</span></span>
 <span>                         par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">3.3</span>, <span class="op">-</span><span class="fl">2.8</span><span class="op">)</span>,</span>
 <span>                                                   sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -385,18 +395,21 @@ the unconstrained coefficients <code>beta</code> (not the constrained
 <span>  <span class="va">alpha</span> <span class="op">=</span> <span class="va">alpha</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span> <span class="co"># multinomial logit link</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span></span>
 <span>  <span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span>, <span class="va">N</span><span class="op">)</span></span>
-<span>  <span class="va">ind</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">logODBA</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">ind</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Z</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="co"># only for non-NA obs.</span></span>
 <span>  <span class="va">allprobs</span><span class="op">[</span><span class="va">ind</span>,<span class="op">]</span> <span class="op">=</span> <span class="va">Z</span><span class="op">[</span><span class="va">ind</span>,<span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span></span>
 <span>  <span class="co"># forward algorithm + penalty</span></span>
 <span>  <span class="op">-</span><span class="fu"><a href="../reference/forward.html">forward</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu"><a href="../reference/penalty.html">penalty</a></span><span class="op">(</span><span class="va">beta</span>, <span class="va">S</span>, <span class="va">lambda</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Now we specify the initial parameter and data list and fit the
-model</p>
+<p>Now we specify the initial parameter and data list and fit the model.
+In this case, we actually don’t need to add the observations to our
+<code>dat</code> list anymore, as all the information is contained in
+the design matrix <code>Z</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="va">beta</span>, <span class="co"># spline coefficients prepared by buildSmoothDens()</span></span>
 <span>           eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial transition matrix on logit scale</span></span>
-<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, N <span class="op">=</span> <span class="fl">3</span>,</span>
+<span></span>
+<span><span class="va">dat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>N <span class="op">=</span> <span class="fl">3</span>, <span class="co"># number of states</span></span>
 <span>           Z <span class="op">=</span> <span class="va">Z</span>, <span class="co"># spline design matrix</span></span>
 <span>           S <span class="op">=</span> <span class="va">S</span>, <span class="co"># spline penalty matrix</span></span>
 <span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial penalty strength vector</span></span>
@@ -417,7 +430,7 @@ model</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.850   2.488  17.350</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.838   2.515  17.325</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -425,7 +438,7 @@ reporting after model fitting.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sDens</span> <span class="op">=</span> <span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span> <span class="co"># all three state-dependent densities on a grid</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">shark</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">mod2</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="va">sDens</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">delta</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">sDens</span><span class="op">)</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Penalised_splines_files/figure-html/shark_smooth_results-1.png" width="85%" style="display: block; margin: auto;"></p>

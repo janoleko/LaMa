@@ -68,7 +68,7 @@ Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differ
 The user has to specify the \strong{penalised negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function to compute the quadratic-form penalty inside the likelihood.
 }
 \examples{
-data = elephant[1:1000,] # subset
+data = trex[1:1000,] # subset
 
 # initial parameter list
 par = list(logmu = log(c(0.3, 1)), # step mean

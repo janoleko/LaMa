@@ -69,7 +69,7 @@ gdeterminant <- function(x,
 #' penalty(re, S, lambda)
 #' 
 #' # Full model-fitting example
-#' data = elephant[1:1000,] # subset
+#' data = trex[1:1000,] # subset
 #'
 #' # initial parameter list
 #' par = list(logmu = log(c(0.3, 1)), # step mean
@@ -209,7 +209,7 @@ penalty = function(re_coef, S, lambda) {
 #' @import RTMB
 #'
 #' @examples
-#' data = elephant[1:1000,] # subset
+#' data = trex[1:1000,] # subset
 #'
 #' # initial parameter list
 #' par = list(logmu = log(c(0.3, 1)), # step mean

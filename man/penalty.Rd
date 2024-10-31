@@ -48,7 +48,7 @@ lambda = c(1,1,2) # length = total number of random effects
 penalty(re, S, lambda)
 
 # Full model-fitting example
-data = elephant[1:1000,] # subset
+data = trex[1:1000,] # subset
 
 # initial parameter list
 par = list(logmu = log(c(0.3, 1)), # step mean

@@ -237,18 +237,18 @@ make_splinecoef = function(model_matrices,
 #' @description
 #' This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
 #'
-#' You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is the converted into suitable spline coefficients.
+#' You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is then converted into suitable spline coefficients.
 #' \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
 #' For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 #'
 #' @param data named data frame of different data streams
-#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data
+#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data. Needs to be a vector corresponding to the number of data streams in \code{data}.
 #' @param par nested named list of initial means and sds/concentrations for each data stream
 #' @param k number of basis functions for each data stream
 #' @param degree degree of the B-spline basis functions for each data stream, defaults to cubic B-splines
 #' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #'
-#' @return a nested list containing the design matrices Z, the penalty matrices S, the initial coefficients betastart, the prediction design matrices Z_predict, the prediction grids xseq, and details for the basis expansion for each data stream.
+#' @return a nested list containing the design matrices \code{Z}, the penalty matrices \code{S}, the initial coefficients \code{coef} the prediction design matrices \code{Z_predict}, the prediction grids \code{xseq}, and details for the basis expansion for each data stream.
 #' @export
 #'
 #' @examples

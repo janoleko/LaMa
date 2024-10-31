@@ -43,8 +43,8 @@ The most important families of functions are
 - the `stationary` family to compute stationary and periodically
   stationary distributions
 
-- as well as the `stateprobs` and `viterbi` family for local and global
-  decoding.
+- as well as the `stateprobs` and `viterbi` families for local and
+  global decoding.
 
 ## Installation
 
@@ -155,7 +155,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.382   0.011   0.394
+#>   0.364   0.010   0.377
 ```
 
 Really fast for 10.000 data points!

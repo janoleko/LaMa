@@ -39,7 +39,7 @@ The most important families of functions are
 
 * the `stationary` family to compute stationary and periodically stationary distributions
 
-* as well as the `stateprobs` and `viterbi` family for local and global decoding.
+* as well as the `stateprobs` and `viterbi` families for local and global decoding.
 
 ## Installation
 

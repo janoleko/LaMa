@@ -255,7 +255,7 @@ call using the <code>penalty</code> argument.</p></li>
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.704   0.192   6.785</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.734   0.184   6.808</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -445,7 +445,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.654   2.573  17.179</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.790   2.537  17.276</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -482,16 +482,20 @@ Specifically, we consider a 2-state MS-GAMLSS defined by
 explanatory covariates for the sake of simplicity.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">MSwM</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in library(MSwM): there is no package called 'MSwM'</span></span>
+<span><span class="co">#&gt; Loading required package: parallel</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">energy</span>, package <span class="op">=</span> <span class="st">"MSwM"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in find.package(package, lib.loc, verbose = verbose): there is no package called 'MSwM'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span></code></pre></div>
+<span><span class="co">#&gt;      Price      Oil      Gas     Coal   EurDol Ibex35   Demand</span></span>
+<span><span class="co">#&gt; 1 3.188083 22.43277 14.40099 38.35157 1.134687 8.3976 477.3856</span></span>
+<span><span class="co">#&gt; 2 4.953667 22.27263 19.02747 38.35157 1.106439 8.3771 609.1261</span></span>
+<span><span class="co">#&gt; 3 4.730917 22.65383 18.48417 38.35157 1.106684 8.5547 650.3715</span></span>
+<span><span class="co">#&gt; 4 4.531000 23.67657 18.30143 38.35157 1.116819 8.4631 647.0499</span></span>
+<span><span class="co">#&gt; 5 5.141875 23.67209 14.55602 38.35157 1.122965 8.1773 627.9698</span></span>
+<span><span class="co">#&gt; 6 6.322083 23.60534 15.22485 38.35157 1.122460 8.1866 693.2467</span></span></code></pre></div>
 <p>Similar to the first example, we can prepare the model matrices using
 <code><a href="../reference/make_matrices.html">make_matrices()</a></code>:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">Oil</span>, k <span class="op">=</span> <span class="fl">12</span>, bs <span class="op">=</span> <span class="st">"ps"</span><span class="op">)</span>, <span class="va">energy</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
 <span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span> <span class="co"># design matrix</span></span>
 <span><span class="va">S</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">S</span> <span class="co"># penalty matrix (list)</span></span></code></pre></div>
 <p>Then, we specify the penalised negative log-likelihood function. It
@@ -545,15 +549,28 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span>           Z <span class="op">=</span> <span class="va">Z</span>, </span>
 <span>           S <span class="op">=</span> <span class="va">S</span>, </span>
 <span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
 <span></span>
 <span><span class="co"># model fit</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">mod3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qreml.html">qreml</a></span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"betaSpline"</span>, <span class="st">"alphaSpline"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
-<span><span class="co">#&gt; Error: non-conformable arguments</span></span>
-<span><span class="co">#&gt; Timing stopped at: 0.006 0 0.007</span></span></code></pre></div>
+<span><span class="co">#&gt; Initializing with lambda: 1000 1000 1000 1000 </span></span>
+<span><span class="co">#&gt; outer 1 - lambda: 238.423 106.067 189.083 42.362 </span></span>
+<span><span class="co">#&gt; outer 2 - lambda: 70.263 17.577 55.015 7.935 </span></span>
+<span><span class="co">#&gt; outer 3 - lambda: 36.315 8.566 26.41 4.88 </span></span>
+<span><span class="co">#&gt; outer 4 - lambda: 27.185 7.426 15.297 4.336 </span></span>
+<span><span class="co">#&gt; outer 5 - lambda: 24.236 7.257 10.88 4.214 </span></span>
+<span><span class="co">#&gt; outer 6 - lambda: 23.193 7.225 9.211 4.182 </span></span>
+<span><span class="co">#&gt; outer 7 - lambda: 22.808 7.217 8.602 4.173 </span></span>
+<span><span class="co">#&gt; outer 8 - lambda: 22.661 7.215 8.384 4.17 </span></span>
+<span><span class="co">#&gt; outer 9 - lambda: 22.593 7.212 8.306 4.169 </span></span>
+<span><span class="co">#&gt; outer 10 - lambda: 22.578 7.213 8.278 4.168 </span></span>
+<span><span class="co">#&gt; outer 11 - lambda: 22.575 7.212 8.276 4.168 </span></span>
+<span><span class="co">#&gt; outer 12 - lambda: 22.575 7.212 8.276 4.168 </span></span>
+<span><span class="co">#&gt; Converged</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   7.084   3.323   6.434</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the
@@ -562,17 +579,12 @@ values and use the <code>pred_matric()</code> function to build the
 associated interpolating design matrix.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">xseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="co"># sequence for prediction</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
 <span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/pred_matrix.html">pred_matrix</a></span><span class="op">(</span><span class="va">modmat</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Oil <span class="op">=</span> <span class="va">xseq</span><span class="op">)</span><span class="op">)</span> <span class="co"># prediction design matrix</span></span>
-<span><span class="co">#&gt; Error in terms.formula(gf, specials = c("s", "te", "ti", "t2", extra.special)): argument is not a valid model</span></span>
 <span></span>
 <span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">delta</span>, <span class="va">mod3</span><span class="op">$</span><span class="va">Gamma</span>, <span class="va">mod3</span><span class="op">$</span><span class="va">allprobs</span><span class="op">)</span> <span class="co"># decoding most probable state sequence</span></span>
-<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
 <span></span>
 <span><span class="va">Mu_plot</span> <span class="op">=</span> <span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
 <span><span class="va">Sigma_plot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'mod3' not found</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org" class="external-link">scales</a></span><span class="op">)</span> <span class="co"># to make colors semi-transparent</span></span>
 <span><span class="co">#&gt; Error in library(scales): there is no package called 'scales'</span></span>
@@ -580,28 +592,25 @@ associated interpolating design matrix.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># state-dependent distribution as a function of oil price</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span>, <span class="va">energy</span><span class="op">$</span><span class="va">Price</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">]</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span>, <span class="va">energy</span><span class="op">$</span><span class="va">Price</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">]</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"oil price"</span>, ylab <span class="op">=</span> <span class="st">"energy price"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
+<span><span class="co">#&gt; Error in alpha(color[mod3$states], 0.1): could not find function "alpha"</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="co"># means</span></span>
-<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
 <span><span class="va">qseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.95</span>, length <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># sequence of quantiles</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">qseq</span><span class="op">)</span><span class="op">{</span> <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">+</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">-</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu">alpha</span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">}</span></span>
-<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
+<span><span class="co">#&gt; Error in alpha(color[j], 0.7): could not find function "alpha"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"state"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL, : plot.new has not been called yet</span></span>
 <span></span>
 <span><span class="co"># decoded time series</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="cn">NA</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="cn">NA</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">10</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"energy price"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, x1 <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span>,</span>
 <span>         y0 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">]</span>, y1 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, </span>
-<span>         col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'energy' not found</span></span></code></pre></div>
+<span>         col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod3</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Penalised_splines_files/figure-html/energy_results-1.png" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

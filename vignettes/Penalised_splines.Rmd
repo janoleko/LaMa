@@ -155,10 +155,10 @@ Clearly, there are at least three behavioural states in the data, and we start b
 ```{r nll Gaussian}
 nll = function(par){
     getAll(par, dat)
-    sigma = exp(logsigma)
+    sigma = exp(logsigma) # exp because strictly positive
     REPORT(mu); REPORT(sigma)
-    Gamma = tpm(eta)
-    delta = stationary(Gamma)
+    Gamma = tpm(eta) # multinomial logit link
+    delta = stationary(Gamma) # stationary dist of the homogeneous Markov chain
     allprobs = matrix(1, length(logODBA), N)
     ind = which(!is.na(logODBA))
     for(j in 1:N) allprobs[ind,j] = dnorm(logODBA[ind], mu[j], sigma[j])

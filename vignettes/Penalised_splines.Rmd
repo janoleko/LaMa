@@ -23,6 +23,10 @@ knitr::opts_chunk$set(
 if(!require("MSwM")){
   options(repos = c(CRAN = "https://cloud.r-project.org"))
   install.packages("MSwM")
+}
+if(!require("scales")){
+  options(repos = c(CRAN = "https://cloud.r-project.org"))
+  install.packages("scales")
 } 
 ```
 

@@ -77,7 +77,9 @@ pnll = function(par) {
 }
 ```
 
-We also have to append a `lambda` vector to our `dat` list which is the initial **penalty strength** parameter vector. In this case it is of length two because our coefficient matrix has two rows.
+We also have to append a `lambda` vector to our `dat` list which is the **initial penalty strength** parameter vector. In this case it is of length two because our coefficient matrix has two rows. 
+
+If you are wondering why `lambda` is not added to the `par` list, this is because for penalised likelihood estimation, it is a **hyperparameter**, hence not a true parameter in the sense of the other parameters in `par`. One could, at his point, just use the above penalised likelihood function to do penalised ML for a **fixed** penalty strength `lambda`.
 
 ```{r todpar2}
 par = list(logmu = log(c(0.3, 2.5)), # state-dependent mean step
@@ -95,30 +97,35 @@ dat = list(step = trex$step, # observed steps
            lambda = rep(100, 2)) # initial penalty strength
 ```
 
-The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength paramter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `qreml()`:
 
-1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as all the likelihood functions in our vignette -- most importantly, it should be a function of the parameter list only.
+1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as the likelihood functions in the vignette *LaMa and RTMB*. Most importantly, it should be a function of the parameter list only.
+
 3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of betaspline, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
-4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices.
+
+4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices. This is shown in the third example in this vignette.
+
 5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail.
 
-```{r qreml, message = FALSE}
+6. By default, `qreml()` assmes that the penalisation hyperparamter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparamter, you have to specify it as a character string in the `qreml()` call using the `penalty` argument.
+
+```{r trex_fit, message = FALSE}
 system.time(
-  mod <- qreml(pnll, par, dat, random = "betaSpline")
+  mod1 <- qreml(pnll, par, dat, random = "betaSpline")
 )
 ```
 The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day.
 
 ```{r results qreml, fig.width = 8, fig.height = 5}
-Gamma = mod$Gamma
-Delta = mod$Delta
+Gamma = mod1$Gamma
+Delta = mod1$Delta
 
-tod_seq = seq(0,24, length=200)
+tod_seq = seq(0,24, length = 200)
 Z_pred = pred_matrix(modmat, data.frame(tod = tod_seq))
 
-Gamma_plot = tpm_g(Z_pred, mod$beta) # interpolating transition probs
+Gamma_plot = tpm_g(Z_pred, mod1$beta) # interpolating transition probs
 
 plot(tod_seq, Gamma_plot[1,2,], type = "l", lwd = 2, ylim = c(0,1),
      xlab = "time of day", ylab = "transition probability", bty = "n")
@@ -134,7 +141,7 @@ axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 
 ### Smooth density estimation
 
-To demonstrate nonparametric estimation of the state-dependent densities, we will consider the `nessi` data set. It contains acceleration data of the Loch Ness Monster, specifically the **overall dynamic body acceleartion (ODBA)**. 
+To demonstrate nonparametric estimation of the state-dependent densities, we will consider the `nessi` data set. It contains acceleration data of the Loch Ness Monster, specifically the **overall dynamic body acceleration (ODBA)**. 
 ODBA is strictily positive with some very extreme values, making direct analysis difficult. Hence, for our analysis we consider the logarithm of ODBA as our observed process.
 
 ```{r shark_data, fig.width = 8, fig.height = 5}
@@ -262,6 +269,119 @@ lines(xseq, colSums(mod2$delta * t(sDens)), col = "black", lwd = 2, lty = 2)
 ```
 
 The P-Spline model results in a very good fit to the empirical distribution. This is beause the first state has a skewed distribution, the second state has a high kurtosis and the third state has a funny right tail. The P-Spline model can capture all of these features where the parametric model failed to do so.
+
+
+### Markov-switching GAMLSS
+
+Lastly, we want to demonstrate how one can easily fit Markov-switching regression models where the state-dependent means and potentially other paramters depend on covariates via smooth functions. For this, we consider the `energy` data set contained in the R package `MSwM`. 
+It comprises 1784 daily observations of energy prices (in Cents per kWh) in Spain which we want to explain using the daily oil prices (in Euros per barrel) also provided in the data. Specifically, we consider a 2-state MS-GAMLSS defined by
+$$
+\text{price}_t \mid \{ S_t = i \} \sim N \bigl(\mu_t^{(i)}, (\sigma_t^{(i)})^2 \bigr),
+$$
+$$
+\mu_t^{(i)} = \beta_{0,\mu}^{(i)} + s_{\mu}^{(i)}(\text{oil}_t), \quad \text{log}(\sigma_t^{(i)}) = \beta_{0, \sigma}^{(i)} + s_{\sigma}^{(i)}(\text{oil}_t), \quad i = 1,2,
+$$
+not covering other potential explanatory covariates for the sake of simplicity.
+
+```{r energy_data}
+library(MSwM)
+data(energy, package = "MSwM")
+head(energy)
+```
+
+Similar to the first example, we can prepare the model matrices using `make_matrices()`:
+
+```{r modmat_energy}
+modmat = make_matrices(~ s(Oil, k = 12, bs = "ps"), energy)
+Z = modmat$Z # design matrix
+S = modmat$S # penalty matrix (list)
+```
+
+Then, we specify the penalised negative log-likelihood function. It differs from the first example as the state-dependent distributions, as opposed to the state process parameters, depend on the covariate. 
+Additionally, we now have two completely seperated spline-coefficient matrices/ random effects called `betaSpline` and `alphaSpline` for the state-dependent means and standard deviations respectively.
+Thus, we need to pass them as a list to the `penalty()` function. 
+
+We also pass the penalty matrix list `S` that is provided by `make_matrices()`. This could potentially be a list of length two if the two spline coefficient matrices were penalised differently (e.g. by us using a different spline basis). In this case, however, they are the same and we only pass the list of length one. It does not matter to `penalty()` if we pass a list of length one or just one matrix.
+
+```{r pnll3}
+pnll = function(par) {
+  getAll(par, dat)
+  Gamma = tpm(eta) # computing the tpm
+  delta = stationary(Gamma) # stationary distribution
+
+  # regression parameters for mean and sd
+  beta = cbind(beta0, betaSpline); REPORT(beta) # mean parameter matrix
+  alpha = cbind(alpha0, alphaSpline); REPORT(alpha) # sd parameter matrix
+
+  # calculating all covariate-dependent means and sds
+  Mu = Z %*% t(beta) # mean
+  Sigma = exp(Z %*% t(alpha)) # sd
+
+  allprobs = cbind(dnorm(price, Mu[,1], Sigma[,1]),
+                   dnorm(price, Mu[,2], Sigma[,2])) # state-dependent densities
+  
+  - forward(delta, Gamma, allprobs) +
+    penalty(list(betaSpline, alphaSpline), S, lambda)
+}
+```
+
+From this point on, the model fit is now basically identical to the previous two examples. We specify initial parameters and include an inital penalty strength parameter in the `dat` list.
+
+```{r energy_fit}
+# initial parameter list
+par = list(eta = rep(-4, 2), # state process intercepts
+           beta0 = c(2, 5), # state-dependent mean intercepts
+           betaSpline = matrix(0, nrow = 2, ncol = 11), # mean spline coef
+           alpha0 = c(0, 0), # state-dependent sd intercepts
+           alphaSpline = matrix(0, nrow = 2, ncol = 11)) # sd spline coef
+
+# data, model matrices and initial penalty strength
+dat = list(price = energy$Price, 
+           Z = Z, 
+           S = S, 
+           lambda = rep(1e3, 4))
+
+# model fit
+system.time(
+  mod3 <- qreml(pnll, par, dat, random = c("betaSpline", "alphaSpline"))
+)
+```
+
+Having fitted the model, we can visualise the results. We first decode the most probable state sequence and then plot the estimated state-dependent densities as a function of the oil price, as well as the decoded time series.
+For the former, we create a fine grid of oil price values and use the `pred_matric()` function to build the associated interpolating design matrix.
+
+```{r energy_results, fig.width = 8, fig.height = 5}
+xseq = seq(min(energy$Oil), max(energy$Oil), length = 200) # sequence for prediction
+Z_pred = pred_matrix(modmat, newdata = data.frame(Oil = xseq)) # prediction design matrix
+
+mod3$states = viterbi(mod3$delta, mod3$Gamma, mod3$allprobs) # decoding most probable state sequence
+
+Mu_plot = Z_pred %*% t(mod3$beta)
+Sigma_plot = exp(Z_pred %*% t(mod3$alpha))
+
+library(scales) # to make colors semi-transparent
+
+par(mfrow = c(1,2))
+
+# state-dependent distribution as a function of oil price
+plot(energy$Oil, energy$Price, pch = 20, bty = "n", col = alpha(color[mod3$states], 0.1),
+     xlab = "oil price", ylab = "energy price")
+for(j in 1:2) lines(xseq, Mu_plot[,j], col = color[j], lwd = 3) # means
+qseq = qnorm(seq(0.5, 0.95, length = 4)) # sequence of quantiles
+for(i in qseq){ for(j in 1:2){
+  lines(xseq, Mu_plot[,j] + i * Sigma_plot[,j], col = alpha(color[j], 0.7), lty = 2)
+  lines(xseq, Mu_plot[,j] - i * Sigma_plot[,j], col = alpha(color[j], 0.7), lty = 2)
+}}
+legend("topright", bty = "n", legend = paste("state", 1:2), col = color, lwd = 3)
+
+# decoded time series
+plot(NA, xlim = c(0, nrow(energy)), ylim = c(1,10), bty = "n",
+     xlab = "time", ylab = "energy price")
+segments(x0 = 1:(nrow(energy)-1), x1 = 2:nrow(energy),
+         y0 = energy$Price[-nrow(energy)], y1 = energy$Price[-1], 
+         col = color[mod3$states[-1]], lwd = 0.5)
+
+```
 
 ## References
 

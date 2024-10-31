@@ -353,7 +353,6 @@ buildSmoothDens = function(data, # data frame of data streams
 }
 
 
-
 #' Compute the design matrix for a trigonometric basis expansion
 #'
 #' Given a periodically varying variable such as time of day or day of year and the associated cycle length, this function performs a basis expansion to efficiently calculate a linear predictor of the form

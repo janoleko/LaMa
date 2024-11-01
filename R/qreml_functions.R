@@ -5,7 +5,7 @@
 #' \deqn{0.5 \sum_{i} \lambda_i b_i^T S_i b_i,}
 #' with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fixed penalty matrices \eqn{S_i}.
 #' 
-#' It is intended to be used inside the \strong{negative penalised log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
+#' It is intended to be used inside the \strong{penalised negative log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
 #' For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
 #'
 #' @param re_coef coefficient vector/ matrix or list of coefficient vectors/ matrices

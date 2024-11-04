@@ -50,11 +50,11 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dvm</span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span>, <span class="va">kappa</span>, log <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dvm</span><span class="op">(</span><span class="va">x</span>, mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pvm</span><span class="op">(</span><span class="va">q</span>, <span class="va">mu</span>, <span class="va">kappa</span>, acc <span class="op">=</span> <span class="fl">1e-20</span><span class="op">)</span></span>
+<span><span class="fu">pvm</span><span class="op">(</span><span class="va">q</span>, mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="fl">1</span>, from <span class="op">=</span> <span class="cn">NULL</span>, tol <span class="op">=</span> <span class="fl">1e-20</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">rvm</span><span class="op">(</span><span class="va">n</span>, <span class="va">mu</span>, <span class="va">kappa</span>, wrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">rvm</span><span class="op">(</span><span class="va">n</span>, mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="fl">1</span>, wrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,8 +77,12 @@
 <dd><p>logical; if <code>TRUE</code>, densities are returned on the log scale.</p></dd>
 
 
-<dt id="arg-acc">acc<a class="anchor" aria-label="anchor" href="#arg-acc"></a></dt>
-<dd><p>accuracy of the distribution function approximation (for details see the <code>CircStats</code> documentation).</p></dd>
+<dt id="arg-from">from<a class="anchor" aria-label="anchor" href="#arg-from"></a></dt>
+<dd><p>value from which the integration for CDF starts. If <code>NULL</code>, is set to <code>mu - pi</code>.</p></dd>
+
+
+<dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
+<dd><p>the precision in evaluating the distribution function</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -95,15 +99,16 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The implementation of <code>dvm</code> allows for automatic differentiation with <code>RTMB</code>. The other functions are imported from <code>CircStats</code>.</p>
+    <p>The implementation of <code>dvm</code> allows for automatic differentiation with <code>RTMB</code>.
+<code>rvm</code> and <code>pvm</code> are imported from <code>CircStats</code> and <code>circular</code> respectively.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">rvm</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">=</span> <span class="fu">dvm</span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">=</span> <span class="fu">pvm</span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (abs(term) &lt; acc) flag &lt;- "false":</span> the condition has length &gt; 1</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">rvm</span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">=</span> <span class="fu">dvm</span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">=</span> <span class="fu">pvm</span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

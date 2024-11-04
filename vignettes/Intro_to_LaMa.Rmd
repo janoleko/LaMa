@@ -169,7 +169,7 @@ Lastly, we can do some model checking using **pseudo-residuals**. First, we need
 probs = stateprobs(delta, Gamma, allprobs)
 ```
 
-Then, we can pass the observations, the state probabilities, the paramteric family and the estimated parameters to the `pseudo_res()` function to get pseudo-residuals for model validation. These should be standard normally distributed if the model is correct.
+Then, we can pass the observations, the state probabilities, the parametric family and the estimated parameters to the `pseudo_res()` function to get pseudo-residuals for model validation. These should be standard normally distributed if the model is correct.
 
 ```{r pseudores}
 pres = pseudo_res(x, # observations

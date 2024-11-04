@@ -19,9 +19,11 @@ pseudo_res_discrete(
 
 \item{stateprobs}{matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)}
 
-\item{dist}{character string specifying which parametric CDF to use (e.g., "norm" for normal)}
+\item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)}
 
-\item{par}{named parameter list for the parametric CDF (e.g. list(mean = c(1,2), sd = c(1,1)) for a normal distribution and 2 states)}
+\item{par}{named parameter list for the parametric CDF
+
+Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states)}
 
 \item{normal}{logical, if \code{TRUE}, return Gaussian pseudo residuals
 
@@ -37,7 +39,7 @@ vector of pseudo residuals
 \description{
 For HMMs, pseudo-residuals are used to assess the goodness-of-fit of the model. 
 These are based on the cumulative distribution function (CDF)
-\deqn{F_{X_t}(x_t) = f(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
+\deqn{F_{X_t}(x_t) = F(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
 and can be used to assess whether an observation is extreme relative to its model-implied distribution.
 
 This function calculates such residuals for \strong{discrete-valued} observations, based on the local state probabilities obtained by \code{\link{stateprobs}} or \code{\link{stateprobs_g}} and the respective parametric family.

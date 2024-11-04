@@ -3,7 +3,7 @@
 #' @description
 #' For HMMs, pseudo-residuals are used to assess the goodness-of-fit of the model. 
 #' These are based on the cumulative distribution function (CDF)
-#' \deqn{F_{X_t}(x_t) = f(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
+#' \deqn{F_{X_t}(x_t) = F(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
 #' and can be used to assess whether an observation is extreme relative to its model-implied distribution.
 #' 
 #' This function calculates such residuals via probability integral transform, based on the local state probabilities obtained by \code{\link{stateprobs}} or \code{\link{stateprobs_g}} and the respective parametric family.
@@ -13,8 +13,10 @@
 #'
 #' @param obs vector of continuous-valued observations (of length n)
 #' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by \code{\link{stateprobs}}, \code{\link{stateprobs_g}} or \code{\link{stateprobs_p}}
-#' @param dist character string specifying which parametric CDF to use (e.g., "norm" for normal)
-#' @param par named parameter list for the parametric CDF (e.g. list(mean = c(1,2), sd = c(1,1)) for a normal distribution and 2 states)
+#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
+#' @param par named parameter list for the parametric CDF
+#' 
+#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states)
 #' @param normal logical, if \code{TRUE}, return Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.
@@ -112,7 +114,7 @@ pseudo_res = function(obs,
 #' @description
 #' For HMMs, pseudo-residuals are used to assess the goodness-of-fit of the model. 
 #' These are based on the cumulative distribution function (CDF)
-#' \deqn{F_{X_t}(x_t) = f(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
+#' \deqn{F_{X_t}(x_t) = F(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
 #' and can be used to assess whether an observation is extreme relative to its model-implied distribution.
 #' 
 #' This function calculates such residuals for \strong{discrete-valued} observations, based on the local state probabilities obtained by \code{\link{stateprobs}} or \code{\link{stateprobs_g}} and the respective parametric family.
@@ -125,8 +127,10 @@ pseudo_res = function(obs,
 #'
 #' @param obs vector of discrete-valued observations (of length n)
 #' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)
-#' @param dist character string specifying which parametric CDF to use (e.g., "norm" for normal)
-#' @param par named parameter list for the parametric CDF (e.g. list(mean = c(1,2), sd = c(1,1)) for a normal distribution and 2 states)
+#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
+#' @param par named parameter list for the parametric CDF
+#' 
+#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states)
 #' @param normal logical, if \code{TRUE}, return Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.

@@ -31,7 +31,7 @@ Imports:
     mvtnorm,
     splines,
     methods,
-    CircStats
+    CircStats, circular
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
@@ -41,7 +41,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    PHSMM
+    PHSMM, MSwM, scales
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 LazyData: true

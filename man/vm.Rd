@@ -7,11 +7,11 @@
 \alias{rvm}
 \title{von Mises distribution}
 \usage{
-dvm(x, mu, kappa, log = FALSE)
+dvm(x, mu = 0, kappa = 1, log = FALSE)
 
-pvm(q, mu, kappa, acc = 1e-20)
+pvm(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20)
 
-rvm(n, mu, kappa, wrap = TRUE)
+rvm(n, mu = 0, kappa = 1, wrap = TRUE)
 }
 \arguments{
 \item{x, q}{vector of angles measured in radians at which to evaluate the density function.}
@@ -22,7 +22,9 @@ rvm(n, mu, kappa, wrap = TRUE)
 
 \item{log}{logical; if \code{TRUE}, densities are returned on the log scale.}
 
-\item{acc}{accuracy of the distribution function approximation (for details see the \code{CircStats} documentation).}
+\item{from}{value from which the integration for CDF starts. If \code{NULL}, is set to \code{mu - pi}.}
+
+\item{tol}{the precision in evaluating the distribution function}
 
 \item{n}{number of observations. If \code{length(n) > 1}, the length is taken to be the number required.}
 
@@ -35,10 +37,12 @@ rvm(n, mu, kappa, wrap = TRUE)
 Density, distribution function and random generation for the von Mises distribution.
 }
 \details{
-The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. The other functions are imported from \code{CircStats}.
+The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
+\code{rvm} and \code{pvm} are imported from \code{CircStats} and \code{circular} respectively.
 }
 \examples{
-x = rvm(2, 0, 2)
-d = dvm(x, 0, 2)
-p = pvm(x, 0, 2)
+set.seed(1)
+x = rvm(1000, 0, 1)
+d = dvm(x, 0, 1)
+p = pvm(x, 0, 1)
 }

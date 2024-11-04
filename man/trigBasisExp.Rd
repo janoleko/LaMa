@@ -37,6 +37,6 @@ Z1 = trigBasisExp(tod, L = 24, degree = 3)
 tod = rep(1:48, 10) # in [1,48] -> L = 48
 Z2 = trigBasisExp(tod, L = 48, degree = 3)
 
-Z1 - Z2
+all(Z1 == Z2)
 # The latter two are equivalent specifications!
 }

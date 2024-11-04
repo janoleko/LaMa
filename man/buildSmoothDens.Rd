@@ -37,9 +37,9 @@ For types \code{"real"} and \code{"circular"} the knots are placed equidistant i
 # normal data with mean 0 and sd 1
 x1 = rnorm(100, mean = 0, sd = 1)
 # gamma data with mean 5 and sd 3
-x2 = rgamma(100, shape = 5^2/3^2, scale = 3^2/5)
+x2 = rgamma2(100, mu = 5, sigma = 3)
 # circular data
-x3 = seq(-pi, pi, length = 100)
+x3 = rvm(100, mu = 0, kappa = 2)
 
 data = data.frame(x1 = x1, x2 = x2, x3 = x3)
 

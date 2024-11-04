@@ -258,9 +258,9 @@ make_splinecoef = function(model_matrices,
 #' # normal data with mean 0 and sd 1
 #' x1 = rnorm(100, mean = 0, sd = 1)
 #' # gamma data with mean 5 and sd 3
-#' x2 = rgamma(100, shape = 5^2/3^2, scale = 3^2/5)
+#' x2 = rgamma2(100, mu = 5, sigma = 3)
 #' # circular data
-#' x3 = seq(-pi, pi, length = 100)
+#' x3 = rvm(100, mu = 0, kappa = 2)
 #' 
 #' data = data.frame(x1 = x1, x2 = x2, x3 = x3)
 #' 
@@ -384,7 +384,7 @@ buildSmoothDens = function(data, # data frame of data streams
 #' tod = rep(1:48, 10) # in [1,48] -> L = 48
 #' Z2 = trigBasisExp(tod, L = 48, degree = 3)
 #' 
-#' Z1 - Z2
+#' all(Z1 == Z2)
 #' # The latter two are equivalent specifications!
 trigBasisExp = function(tod, L = 24, degree = 1){
   n = length(tod)

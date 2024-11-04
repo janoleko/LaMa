@@ -30,7 +30,8 @@ Imports:
     MASS,
     mvtnorm,
     splines,
-    methods
+    methods,
+    CircStats
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

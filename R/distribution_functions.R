@@ -2,28 +2,31 @@
 #' 
 #' Density, distribution function and random generation for the von Mises distribution.
 #' 
-#' The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. The other functions are imported from \code{CircStats}.
+#' The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
+#' \code{rvm} and \code{pvm} are imported from \code{CircStats} and \code{circular} respectively.
 #'
 #' @param x,q vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
 #' @param kappa non-negative numeric value for the concentration parameter of the distribution.
 #' @param log logical; if \code{TRUE}, densities are returned on the log scale.
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
-#' @param acc accuracy of the distribution function approximation (for details see the \code{CircStats} documentation).
+#' @param tol the precision in evaluating the distribution function
+#' @param from value from which the integration for CDF starts. If \code{NULL}, is set to \code{mu - pi}.
 #' @param wrap logical; if \code{TRUE}, generated angles are wrapped to the interval [-pi, pi].
 #'
 #' @return \code{dvm} gives the density, \code{pvm} gives the distribution function, and \code{rvm} generates random deviates.
 #'
 #' @examples 
-#' x = rvm(2, 0, 2)
-#' d = dvm(x, 0, 2)
-#' p = pvm(x, 0, 2)
+#' set.seed(1)
+#' x = rvm(1000, 0, 1)
+#' d = dvm(x, 0, 1)
+#' p = pvm(x, 0, 1)
 #' @name vm
 NULL
 
 #' @rdname vm
 #' @export
-dvm = function(x, mu, kappa, log = FALSE) {
+dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
   res = 1 / (2 * pi * RTMB::besselI(kappa, 0)) * exp(kappa * cos(x - mu))
   if(log){
     return(log(res))
@@ -34,13 +37,16 @@ dvm = function(x, mu, kappa, log = FALSE) {
 
 #' @rdname vm
 #' @export
-pvm = function(q, mu, kappa, acc = 1e-020) {
-  CircStats::pvm(q, mu, kappa, acc)
+pvm = function(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20) {
+  suppressWarnings(
+    probs <- circular::pvonmises(q, mu, kappa, from = from, tol = tol)
+  )
+  as.numeric(probs)
 }
 
 #' @rdname vm
 #' @export
-rvm = function(n, mu, kappa, wrap = TRUE) {
+rvm = function(n, mu = 0, kappa = 1, wrap = TRUE) {
   angles = CircStats::rvm(n, mu, kappa)
   
   # if generated angels should be wrapped, i.e. mapped to interval [-pi, pi], do so

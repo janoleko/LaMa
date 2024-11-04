@@ -8,9 +8,11 @@
 #' Markov chains are parametrised in terms of a transition probability matrix \eqn{\Gamma}, for which each row contains a conditional probability distribution of the next state given the current state.
 #' Hence, each row has entries between 0 and 1 that need to sum to one. 
 #' 
-#' For numerical optimisation, we parametrise in terms of unconstrained parameters, thus this function computes said matrix from an unconstrained paramter vector via the inverse multinomial logistic link (also known as softmax) applied to each row.
+#' For numerical optimisation, we parametrise in terms of unconstrained parameters, thus this function computes said matrix from an unconstrained parameter vector via the inverse multinomial logistic link (also known as softmax) applied to each row.
 #'
-#' @param param unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain
+#' @family transition probability matrix functions
+#'
+#' @param param unconstrained parameter vector of length N*(N-1) where N is the number of states of the Markov chain
 #' @param byrow logical indicating if the transition probability matrix should be filled by row
 #' 
 #' Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
@@ -21,12 +23,12 @@
 #'
 #' @examples
 #' # 2 states: 2 free off-diagonal elements
-#' param1 = rep(-1, 2)
-#' Gamma1 = tpm(param1)
+#' par1 = rep(-1, 2)
+#' Gamma1 = tpm(par1)
 #' 
 #' # 3 states: 6 free off-diagonal elements
-#' param2 = rep(-2, 6)
-#' Gamma2 = tpm(param2)
+#' par2 = rep(-2, 6)
+#' Gamma2 = tpm(par2)
 tpm = function(param, byrow = FALSE) {
   
   "[<-" <- RTMB::ADoverload("[<-") # overloading assignment operators, currently necessary
@@ -49,15 +51,17 @@ tpm = function(param, byrow = FALSE) {
 
 #' Build all transition probability matrices of an inhomogeneous HMM
 #' 
-#' In an HMM, we model the influence of covariates on the state process by linking them to the transition probabiltiy matrix. 
+#' In an HMM, we often model the influence of covariates on the state process by linking them to the transition probabiltiy matrix. 
 #' Most commonly, this is done by specifying a linear predictor
 #' \deqn{ \eta_{ij}^{(t)} = \beta^{(ij)}_0 + \beta^{(ij)}_1 z_{t1} + \dots + \beta^{(ij)}_p z_{tp} }
 #' for each off-diagonal element (\eqn{i \neq j}) of the transition probability matrix and then applying the inverse multinomial logistic link (also known as softmax) to each row.
-#' This function efficiently calculates all transition probabilty matrices for a given design matrix \eqn{Z} and parameter matrix beta.
+#' This function efficiently calculates all transition probabilty matrices for a given design matrix \code{Z} and parameter matrix \code{beta}.
+#' 
+#' @family transition probability matrix functions
 #'
 #' @param Z covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
 #' 
-#' If Z has only p columns, an intercept column of ones will be added automatically.
+#' If \code{Z} has only p columns, an intercept column of ones will be added automatically.
 #' @param beta matrix of coefficients for the off-diagonal elements of the transition probability matrix
 #' 
 #' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
@@ -72,8 +76,7 @@ tpm = function(param, byrow = FALSE) {
 #' @import RTMB
 #'
 #' @examples
-#' n = 1000
-#' Z = matrix(runif(n*2), ncol = 2)
+#' Z = matrix(runif(200), ncol = 2)
 #' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_g(Z, beta)
 tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
@@ -142,7 +145,7 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
 #' This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix
 #' \deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}
 #' This function calculates the matrix above efficiently as a preliminery step to calculating the periodically stationary distribution.
-#'
+#' 
 #' @param Gamma array of transition probability matrices of dimension c(N,N,L).
 #' @param t integer index of the time point in the cycle, for which to calculate the thinned transition probility matrix
 #'
@@ -152,16 +155,9 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
 #' @examples
 #' # setting parameters for trigonometric link
 #' beta = matrix(c(-1, -2, 2, -1, 2, -4), nrow = 2, byrow = TRUE)
-#' # building trigonometric design matrix
-#' Z = cbind(1,trigBasisExp(1:24, 24, 1))
-#' # calculating all 24 linear predictor vectors
-#' Eta = Z%*%t(beta)
-#' # building all 24 t.p.m.s
-#' Gamma = array(dim = c(2,2,24))
-#' for(t in 1:24){
-#'   Gamma[,,t] = tpm(Eta[t,])
-#' }
-#' # calculating 
+#' # calculating periodically varying t.p.m. array (of length 24 here)
+#' Gamma = tpm_p(beta = beta)
+#' # calculating t.p.m. of thinned Markov chain
 #' tpm_thinned(Gamma, 4)
 tpm_thinned = function(Gamma, t){
   tpm_thinned_t_cpp(Gamma, t)
@@ -182,6 +178,8 @@ tpm_thinned = function(Gamma, t){
 #' Note that using this function inside the negative log-likelihood function is convenient, but it performs the basis expansion into sine and cosine terms each time it is called. 
 #' As these do not change during the optimisation, using \code{\link{tpm_g}} with a pre-calculated (by \code{\link{trigBasisExp}}) design matrix would be more efficient.
 #'
+#' @family transition probability matrix functions
+#'
 #' @param tod equidistant sequence of a cyclic variable
 #' 
 #' For time of day and e.g. half-hourly data, this could be 1, ..., L and L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.
@@ -196,7 +194,7 @@ tpm_thinned = function(Gamma, t){
 #' @param Z pre-calculated design matrix (excluding intercept column)
 #' 
 #' Defaults to \code{NULL} if trigonometric link should be calculated. 
-#' From an efficiency perspective, Z should be pre-calculated within the likelihood function, as the basis expansion should not be redundantly calculated. This can be done by using \code{\link{trigBasisExp}}.
+#' From an efficiency perspective, \code{Z} should be pre-calculated within the likelihood function, as the basis expansion should not be redundantly calculated. This can be done by using \code{\link{trigBasisExp}}.
 #' @param byrow logical indicating if each transition probability matrix should be filled by row
 #'  
 #' Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of \code{beta} parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
@@ -226,18 +224,7 @@ tpm_thinned = function(Gamma, t){
 #' beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
 #' Gamma2 = tpm_p(tod, L, beta, degree = 1)
 #' 
-#' Gamma1-Gamma2 # same result
-#' 
-#' # cubic P-splines
-#' set.seed(123)
-#' nk = 8 # number of basis functions
-#' tod = seq(0.5, 24, by = 0.5)
-#' L = 24
-#' k = L * 0:nk / nk # equidistant knots
-#' Z = mgcv::cSplineDes(tod, k) ## cyclic spline design matrix
-#' beta = matrix(c(-1, runif(8, -2, 2), # 9 parameters per off-diagonal element
-#'                  -2, runif(8, -2, 2)), nrow = 2, byrow = TRUE)
-#' Gamma = tpm_p(tod, L, beta, Z = Z)
+#' all(Gamma1 == Gamma2) # same result
 tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad = NULL, report = TRUE){
   K = nrow(beta)
   p = ncol(beta) - 1 # number of covariates
@@ -272,6 +259,8 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad
 #' \deqn{\Gamma(\Delta t_i) = \exp(Q \Delta t_i),}
 #' where \eqn{\exp()} is the matrix exponential. The mapping \eqn{\Gamma(\Delta t)} is also called the \strong{Markov semigroup}.
 #' This function calculates all transition matrices based on a given generator and time differences.
+#' 
+#' @family transition probability matrix functions
 #'
 #' @param Q infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)
 #' @param timediff time differences between observations of length n-1 when based on n observations
@@ -284,14 +273,12 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad
 #'
 #' @examples
 #' # building a Q matrix for a 3-state cont.-time Markov chain
-#' Q = diag(3)
-#' Q[!Q] = rexp(6)
-#' diag(Q) = 0
-#' diag(Q) = - rowSums(Q)
+#' Q = generator(rep(-2, 6))
 #'
-#' # draw time differences
-#' timediff = rexp(1000, 10)
+#' # draw random time differences
+#' timediff = rexp(100, 10)
 #'
+#' # compute all transition matrices
 #' Gamma = tpm_cont(Q, timediff)
 tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
   
@@ -334,6 +321,8 @@ tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
 #' Build the generator matrix of a continuous-time Markov chain
 #' 
 #' This function builds the \strong{infinitesimal generator matrix} for a \strong{continuous-time Markov chain} from an unconstrained parameter vector.
+#' 
+#' @family transition probability matrix functions
 #' 
 #' @param param unconstrained parameter vector of length N*(N-1) where N is the number of states of the Markov chain
 #' @param byrow logical indicating if the transition probability matrix should be filled by row
@@ -379,7 +368,7 @@ generator = function(param, byrow = FALSE, report = TRUE) {
 #' Build the embedded transition probability matrix of an HSMM from unconstrained parameter vector
 #'
 #' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+#' Hidden semi-Markov models are defined in terms of state durations and an \strong{embedded} transition probability matrix that contains the conditional transition probabilities given that the \strong{current state is left}. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
 #' 
 #' This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector. 
 #' For each row of the matrix, the inverse multinomial logistic link is applied.
@@ -388,6 +377,8 @@ generator = function(param, byrow = FALSE, report = TRUE) {
 #' This means, for 2 states, the function needs to be called without any arguments, for 3-states with a vector of length 3, for 4 states with a vector of length 8, etc.
 #'
 #' Compatible with automatic differentiation by \code{RTMB}
+#' 
+#' @family transition probability matrix functions
 #'
 #' @param param unconstrained parameter vector of length N*(N-2) where N is the number of states of the Markov chain
 #'
@@ -431,7 +422,7 @@ tpm_emb = function(param = NULL){
 #' Build all embedded transition probability matrices of an inhomogeneous HSMM
 #'
 #' @description
-#' Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+#' Hidden semi-Markov models are defined in terms of state durations and an \strong{embedded} transition probability matrix that contains the conditional transition probabilities given that the \strong{current state is left}. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
 #' We can allow this matrix to vary with covariates, which is the purpose of this function.
 #'
 #' It builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
@@ -440,15 +431,17 @@ tpm_emb = function(param = NULL){
 #' For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2) which determines the number of rows of the parameter matrix.
 #'
 #' Compatible with automatic differentiation by \code{RTMB}
+#' 
+#' @family transition probability matrix functions
+#' 
 #' @param Z covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
 #'
-#' If Z has only p columns, an intercept column of ones will be added automatically.
+#' If \code{Z} has only p columns, an intercept column of ones will be added automatically.
 #' @param beta matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix
 #'
 #' Needs to be of dimension c(N*(N-2), p+1), where the first column contains the intercepts.
 #' p can be 0, in which case the model is homogeneous.
 #' @param report logical, indicating whether the coefficient matrix beta should be reported from the fitted model. Defaults to \code{TRUE}.
-#'
 #'
 #' @return array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
 #' @export

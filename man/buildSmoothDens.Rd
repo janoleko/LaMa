@@ -23,7 +23,10 @@ buildSmoothDens(data, type = "real", par, k = 20, degree = 3, diff_order = 2)
 a nested list containing the design matrices \code{Z}, the penalty matrices \code{S}, the initial coefficients \code{coef} the prediction design matrices \code{Z_predict}, the prediction grids \code{xseq}, and details for the basis expansion for each data stream.
 }
 \description{
-This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+This high-level function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+}
+\details{
+Under the hood, \code{\link{make_matrices_dens}} is used for the actual construction of the design and penalty matrices.
 
 You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is then converted into suitable spline coefficients.
 \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.

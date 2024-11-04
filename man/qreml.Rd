@@ -27,12 +27,12 @@ Needs to be a function of the named list of initial parameters \code{par} only.}
 
 The random effects/ spline coefficients can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.}
 
-\item{dat}{initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength
+\item{dat}{initial data list that contains the data used in the likelihood function, hyperparameters, and the \strong{initial penalty strength} vector
 
-If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
+If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{penalty} argument below.
 Its length needs to match the to the total number of random effects.}
 
-\item{random}{vector of names of the random effects in \code{par} that are penalised.
+\item{random}{vector of names of the random effects/ penalised parameters in \code{par}
 
 \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
 
@@ -106,4 +106,7 @@ pnll = function(par) {
 
 # model fitting
 mod = qreml(pnll, par, dat, random = "betaspline")
+}
+\seealso{
+\code{\link{penalty}} to compute the penalty inside the likelihood function
 }

@@ -6,6 +6,8 @@
 #' Viterbi algorithm for state decoding in homogeneous HMMs
 #' 
 #' The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
+#' 
+#' @family decoding functions
 #'
 #' @param delta initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided
@@ -46,7 +48,9 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL){
 #' Viterbi algorithm for state decoding in inhomogeneous HMMs
 #' 
 #' The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
-#'
+#' 
+#' @family decoding functions
+#' 
 #' @param delta initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions
 #' 
@@ -147,6 +151,8 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' 
 #' The Viterbi algorithm allows one to decode the most probable state sequence of an HMM.
 #'
+#' @family decoding functions
+#'
 #' @param delta initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' 
 #' This could e.g. be the periodically stationary distribution (for each track).
@@ -197,6 +203,8 @@ viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
 #' \deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
 #' for homogeneous HMMs
 #'
+#' @family decoding functions
+#' 
 #' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided
 #' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
@@ -243,7 +251,9 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL){
 #' Computes
 #' \deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
 #' for inhomogeneous HMMs
-#'
+#' 
+#' @family decoding functions
+#' 
 #' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions
 #' 
@@ -365,7 +375,9 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' Computes
 #' \deqn{\Pr(S_t = j \mid X_1, ..., X_T)}
 #' for periodically inhomogeneous HMMs
-#'
+#'  
+#' @family decoding functions
+#' 
 #' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #'
 #' This could e.g. be the periodically stationary distribution (for each track) as computed by \code{\link{stationary_p}}.

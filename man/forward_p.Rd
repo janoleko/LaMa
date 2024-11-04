@@ -40,54 +40,43 @@ Instead of a single vector \code{delta} corresponding to the initial distributio
 log-likelihood for given data and parameters
 }
 \description{
+Calculates the log-likelihood of a sequence of observations under a hidden Markov model with periodically varying transition probabilities using the \strong{forward algorithm}.
+}
+\details{
 When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
 Thus, it is much more efficient to only calculate these \eqn{L} matrices and index them by a time variable (e.g. time of day or day of year) instead of calculating such a matrix for each index in the data set (which would be redundant).
 This function allows for that by only expecting a transition probability matrix for each time point in a period and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
 }
 \examples{
-## generating data from periodic 2-state HMM
-mu = c(0, 6)
-sigma = c(2, 4)
-beta = matrix(c(-2,-2,1,-1, 1, -1),nrow=2)
-delta = c(0.5, 0.5)
-# simulation
-n = 2000
-s = x = rep(NA, n)
-tod = rep(1:24, ceiling(2000/24))
-s[1] = sample(1:2, 1, prob = delta)
-x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-# 24 unique t.p.m.s
-Gamma = array(dim = c(2,2,24))
-for(t in 1:24){
-  G = diag(2)
-  G[!G] = exp(beta[,1]+beta[,2]*sin(2*pi*t/24)+
-    beta[,3]*cos(2*pi*t/24)) # trigonometric link
-  Gamma[,,t] = G / rowSums(G)
-}
-for(t in 2:n){
-  s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,tod[t]])
-  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-}
-# we can also use function from LaMa to make building periodic tpms much easier
-Gamma = tpm_p(1:24, 24, beta, degree = 1)
-
 ## negative log likelihood function
-mllk = function(theta.star, x, tod){
-  # parameter transformations for unconstraint optimization
-  beta = matrix(theta.star[1:6], 2, 3)
-  Gamma = tpm_p(tod=1:24, L=24, beta=beta)
-  delta = stationary_p(Gamma, t=tod[1])
-  mu = theta.star[8:9]
-  sigma = exp(theta.star[10:11])
-  # calculate all state-dependent probabilities
-  allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-  # return negative for minimization
-  -forward_p(delta, Gamma, allprobs, tod)
+nll = function(par, step, tod) {
+ # parameter transformations for unconstrained optimisation
+ beta = matrix(par[1:6], nrow = 2)
+ Gamma = tpm_p(1:24, beta = beta) # multinomial logit link for each time point
+ delta = stationary_p(Gamma, tod[1]) # stationary HMM
+ mu = exp(par[7:8])
+ sigma = exp(par[9:10])
+ # calculate all state-dependent probabilities
+ allprobs = matrix(1, length(step), 2)
+ ind = which(!is.na(step))
+ for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+ # simple forward algorithm to calculate log-likelihood
+ -forward_p(delta, Gamma, allprobs, tod)
 }
 
-## fitting an HMM to the data
-theta.star = c(-2,-2,1,-1,1,-1,0,0,5,log(2),log(3))
-mod = nlm(mllk, theta.star, x = x, tod = tod)
-
+## fitting an HMM to the nessi data
+par = c(-2,-2,            # initial tpm intercepts (logit-scale)
+        rep(0, 4),        # initial tpm slopes
+        log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+        log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+mod = nlm(nll, par, step = trex$step[1:500], tod = trex$tod[1:500])
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward}()},
+\code{\link{forward_g}()},
+\code{\link{forward_hsmm}()},
+\code{\link{forward_ihsmm}()},
+\code{\link{forward_phsmm}()}
+}
+\concept{forward algorithms}

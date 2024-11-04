@@ -1,25 +1,56 @@
-#' von Mises Density Function
+#' von Mises distribution
 #' 
-#' Returns the density function of the van Mises distribution evaluated at a particular value.
+#' Density, distribution function and random generation for the von Mises distribution.
 #' 
-#' This implementation allows for automatic differentiation with \code{RTMB}.
+#' The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. The other functions are imported from \code{CircStats}.
 #'
-#' @param x vector of angles measured in radians at which to evaluate the density function.
+#' @param x,q vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
 #' @param kappa non-negative numeric value for the concentration parameter of the distribution.
 #' @param log logical; if \code{TRUE}, densities are returned on the log scale.
+#' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
+#' @param acc accuracy of the distribution function approximation (for details see the \code{CircStats} documentation).
+#' @param wrap logical; if \code{TRUE}, generated angles are wrapped to the interval [-pi, pi].
 #'
-#' @return Returns the density function of the von Mises density distribution evaluated at x.
-#' @export
+#' @return \code{dvm} gives the density, \code{pvm} gives the distribution function, and \code{rvm} generates random deviates.
 #'
 #' @examples 
-#' x = c(0, pi/2, pi)
-#' dvm(x, 0, 1)
+#' x = rvm(2, 0, 2)
+#' d = dvm(x, 0, 2)
+#' p = pvm(x, 0, 2)
+#' @name vm
+NULL
+
+#' @rdname vm
+#' @export
 dvm = function(x, mu, kappa, log = FALSE) {
   res = 1 / (2 * pi * RTMB::besselI(kappa, 0)) * exp(kappa * cos(x - mu))
-  if(log) res = log(res)
-  res
+  if(log){
+    return(log(res))
+  } else{
+    return(res)
+  }
 }
+
+#' @rdname vm
+#' @export
+pvm = function(q, mu, kappa, acc = 1e-020) {
+  CircStats::pvm(q, mu, kappa, acc)
+}
+
+#' @rdname vm
+#' @export
+rvm = function(n, mu, kappa, wrap = TRUE) {
+  angles = CircStats::rvm(n, mu, kappa)
+  
+  # if generated angels should be wrapped, i.e. mapped to interval [-pi, pi], do so
+  if(wrap){
+    angles = (angles + pi) %% (2 * pi) - pi
+  }
+  angles
+}
+
+
 
 #' Reparametrised gamma distribution
 #' 
@@ -83,8 +114,8 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 #' Reparametrised multivariate Gaussian distribution
 #'
 #' Density function of the multivariate Gaussian distribution reparametrised in terms of its precision matrix (inverse variance).
-#' This implementation is particularly useful for marginal ML with penalised splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is a fixed penalty matrix.
-#' As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalization constant) and only scale the quadratic form by \eqn{\lambda}
+#' This implementation is particularly useful for defining the \strong{joint log-likelihood} with penalised splines or i.i.d. random effects that have a multivariate Gaussian distribution with fixed precision/ penalty matrix \eqn{\lambda S}.
+#' As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalisation constant) and only scale the quadratic form by \eqn{\lambda}
 #' when multiple spline parameters/ random effects with different \eqn{\lambda}'s but the same penalty matrix \eqn{S} are evaluated.
 #'
 #' This implementation allows for automatic differentiation with \code{RTMB}.
@@ -94,12 +125,12 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 #' @param S unscaled precision matrix
 #' @param lambda precision scaling parameter
 #' 
-#' Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
+#' Can be a vector if \code{x} is a matrix. Then each row of \code{x} is evaluated with the corresponding \code{lambda}.
 #' This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.
 #' @param logdetS Optional precomputed log determinant of the precision matrix \code{S}. If the precision matrix does not depend on parameters, it can be precomputed and passed to the function.
 #' @param log logical; if \code{TRUE}, densities are returned on the log scale.
 #'
-#' @return Vector of densities
+#' @return vector of density values
 #' @export
 #' @import RTMB
 #'
@@ -110,13 +141,13 @@ rgamma2 = function(n, mu = 1, sigma = 1) {
 #' S = diag(10)
 #' sigma = c(1, 2, 3) # random effect standard deviations
 #' lambda = 1 / sigma^2
-#' dgmrf2(x, 0, S, lambda)
+#' d = dgmrf2(x, 0, S, lambda)
 #'
 #' # P-splines
 #' L = diff(diag(10), diff = 2) # second-order difference matrix
 #' S = t(L) %*% L
 #' lambda = c(1,2,3)
-#' dgmrf2(x, 0, S, lambda, log = TRUE)
+#' d = dgmrf2(x, 0, S, lambda, log = TRUE)
 dgmrf2 = function(x, 
                   mu = 0, 
                   S, 

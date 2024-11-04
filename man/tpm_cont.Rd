@@ -27,13 +27,21 @@ This function calculates all transition matrices based on a given generator and 
 }
 \examples{
 # building a Q matrix for a 3-state cont.-time Markov chain
-Q = diag(3)
-Q[!Q] = rexp(6)
-diag(Q) = 0
-diag(Q) = - rowSums(Q)
+Q = generator(rep(-2, 6))
 
-# draw time differences
-timediff = rexp(1000, 10)
+# draw random time differences
+timediff = rexp(100, 10)
 
+# compute all transition matrices
 Gamma = tpm_cont(Q, timediff)
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

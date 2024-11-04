@@ -33,7 +33,7 @@ For each additional degree, one sine and one cosine frequency are added.}
 \item{Z}{pre-calculated design matrix (excluding intercept column)
 
 Defaults to \code{NULL} if trigonometric link should be calculated. 
-From an efficiency perspective, Z should be pre-calculated within the likelihood function, as the basis expansion should not be redundantly calculated. This can be done by using \code{\link{trigBasisExp}}.}
+From an efficiency perspective, \code{Z} should be pre-calculated within the likelihood function, as the basis expansion should not be redundantly calculated. This can be done by using \code{\link{trigBasisExp}}.}
 
 \item{byrow}{logical indicating if each transition probability matrix should be filled by row
  
@@ -78,16 +78,15 @@ L = 24
 beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
 Gamma2 = tpm_p(tod, L, beta, degree = 1)
 
-Gamma1-Gamma2 # same result
-
-# cubic P-splines
-set.seed(123)
-nk = 8 # number of basis functions
-tod = seq(0.5, 24, by = 0.5)
-L = 24
-k = L * 0:nk / nk # equidistant knots
-Z = mgcv::cSplineDes(tod, k) ## cyclic spline design matrix
-beta = matrix(c(-1, runif(8, -2, 2), # 9 parameters per off-diagonal element
-                 -2, runif(8, -2, 2)), nrow = 2, byrow = TRUE)
-Gamma = tpm_p(tod, L, beta, Z = Z)
+all(Gamma1 == Gamma2) # same result
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_g}()}
+}
+\concept{transition probability matrix functions}

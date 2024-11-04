@@ -25,3 +25,13 @@ generator(rep(-1, 2))
 # 3 states: 6 free off-diagonal elements
 generator(rep(-2, 6))
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{tpm}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

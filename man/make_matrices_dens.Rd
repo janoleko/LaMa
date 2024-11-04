@@ -32,15 +32,14 @@ make_matrices_dens(
 Such non-equidistant knot spacing is only used for \code{type = "positive"}.}
 }
 \value{
-list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
+list containing the design matrix \code{Z}, the penalty matrix \code{S}, the prediction design matrix \code{Z_predict}, the prediction grid \code{xseq}, and details for the basis expansion.
 }
 \description{
-This function builds the B-spline design matrix for a given data vector x. 
+This function builds the B-spline design matrix for a given data vector. 
 Importantly, the B-spline basis functions are normalised such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation, when the basis functions are weighted by non-negative weights summing to one.
 }
 \examples{
 modmat = make_matrices_dens(x = (-50):50, k = 20)
 modmat = make_matrices_dens(x = 1:100, k = 20, type = "positive")
 modmat = make_matrices_dens(x = seq(-pi,pi), k = 20, type = "circular")
-
 }

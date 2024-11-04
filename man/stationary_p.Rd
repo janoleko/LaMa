@@ -11,7 +11,7 @@ stationary_p(Gamma, t = NULL, ad = NULL)
 
 \item{t}{integer index of the time point in the cycle, for which to calculate the stationary distribution
 
-If t is not provided, the function calculates all stationary distributions for each time point in the cycle.}
+If \code{t} is not provided, the function calculates all stationary distributions for each time point in the cycle.}
 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
 }
@@ -27,12 +27,20 @@ The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t
 This function calculates said periodically stationary distribution.
 }
 \examples{
-L = 24
+# setting parameters for trigonometric link
 beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
-Gamma = tpm_p(1:L, L, beta, degree = 1)
-# Periodically stationary distribution for specific time point
+Gamma = tpm_p(beta = beta, degree = 1)
+# periodically stationary distribution for specific time point
 delta = stationary_p(Gamma, 4)
 
-# All periodically stationary distributions
+# all periodically stationary distributions
 Delta = stationary_p(Gamma)
 }
+\seealso{
+\code{\link{tpm_p}} and \code{\link{tpm_g}} to create multiple transition matrices based on a cyclic variable or design matrix
+
+Other stationary distribution functions: 
+\code{\link{stationary}()},
+\code{\link{stationary_cont}()}
+}
+\concept{stationary distribution functions}

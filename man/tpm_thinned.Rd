@@ -23,15 +23,8 @@ This function calculates the matrix above efficiently as a preliminery step to c
 \examples{
 # setting parameters for trigonometric link
 beta = matrix(c(-1, -2, 2, -1, 2, -4), nrow = 2, byrow = TRUE)
-# building trigonometric design matrix
-Z = cbind(1,trigBasisExp(1:24, 24, 1))
-# calculating all 24 linear predictor vectors
-Eta = Z\%*\%t(beta)
-# building all 24 t.p.m.s
-Gamma = array(dim = c(2,2,24))
-for(t in 1:24){
-  Gamma[,,t] = tpm(Eta[t,])
-}
-# calculating 
+# calculating periodically varying t.p.m. array (of length 24 here)
+Gamma = tpm_p(beta = beta)
+# calculating t.p.m. of thinned Markov chain
 tpm_thinned(Gamma, 4)
 }

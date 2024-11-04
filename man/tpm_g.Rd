@@ -9,7 +9,7 @@ tpm_g(Z, beta, byrow = FALSE, ad = NULL, report = TRUE)
 \arguments{
 \item{Z}{covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
 
-If Z has only p columns, an intercept column of ones will be added automatically.}
+If \code{Z} has only p columns, an intercept column of ones will be added automatically.}
 
 \item{beta}{matrix of coefficients for the off-diagonal elements of the transition probability matrix
 
@@ -27,15 +27,24 @@ Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work 
 array of transition probability matrices of dimension c(N,N,n)
 }
 \description{
-In an HMM, we model the influence of covariates on the state process by linking them to the transition probabiltiy matrix. 
+In an HMM, we often model the influence of covariates on the state process by linking them to the transition probabiltiy matrix. 
 Most commonly, this is done by specifying a linear predictor
 \deqn{ \eta_{ij}^{(t)} = \beta^{(ij)}_0 + \beta^{(ij)}_1 z_{t1} + \dots + \beta^{(ij)}_p z_{tp} }
 for each off-diagonal element (\eqn{i \neq j}) of the transition probability matrix and then applying the inverse multinomial logistic link (also known as softmax) to each row.
-This function efficiently calculates all transition probabilty matrices for a given design matrix \eqn{Z} and parameter matrix beta.
+This function efficiently calculates all transition probabilty matrices for a given design matrix \code{Z} and parameter matrix \code{beta}.
 }
 \examples{
-n = 1000
-Z = matrix(runif(n*2), ncol = 2)
+Z = matrix(runif(200), ncol = 2)
 beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 Gamma = tpm_g(Z, beta)
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

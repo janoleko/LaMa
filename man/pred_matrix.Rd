@@ -19,5 +19,5 @@ Build the prediction design matrix based on new data and model_matrices object c
 }
 \examples{
 modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 }

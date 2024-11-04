@@ -37,45 +37,38 @@ Furthermore, instead of a single vector \code{delta} corresponding to the initia
 log-likelihood for given data and parameters
 }
 \description{
-General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
+Calculates the log-likelihood of a sequence of observations under a hidden Markov model with time-varying transition probabilities using the \strong{forward algorithm}.
 }
 \examples{
-## generating data from inhomogeneous 2-state HMM
-mu = c(0, 6)
-sigma = c(2, 4)
-beta = matrix(c(-2,-2,0.5,-0.5),nrow=2)
-delta = c(0.5, 0.5)
-# simulation
-n = 2000
-s = x = rep(NA, n)
-z = rnorm(n, 0, 2)
-s[1] = sample(1:2, 1, prob = delta)
-x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-for(t in 2:n){
-  Gamma = diag(2)
-  Gamma[!Gamma] = exp(beta[,1]+beta[,2]*z[t])
-  Gamma = Gamma / rowSums(Gamma)
-  s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-}
-
 ## negative log likelihood function
-mllk = function(theta.star, x, z){
-  # parameter transformations for unconstraint optimization
-  beta = matrix(theta.star[1:4], 2, 2)
-  Gamma = tpm_g(Z = z, beta = beta)
-  delta = c(plogis(theta.star[5]), 1-plogis(theta.star[5]))
-  mu = theta.star[6:7]
-  sigma = exp(theta.star[8:9])
-  # calculate all state-dependent probabilities
-  allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-  # return negative for minimization
-  -forward_g(delta, Gamma, allprobs)
+nll = function(par, step, Z) {
+ # parameter transformations for unconstrained optimisation
+ beta = matrix(par[1:6], nrow = 2)
+ Gamma = tpm_g(Z, beta) # multinomial logit link for each time point
+ delta = stationary(Gamma[,,1]) # stationary HMM
+ mu = exp(par[7:8])
+ sigma = exp(par[9:10])
+ # calculate all state-dependent probabilities
+ allprobs = matrix(1, length(step), 2)
+ ind = which(!is.na(step))
+ for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+ # simple forward algorithm to calculate log-likelihood
+ -forward_g(delta, Gamma, allprobs)
 }
 
-## fitting an HMM to the data
-theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
-mod = nlm(mllk, theta.star, x = x, z = z)
-
+## fitting an HMM to the trex data
+par = c(-2,-2,            # initial tpm intercepts (logit-scale)
+        rep(0, 4),        # initial tpm slopes
+        log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+        log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+mod = nlm(nll, par, step = trex$step[1:500], Z = trigBasisExp(trex$tod[1:500]))
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward}()},
+\code{\link{forward_hsmm}()},
+\code{\link{forward_ihsmm}()},
+\code{\link{forward_p}()},
+\code{\link{forward_phsmm}()}
+}
+\concept{forward algorithms}

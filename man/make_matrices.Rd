@@ -17,7 +17,7 @@ For most bases the user simply supplies the knots to be used, which must match u
 See \code{mgcv} documentation for more details.}
 }
 \value{
-a list containing the design matrix Z, the penalty matrix S, the formula, the data and the knots
+a list containing the design matrix \code{Z}, the penalty matrix \code{S}, the \code{formula}, the \code{data} and the \code{knots}
 }
 \description{
 Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set

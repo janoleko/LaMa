@@ -38,3 +38,12 @@ tod = rep(1:24, 5)[1:100]
 
 probs = stateprobs_p(delta, Gamma, allprobs, tod)
 }
+\seealso{
+Other decoding functions: 
+\code{\link{stateprobs}()},
+\code{\link{stateprobs_g}()},
+\code{\link{viterbi}()},
+\code{\link{viterbi_g}()},
+\code{\link{viterbi_p}()}
+}
+\concept{decoding functions}

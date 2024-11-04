@@ -36,3 +36,12 @@ for(t in 1:99){
 allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 states = viterbi_g(delta, Gamma, allprobs)
 }
+\seealso{
+Other decoding functions: 
+\code{\link{stateprobs}()},
+\code{\link{stateprobs_g}()},
+\code{\link{stateprobs_p}()},
+\code{\link{viterbi}()},
+\code{\link{viterbi_p}()}
+}
+\concept{decoding functions}

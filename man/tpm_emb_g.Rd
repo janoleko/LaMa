@@ -9,7 +9,7 @@ tpm_emb_g(Z, beta, report = TRUE)
 \arguments{
 \item{Z}{covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
 
-If Z has only p columns, an intercept column of ones will be added automatically.}
+If \code{Z} has only p columns, an intercept column of ones will be added automatically.}
 
 \item{beta}{matrix of coefficients for the off-diagonal elements of the embedded transition probability matrix
 
@@ -22,7 +22,7 @@ p can be 0, in which case the model is homogeneous.}
 array of embedded/ conditional transition probability matrices of dimension c(N,N,n)
 }
 \description{
-Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+Hidden semi-Markov models are defined in terms of state durations and an \strong{embedded} transition probability matrix that contains the conditional transition probabilities given that the \strong{current state is left}. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
 We can allow this matrix to vary with covariates, which is the purpose of this function.
 
 It builds all embedded/ conditional transition probability matrices based on a design and parameter matrix.
@@ -42,3 +42,13 @@ omega = tpm_emb_g(Z, beta)
 Z = cbind(1, Z)
 omega = tpm_emb_g(Z, beta)
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

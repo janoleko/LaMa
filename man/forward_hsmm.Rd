@@ -41,6 +41,9 @@ By default, the stationary distribution is computed (which is typically recommen
 log-likelihood for given data and parameters
 }
 \description{
+Calculates the (approximate) log-likelihood of a sequence of observations under a homogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+}
+\details{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers.
 For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 
@@ -49,3 +52,12 @@ This function is designed to be used with automatic differentiation based on the
 \examples{
 # currently no examples
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward}()},
+\code{\link{forward_g}()},
+\code{\link{forward_ihsmm}()},
+\code{\link{forward_p}()},
+\code{\link{forward_phsmm}()}
+}
+\concept{forward algorithms}

@@ -7,15 +7,20 @@
 #' 
 #' It is intended to be used inside the \strong{penalised negative log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
 #' For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
+#' 
+#' @seealso \code{\link{qreml}} for the \strong{qREML} algorithm
+#' 
+#' @details
+#' \strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalised negative log-likelihood function, 
+#' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
+#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.
+#' 
 #'
 #' @param re_coef coefficient vector/ matrix or list of coefficient vectors/ matrices
 #'
 #' Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
-#' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
-#' 
-#' \strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
-#' i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-#' If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.
+#' When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. 
+#' This way all rows can use the same penalty matrix.
 #' @param S fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects
 #' @param lambda penalty strength parameter vector that has a length corresponding to the \strong{total number} of random effects/ spline coefficients in \code{re_coef}
 #'
@@ -154,6 +159,8 @@ penalty = function(re_coef, S, lambda) {
 #'
 #' Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimisation.
 #' The user has to specify the \strong{penalised negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function to compute the quadratic-form penalty inside the likelihood.
+#' 
+#' @seealso \code{\link{penalty}} to compute the penalty inside the likelihood function
 #'
 #' @param pnll penalised negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty
 #'
@@ -161,11 +168,11 @@ penalty = function(re_coef, S, lambda) {
 #' @param par named list of initial parameters
 #'
 #' The random effects/ spline coefficients can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
-#' @param dat initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength
+#' @param dat initial data list that contains the data used in the likelihood function, hyperparameters, and the \strong{initial penalty strength} vector
 #'
-#' If the initial penalty strength vector is \strong{not} called \code{lambda}, you need to specify its name in \code{dat} using the \code{penalty} argument below.
+#' If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{penalty} argument below.
 #' Its length needs to match the to the total number of random effects.
-#' @param random vector of names of the random effects in \code{par} that are penalised.
+#' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
 #' @param penalty optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.

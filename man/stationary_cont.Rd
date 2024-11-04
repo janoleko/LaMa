@@ -17,9 +17,17 @@ A well-behaved continuous-time Markov chain converges to a unique stationary dis
 This distribution satisfies
 \deqn{\pi Q = 0,} subject to \eqn{\sum_{j=1}^N \pi_j = 1},
 where \eqn{Q} is the infinitesimal generator of the Markov chain.
-This function solves the linear system of equations above.
+This function solves the linear system of equations above for a given generator matrix.
 }
 \examples{
 Q = generator(c(-2,-2))
 Pi = stationary_cont(Q)
 }
+\seealso{
+\code{\link{generator}} to create a generator matrix
+
+Other stationary distribution functions: 
+\code{\link{stationary}()},
+\code{\link{stationary_p}()}
+}
+\concept{stationary distribution functions}

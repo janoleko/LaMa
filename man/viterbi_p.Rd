@@ -39,3 +39,12 @@ n = length(tod)
 allprobs = matrix(runif(2*n), nrow = n, ncol = 2)
 states = viterbi_p(delta, Gamma, allprobs, tod)
 }
+\seealso{
+Other decoding functions: 
+\code{\link{stateprobs}()},
+\code{\link{stateprobs_g}()},
+\code{\link{stateprobs_p}()},
+\code{\link{viterbi}()},
+\code{\link{viterbi_g}()}
+}
+\concept{decoding functions}

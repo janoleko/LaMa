@@ -10,11 +10,8 @@ penalty(re_coef, S, lambda)
 \item{re_coef}{coefficient vector/ matrix or list of coefficient vectors/ matrices
 
 Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in \code{S}.
-When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.\cr\cr
-
-\strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalized negative log-likelihood function, 
-i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
-If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.}
+When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. 
+This way all rows can use the same penalty matrix.}
 
 \item{S}{fixed penalty matrix or list of penalty matrices matching the structure of \code{re_coef} and also the dimension of the individuals smooths/ random effects}
 
@@ -32,6 +29,11 @@ with smoothing parameters \eqn{\lambda_i}, coefficient vectors \eqn{b_i}, and fi
 
 It is intended to be used inside the \strong{penalised negative log-likelihood function} when fitting models with penalised splines or simple random effects via \strong{quasi restricted maximum likelihood} (qREML) with the \code{\link{qreml}} function.
 For \code{\link{qreml}} to work, the likelihood function needs to be compatible with the \code{RTMB} R package to enable automatic differentiation.
+}
+\details{
+\strong{Caution:} The formatting of \code{re_coef} needs to match the structure of the parameter list in your penalised negative log-likelihood function, 
+i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to \code{penalty}.
+If these are seperate random effects, each with its own name, they need to be passed as a list to \code{penalty}. Moreover, the ordering of \code{re_coef} needs to match the character vector \code{random} specified in \code{\link{qreml}}.
 }
 \examples{
 # Example with a single random effect
@@ -86,4 +88,7 @@ pnll = function(par) {
 
 # model fitting
 mod = qreml(pnll, par, dat, random = "betaspline")
+}
+\seealso{
+\code{\link{qreml}} for the \strong{qREML} algorithm
 }

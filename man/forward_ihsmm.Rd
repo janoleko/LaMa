@@ -52,6 +52,9 @@ Hence, when not provided, \code{startInd} is chosen to be \code{max(sapply(dm, n
 log-likelihood for given data and parameters
 }
 \description{
+Calculates the (approximate) log-likelihood of a sequence of observations under an inhomogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+}
+\details{
 Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers. This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary with covariates.
 For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 
@@ -60,3 +63,12 @@ This function is designed to be used with automatic differentiation based on the
 \examples{
 # currently no examples
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward}()},
+\code{\link{forward_g}()},
+\code{\link{forward_hsmm}()},
+\code{\link{forward_p}()},
+\code{\link{forward_phsmm}()}
+}
+\concept{forward algorithms}

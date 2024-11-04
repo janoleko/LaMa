@@ -6,6 +6,10 @@
 #' \deqn{\delta \Gamma = \delta,} subject to \eqn{\sum_{j=1}^N \delta_j = 1},
 #' where \eqn{\Gamma} is the transition probability matrix. 
 #' This function solves the linear system of equations above.
+#' 
+#' @family stationary distribution functions
+#' 
+#' @seealso \code{\link{tpm}} to create a transition probabilty matrix using the multinomial logistic link (softmax)
 #
 #' @param Gamma transition probability matrix of dimension c(N,N)
 #'
@@ -37,11 +41,15 @@ stationary = function(Gamma){
 #' The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t = \delta^{(t)}}.
 #' 
 #' This function calculates said periodically stationary distribution.
+#'
+#' @family stationary distribution functions
+#' 
+#' @seealso \code{\link{tpm_p}} and \code{\link{tpm_g}} to create multiple transition matrices based on a cyclic variable or design matrix
 #' 
 #' @param Gamma array of transition probability matrices of dimension c(N,N,L)
 #' @param t integer index of the time point in the cycle, for which to calculate the stationary distribution
 #' 
-#' If t is not provided, the function calculates all stationary distributions for each time point in the cycle.
+#' If \code{t} is not provided, the function calculates all stationary distributions for each time point in the cycle.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
 #'
 #' @return either the periodically stationary distribution at time t or all periodically stationary distributions.
@@ -49,14 +57,13 @@ stationary = function(Gamma){
 #' @import RTMB
 #'
 #' @examples
-# setting parameters for trigonometric link
-#' L = 24
+#' # setting parameters for trigonometric link
 #' beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
-#' Gamma = tpm_p(1:L, L, beta, degree = 1)
-#' # Periodically stationary distribution for specific time point
+#' Gamma = tpm_p(beta = beta, degree = 1)
+#' # periodically stationary distribution for specific time point
 #' delta = stationary_p(Gamma, 4)
 #'
-#' # All periodically stationary distributions
+#' # all periodically stationary distributions
 #' Delta = stationary_p(Gamma)
 stationary_p = function(Gamma, t = NULL, ad = NULL){
   
@@ -133,7 +140,11 @@ stationary_p = function(Gamma, t = NULL, ad = NULL){
 #' This distribution satisfies
 #' \deqn{\pi Q = 0,} subject to \eqn{\sum_{j=1}^N \pi_j = 1},
 #' where \eqn{Q} is the infinitesimal generator of the Markov chain.
-#' This function solves the linear system of equations above.
+#' This function solves the linear system of equations above for a given generator matrix.
+#'
+#' @family stationary distribution functions
+#'
+#' @seealso \code{\link{generator}} to create a generator matrix
 #
 #' @param Q infinitesimal generator matrix of dimension c(N,N)
 #'

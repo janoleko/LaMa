@@ -11,7 +11,7 @@
 #' For most bases the user simply supplies the knots to be used, which must match up with the k value supplied (note that the number of knots is not always just k).
 #' See \code{mgcv} documentation for more details.
 #'
-#' @return a list containing the design matrix Z, the penalty matrix S, the formula, the data and the knots
+#' @return a list containing the design matrix \code{Z}, the penalty matrix \code{S}, the \code{formula}, the \code{data} and the \code{knots}
 #' @export
 #' 
 #' @import mgcv
@@ -46,7 +46,7 @@ make_matrices = function(formula, data, knots = NULL){
 #'
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-#' pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+#' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 pred_matrix = function(model_matrices, newdata) {
   gam_setup0 = gam(model_matrices$form, 
                    data = cbind(dummy = 1, model_matrices$data),
@@ -62,7 +62,7 @@ pred_matrix = function(model_matrices, newdata) {
 
 #' Build a standardised P-Spline design matrix and the associated P-Spline penalty matrix
 #' 
-#' This function builds the B-spline design matrix for a given data vector x. 
+#' This function builds the B-spline design matrix for a given data vector. 
 #' Importantly, the B-spline basis functions are normalised such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation, when the basis functions are weighted by non-negative weights summing to one.
 #'
 #' @param x data vector
@@ -75,14 +75,13 @@ pred_matrix = function(model_matrices, newdata) {
 #' 
 #' Such non-equidistant knot spacing is only used for \code{type = "positive"}.
 #'
-#' @return list containing the design matrix Z, the penalty matrix S, the prediction design matrix Z_predict, the prediction grid xseq, and details for the basis expansion.
+#' @return list containing the design matrix \code{Z}, the penalty matrix \code{S}, the prediction design matrix \code{Z_predict}, the prediction grid \code{xseq}, and details for the basis expansion.
 #' @export
 #'
 #' @examples
 #' modmat = make_matrices_dens(x = (-50):50, k = 20)
 #' modmat = make_matrices_dens(x = 1:100, k = 20, type = "positive")
 #' modmat = make_matrices_dens(x = seq(-pi,pi), k = 20, type = "circular")
-#' 
 make_matrices_dens = function(x, # data vector
                               k, # number of basis functions
                               type = "real", # type of the data
@@ -235,7 +234,10 @@ make_splinecoef = function(model_matrices,
 #' Build the design and penalty matrices for smooth density estimation
 #' 
 #' @description
-#' This function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+#' This high-level function can be used to prepare objects needed to estimate mixture models of smooth densities using P-Splines.
+#' 
+#' @details
+#' Under the hood, \code{\link{make_matrices_dens}} is used for the actual construction of the design and penalty matrices.
 #'
 #' You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is then converted into suitable spline coefficients.
 #' \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.

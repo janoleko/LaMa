@@ -15,7 +15,7 @@ If the function is called without \code{param}, it will return the conditional t
 embedded/ conditional transition probability matrix of dimension c(N,N)
 }
 \description{
-Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
+Hidden semi-Markov models are defined in terms of state durations and an \strong{embedded} transition probability matrix that contains the conditional transition probabilities given that the \strong{current state is left}. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.
 
 This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector. 
 For each row of the matrix, the inverse multinomial logistic link is applied.
@@ -37,3 +37,13 @@ omega = tpm_emb(param)
 param = rep(0, 8)
 omega = tpm_emb(param)
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

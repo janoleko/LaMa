@@ -4,6 +4,10 @@
 
 
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix
+#' 
+#' Calculates the log-likelihood of a sequence of observations under a homogeneous hidden Markov model using the \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
 #'
 #' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided
@@ -21,38 +25,26 @@
 #' @import RTMB
 #'
 #' @examples
-#' ## generating data from homogeneous 2-state HMM
-#' mu = c(0, 6)
-#' sigma = c(2, 4)
-#' Gamma = matrix(c(0.5, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-#' delta = c(0.5, 0.5)
-#' # simulation
-#' s = x = rep(NA, 500)
-#' s[1] = sample(1:2, 1, prob = delta)
-#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-#' for(t in 2:500){
-#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-#' }
-#' 
 #' ## negative log likelihood function
-#' mllk = function(theta.star, x){
-#'   # parameter transformations for unconstraint optimization
-#'   Gamma = tpm(theta.star[1:2])
-#'   delta = stationary(Gamma) # stationary HMM
-#'   mu = theta.star[3:4]
-#'   sigma = exp(theta.star[5:6])
-#'   # calculate all state-dependent probabilities
-#'   allprobs = matrix(1, length(x), 2)
-#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-#'   # return negative for minimization
-#'   -forward(delta, Gamma, allprobs)
+#' nll = function(par, step) {
+#'  # parameter transformations for unconstrained optimisation
+#'  Gamma = tpm(par[1:2]) # multinomial logit link
+#'  delta = stationary(Gamma) # stationary HMM
+#'  mu = exp(par[3:4])
+#'  sigma = exp(par[5:6])
+#'  # calculate all state-dependent probabilities
+#'  allprobs = matrix(1, length(step), 2)
+#'  ind = which(!is.na(step))
+#'  for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+#'  # simple forward algorithm to calculate log-likelihood
+#'  -forward(delta, Gamma, allprobs)
 #' }
 #' 
-#' ## fitting an HMM to the data
-#' theta.star = c(-2,-2,0,5,log(2),log(3))
-#' mod = stats::nlm(mllk, theta.star, x = x)
-#'
+#' ## fitting an HMM to the trex data
+#' par = c(-2,-2,            # initial tpm params (logit-scale)
+#'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+#'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+#' mod = nlm(nll, par, step = trex$step[1:1000])
 forward = function(delta, Gamma, allprobs, 
                    trackID = NULL, ad = NULL, report = TRUE){
   
@@ -211,6 +203,10 @@ forward = function(delta, Gamma, allprobs,
 
 #' General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix
 #'
+#' Calculates the log-likelihood of a sequence of observations under a hidden Markov model with time-varying transition probabilities using the \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
+#'
 #' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
 #' @param Gamma array of transition probability matrices of dimension c(N,N,n-1), as in a time series of length n, there are only n-1 transitions. 
 #' 
@@ -238,44 +234,28 @@ forward = function(delta, Gamma, allprobs,
 #' @import RTMB
 #'
 #' @examples
-#' ## generating data from inhomogeneous 2-state HMM
-#' mu = c(0, 6)
-#' sigma = c(2, 4)
-#' beta = matrix(c(-2,-2,0.5,-0.5),nrow=2)
-#' delta = c(0.5, 0.5)
-#' # simulation
-#' n = 2000
-#' s = x = rep(NA, n)
-#' z = rnorm(n, 0, 2)
-#' s[1] = sample(1:2, 1, prob = delta)
-#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-#' for(t in 2:n){
-#'   Gamma = diag(2)
-#'   Gamma[!Gamma] = exp(beta[,1]+beta[,2]*z[t])
-#'   Gamma = Gamma / rowSums(Gamma)
-#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-#' }
-#' 
 #' ## negative log likelihood function
-#' mllk = function(theta.star, x, z){
-#'   # parameter transformations for unconstraint optimization
-#'   beta = matrix(theta.star[1:4], 2, 2)
-#'   Gamma = tpm_g(Z = z, beta = beta)
-#'   delta = c(plogis(theta.star[5]), 1-plogis(theta.star[5]))
-#'   mu = theta.star[6:7]
-#'   sigma = exp(theta.star[8:9])
-#'   # calculate all state-dependent probabilities
-#'   allprobs = matrix(1, length(x), 2)
-#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-#'   # return negative for minimization
-#'   -forward_g(delta, Gamma, allprobs)
+#' nll = function(par, step, Z) {
+#'  # parameter transformations for unconstrained optimisation
+#'  beta = matrix(par[1:6], nrow = 2)
+#'  Gamma = tpm_g(Z, beta) # multinomial logit link for each time point
+#'  delta = stationary(Gamma[,,1]) # stationary HMM
+#'  mu = exp(par[7:8])
+#'  sigma = exp(par[9:10])
+#'  # calculate all state-dependent probabilities
+#'  allprobs = matrix(1, length(step), 2)
+#'  ind = which(!is.na(step))
+#'  for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+#'  # simple forward algorithm to calculate log-likelihood
+#'  -forward_g(delta, Gamma, allprobs)
 #' }
 #' 
-#' ## fitting an HMM to the data
-#' theta.star = c(-2,-2,1,-1,0,0,5,log(2),log(3))
-#' mod = nlm(mllk, theta.star, x = x, z = z)
-#'
+#' ## fitting an HMM to the trex data
+#' par = c(-2,-2,            # initial tpm intercepts (logit-scale)
+#'         rep(0, 4),        # initial tpm slopes
+#'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+#'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+#' mod = nlm(nll, par, step = trex$step[1:500], Z = trigBasisExp(trex$tod[1:500]))
 forward_g = function(delta, Gamma, allprobs, 
                      trackID = NULL, ad = NULL, report = TRUE) {
   
@@ -426,6 +406,11 @@ forward_g = function(delta, Gamma, allprobs,
 
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with for periodically varying transition probability matrices
 #'
+#' Calculates the log-likelihood of a sequence of observations under a hidden Markov model with periodically varying transition probabilities using the \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
+#' 
+#' @details
 #' When the transition probability matrix only varies periodically (e.g. as a function of time of day), there are only \eqn{L} unique matrices if \eqn{L} is the period length (e.g. \eqn{L=24} for hourly data and time-of-day variation).
 #' Thus, it is much more efficient to only calculate these \eqn{L} matrices and index them by a time variable (e.g. time of day or day of year) instead of calculating such a matrix for each index in the data set (which would be redundant).
 #' This function allows for that by only expecting a transition probability matrix for each time point in a period and an integer valued (\eqn{1, \dots, L}) time variable that maps the data index to the according time.
@@ -450,51 +435,28 @@ forward_g = function(delta, Gamma, allprobs,
 #' @export
 #'
 #' @examples
-#' ## generating data from periodic 2-state HMM
-#' mu = c(0, 6)
-#' sigma = c(2, 4)
-#' beta = matrix(c(-2,-2,1,-1, 1, -1),nrow=2)
-#' delta = c(0.5, 0.5)
-#' # simulation
-#' n = 2000
-#' s = x = rep(NA, n)
-#' tod = rep(1:24, ceiling(2000/24))
-#' s[1] = sample(1:2, 1, prob = delta)
-#' x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-#' # 24 unique t.p.m.s
-#' Gamma = array(dim = c(2,2,24))
-#' for(t in 1:24){
-#'   G = diag(2)
-#'   G[!G] = exp(beta[,1]+beta[,2]*sin(2*pi*t/24)+
-#'     beta[,3]*cos(2*pi*t/24)) # trigonometric link
-#'   Gamma[,,t] = G / rowSums(G)
-#' }
-#' for(t in 2:n){
-#'   s[t] = sample(1:2, 1, prob = Gamma[s[t-1],,tod[t]])
-#'   x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-#' }
-#' # we can also use function from LaMa to make building periodic tpms much easier
-#' Gamma = tpm_p(1:24, 24, beta, degree = 1)
-#' 
 #' ## negative log likelihood function
-#' mllk = function(theta.star, x, tod){
-#'   # parameter transformations for unconstraint optimization
-#'   beta = matrix(theta.star[1:6], 2, 3)
-#'   Gamma = tpm_p(tod=1:24, L=24, beta=beta)
-#'   delta = stationary_p(Gamma, t=tod[1])
-#'   mu = theta.star[8:9]
-#'   sigma = exp(theta.star[10:11])
-#'   # calculate all state-dependent probabilities
-#'   allprobs = matrix(1, length(x), 2)
-#'   for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-#'   # return negative for minimization
-#'   -forward_p(delta, Gamma, allprobs, tod)
+#' nll = function(par, step, tod) {
+#'  # parameter transformations for unconstrained optimisation
+#'  beta = matrix(par[1:6], nrow = 2)
+#'  Gamma = tpm_p(1:24, beta = beta) # multinomial logit link for each time point
+#'  delta = stationary_p(Gamma, tod[1]) # stationary HMM
+#'  mu = exp(par[7:8])
+#'  sigma = exp(par[9:10])
+#'  # calculate all state-dependent probabilities
+#'  allprobs = matrix(1, length(step), 2)
+#'  ind = which(!is.na(step))
+#'  for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+#'  # simple forward algorithm to calculate log-likelihood
+#'  -forward_p(delta, Gamma, allprobs, tod)
 #' }
 #' 
-#' ## fitting an HMM to the data
-#' theta.star = c(-2,-2,1,-1,1,-1,0,0,5,log(2),log(3))
-#' mod = nlm(mllk, theta.star, x = x, tod = tod)
-#'
+#' ## fitting an HMM to the nessi data
+#' par = c(-2,-2,            # initial tpm intercepts (logit-scale)
+#'         rep(0, 4),        # initial tpm slopes
+#'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+#'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+#' mod = nlm(nll, par, step = trex$step[1:500], tod = trex$tod[1:500])
 forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, report = TRUE){
   utod = unique(tod) # unique time of days
   L = length(utod) # cycle length
@@ -516,8 +478,12 @@ forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, rep
 
 
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for homogeneous hidden semi-Markov models
+#' 
+#' Calculates the (approximate) log-likelihood of a sequence of observations under a homogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
 #'
-#' @description
+#' @details
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
@@ -737,7 +703,11 @@ forward_hsmm <- function(dm, omega, allprobs,
 
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with inhomogeneous state durations and/ or conditional transition probabilities
 #'
-#' @description
+#' Calculates the (approximate) log-likelihood of a sequence of observations under an inhomogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
+#' 
+#' @details
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers. This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary with covariates.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
@@ -1064,6 +1034,10 @@ forward_ihsmm <- function(dm, omega, allprobs,
 
 #' \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} for hidden semi-Markov models with periodically inhomogeneous state durations and/ or conditional transition probabilities
 #'
+#' Calculates the (approximate) log-likelihood of a sequence of observations under a periodically inhomogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+#' 
+#' @family forward algorithms
+#' 
 #' @description
 #' Hidden semi-Markov models (HSMMs) are a flexible extension of HMMs, where the state duration distribution is explicitly modelled by a distribution on the positive integers. This function can be used to fit HSMMs where the state-duration distribution and/ or the conditional transition probabilities vary with covariates.
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.

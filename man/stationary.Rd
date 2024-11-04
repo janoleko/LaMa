@@ -23,3 +23,11 @@ This function solves the linear system of equations above.
 Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 delta = stationary(Gamma)
 }
+\seealso{
+\code{\link{tpm}} to create a transition probabilty matrix using the multinomial logistic link (softmax)
+
+Other stationary distribution functions: 
+\code{\link{stationary_cont}()},
+\code{\link{stationary_p}()}
+}
+\concept{stationary distribution functions}

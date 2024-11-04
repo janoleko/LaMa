@@ -54,6 +54,18 @@ In the special case of periodic variation (as compared to arbitrary covariate in
 
 This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
 }
+\details{
+Calculates the (approximate) log-likelihood of a sequence of observations under a periodically inhomogeneous hidden semi-Markov model using a modified \strong{forward algorithm}.
+}
 \examples{
 # currently no examples
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward}()},
+\code{\link{forward_g}()},
+\code{\link{forward_hsmm}()},
+\code{\link{forward_ihsmm}()},
+\code{\link{forward_p}()}
+}
+\concept{forward algorithms}

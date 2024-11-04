@@ -27,3 +27,12 @@ Gamma = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
 allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 states = viterbi(delta, Gamma, allprobs)
 }
+\seealso{
+Other decoding functions: 
+\code{\link{stateprobs}()},
+\code{\link{stateprobs_g}()},
+\code{\link{stateprobs_p}()},
+\code{\link{viterbi_g}()},
+\code{\link{viterbi_p}()}
+}
+\concept{decoding functions}

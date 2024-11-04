@@ -7,7 +7,7 @@
 tpm(param, byrow = FALSE)
 }
 \arguments{
-\item{param}{unconstraint parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
+\item{param}{unconstrained parameter vector of length N*(N-1) where N is the number of states of the Markov chain}
 
 \item{byrow}{logical indicating if the transition probability matrix should be filled by row
 
@@ -20,14 +20,24 @@ Transition probability matrix of dimension c(N,N)
 Markov chains are parametrised in terms of a transition probability matrix \eqn{\Gamma}, for which each row contains a conditional probability distribution of the next state given the current state.
 Hence, each row has entries between 0 and 1 that need to sum to one. 
 
-For numerical optimisation, we parametrise in terms of unconstrained parameters, thus this function computes said matrix from an unconstrained paramter vector via the inverse multinomial logistic link (also known as softmax) applied to each row.
+For numerical optimisation, we parametrise in terms of unconstrained parameters, thus this function computes said matrix from an unconstrained parameter vector via the inverse multinomial logistic link (also known as softmax) applied to each row.
 }
 \examples{
 # 2 states: 2 free off-diagonal elements
-param1 = rep(-1, 2)
-Gamma1 = tpm(param1)
+par1 = rep(-1, 2)
+Gamma1 = tpm(par1)
 
 # 3 states: 6 free off-diagonal elements
-param2 = rep(-2, 6)
-Gamma2 = tpm(param2)
+par2 = rep(-2, 6)
+Gamma2 = tpm(par2)
 }
+\seealso{
+Other transition probability matrix functions: 
+\code{\link{generator}()},
+\code{\link{tpm_cont}()},
+\code{\link{tpm_emb}()},
+\code{\link{tpm_emb_g}()},
+\code{\link{tpm_g}()},
+\code{\link{tpm_p}()}
+}
+\concept{transition probability matrix functions}

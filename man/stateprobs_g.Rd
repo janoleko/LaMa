@@ -34,3 +34,12 @@ allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 
 probs = stateprobs_g(delta, Gamma, allprobs)
 }
+\seealso{
+Other decoding functions: 
+\code{\link{stateprobs}()},
+\code{\link{stateprobs_p}()},
+\code{\link{viterbi}()},
+\code{\link{viterbi_g}()},
+\code{\link{viterbi_p}()}
+}
+\concept{decoding functions}

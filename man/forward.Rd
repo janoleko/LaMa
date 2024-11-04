@@ -27,39 +27,36 @@ Furthermore, instead of a single vector \code{delta} corresponding to the initia
 log-likelihood for given data and parameters
 }
 \description{
-\href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{Forward algorithm} with homogeneous transition probability matrix
+Calculates the log-likelihood of a sequence of observations under a homogeneous hidden Markov model using the \strong{forward algorithm}.
 }
 \examples{
-## generating data from homogeneous 2-state HMM
-mu = c(0, 6)
-sigma = c(2, 4)
-Gamma = matrix(c(0.5, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE)
-delta = c(0.5, 0.5)
-# simulation
-s = x = rep(NA, 500)
-s[1] = sample(1:2, 1, prob = delta)
-x[1] = rnorm(1, mu[s[1]], sigma[s[1]])
-for(t in 2:500){
-  s[t] = sample(1:2, 1, prob = Gamma[s[t-1],])
-  x[t] = rnorm(1, mu[s[t]], sigma[s[t]])
-}
-
 ## negative log likelihood function
-mllk = function(theta.star, x){
-  # parameter transformations for unconstraint optimization
-  Gamma = tpm(theta.star[1:2])
-  delta = stationary(Gamma) # stationary HMM
-  mu = theta.star[3:4]
-  sigma = exp(theta.star[5:6])
-  # calculate all state-dependent probabilities
-  allprobs = matrix(1, length(x), 2)
-  for(j in 1:2){ allprobs[,j] = dnorm(x, mu[j], sigma[j]) }
-  # return negative for minimization
-  -forward(delta, Gamma, allprobs)
+nll = function(par, step) {
+ # parameter transformations for unconstrained optimisation
+ Gamma = tpm(par[1:2]) # multinomial logit link
+ delta = stationary(Gamma) # stationary HMM
+ mu = exp(par[3:4])
+ sigma = exp(par[5:6])
+ # calculate all state-dependent probabilities
+ allprobs = matrix(1, length(step), 2)
+ ind = which(!is.na(step))
+ for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+ # simple forward algorithm to calculate log-likelihood
+ -forward(delta, Gamma, allprobs)
 }
 
-## fitting an HMM to the data
-theta.star = c(-2,-2,0,5,log(2),log(3))
-mod = stats::nlm(mllk, theta.star, x = x)
-
+## fitting an HMM to the trex data
+par = c(-2,-2,            # initial tpm params (logit-scale)
+        log(c(0.3, 2.5)), # initial means for step length (log-transformed)
+        log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
+mod = nlm(nll, par, step = trex$step[1:1000])
 }
+\seealso{
+Other forward algorithms: 
+\code{\link{forward_g}()},
+\code{\link{forward_hsmm}()},
+\code{\link{forward_ihsmm}()},
+\code{\link{forward_p}()},
+\code{\link{forward_phsmm}()}
+}
+\concept{forward algorithms}

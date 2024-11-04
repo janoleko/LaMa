@@ -15,7 +15,7 @@ dgmrf2(x, mu = 0, S, lambda, logdetS = NULL, log = FALSE)
 
 \item{lambda}{precision scaling parameter
 
-Can be a vector if x is a matrix. Then each row of x is evaluated with the corresponding \code{lambda}.
+Can be a vector if \code{x} is a matrix. Then each row of \code{x} is evaluated with the corresponding \code{lambda}.
 This is benefitial from an efficiency perspective because the determinant of \code{S} is only computed once.}
 
 \item{logdetS}{Optional precomputed log determinant of the precision matrix \code{S}. If the precision matrix does not depend on parameters, it can be precomputed and passed to the function.}
@@ -23,12 +23,12 @@ This is benefitial from an efficiency perspective because the determinant of \co
 \item{log}{logical; if \code{TRUE}, densities are returned on the log scale.}
 }
 \value{
-Vector of densities
+vector of density values
 }
 \description{
 Density function of the multivariate Gaussian distribution reparametrised in terms of its precision matrix (inverse variance).
-This implementation is particularly useful for marginal ML with penalised splines or i.i.d. random effects that have a multivariate Gaussian distribution with precision matrix \eqn{\lambda S} where S is a fixed penalty matrix.
-As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalization constant) and only scale the quadratic form by \eqn{\lambda}
+This implementation is particularly useful for defining the \strong{joint log-likelihood} with penalised splines or i.i.d. random effects that have a multivariate Gaussian distribution with fixed precision/ penalty matrix \eqn{\lambda S}.
+As \eqn{S} is fixed and only scaled by \eqn{\lambda}, it is more efficient to precompute the determinant of \eqn{S} (for the normalisation constant) and only scale the quadratic form by \eqn{\lambda}
 when multiple spline parameters/ random effects with different \eqn{\lambda}'s but the same penalty matrix \eqn{S} are evaluated.
 }
 \details{
@@ -41,11 +41,11 @@ x = matrix(runif(30), nrow = 3)
 S = diag(10)
 sigma = c(1, 2, 3) # random effect standard deviations
 lambda = 1 / sigma^2
-dgmrf2(x, 0, S, lambda)
+d = dgmrf2(x, 0, S, lambda)
 
 # P-splines
 L = diff(diag(10), diff = 2) # second-order difference matrix
 S = t(L) \%*\% L
 lambda = c(1,2,3)
-dgmrf2(x, 0, S, lambda, log = TRUE)
+d = dgmrf2(x, 0, S, lambda, log = TRUE)
 }

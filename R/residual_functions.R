@@ -141,13 +141,13 @@ pseudo_res = function(obs,
 #' stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 #' par = list(lambda = c(1,2))
 #' pres = pseudo_res_discrete(obs, stateprobs, "pois", par)
-pseudo_res_discrete = function(obs, 
-                               stateprobs, 
-                               dist, 
-                               par,
-                               normal = TRUE,
-                               randomise = TRUE,
-                               seed = NULL) {
+pseudo_res_discrete <- function(obs, 
+                                stateprobs, 
+                                dist, 
+                                par,
+                                normal = TRUE,
+                                randomise = TRUE,
+                                seed = NULL) {
   # Number of observations and number of states
   nObs <- length(obs)              # Length of observations
   N <- ncol(stateprobs)            # Number of states (columns in stateprobs)
@@ -167,11 +167,11 @@ pseudo_res_discrete = function(obs,
   cdf_func <- get(cdf_name, mode = "function")
   
   # Initialize a matrix to store CDF values for each observation and state
-  cdf_values_lower = cdf_values_upper <- matrix(0, nrow = nObs, ncol = N)
+  cdf_values_lower <- cdf_values_upper <- matrix(0, nrow = nObs, ncol = N)
   cdf_values_random <- matrix(0, nrow = nObs, ncol = N)
   
-  # if seed is specified, set
-  if(!is.null(seed)){
+  # Set the random seed if specified
+  if (!is.null(seed)) {
     set.seed(seed)
   }
   
@@ -181,40 +181,45 @@ pseudo_res_discrete = function(obs,
     current_par <- lapply(par, function(param) param[state])
     
     # Use `mapply` to evaluate the CDF function at each observation with these parameters
-    cdf_values_lower[, state] <- mapply(cdf_func, pmax(obs-1, 0), MoreArgs = current_par)
+    # safe evaluation of CDF at `obs - 1` in case of errors
+    cdf_values_lower[, state] <- tryCatch(
+      mapply(cdf_func, obs-1, MoreArgs = current_par),
+      error = function(e) mapply(cdf_func_safe, pmax(obs - 1, 0), MoreArgs = list(params = current_par))
+    )
+    
     cdf_values_upper[, state] <- mapply(cdf_func, obs, MoreArgs = current_par)
     
-    if(randomise){
-      cdf_values_random[, state] = sapply(1:nObs, function(i){
+    if (randomise) {
+      cdf_values_random[, state] <- sapply(1:nObs, function(i) {
         stats::runif(1, cdf_values_lower[i, state], cdf_values_upper[i, state])
       })
     }
   }
   
-  # either return randomised pseudo residuals or lower upper and mean
-  if(randomise){
+  # Either return randomised pseudo-residuals or lower, upper, and mean
+  if (randomise) {
     cat("Randomised between lower and upper\n")
     
     # Compute pseudo-residuals by weighting random CDF values with state probabilities
-    residuals = rowSums(cdf_values_random * stateprobs)
+    residuals <- rowSums(cdf_values_random * stateprobs)
     
-    if(normal){
+    if (normal) {
       return(qnorm(residuals))
-    } else{
+    } else {
       return(residuals)
     }
-  } else{
+  } else {
     # Compute pseudo-residuals by weighting lower and upper CDF values with state probabilities
     residuals_lower <- rowSums(cdf_values_lower * stateprobs)
     residuals_upper <- rowSums(cdf_values_upper * stateprobs)
     
-    if(normal){
+    if (normal) {
       return(list(
         lower = qnorm(residuals_lower),
         upper = qnorm(residuals_upper),
         mean = qnorm((residuals_lower + residuals_upper) / 2)
       ))
-    } else{
+    } else {
       return(list(
         lower = residuals_lower,
         upper = residuals_upper,

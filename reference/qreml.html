@@ -95,13 +95,13 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 
 
 <dt id="arg-dat">dat<a class="anchor" aria-label="anchor" href="#arg-dat"></a></dt>
-<dd><p>initial data list that contains the data used in the likelihood function, hyperparameters, and the initial penalty strength</p>
-<p>If the initial penalty strength vector is <strong>not</strong> called <code>lambda</code>, you need to specify its name in <code>dat</code> using the <code>penalty</code> argument below.
+<dd><p>initial data list that contains the data used in the likelihood function, hyperparameters, and the <strong>initial penalty strength</strong> vector</p>
+<p>If the initial penalty strength vector is <strong>not</strong> called <code>lambda</code>, the name it has in <code>dat</code> needs to be specified using the <code>penalty</code> argument below.
 Its length needs to match the to the total number of random effects.</p></dd>
 
 
 <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
-<dd><p>vector of names of the random effects in <code>par</code> that are penalised.</p>
+<dd><p>vector of names of the random effects/ penalised parameters in <code>par</code></p>
 <p><strong>Caution:</strong> The ordering of <code>random</code> needs to match the order of the random effects passed to <code><a href="penalty.html">penalty</a></code> inside the likelihood function.</p></dd>
 
 
@@ -138,6 +138,10 @@ Its length needs to match the to the total number of random effects.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>returns a model list influenced by the users report statements in <code>pnll</code></p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="penalty.html">penalty</a></code> to compute the penalty inside the likelihood function</p></div>
     </div>
 
     <div class="section level2">

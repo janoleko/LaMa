@@ -17,7 +17,6 @@
 <url><loc>https://janoleko.github.io/reference/buildSmoothDens.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/calc_trackInd.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/dgmrf2.html</loc></url>
-<url><loc>https://janoleko.github.io/reference/dvm.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward_g.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward_hsmm.html</loc></url>
@@ -61,5 +60,6 @@
 <url><loc>https://janoleko.github.io/reference/viterbi.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/viterbi_g.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/viterbi_p.html</loc></url>
+<url><loc>https://janoleko.github.io/reference/vm.html</loc></url>
 </urlset>
 

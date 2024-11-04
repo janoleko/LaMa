@@ -75,7 +75,7 @@ The stationary distribution for time \(t\) satifies \(\delta^{(t)} \Gamma_t = \d
 
 <dt id="arg-t">t<a class="anchor" aria-label="anchor" href="#arg-t"></a></dt>
 <dd><p>integer index of the time point in the cycle, for which to calculate the stationary distribution</p>
-<p>If t is not provided, the function calculates all stationary distributions for each time point in the cycle.</p></dd>
+<p>If <code>t</code> is not provided, the function calculates all stationary distributions for each time point in the cycle.</p></dd>
 
 
 <dt id="arg-ad">ad<a class="anchor" aria-label="anchor" href="#arg-ad"></a></dt>
@@ -86,16 +86,23 @@ The stationary distribution for time \(t\) satifies \(\delta^{(t)} \Gamma_t = \d
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>either the periodically stationary distribution at time t or all periodically stationary distributions.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="tpm_p.html">tpm_p</a></code> and <code><a href="tpm_g.html">tpm_g</a></code> to create multiple transition matrices based on a cyclic variable or design matrix</p>
+<p>Other stationary distribution functions:
+<code><a href="stationary.html">stationary</a>()</code>,
+<code><a href="stationary_cont.html">stationary_cont</a>()</code></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">L</span> <span class="op">=</span> <span class="fl">24</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># setting parameters for trigonometric link</span></span></span>
 <span class="r-in"><span><span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="tpm_p.html">tpm_p</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">L</span>, <span class="va">L</span>, <span class="va">beta</span>, degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Periodically stationary distribution for specific time point</span></span></span>
+<span class="r-in"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="tpm_p.html">tpm_p</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="va">beta</span>, degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># periodically stationary distribution for specific time point</span></span></span>
 <span class="r-in"><span><span class="va">delta</span> <span class="op">=</span> <span class="fu">stationary_p</span><span class="op">(</span><span class="va">Gamma</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># All periodically stationary distributions</span></span></span>
+<span class="r-in"><span><span class="co"># all periodically stationary distributions</span></span></span>
 <span class="r-in"><span><span class="va">Delta</span> <span class="op">=</span> <span class="fu">stationary_p</span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

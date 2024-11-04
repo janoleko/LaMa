@@ -72,10 +72,8 @@ For <code><a href="qreml.html">qreml</a></code> to work, the likelihood function
 <dl><dt id="arg-re-coef">re_coef<a class="anchor" aria-label="anchor" href="#arg-re-coef"></a></dt>
 <dd><p>coefficient vector/ matrix or list of coefficient vectors/ matrices</p>
 <p>Each list entry corresponds to a different smooth/ random effect with its own associated penalty matrix in <code>S</code>.
-When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect. This way all rows can use the same penalty matrix.<br><br></p>
-<p><strong>Caution:</strong> The formatting of <code>re_coef</code> needs to match the structure of the parameter list in your penalized negative log-likelihood function,
-i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to <code>penalty</code>.
-If these are seperate random effects, each with its own name, they need to be passed as a list to <code>penalty</code>. Moreover, the ordering of <code>re_coef</code> needs to match the character vector <code>random</code> specified in <code><a href="qreml.html">qreml</a></code>.</p></dd>
+When several smooths/ random effects of the same kind are present, it is convenient to pass them as a matrix, where each row corresponds to one smooth/ random effect.
+This way all rows can use the same penalty matrix.</p></dd>
 
 
 <dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
@@ -90,6 +88,16 @@ If these are seperate random effects, each with its own name, they need to be pa
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>returns the penalty value and reports to <code><a href="qreml.html">qreml</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><strong>Caution:</strong> The formatting of <code>re_coef</code> needs to match the structure of the parameter list in your penalised negative log-likelihood function,
+i.e. you cannot have two random effect vectors of different names (different list elements in the parameter list), combine them into a matrix inside your likelihood and pass the matrix to <code>penalty</code>.
+If these are seperate random effects, each with its own name, they need to be passed as a list to <code>penalty</code>. Moreover, the ordering of <code>re_coef</code> needs to match the character vector <code>random</code> specified in <code><a href="qreml.html">qreml</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="qreml.html">qreml</a></code> for the <strong>qREML</strong> algorithm</p></div>
     </div>
 
     <div class="section level2">

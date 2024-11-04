@@ -55,7 +55,7 @@ Compatible with automatic differentiation by RTMB"></head><body>
     </div>
 
     <div class="ref-description section level2">
-    <p>Hidden semi-Markov models are defined in terms of state durations and an embedded transition probability matrix that contains the conditional transition probabilities given that the current state is left. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.</p>
+    <p>Hidden semi-Markov models are defined in terms of state durations and an <strong>embedded</strong> transition probability matrix that contains the conditional transition probabilities given that the <strong>current state is left</strong>. This matrix necessarily has diagonal entries all equal to zero as self-transitions are impossible.</p>
 <p>This function builds such an embedded/ conditional transition probability matrix from an unconstrained parameter vector.
 For each row of the matrix, the inverse multinomial logistic link is applied.</p>
 <p>For a matrix of dimension c(N,N), the number of free off-diagonal elements is N*(N-2), hence also the length of <code>param</code>.
@@ -80,6 +80,16 @@ This means, for 2 states, the function needs to be called without any arguments,
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>embedded/ conditional transition probability matrix of dimension c(N,N)</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other transition probability matrix functions:
+<code><a href="generator.html">generator</a>()</code>,
+<code><a href="tpm.html">tpm</a>()</code>,
+<code><a href="tpm_cont.html">tpm_cont</a>()</code>,
+<code><a href="tpm_emb_g.html">tpm_emb_g</a>()</code>,
+<code><a href="tpm_g.html">tpm_g</a>()</code>,
+<code><a href="tpm_p.html">tpm_p</a>()</code></p></div>
     </div>
 
     <div class="section level2">

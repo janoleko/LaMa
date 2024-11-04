@@ -98,7 +98,7 @@ We start by defining the negative log-likelihood function. This is made really c
 
 ```{r nll}
 nll = function(par, step){
-  # parameter transformations for unconstraint optimization
+  # parameter transformations for unconstrained optimisation
   Gamma = tpm(par[1:2]) # multinomial logit link
   delta = stationary(Gamma) # stationary HMM
   mu = exp(par[3:4])

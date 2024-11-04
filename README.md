@@ -129,7 +129,7 @@ which calculates the log-likelihood via the forward algorithm.
 
 ``` r
 nll = function(par, step){
-  # parameter transformations for unconstraint optimization
+  # parameter transformations for unconstrained optimisation
   Gamma = tpm(par[1:2]) # multinomial logit link
   delta = stationary(Gamma) # stationary HMM
   mu = exp(par[3:4])
@@ -155,7 +155,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.364   0.010   0.377
+#>   0.365   0.011   0.381
 ```
 
 Really fast for 10.000 data points!

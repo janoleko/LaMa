@@ -164,4 +164,28 @@ legend("topright", pch = 20, legend = c("state 1", "state 2"),
        col = color, box.lwd = 0)
 ```
 
+Lastly, we can do some model checking using **pseudo-residuals**. First, we need to compute the local state probabilities of our observations:
+
+```{r stateprobs}
+probs = stateprobs(delta, Gamma, allprobs)
+```
+
+Then, we can pass the observations, the state probabilities, the paramteric family and the estimated parameters to the `pseudo_res()` function to get pseudo-residuals for model validation. These should be standard normally distributed if the model is correct.
+
+```{r pseudores}
+pres = pseudo_res(x, # observations
+                  probs, # local state probabilities
+                  "norm", # parametric distribution to use
+                  list(mean = mu, sd = sigma)) # parameters for that distribution
+
+oldpar = par(mfrow = c(1,2))
+hist(pres, prob = TRUE, bor = "white")
+curve(dnorm(x), lty = 2, add = TRUE)
+qqnorm(pres, pch = 16, col = "#00000020", bty = "n")
+qqline(pres, col = "orange")
+par(oldpar)
+```
+
+In this case, our model looks really good -- as it should as we simulated from the exact same model.
+
 ## References

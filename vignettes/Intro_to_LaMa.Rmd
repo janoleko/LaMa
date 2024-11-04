@@ -128,7 +128,6 @@ par = c(logitGamma = qlogis(c(0.05, 0.05)),
 # initial transformed parameters: not chosen too well
 system.time(
   mod <- nlm(nll, par, x = x)
-
 )
 ```
 We see that implementation of the forward algorithm in C++ leads to really fast estimation speeds.

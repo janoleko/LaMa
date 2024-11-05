@@ -113,7 +113,7 @@ There are some rules to follow when using `qreml()`:
 
 1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as the likelihood functions in the vignette *LaMa and RTMB*. Most importantly, it should be a function of the parameter list only.
 
-3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of betaspline, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
+3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of `betaSpline`, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
 
 4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices. This is shown in the third example in this vignette.
 

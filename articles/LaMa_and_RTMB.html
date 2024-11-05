@@ -662,14 +662,14 @@ types. To avoid this, always initiate with <code>numeric</code> or
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>to avoid the error.</p>
 <p>Importantly, you cannot use <code>if</code> or <code>max</code>/
-<code>min</code> statements <strong>on your parameter itself</strong>,
-as these are not differentiable. If you do so, <code>RTMB</code> will
-fail and probably does not produce a helpful error message. The problem
-here results from <code>RTMB</code> building the <em>tape</em>
-(computational graph) of the function at the initial parameter. If you
-have <code>if</code> statements, then the resulting gradient will be
-different from the one at another parameter value. Often, you can remedy
-this behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
+<code>min</code> statements <strong>on the parameter itself</strong> as
+these are not differentiable. If you do so, <code>RTMB</code> will fail
+and probably does not produce a helpful error message. The problem here
+results from <code>RTMB</code> building the <em>tape</em> (computational
+graph) of the function at the initial parameter value. When you have
+<code>if</code> statements, the resulting gradient will be different
+from the one at a different parameter value. Often, you can remedy this
+behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
 differentiable (in code). For example, you can create the differentiable
 <code>max</code> alternative:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">

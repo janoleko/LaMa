@@ -217,7 +217,7 @@ distributions is covered.</p>
 <span><span class="va">t1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mod</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk</span>, <span class="va">theta.star</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, agsizes <span class="op">=</span> <span class="va">agsizes</span>, stepmax <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 2.287654 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 2.274781 secs</span></span></code></pre></div>
 <p>HSMMs are rather slow (even using C++) as we translate the additional
 model complexity into a higher computational overhead (31 states
 here).</p>
@@ -320,7 +320,7 @@ interpretability.</p>
 <span><span class="va">mod_muskox</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">mllk_muskox</span>, <span class="va">theta.star</span>, step<span class="op">=</span><span class="va">data</span><span class="op">$</span><span class="va">step</span>, N<span class="op">=</span><span class="fl">3</span>,</span>
 <span>                 agsizes<span class="op">=</span><span class="va">agsizes</span>,iterlim <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">-</span><span class="va">t1</span></span>
-<span><span class="co">#&gt; Time difference of 6.186796 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 6.141151 secs</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>

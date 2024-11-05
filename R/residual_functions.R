@@ -4,7 +4,7 @@
 #' For HMMs, pseudo-residuals are used to assess the goodness-of-fit of the model. 
 #' These are based on the cumulative distribution function (CDF)
 #' \deqn{F_{X_t}(x_t) = F(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
-#' and can be used to assess whether an observation is extreme relative to its model-implied distribution.
+#' and can be used to quantify whether an observation is extreme relative to its model-implied distribution.
 #' 
 #' This function calculates such residuals via probability integral transform, based on the local state probabilities obtained by \code{\link{stateprobs}} or \code{\link{stateprobs_g}} and the respective parametric family.
 #'
@@ -16,8 +16,9 @@
 #' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
 #' @param par named parameter list for the parametric CDF
 #' 
-#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states)
-#' @param normal logical, if \code{TRUE}, return Gaussian pseudo residuals
+#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
+#' This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.
+#' @param normal logical, if \code{TRUE}, returns Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.
 #' @param discrete logical, if \code{TRUE}, computes discrete pseudo residuals (which slightly differ in their definition)
@@ -76,11 +77,6 @@ pseudo_res = function(obs,
       stop("The number of rows in `stateprobs` must match the length of `obs`.")
     }
     
-    # Check that each parameter in `par` has the correct length
-    if (!all(sapply(par, length) == N)) {
-      stop("Each entry in `par` must have a length equal to the number of columns in `stateprobs`.")
-    }
-    
     # Construct the CDF function name dynamically, e.g., "pnorm" for "norm"
     cdf_name <- paste0("p", dist)
     cdf_func <- get(cdf_name, mode = "function")
@@ -90,11 +86,31 @@ pseudo_res = function(obs,
     
     # Loop over each state to compute the CDF values for each observation
     for (state in 1:N) {
-      # Extract the parameters for the current state
-      current_par <- lapply(par, function(param) param[state])
       
-      # Use `mapply` to evaluate the CDF function at each observation with these parameters
-      cdf_values[, state] <- mapply(cdf_func, obs, MoreArgs = current_par)
+      # Extract the parameters for the current state
+      # can be either vector
+      current_par <- lapply(par, function(param){
+        if(is.matrix(param)){
+          if(ncol(param) != N | nrow(param) != nObs){
+            stop("Parameter matrix dimensions must match number of observations and states")
+          } else{
+            return(param[, state])
+          }
+        } else if(is.vector(param)){
+          if(length(param) == 1){
+            return(param)
+          } else{
+            if(length(param) != N){
+              stop("Parameter vector must have the same length as the number of states")
+            } else{
+              return(param[state])
+            }
+          }
+        }
+      })
+      
+      # evaluate the CDF function at each observation with these parameters
+      cdf_values[, state] <- do.call(cdf_func, args = c(list(obs), current_par))
     }
     
     # Compute pseudo-residuals by weighting CDF values with state probabilities
@@ -115,7 +131,7 @@ pseudo_res = function(obs,
 #' For HMMs, pseudo-residuals are used to assess the goodness-of-fit of the model. 
 #' These are based on the cumulative distribution function (CDF)
 #' \deqn{F_{X_t}(x_t) = F(x_t \mid x_1, \dots, x_{t-1}, x_{t+1}, \dots, x_T)}
-#' and can be used to assess whether an observation is extreme relative to its model-implied distribution.
+#' and can be used to quantify whether an observation is extreme relative to its model-implied distribution.
 #' 
 #' This function calculates such residuals for \strong{discrete-valued} observations, based on the local state probabilities obtained by \code{\link{stateprobs}} or \code{\link{stateprobs_g}} and the respective parametric family.
 #'
@@ -130,8 +146,9 @@ pseudo_res = function(obs,
 #' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
 #' @param par named parameter list for the parametric CDF
 #' 
-#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states)
-#' @param normal logical, if \code{TRUE}, return Gaussian pseudo residuals
+#' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
+#' This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.
+#' @param normal logical, if \code{TRUE}, returns Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.
 #' @param randomise logical, if \code{TRUE}, return randomised pseudo residuals. Recommended for discrete observations.
@@ -181,17 +198,38 @@ pseudo_res_discrete <- function(obs,
   
   # Loop over each state to compute the CDF values for each observation
   for (state in 1:N) {
+    
     # Extract the parameters for the current state
-    current_par <- lapply(par, function(param) param[state])
+    # can be either vector
+    current_par <- lapply(par, function(param){
+      if(is.matrix(param)){
+        if(ncol(param) != N | nrow(param) != nObs){
+          stop("Parameter matrix dimensions must match number of observations and states")
+        } else{
+          return(param[, state])
+        }
+      } else if(is.vector(param)){
+        if(length(param) == 1){
+          return(param)
+        } else{
+          if(length(param) != N){
+            stop("Parameter vector must have the same length as the number of states")
+          } else{
+            return(param[state])
+          }
+        }
+      }
+    })
+    
     
     # Use `mapply` to evaluate the CDF function at each observation with these parameters
     # safe evaluation of CDF at `obs - 1` in case of errors
     cdf_values_lower[, state] <- tryCatch(
-      mapply(cdf_func, obs-1, MoreArgs = current_par),
-      error = function(e) mapply(cdf_func_safe, pmax(obs - 1, 0), MoreArgs = list(params = current_par))
+      do.call(cdf_func, args = c(list(obs-1), current_par)),
+      error = function(e) do.call(cdf_func, args = c(list(pmax(obs-1, 0)), current_par))
     )
     
-    cdf_values_upper[, state] <- mapply(cdf_func, obs, MoreArgs = current_par)
+    cdf_values_upper[, state] <- do.call(cdf_func, args = c(list(obs), current_par))
     
     if (randomise) {
       cdf_values_random[, state] <- sapply(1:nObs, function(i) {

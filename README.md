@@ -16,18 +16,18 @@ Koslik, and Langrock 2024)</a>, including **hidden Markov models**
 (HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
 (SSMs) and **continuous-time** variants can be formulated and estimated
 within the same framework via directly maximising the likelihood
-function using the so-called **forward algorithm** (for details see
-<a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">Zucchini
-et al. 2016</a>). Applied researchers often need custom models that
-standard software does not easily support. Writing tailored `R` code
-offers flexibility but suffers from slow estimation speeds. This `R`
-package solves these issues by providing easy-to-use functions (written
-in C++ for speed) for common tasks like the forward algorithm. These
-functions can be combined into custom models in a Lego-type approach,
-offering up to 10-20 times faster estimation via standard numerical
-optimisers. The development version now also allows for automatic
-differentiation with the `RTMB` package which drastically increases
-speed and accuracy.
+function using the so-called **forward algorithm**
+<a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">(Zucchini,
+MacDonald, and Langrock 2016)</a>. Applied researchers often need custom
+models that standard software does not easily support. Writing tailored
+`R` code offers flexibility but suffers from slow estimation speeds.
+This `R` package solves these issues by providing easy-to-use functions
+(written in C++ for speed) for common tasks like the forward algorithm.
+These functions can be combined into custom models in a Lego-type
+approach, offering up to 10-20 times faster estimation via standard
+numerical optimisers. The development version now also allows for
+automatic differentiation with the `RTMB` package which drastically
+increases speed and accuracy.
 
 The most important families of functions are
 
@@ -149,14 +149,14 @@ optimise the above function using `nlm()`:
 
 ``` r
 par = c(-2,-2,             # initial tpm params (logit-scale)
-        log(c(0.3, 2.5)),    # initial means for step length (log-transformed)
+        log(c(0.3, 2.5)),  # initial means for step length (log-transformed)
         log(c(0.2, 1.5)))  # initial sds for step length (log-transformed)
 
 system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.363   0.008   0.375
+#>   0.372   0.010   0.383
 ```
 
 Really fast for 10.000 data points!
@@ -187,6 +187,14 @@ entry-spacing="0">
 Mews, Sina, Jan-Ole Koslik, and Roland Langrock. 2024. “How to Build
 Your Latent Markov Model - the Role of Time and Space.” *arXiv Preprint
 arXiv:2406.19157*.
+
+</div>
+
+<div id="ref-zucchini" class="csl-entry">
+
+Zucchini, Walter, Iain L. MacDonald, and Roland Langrock. 2016. *Hidden
+Markov Models for Time Series: An Introduction Using R*. Boca Raton:
+Chapman & Hall/CRC.
 
 </div>
 

@@ -497,6 +497,14 @@ X = array(0, dim = c(1,2,3))
 ```
 to avoid the error.
 
+Importantly, you cannot use `if` or `max`/ `min` statements **on your parameter itself**, as these are not differentiable. If you do so, `RTMB` will fail and probably does not produce a helpful error message. The problem here results from `RTMB` building the *tape* (computational graph) of the function at the initial parameter. If you have `if` statements, then the resulting gradient will be different from the one at another parameter value. Often, you can remedy this behaviour by exploiting the fact that `abs()` is differentiable (in code). For example, you can create the differentiable `max` alternative:
+```{r max2, eval = FALSE}
+max2 = function(x,y){
+  (x + y + abs(x - y)) / 2
+}
+```
+So you might be able to solve such problems by finding a clever alternative. If the `if` statement does not involve the parameter, it will typically be fine because it does not change during the optimisation.
+
 Furthermore, there are some unfortunate side effects of R's 'byte compiler' (enabled by default in R). So if you encounter an error not matching the previous ones, try disabling the byte compiler with
 ```{r bytecompiler, message = FALSE}
 compiler::enableJIT(0)
@@ -507,7 +515,6 @@ Some more minor things:
 
 * if you're used to `expm::expm()` that won't work with AD. Use `Matrix::expm()` instead.
 * `CircStats::dvm()` also isn't compatible with AD. Use `LaMa::dvm()` instead.
-* you can use `if` statements in your likelihood function, but *not* on the parameter itself as this will obviously not be differentiable.
 * most of the standard distributions are available in `RTMB`. If you need a non-standard one, try implementing the density function yourself using plain R code. 
 `RTMB` also provides AD versions of many building-block functions (like the Gamma or Bessel function) which might help with this.
 

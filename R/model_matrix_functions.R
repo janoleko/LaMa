@@ -19,7 +19,10 @@
 #'
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-make_matrices = function(formula, data, knots = NULL){
+make_matrices = function(formula, 
+                         data, 
+                         knots = NULL
+                         ){
   gam_setup = gam(formula = update(formula, dummy ~ .),
                   data = cbind(dummy = 1, data), 
                   knots = knots,
@@ -47,7 +50,8 @@ make_matrices = function(formula, data, knots = NULL){
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
-pred_matrix = function(model_matrices, newdata) {
+pred_matrix = function(model_matrices, 
+                       newdata) {
   gam_setup0 = gam(model_matrices$form, 
                    data = cbind(dummy = 1, model_matrices$data),
                    knots = model_matrices$knots)
@@ -291,12 +295,12 @@ make_splinecoef = function(model_matrices,
 #' Z = SmoothDens$Z$x
 #' S = SmoothDens$S$x
 #' coefs = SmoothDens$coef$x
-buildSmoothDens = function(data, # data frame of data streams
-                           type = "real", # type of each data stream
-                           par, # nested list of initial means and sds/concentrations
-                           k = 20, # number of basis functions
-                           degree = 3, # degree of the splines, defaults to cubic
-                           diff_order = 2 # difference order for the penalization, defaults to second-order differences
+buildSmoothDens = function(data,
+                           type = "real",
+                           par,
+                           k = 20,
+                           degree = 3,
+                           diff_order = 2
 ){
   if(!is.data.frame(data)){
     stop("datastreams must be a data frame")

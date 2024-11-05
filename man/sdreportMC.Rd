@@ -2,7 +2,7 @@
 % Please edit documentation in R/sdreportMC.R
 \name{sdreportMC}
 \alias{sdreportMC}
-\title{Monte Carlo version of sdreport}
+\title{Monte Carlo version of \code{sdreport}}
 \usage{
 sdreportMC(
   obj,
@@ -14,26 +14,78 @@ sdreportMC(
 )
 }
 \arguments{
-\item{obj}{Object returned by \code{MakeADFun()} after optimization}
+\item{obj}{object returned by \code{MakeADFun()} after optimisation}
 
-\item{what}{Vector of strings with names of parameters and \code{REPORT()}ed quantities to be reported}
+\item{what}{vector of strings with names of parameters and \code{REPORT()}ed quantities to be reported}
 
-\item{Hessian}{Optional Hessian matrix. If not provided, it will be computed from the object}
+\item{Hessian}{optional Hessian matrix. If not provided, it will be computed from the object}
 
-\item{CI}{Logical. If \code{TRUE}, only confidence intervals instead of samples will be returned}
+\item{CI}{logical. If \code{TRUE}, only confidence intervals instead of samples will be returned}
 
-\item{n}{Number of samples to draw from the multivariate normal distribution of the MLE}
+\item{n}{number of samples to draw from the multivariate normal distribution of the MLE}
 
-\item{probs}{Vector of probabilities for the confidence intervals (ignored if no CIs are computed)}
+\item{probs}{vector of probabilities for the confidence intervals (ignored if no CIs are computed)}
 }
 \value{
-Named list corresponding to the elements of \code{what}. Each element has the structure of the corresponding quantity with an additional dimension added for the samples.
+named list corresponding to the elements of \code{what}. Each element has the structure of the corresponding quantity with an additional dimension added for the samples.
 For example, if a quantity is a vector, the list contains a matrix. If a quantity is a matrix, the list contains an array.
 }
 \description{
-After optimization of an AD model, sdreportMC can be used to calculate samples of confidence intervals of all model parameters and \code{REPORT()}ed quantities
-including non linear functions of random effects and parameters.
+After optimisation of an AD model, \code{sdreportMC} can be used to calculate samples of confidence intervals of all model parameters and \code{REPORT()}ed quantities
+including nonlinear functions of random effects and parameters.
+}
+\details{
+\strong{Caution:} Currently does not work for models with fixed parameters (i.e. that use the \code{map} argument of \code{MakeADFun}.)
 }
 \examples{
-# currently no examples
+# fitting an HMM to the trex data and running sdreportMC
+## negative log-likelihood function
+nll = function(par) {
+  getAll(par, dat) # makes everything contained available without $
+  Gamma = tpm(eta) # computes transition probability matrix from unconstrained eta
+  delta = stationary(Gamma) # computes stationary distribution
+  # exponentiating because all parameters strictly positive
+  mu = exp(logmu)
+  sigma = exp(logsigma)
+  kappa = exp(logkappa)
+  # reporting statements for sdreportMC
+  REPORT(mu)
+  REPORT(sigma)
+  REPORT(kappa)
+  # calculating all state-dependent densities
+  allprobs = matrix(1, nrow = length(step), ncol = N)
+  ind = which(!is.na(step) & !is.na(angle)) # only for non-NA obs.
+  for(j in 1:N){
+    allprobs[ind,j] = dgamma2(step[ind],mu[j],sigma[j])*dvm(angle[ind],0,kappa[j])
+  }
+  -forward(delta, Gamma, allprobs) # simple forward algorithm
+}
+
+## initial parameter list
+par = list(
+ logmu = log(c(0.3, 1)),       # initial means for step length (log-transformed)
+  logsigma = log(c(0.2, 0.7)), # initial sds for step length (log-transformed)
+  logkappa = log(c(0.2, 0.7)), # initial concentration for turning angle (log-transformed)
+  eta = rep(-2, 2)             # initial t.p.m. parameters (on logit scale)
+)   
+## data and hyperparameters
+dat = list(
+  step = trex$step[1:500],   # hourly step lengths
+  angle = trex$angle[1:500], # hourly turning angles
+  N = 2
+)
+
+## creating AD function
+obj = MakeADFun(nll, par, silent = TRUE) # creating the objective function
+
+## optimising
+opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
+
+## running sdreportMC
+# `mu` has report statement, `delta` is automatically reported by `forward()`
+sdrMC = sdreportMC(obj, 
+                   what = c("mu", "delta"), 
+                   n = 50)
+dim(sdrMC$delta)
+# now a matrix with 50 samples (rows)
 }

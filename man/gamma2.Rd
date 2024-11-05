@@ -8,20 +8,20 @@
 \alias{rgamma2}
 \title{Reparametrised gamma distribution}
 \usage{
-dgamma2(x, mu = 1, sigma = 1, log = FALSE)
+dgamma2(x, mean = 1, sd = 1, log = FALSE)
 
-pgamma2(q, mu = 1, sigma = 1, lower.tail = TRUE, log.p = FALSE)
+pgamma2(q, mean = 1, sd = 1, lower.tail = TRUE, log.p = FALSE)
 
-qgamma2(p, mu = 1, sigma = 1, lower.tail = TRUE, log.p = FALSE)
+qgamma2(p, mean = 1, sd = 1, lower.tail = TRUE, log.p = FALSE)
 
-rgamma2(n, mu = 1, sigma = 1)
+rgamma2(n, mean = 1, sd = 1)
 }
 \arguments{
 \item{x, q}{vector of quantiles}
 
-\item{mu}{mean parameter, must be positive scalar.}
+\item{mean}{mean parameter, must be positive scalar.}
 
-\item{sigma}{standard deviation parameter, must be positive scalar.}
+\item{sd}{standard deviation parameter, must be positive scalar.}
 
 \item{log, log.p}{logical; if \code{TRUE}, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.}
 

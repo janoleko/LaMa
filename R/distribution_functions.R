@@ -2,6 +2,7 @@
 #' 
 #' Density, distribution function and random generation for the von Mises distribution.
 #' 
+#' @details
 #' The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
 #' \code{rvm} and \code{pvm} are imported from \code{CircStats} and \code{circular} respectively.
 #'
@@ -57,19 +58,19 @@ rvm = function(n, mu = 0, kappa = 1, wrap = TRUE) {
 }
 
 
-
 #' Reparametrised gamma distribution
 #' 
 #' Density, distribution function, quantile function and random generation for
 #' the gamma distribution reparametrised in terms of mean and standard deviation.
 #' 
+#' @details
 #' This implementation allows for automatic differentiation with \code{RTMB}.
 #'
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
-#' @param mu mean parameter, must be positive scalar.
-#' @param sigma standard deviation parameter, must be positive scalar.
+#' @param mean mean parameter, must be positive scalar.
+#' @param sd standard deviation parameter, must be positive scalar.
 #' @param log,log.p logical; if \code{TRUE}, probabilities/ densities \eqn{p} are returned as \eqn{\log(p)}.
 #' @param lower.tail logical; if \code{TRUE}, probabilities are \eqn{P[X <= x]}, otherwise, \eqn{P[X > x]}.
 #'
@@ -86,33 +87,33 @@ NULL
 
 #' @rdname gamma2
 #' @export
-dgamma2 = function(x, mu = 1, sigma = 1, log = FALSE) {
-  shape = mu^2 / sigma^2
-  scale = sigma^2 / mu
+dgamma2 = function(x, mean = 1, sd = 1, log = FALSE) {
+  shape = mean^2 / sd^2
+  scale = sd^2 / mean
   RTMB::dgamma(x = x, shape = shape, scale = scale, log = log)
 }
 
 #' @rdname gamma2
 #' @export
-pgamma2 = function(q, mu = 1, sigma = 1, lower.tail = TRUE, log.p = FALSE) {
-  shape = mu^2 / sigma^2
-  scale = sigma^2 / mu
+pgamma2 = function(q, mean = 1, sd = 1, lower.tail = TRUE, log.p = FALSE) {
+  shape = mean^2 / sd^2
+  scale = sd^2 / mean
   RTMB::pgamma(q = q, shape = shape, scale = scale, lower.tail = lower.tail, log.p = log.p)
 }
 
 #' @rdname gamma2
 #' @export
-qgamma2 = function(p, mu = 1, sigma = 1, lower.tail = TRUE, log.p = FALSE) {
-  shape = mu^2 / sigma^2
-  scale = sigma^2 / mu
+qgamma2 = function(p, mean = 1, sd = 1, lower.tail = TRUE, log.p = FALSE) {
+  shape = mean^2 / sd^2
+  scale = sd^2 / mean
   RTMB::qgamma(p = p, shape = shape, scale = scale, lower.tail = lower.tail, log.p = log.p)
 }
 
 #' @rdname gamma2
 #' @export
-rgamma2 = function(n, mu = 1, sigma = 1) {
-  shape = mu^2 / sigma^2
-  scale = sigma^2 / mu
+rgamma2 = function(n, mean = 1, sd = 1) {
+  shape = mean^2 / sd^2
+  scale = sd^2 / mean
   stats::rgamma(n = n, shape = shape, scale = scale)
 }
 
@@ -162,11 +163,11 @@ dgmrf2 = function(x,
                   log = FALSE) {
   # if logdet not specified, compute generalised determinant
   if(is.null(logdetS)){
-    logdetS = as.numeric(gdeterminant(S))
+    logdetS = gdeterminant(S)
   }
   k = nrow(S)
   
-  x_centered = x - mu
+  x_centered = x - mu # center data
   
   if(is.matrix(x_centered)){
     y = S %*% t(x_centered)

@@ -258,7 +258,7 @@ make_splinecoef = function(model_matrices,
 #' # normal data with mean 0 and sd 1
 #' x1 = rnorm(100, mean = 0, sd = 1)
 #' # gamma data with mean 5 and sd 3
-#' x2 = rgamma2(100, mu = 5, sigma = 3)
+#' x2 = rgamma2(100, mean = 5, sd = 3)
 #' # circular data
 #' x3 = rvm(100, mu = 0, kappa = 2)
 #' 

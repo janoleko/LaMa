@@ -217,11 +217,11 @@ i.e. have the same structure as the likelihood functions in the vignette
 parameter list only.</p></li>
 <li><p>The penalty strength vector <code>lambda</code> needs its length
 to correspond to the <em>total</em> number of spline coefficient vectors
-used. In our case, this is the number of rows of betaspline, but if we
-additionally had a different spline coefficient (with a different name)
-in our parameter list, possibly with a different length and a different
-penalty matrix, we would have needed more elements in
-<code>lambda</code>.</p></li>
+used. In our case, this is the number of rows of
+<code>betaSpline</code>, but if we additionally had a different spline
+coefficient (with a different name) in our parameter list, possibly with
+a different length and a different penalty matrix, we would have needed
+more elements in <code>lambda</code>.</p></li>
 <li><p>The <code><a href="../reference/penalty.html">penalty()</a></code> function can only be called
 <em>once</em> in the likelihood. If several spline coefficients are
 penalised, <code><a href="../reference/penalty.html">penalty()</a></code> expects a list of coefficient matrices
@@ -254,7 +254,7 @@ call using the <code>penalty</code> argument.</p></li>
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   7.035   0.217   7.143</span></span></code></pre></div>
+<span><span class="co">#&gt;   6.850   0.184   6.924</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -444,7 +444,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.839   2.628  17.411</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.834   2.480  17.286</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -568,7 +568,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; outer 12 - lambda: 22.575 7.212 8.276 4.168 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   7.172   3.270   6.495</span></span></code></pre></div>
+<span><span class="co">#&gt;   7.117   3.164   6.422</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

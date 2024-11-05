@@ -497,7 +497,7 @@ X = array(0, dim = c(1,2,3))
 ```
 to avoid the error.
 
-Importantly, you cannot use `if` or `max`/ `min` statements **on your parameter itself**, as these are not differentiable. If you do so, `RTMB` will fail and probably does not produce a helpful error message. The problem here results from `RTMB` building the *tape* (computational graph) of the function at the initial parameter. If you have `if` statements, then the resulting gradient will be different from the one at another parameter value. Often, you can remedy this behaviour by exploiting the fact that `abs()` is differentiable (in code). For example, you can create the differentiable `max` alternative:
+Importantly, you cannot use `if` or `max`/ `min` statements **on the parameter itself** as these are not differentiable. If you do so, `RTMB` will fail and probably does not produce a helpful error message. The problem here results from `RTMB` building the *tape* (computational graph) of the function at the initial parameter value. When you have `if` statements, the resulting gradient will be different from the one at a different parameter value. Often, you can remedy this behaviour by exploiting the fact that `abs()` is differentiable (in code). For example, you can create the differentiable `max` alternative:
 ```{r max2, eval = FALSE}
 max2 = function(x,y){
   (x + y + abs(x - y)) / 2

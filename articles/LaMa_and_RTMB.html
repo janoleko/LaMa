@@ -661,10 +661,29 @@ types. To avoid this, always initiate with <code>numeric</code> or
 <span><span class="co"># or</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>to avoid the error.</p>
+<p>Importantly, you cannot use <code>if</code> or <code>max</code>/
+<code>min</code> statements <strong>on your parameter itself</strong>,
+as these are not differentiable. If you do so, <code>RTMB</code> will
+fail and probably does not produce a helpful error message. The problem
+here results from <code>RTMB</code> building the <em>tape</em>
+(computational graph) of the function at the initial parameter. If you
+have <code>if</code> statements, then the resulting gradient will be
+different from the one at another parameter value. Often, you can remedy
+this behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
+differentiable (in code). For example, you can create the differentiable
+<code>max</code> alternative:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">max2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">y</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>So you might be able to solve such problems by finding a clever
+alternative. If the <code>if</code> statement does not involve the
+parameter, it will typically be fine because it does not change during
+the optimisation.</p>
 <p>Furthermore, there are some unfortunate side effects of R’s ‘byte
 compiler’ (enabled by default in R). So if you encounter an error not
 matching the previous ones, try disabling the byte compiler with</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">compiler</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/compiler/compile.html" class="external-link">enableJIT</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>and see if the error is resolved.</p>
@@ -675,9 +694,6 @@ Use <code><a href="https://rdrr.io/pkg/Matrix/man/expm-methods.html" class="exte
 <li>
 <code><a href="https://rdrr.io/pkg/CircStats/man/dvm.html" class="external-link">CircStats::dvm()</a></code> also isn’t compatible with AD. Use
 <code><a href="../reference/vm.html">LaMa::dvm()</a></code> instead.</li>
-<li>you can use <code>if</code> statements in your likelihood function,
-but <em>not</em> on the parameter itself as this will obviously not be
-differentiable.</li>
 <li>most of the standard distributions are available in
 <code>RTMB</code>. If you need a non-standard one, try implementing the
 density function yourself using plain R code. <code>RTMB</code> also

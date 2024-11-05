@@ -23,10 +23,11 @@ standard software does not easily support. Writing tailored `R` code
 offers flexibility but suffers from slow estimation speeds. This `R`
 package solves these issues by providing easy-to-use functions (written
 in C++ for speed) for common tasks like the forward algorithm. These
-functions can be combined into custom models, offering up to 10-20 times
-faster estimation via standard numerical optimisers. The development
-version now also allows for automatic differentiation with the `RTMB`
-package which drastically increases speed and accuracy.
+functions can be combined into custom models in a Lego-type approach,
+offering up to 10-20 times faster estimation via standard numerical
+optimisers. The development version now also allows for automatic
+differentiation with the `RTMB` package which drastically increases
+speed and accuracy.
 
 The most important families of functions are
 
@@ -155,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.365   0.011   0.381
+#>   0.363   0.008   0.375
 ```
 
 Really fast for 10.000 data points!

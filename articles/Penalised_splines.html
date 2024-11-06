@@ -238,7 +238,7 @@ hyperparamter in the <code>dat</code> object is called
 (of course than changing it in your <code>pnll</code> as well), but if
 you want to use a different name for the penalisation hyperparamter, you
 have to specify it as a character string in the <code><a href="../reference/qreml.html">qreml()</a></code>
-call using the <code>penalty</code> argument.</p></li>
+call using the <code>psname</code> argument.</p></li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
@@ -254,7 +254,7 @@ call using the <code>penalty</code> argument.</p></li>
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.879   0.197   6.966</span></span></code></pre></div>
+<span><span class="co">#&gt;   7.076   0.204   7.174</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -444,7 +444,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.764   2.546  17.280</span></span></code></pre></div>
+<span><span class="co">#&gt;  18.288   2.539  17.797</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -568,7 +568,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; outer 12 - lambda: 22.575 7.212 8.276 4.168 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   6.970   3.445   6.436</span></span></code></pre></div>
+<span><span class="co">#&gt;   7.232   3.215   6.538</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

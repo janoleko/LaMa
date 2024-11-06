@@ -175,7 +175,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
-#' @param psname optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
+#' @param psname optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths
 #'
 #' For larger values smoother convergence is to be expected but the algorithm may need more iterations.

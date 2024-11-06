@@ -175,7 +175,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
-#' @param penalty optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
+#' @param psname optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths
 #'
 #' For larger values smoother convergence is to be expected but the algorithm may need more iterations.
@@ -185,6 +185,7 @@ penalty = function(re_coef, S, lambda) {
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
+#' @param joint_unc logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #'
 #' @return returns a model list influenced by the users report statements in \code{pnll}
@@ -235,12 +236,13 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  par, # initial parameter list
                  dat, # initial dat object, currently needs to be called dat!
                  random, # names of parameters in par that are random effects/ penalized
-                 penalty = "lambda", # name given to the penalty parameter in dat
+                 psname = "lambda", # name given to the psname parameter in dat
                  alpha = 0, # exponential smoothing parameter
                  maxiter = 100, # maximum number of iterations
                  tol = 1e-4, # tolerance for convergence
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                  silent = 1, # print level
+                 joint_unc = TRUE, # should joint object be returned?
                  saveall = FALSE) # save all intermediate models?
 {
   
@@ -267,7 +269,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   # }
   
   # initial lambda locally
-  lambda = dat[[penalty]]
+  lambda = dat[[psname]]
   
   # experimentally, changing the name of the data object in pnll to dat
   # if(argname_dat != "dat"){
@@ -284,7 +286,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     
     getLambda = function(x) lambda
     
-    dat[[penalty]] = DataEval(getLambda, rep(advector(1), 0))
+    dat[[psname]] = DataEval(getLambda, rep(advector(1), 0))
     
     # assigning dat to whatever it is called in pnll() (hopefully)
     assign(argname_dat, dat, envir = environment())
@@ -335,7 +337,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   Lambdas[[1]] = reshape_lambda(re_lengths, lambda) # reshaping to match structure of random effects
   
   if(silent < 2){
-    cat("Initializing with", paste0(penalty, ":"), round(lambda, 3), "\n")
+    cat("Initializing with", paste0(psname, ":"), round(lambda, 3), "\n")
   }
   
   # computing rank deficiency for each penalty matrix to use in correction term
@@ -408,7 +410,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     lambda = unlist(lambdas_k) 
     
     if(silent < 2){
-      cat("outer", k, "-", paste0(penalty, ":"), round(lambda, 3), "\n")
+      cat("outer", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
     }
     
     # convergence check
@@ -432,14 +434,14 @@ qreml = function(pnll, # penalized negative log-likelihood function
   }
   
   # assign final lambda to return object
-  mod[[penalty]] = lambda
+  mod[[psname]] = lambda
   
   # assigning all lambdas to return object
-  mod[[paste0("all_", penalty)]] = Lambdas
+  mod[[paste0("all_", psname)]] = Lambdas
   
   # calculating unpenalized log-likelihood at final parameter values
   lambda = rep(0, length(lambda))
-  dat[[penalty]] = lambda
+  dat[[psname]] = lambda
   
   # format parameter to list
   skeleton = utils::as.relistable(par)
@@ -472,58 +474,60 @@ qreml = function(pnll, # penalized negative log-likelihood function
   # removing penalty list from model object
   mod = mod[names(mod) != "Pen"] 
   
-  #############################
-  ### constructing joint object
-  parlist$loglambda = log(mod[[penalty]])
   
-  # finding the number of similar random effects for each random effect
-  # indvec = rep(1:n_re, times = re_lengths)
-  
-  # computing log determinants
-  logdetS = numeric(length(S))
-  for(i in 1:length(S)){
-    logdetS[i] = gdeterminant(S[[i]])
-  }
-  
-  ## defining joint negative log-likelihood
-  jnll = function(par) {
+  if(joint_unc){
+    ### constructing joint object
+    parlist$loglambda = log(mod[[psname]])
     
-    environment(pnll) = environment()
+    # finding the number of similar random effects for each random effect
+    # indvec = rep(1:n_re, times = re_lengths)
     
-    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
-    "c" <- ADoverload("c")
-    "diag<-" <- ADoverload("diag<-")
-    
-    dat[[penalty]] = exp(par$loglambda)
-    
-    l_p = -pnll(par[names(par) != "loglambda"])
-    
-    ## computing additive constants (missing from only penalized likelihood)
-    const = 0
-    for(i in 1:n_re){
-      for(j in 1:nrow(re_inds[[i]])){
-        k = length(re_inds[[i]][j,])
-        
-        if(i == 1){
-          loglam = par$loglambda[j]
-        } else{
-          loglam = par$loglambda[re_lengths[i-1] + j]
-        }
-        
-        const = const - k * log(2*pi) + k * loglam + logdetS[i]
-      }
+    # computing log determinants
+    logdetS = numeric(length(S))
+    for(i in 1:length(S)){
+      logdetS[i] = gdeterminant(S[[i]])
     }
     
-    l_joint = l_p + 0.5 * const
-    -l_joint
+    ## defining joint negative log-likelihood
+    jnll = function(par) {
+      
+      environment(pnll) = environment()
+      
+      "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+      "c" <- ADoverload("c")
+      "diag<-" <- ADoverload("diag<-")
+      
+      dat[[psname]] = exp(par$loglambda)
+      
+      l_p = -pnll(par[names(par) != "loglambda"])
+      
+      ## computing additive constants (missing from only penalized likelihood)
+      const = 0
+      for(i in 1:n_re){
+        for(j in 1:nrow(re_inds[[i]])){
+          k = length(re_inds[[i]][j,])
+          
+          if(i == 1){
+            loglam = par$loglambda[j]
+          } else{
+            loglam = par$loglambda[re_lengths[i-1] + j]
+          }
+          
+          const = const - k * log(2*pi) + k * loglam + logdetS[i]
+        }
+      }
+      
+      l_joint = l_p + 0.5 * const
+      -l_joint
+    }
+    
+    # creating joint AD object
+    obj_joint = MakeADFun(jnll, parlist,
+                          random = names(par)[names(par) != "loglambda"]) # REML, everything random except lambda
+    
+    # assigning object to return object
+    mod$obj_joint = obj_joint
   }
-  
-  # creating joint AD object
-  obj_joint = MakeADFun(jnll, parlist,
-                        random = names(par)[names(par) != "loglambda"]) # REML, everything random except lambda
-  
-  # assigning object to return object
-  mod$obj_joint = obj_joint
   
   return(mod)
 }

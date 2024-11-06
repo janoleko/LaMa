@@ -9,12 +9,13 @@ qreml(
   par,
   dat,
   random,
-  penalty = "lambda",
+  psname = "lambda",
   alpha = 0,
   maxiter = 100,
   tol = 1e-04,
   control = list(reltol = 1e-10, maxit = 1000),
   silent = 1,
+  joint_unc = TRUE,
   saveall = FALSE
 )
 }
@@ -36,7 +37,7 @@ Its length needs to match the to the total number of random effects.}
 
 \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
 
-\item{penalty}{optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
+\item{psname}{optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
 \item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths
 
@@ -51,6 +52,8 @@ For larger values smoother convergence is to be expected but the algorithm may n
 We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
 
 \item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
+
+\item{joint_unc}{logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification}
 
 \item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
 }

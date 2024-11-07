@@ -9,7 +9,7 @@ Authors@R: c(
           comment = c(ORCID = "0009-0004-1556-9053")))
 Description: 
   A variety of latent Markov models, including hidden Markov models, hidden semi-Markov models, 
-  state space models and continuous-time variants can be formulated and estimated within the same framework via directly maximising the likelihood function using the so-called forward algorithm. 
+  state-space models and continuous-time variants can be formulated and estimated within the same framework via directly maximising the likelihood function using the so-called forward algorithm. 
   Applied researchers often need custom models that standard software does not easily support. 
   Writing tailored 'R' code offers flexibility but suffers from slow estimation speeds. 
   We address these issues by providing easy-to-use functions (written in 'C++' for speed) for common tasks like the forward algorithm. 
@@ -28,11 +28,14 @@ Imports:
     mvtnorm,
     splines,
     methods,
-    CircStats, circular
+    CircStats, 
+    circular
 LinkingTo: 
     Rcpp, 
     RcppArmadillo
-Depends: R (>= 3.5.0), RTMB
+Depends: 
+    R (>= 3.5.0), 
+    RTMB
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,

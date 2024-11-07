@@ -14,8 +14,9 @@
 #' @return a list containing the design matrix \code{Z}, the penalty matrix \code{S}, the \code{formula}, the \code{data} and the \code{knots}
 #' @export
 #' 
-#' @import mgcv
-#' @importFrom stats update predict
+#' @importFrom mgcv gam
+#' @importFrom mgcv s
+#' @importFrom stats update
 #'
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
@@ -23,16 +24,20 @@ make_matrices = function(formula,
                          data, 
                          knots = NULL
                          ){
-  gam_setup = gam(formula = update(formula, dummy ~ .),
-                  data = cbind(dummy = 1, data), 
-                  knots = knots,
-                  fit = FALSE)
+  gam_setup = mgcv::gam(formula = stats::update(formula, dummy ~ .),
+                        data = cbind(dummy = 1, data), 
+                        knots = knots,
+                        fit = FALSE)
   
   Z = gam_setup$X
   S = gam_setup$S
   formula = gam_setup$formula
   
-  return(list(Z = Z, S = S, formula = formula, data = data, knots = knots))
+  return(list(Z = Z, 
+              S = S, 
+              formula = formula, 
+              data = data, 
+              knots = knots))
 }
 
 
@@ -44,19 +49,22 @@ make_matrices = function(formula,
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
 #' 
-#' @import mgcv
-#' @importFrom stats update predict
+#' @importFrom mgcv gam
+#' @importFrom mgcv s
+#' @importFrom stats predict
 #'
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 pred_matrix = function(model_matrices, 
                        newdata) {
-  gam_setup0 = gam(model_matrices$form, 
-                   data = cbind(dummy = 1, model_matrices$data),
-                   knots = model_matrices$knots)
+  gam_setup0 = mgcv::gam(model_matrices$formula, 
+                         data = cbind(dummy = 1, model_matrices$data),
+                         knots = model_matrices$knots)
   
-  predict(gam_setup0, newdata = cbind(dummy = 1, newdata), type = "lpmatrix")
+  stats::predict(gam_setup0, 
+                 newdata = cbind(dummy = 1, newdata), 
+                 type = "lpmatrix")
 }
 
 
@@ -81,6 +89,9 @@ pred_matrix = function(model_matrices,
 #'
 #' @return list containing the design matrix \code{Z}, the penalty matrix \code{S}, the prediction design matrix \code{Z_predict}, the prediction grid \code{xseq}, and details for the basis expansion.
 #' @export
+#' @importFrom splines spline.des
+#' @importFrom splines bs
+#' @importFrom mgcv cSplineDes
 #'
 #' @examples
 #' modmat = make_matrices_dens(x = (-50):50, k = 20)

@@ -38,6 +38,7 @@ dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
 
 #' @rdname vm
 #' @export
+#' @importFrom circular pvonmises
 pvm = function(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20) {
   suppressWarnings(
     probs <- circular::pvonmises(q, mu, kappa, from = from, tol = tol)
@@ -47,6 +48,7 @@ pvm = function(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20) {
 
 #' @rdname vm
 #' @export
+#' @importFrom CircStats rvm
 rvm = function(n, mu = 0, kappa = 1, wrap = TRUE) {
   angles = CircStats::rvm(n, mu, kappa)
   
@@ -87,6 +89,7 @@ NULL
 
 #' @rdname gamma2
 #' @export
+#' @importFrom RTMB dgamma
 dgamma2 = function(x, mean = 1, sd = 1, log = FALSE) {
   shape = mean^2 / sd^2
   scale = sd^2 / mean

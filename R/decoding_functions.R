@@ -98,7 +98,7 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
     states = rep(NA, n)
     
     # loop over individual tracks
-    for(i in 1:length(uID)){
+    for(i in seq_len(length(uID))){
       id_i = which(trackID == uID[i])
       
       allprobs_i = allprobs[id_i, ]
@@ -299,7 +299,7 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
     stateprobs = matrix(NA, nrow = n, ncol = N)
     
     # loop over individual tracks
-    for(i in 1:length(uID)){
+    for(i in seq_len(length(uID))){
       id_i = which(trackID == uID[i])
       allprobs_i = allprobs[id_i, ]
       

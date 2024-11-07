@@ -342,13 +342,13 @@ qreml = function(pnll, # penalized negative log-likelihood function
   
   # computing rank deficiency for each penalty matrix to use in correction term
   m = numeric(length(S)) 
-  for(i in 1:length(m)) {
+  for(i in seq_len(length(m))) {
     m[i] = nrow(S[[i]]) - Matrix::rankMatrix(S[[i]])
   } 
   
   ### updating algorithm
   # loop over outer iterations until convergence or maxiter
-  for(k in 1:maxiter){
+  for(k in seq_len(maxiter)){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     opt = stats::optim(newpar, obj$fn, newgrad, 

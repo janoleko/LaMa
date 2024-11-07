@@ -519,7 +519,7 @@ forward_hsmm <- function(dm, omega, allprobs,
   "diag<-" <- ADoverload("diag<-")
   ################################
   
-  agsizes = sapply(dm, length)
+  agsizes = vapply(dm, length, 1L)
   
   N = ncol(allprobs) # number of HSMM states
   M = sum(agsizes) # total number of states of the approximating HMM

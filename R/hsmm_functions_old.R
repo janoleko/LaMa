@@ -23,7 +23,7 @@
 #' # calculating extended-state-space t.p.m.
 #' Gamma = tpm_hsmm(omega, dm)
 tpm_hsmm2 = function(omega,dm,eps=1e-10){
-  mv = sapply(dm,length)
+  mv = vapply(dm, length, integer(1))
   m = length(mv)
   G = matrix(0,0,sum(mv))
   for (i in 1:m){
@@ -104,7 +104,7 @@ tpm_phsmm2 = function(omega, dm, eps = 1e-10){
   if(is.matrix(omega)){
     omega = array(rep(omega,L), dim = c(N,N,L))
   }
-  mv = sapply(dm, ncol) # lengths of the pmf vectors
+  mv = vapply(dm, ncol, integer(1)) # lengths of the pmf vectors
   M = sum(mv)
   G_all = array(dim = c(M,M,L))
   Fm = vector("list") # computing all cdfs

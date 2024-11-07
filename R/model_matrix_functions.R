@@ -109,7 +109,7 @@ make_matrices_dens = function(x, # data vector
       
       # numerical integration for normalizing the B-spline basis functions
       xseq = seq(bm[1], bm[2], length = npoints)
-      B0 = splines::spline.des(knots, xseq, degree+1, outer.ok=T)$design # unnormalized
+      B0 = splines::spline.des(knots, xseq, degree+1, outer.ok = TRUE)$design # unnormalized
       w = rep(NA, k)
       h = diff(c(knots[1], knots[length(knots)])) / npoints
       for (i in 1:k){
@@ -333,7 +333,7 @@ buildSmoothDens = function(data,
   names(listseed) = varnames
   Z = S = Z_predict = xseq = betastart = basis = listseed
   
-  for(i in 1:nStreams){
+  for(i in seq_len(nStreams)){
     thisname = varnames[i]
     
     cat(thisname, "\n")
@@ -394,7 +394,7 @@ trigBasisExp = function(tod, L = 24, degree = 1){
   n = length(tod)
   Z = matrix(nrow = n, ncol = 2*degree)
   inner = 2*pi*tod/L
-  for(k in 1:degree){
+  for(k in seq_len(degree)){
     Z[,2*(k-1)+1:2] = cbind(sin(inner*k), cos(inner*k))
   }
   colnames(Z) = paste0(c("sin_", "cos_"), rep(1:degree, each = 2))

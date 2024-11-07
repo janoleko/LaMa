@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>State space models • LaMa</title>
+<title>State-space models • LaMa</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="State space models">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="State-space models">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -42,7 +42,7 @@
     <li><a class="dropdown-item" href="../articles/MMMPPs.html">Markov-modulated (marked) Poisson processes</a></li>
     <li><a class="dropdown-item" href="../articles/Penalised_splines.html">Penalised splines</a></li>
     <li><a class="dropdown-item" href="../articles/Periodic_HMMs.html">Periodic HMMs</a></li>
-    <li><a class="dropdown-item" href="../articles/State_space_models.html">State space models</a></li>
+    <li><a class="dropdown-item" href="../articles/State_space_models.html">State-space models</a></li>
   </ul>
 </li>
       </ul>
@@ -63,7 +63,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>State space models</h1>
+      <h1>State-space models</h1>
                         <h4 data-toc-skip class="author">Jan-Ole
 Koslik</h4>
             
@@ -78,21 +78,23 @@ Koslik</h4>
 <p>Before diving into this vignette, we recommend reading the vignette
 <strong>Introduction to LaMa</strong>.</p>
 </blockquote>
-<p>This vignette shows how to fit state space models which can be
+<p>This vignette shows how to fit state-space models which can be
 interpreted as generalisation of HMMs to continuous state spaces.
-Several approaches exist to fitting such models, but <span class="citation">Langrock (<a href="#ref-langrock2011some">2011</a>)</span> showed that very general
-state space models can be fitted via approximate maximum likelihood
-estimation, when the continous state space is finely discretised. This
-is equivalent to numerical integration over the state process using
-midpoint quadrature.</p>
-<p>Here, we will showcase this approach for a basic stochastic volatily
-model, which can be used to describe fincancial markets. In this model
-the unobserved marked volatility is described by an AR(1) process:</p>
+Several approaches exist to fitting such models, but <span class="citation">Langrock (<a href="#ref-langrock2011some">2011</a>)</span> showed that very
+<strong>general state-space models</strong> can be fitted via
+approximate maximum likelihood estimation, when the continous state
+space is <strong>finely discretised</strong>. This is equivalent to
+numerical integration over the state process using midpoint
+quadrature.</p>
+<p>Here, we will showcase this approach for a basic <strong>stochastic
+volatily model</strong> which, while being very simple, captures most of
+the stylised facts of financial time series. In this model the
+unobserved marked volatility is described by an AR(1) process:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>g</mi><mi>t</mi></msub><mo>=</mo><mi>ϕ</mi><msub><mi>g</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mi>σ</mi><msub><mi>η</mi><mi>t</mi></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>η</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
 </annotation></semantics></math> with autoregression parameter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\phi &lt; 1</annotation></semantics></math>
-a dispersion parameter
+and dispersion parameter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>σ</mi><annotation encoding="application/x-tex">\sigma</annotation></semantics></math>.
 Share returns
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">y_t</annotation></semantics></math>
@@ -119,13 +121,13 @@ y_t \mid g_t \sim N(0, (\beta e^{g_t / 2})^2).
 <span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">beta</span> <span class="op">=</span> <span class="fl">2</span> <span class="co"># baseline standard deviation</span></span>
-<span><span class="va">phi</span> <span class="op">=</span> <span class="fl">0.95</span> <span class="co"># AR parameter</span></span>
-<span><span class="va">sigma</span> <span class="op">=</span> <span class="fl">0.5</span> <span class="co"># variability of the AR process</span></span>
+<span><span class="va">phi</span> <span class="op">=</span> <span class="fl">0.95</span> <span class="co"># AR parameter of the log-volatility process</span></span>
+<span><span class="va">sigma</span> <span class="op">=</span> <span class="fl">0.5</span> <span class="co"># variability of the log-volatility process</span></span>
 <span></span>
 <span><span class="va">n</span> <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">g</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">n</span><span class="op">)</span></span>
-<span><span class="va">g</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="va">sigma</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">phi</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># stationary distribution of AR process</span></span>
+<span><span class="va">g</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="va">sigma</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">phi</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># stationary distribution of AR(1) process</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">n</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># sampling next state based on previous state and AR(1) equation</span></span>
 <span>  <span class="va">g</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">phi</span><span class="op">*</span><span class="va">g</span><span class="op">[</span><span class="va">t</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">)</span></span>
@@ -174,13 +176,13 @@ the continuous state space into the intervals <code>b</code> with width
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">qlogis</a></span><span class="op">(</span><span class="fl">0.95</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">bm</span> <span class="op">=</span> <span class="fl">5</span> <span class="co"># relevant range of underlying volatility (-5,5)</span></span>
-<span><span class="va">m</span> <span class="op">=</span> <span class="fl">50</span> <span class="co"># number of approximating states</span></span>
+<span><span class="va">m</span> <span class="op">=</span> <span class="fl">100</span> <span class="co"># number of approximating states</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">y</span>, bm <span class="op">=</span> <span class="va">bm</span>, m <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.428   0.017   0.444</span></span></code></pre></div>
+<span><span class="co">#&gt;   1.437   2.435   1.018</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -188,11 +190,11 @@ the continuous state space into the intervals <code>b</code> with width
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## parameter estimates</span></span>
 <span><span class="op">(</span><span class="va">phi</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.9516547</span></span>
+<span><span class="co">#&gt; [1] 0.9516567</span></span>
 <span><span class="op">(</span><span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.4437049</span></span>
+<span><span class="co">#&gt; [1] 0.4436876</span></span>
 <span><span class="op">(</span><span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2.183825</span></span>
+<span><span class="co">#&gt; [1] 2.184006</span></span>
 <span></span>
 <span><span class="co">## decoding states</span></span>
 <span><span class="va">b</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="va">bm</span>, <span class="va">bm</span>, length <span class="op">=</span> <span class="va">m</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span> <span class="co"># intervals for midpoint quadrature</span></span>
@@ -204,8 +206,8 @@ the continuous state space into the intervals <code>b</code> with width
 <span><span class="va">allprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">dnorm</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">beta</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">bstar</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># actual decoding</span></span>
-<span><span class="va">probs</span> <span class="op">=</span> <span class="fu"><a href="../reference/stateprobs.html">stateprobs</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span></span>
-<span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span></span>
+<span><span class="va">probs</span> <span class="op">=</span> <span class="fu"><a href="../reference/stateprobs.html">stateprobs</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="co"># local/ soft decoding</span></span>
+<span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="co"># global/ hard decoding</span></span>
 <span></span>
 <span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span>,<span class="fl">3</span>,<span class="fl">4.5</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">y</span>, type <span class="op">=</span> <span class="st">"l"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>,<span class="fl">20</span><span class="op">)</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
@@ -213,7 +215,7 @@ the continuous state space into the intervals <code>b</code> with width
 <span><span class="co"># as its probability might still be very small. Generally, we are approximating continuous </span></span>
 <span><span class="co"># distributions, thus it makes sense to plot the entire conditional distribution.</span></span>
 <span><span class="va">maxprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">probs</span>, <span class="fl">1</span>, <span class="va">max</span><span class="op">)</span></span>
-<span><span class="kw">for</span><span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span><span class="op">{</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">colend</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">probs</span><span class="op">[</span><span class="va">t</span>,<span class="op">]</span><span class="op">/</span><span class="op">(</span><span class="va">maxprobs</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">*</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span></span>
 <span>  <span class="va">colend</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">colend</span><span class="op">&lt;</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="va">colend</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">colend</span><span class="op">&lt;</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">t</span>, <span class="va">m</span><span class="op">)</span>, <span class="va">bstar</span><span class="op">*</span><span class="fl">4</span><span class="op">-</span><span class="fl">35</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"#FFA200"</span>,<span class="va">colend</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
@@ -227,6 +229,18 @@ the continuous state space into the intervals <code>b</code> with width
 <p><img src="State_space_models_files/figure-html/results-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
+<!-- Lastly, we can check if this model is adequate by computing pseudo-residuals using the `pseudo_res()` function. We just have to pass the observations, the decoded state probabilities, the distribution to use and the state-dependent parameters. In this case, the state-dependent mean is fixed at zero while the standard deviation is $\beta \exp(g_t / 2)$. If the model is correctly specified, these residuals should be standard normally distributed. -->
+<!-- ```{r resiudals} -->
+<!-- pres = pseudo_res(y, probs, "norm", -->
+<!--                   list(mean = 0, sd = beta * exp(bstar / 2))) -->
+<!-- oldpar = par(mfrow = c(1,2)) -->
+<!-- hist(pres, prob = TRUE, bor = "white") -->
+<!-- curve(dnorm(x), lty = 2, add = TRUE) -->
+<!-- qqnorm(pres, pch = 16, col = "#00000020", bty = "n") -->
+<!-- qqline(pres, col = "orange") -->
+<!-- par(oldpar) -->
+<!-- ``` -->
+<!-- We see that, overall, the model fit looks reasonable, but there are deviations in the tails. This is very typical for the basic SV model using a normal distribution as the **tail-risk** is not well captured. The residuals above would suggest that a model using a t-distribution for $\epsilon_t$ is more adequate as it can accommodate heavier tails. -->
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

@@ -113,7 +113,7 @@ nll_pool_slow = function(par, x, K){
 ### Estimating the model
 
 Now we estimate the model with complete pooling. We compare the fast version using `forward()` with `trackID` with the slow version also using `forward()` but looping over individuals in `R`.
-```{r model_pool, warning=FALSE}
+```{r model_pool, warning=FALSE, cache = TRUE}
 # initial parameter vector
 par = c(logitgamma = c(-1,-1), # off-diagonals of Gamma (on logit scale)
         mu = c(15, 60), # state-dependent means

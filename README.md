@@ -89,7 +89,7 @@ HMMs, from simple to complex:
 
 Other latent Markov model classes:
 
-- [State space
+- [State-space
   models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 - [Continuous-time
   HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.372   0.010   0.383
+#>   0.363   0.009   0.374
 ```
 
 Really fast for 10.000 data points!

@@ -1,5 +1,5 @@
 ---
-title: "State space models"
+title: "State-space models"
 author: "Jan-Ole Koslik"
 output: rmarkdown::html_vignette
 # output: pdf_document
@@ -24,14 +24,14 @@ knitr::opts_chunk$set(
 
 > Before diving into this vignette, we recommend reading the vignette **Introduction to LaMa**.
 
-This vignette shows how to fit state space models which can be interpreted as generalisation of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very general state space models can be fitted via approximate maximum likelihood estimation, when the continous state space is finely discretised. This is equivalent to numerical integration over the state process using midpoint quadrature.
+This vignette shows how to fit state-space models which can be interpreted as generalisation of HMMs to continuous state spaces. Several approaches exist to fitting such models, but @langrock2011some showed that very **general state-space models** can be fitted via approximate maximum likelihood estimation, when the continous state space is **finely discretised**. This is equivalent to numerical integration over the state process using midpoint quadrature.
 
-Here, we will showcase this approach for a basic stochastic volatily model, which can be used to describe fincancial markets. In this model the unobserved marked volatility is described by an AR(1) process:
+Here, we will showcase this approach for a basic **stochastic volatily model** which, while being very simple, captures most of the stylised facts of financial time series. In this model the unobserved marked volatility is described by an AR(1) process:
 
 $$
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
 $$
-with autoregression parameter $\phi < 1$ a dispersion parameter $\sigma$. Share returns $y_t$ can then be modelled as
+with autoregression parameter $\phi < 1$ and dispersion parameter $\sigma$. Share returns $y_t$ can then be modelled as
 $$
 y_t = \beta \epsilon_t \exp(g_t / 2),
 $$
@@ -51,13 +51,13 @@ library(LaMa)
 
 ```{r data}
 beta = 2 # baseline standard deviation
-phi = 0.95 # AR parameter
-sigma = 0.5 # variability of the AR process
+phi = 0.95 # AR parameter of the log-volatility process
+sigma = 0.5 # variability of the log-volatility process
 
 n = 1000
 set.seed(123)
 g = rep(NA, n)
-g[1] = rnorm(1, 0, sigma / sqrt(1-phi^2)) # stationary distribution of AR process
+g[1] = rnorm(1, 0, sigma / sqrt(1-phi^2)) # stationary distribution of AR(1) process
 for(t in 2:n){
   # sampling next state based on previous state and AR(1) equation
   g[t] = rnorm(1, phi*g[t-1], sigma)
@@ -100,10 +100,10 @@ nll = function(par, y, bm, m){
 
 ### Fitting an SSM to the data
 
-```{r model, warning=FALSE}
+```{r model, warning=FALSE, cache = TRUE}
 par = c(qlogis(0.95), log(0.3), log(1))
 bm = 5 # relevant range of underlying volatility (-5,5)
-m = 50 # number of approximating states
+m = 100 # number of approximating states
 
 system.time(
   mod <- nlm(nll, par, y = y, bm = bm, m = m)
@@ -128,8 +128,8 @@ delta = h * dnorm(bstar, 0, sigma/sqrt(1-phi^2)) # stationary distribution
 allprobs = t(sapply(y, dnorm, mean = 0, sd = beta * exp(bstar/2)))
 
 # actual decoding
-probs = stateprobs(delta, Gamma, allprobs)
-states = viterbi(delta, Gamma, allprobs)
+probs = stateprobs(delta, Gamma, allprobs) # local/ soft decoding
+states = viterbi(delta, Gamma, allprobs) # global/ hard decoding
 
 oldpar = par(mar = c(5,4,3,4.5)+0.1)
 plot(y, type = "l", bty = "n", ylim = c(-50,20), yaxt = "n")
@@ -137,7 +137,7 @@ plot(y, type = "l", bty = "n", ylim = c(-50,20), yaxt = "n")
 # as its probability might still be very small. Generally, we are approximating continuous 
 # distributions, thus it makes sense to plot the entire conditional distribution.
 maxprobs = apply(probs, 1, max)
-for(t in 1:1000){
+for(t in 1:nrow(probs)){
   colend = round((probs[t,]/(maxprobs[t]*5))*100)
   colend[which(colend<10)] = paste0("0", colend[which(colend<10)])
   points(rep(t, m), bstar*4-35, col = paste0("#FFA200",colend), pch = 20)
@@ -150,5 +150,20 @@ axis(side=4, at = seq(-5,5, by = 5)*4-35, labels = seq(-5,5, by = 5))
 mtext("g", side=4, line=3, at = -30)
 par(oldpar)
 ```
+<!-- Lastly, we can check if this model is adequate by computing pseudo-residuals using the `pseudo_res()` function. We just have to pass the observations, the decoded state probabilities, the distribution to use and the state-dependent parameters. In this case, the state-dependent mean is fixed at zero while the standard deviation is $\beta \exp(g_t / 2)$. If the model is correctly specified, these residuals should be standard normally distributed. -->
+
+<!-- ```{r resiudals} -->
+<!-- pres = pseudo_res(y, probs, "norm", -->
+<!--                   list(mean = 0, sd = beta * exp(bstar / 2))) -->
+
+<!-- oldpar = par(mfrow = c(1,2)) -->
+<!-- hist(pres, prob = TRUE, bor = "white") -->
+<!-- curve(dnorm(x), lty = 2, add = TRUE) -->
+<!-- qqnorm(pres, pch = 16, col = "#00000020", bty = "n") -->
+<!-- qqline(pres, col = "orange") -->
+<!-- par(oldpar) -->
+<!-- ``` -->
+
+<!-- We see that, overall, the model fit looks reasonable, but there are deviations in the tails. This is very typical for the basic SV model using a normal distribution as the **tail-risk** is not well captured. The residuals above would suggest that a model using a t-distribution for $\epsilon_t$ is more adequate as it can accommodate heavier tails. -->
 
 ## References

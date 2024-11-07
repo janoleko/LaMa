@@ -70,7 +70,7 @@ HMMs, from simple to complex:
 
 Other latent Markov model classes:
 
-* [State space models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
+* [State-space models](https://janoleko.github.io/LaMa/articles/State_space_models.html)
 * [Continuous-time HMMs](https://janoleko.github.io/LaMa/articles/Continuous_time_HMMs.html)
 * [Hidden semi-Markov models](https://janoleko.github.io/LaMa/articles/HSMMs.html)
 * [Markov-modulated (marked) Poisson processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)

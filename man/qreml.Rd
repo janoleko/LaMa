@@ -37,7 +37,7 @@ Its length needs to match the to the total number of random effects.}
 
 \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
 
-\item{psname}{optional name given to the penalty parameter in \code{dat}. Defaults to \code{"lambda"}.}
+\item{psname}{optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
 \item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths
 

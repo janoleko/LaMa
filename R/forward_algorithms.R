@@ -66,7 +66,7 @@ forward = function(delta, Gamma, allprobs,
     }
     
     # if delta is advector, run ad version of the function
-    ad = inherits(delta, "advector")
+    ad = inherits(delta, "advector") | inherits(Gamma, "advector")
   }
   
   # non-ad version in C++
@@ -277,7 +277,7 @@ forward_g = function(delta, Gamma, allprobs,
     }
     
     # if delta is advector, run ad version of the function
-    ad = inherits(delta, "advector")
+    ad = inherits(delta, "advector") | inherits(Gamma, "advector")
   }
   
   if(!ad) {

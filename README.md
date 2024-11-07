@@ -13,7 +13,7 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-pr
 A variety of **latent Markov models**
 <a href="https://arxiv.org/abs/2406.19157" target="_blank">(Mews,
 Koslik, and Langrock 2024)</a>, including **hidden Markov models**
-(HMMs), **hidden semi-Markov models** (HSMMs), **state space models**
+(HMMs), **hidden semi-Markov models** (HSMMs), **state-space models**
 (SSMs) and **continuous-time** variants can be formulated and estimated
 within the same framework via directly maximising the likelihood
 function using the so-called **forward algorithm**
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.363   0.009   0.374
+#>   0.403   0.012   0.974
 ```
 
 Really fast for 10.000 data points!

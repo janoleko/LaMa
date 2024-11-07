@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-A variety of **latent Markov models** <a href="https://arxiv.org/abs/2406.19157" target="_blank">[@mews2024build]</a>, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) 
+A variety of **latent Markov models** <a href="https://arxiv.org/abs/2406.19157" target="_blank">[@mews2024build]</a>, including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state-space models** (SSMs) 
 and **continuous-time** variants can be formulated and estimated within the same framework via directly maximising the likelihood function using the so-called **forward algorithm** <a href="https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock" target="_blank">[@zucchini]</a>.
 Applied researchers often need custom models that standard software does not easily support. Writing tailored `R` code offers flexibility but suffers from slow estimation speeds. This `R` package solves these issues by providing easy-to-use functions (written in C++ for speed) for common tasks like the forward algorithm. These functions can be combined into custom models in a Lego-type approach, offering up to 10-20 times faster estimation via standard numerical optimisers. The development version now also allows for automatic differentiation with the `RTMB` package which drastically increases speed and accuracy.
 

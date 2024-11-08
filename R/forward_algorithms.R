@@ -433,6 +433,7 @@ forward_g = function(delta, Gamma, allprobs,
 #'
 #' @return log-likelihood for given data and parameters
 #' @export
+#' @importFrom RTMB REPORT
 #'
 #' @examples
 #' ## negative log likelihood function
@@ -466,6 +467,10 @@ forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, rep
   } 
   
   Gammanew = Gamma[,,tod]
+  
+  if(report){
+    RTMB::REPORT(tod)
+  }
   
   forward_g(delta, Gammanew, allprobs, 
             trackID = trackID, ad = ad, report = report)

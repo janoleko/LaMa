@@ -253,6 +253,7 @@ call using the <code>psname</code> argument.</p></li>
 <span><span class="co">#&gt; outer 5 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; outer 6 - lambda: 0.308 0.113 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
+<span><span class="co">#&gt; Final model fit with lambda: 0.308 0.113</span></span>
 <span><span class="co">#&gt; Error in qreml(pnll, par, dat, random = "betaSpline"): object 'smoothing_factor' not found</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
@@ -447,8 +448,9 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; outer 7 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; outer 8 - lambda: 1.608 1.375 2.367 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
+<span><span class="co">#&gt; Final model fit with lambda: 1.608 1.375 2.367</span></span>
 <span><span class="co">#&gt; Error in qreml(pnll, par, dat, random = "beta"): object 'smoothing_factor' not found</span></span>
-<span><span class="co">#&gt; Timing stopped at: 17.11 2.186 16.66</span></span></code></pre></div>
+<span><span class="co">#&gt; Timing stopped at: 16.76 2.275 16.36</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -574,8 +576,9 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; outer 11 - lambda: 22.575 7.212 8.276 4.168 </span></span>
 <span><span class="co">#&gt; outer 12 - lambda: 22.575 7.212 8.276 4.168 </span></span>
 <span><span class="co">#&gt; Converged</span></span>
+<span><span class="co">#&gt; Final model fit with lambda: 22.575 7.212 8.276 4.168</span></span>
 <span><span class="co">#&gt; Error in qreml(pnll, par, dat, random = c("betaSpline", "alphaSpline")): object 'smoothing_factor' not found</span></span>
-<span><span class="co">#&gt; Timing stopped at: 6.8 3.019 6.217</span></span></code></pre></div>
+<span><span class="co">#&gt; Timing stopped at: 6.602 3.013 6.064</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

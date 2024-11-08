@@ -107,7 +107,7 @@ dat = list(step = trex$step, # observed steps
            lambda = rep(100, 2)) # initial penalty strength
 ```
 
-The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength paramter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength parameter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `qreml()`:
 
@@ -119,7 +119,7 @@ There are some rules to follow when using `qreml()`:
 
 5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail.
 
-6. By default, `qreml()` assmes that the penalisation hyperparamter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparamter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
+6. By default, `qreml()` assmes that the penalisation hyperparameter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparameter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
 
 ```{r trex_fit, message = FALSE}
 system.time(
@@ -283,7 +283,7 @@ The P-Spline model results in a very good fit to the empirical distribution. Thi
 
 ### Markov-switching GAMLSS
 
-Lastly, we want to demonstrate how one can easily fit Markov-switching regression models where the state-dependent means and potentially other paramters depend on covariates via smooth functions. For this, we consider the `energy` data set contained in the R package `MSwM`. 
+Lastly, we want to demonstrate how one can easily fit Markov-switching regression models where the state-dependent means and potentially other parameters depend on covariates via smooth functions. For this, we consider the `energy` data set contained in the R package `MSwM`. 
 It comprises 1784 daily observations of energy prices (in Cents per kWh) in Spain which we want to explain using the daily oil prices (in Euros per barrel) also provided in the data. Specifically, we consider a 2-state MS-GAMLSS defined by
 $$
 \text{price}_t \mid \{ S_t = i \} \sim N \bigl(\mu_t^{(i)}, (\sigma_t^{(i)})^2 \bigr),
@@ -308,7 +308,7 @@ S = modmat$S # penalty matrix (list)
 ```
 
 Then, we specify the penalised negative log-likelihood function. It differs from the first example as the state-dependent distributions, as opposed to the state process parameters, depend on the covariate. 
-Additionally, we now have two completely seperated spline-coefficient matrices/ random effects called `betaSpline` and `alphaSpline` for the state-dependent means and standard deviations respectively.
+Additionally, we now have two completely separated spline-coefficient matrices/ random effects called `betaSpline` and `alphaSpline` for the state-dependent means and standard deviations respectively.
 Thus, we need to pass them as a list to the `penalty()` function. 
 
 We also pass the penalty matrix list `S` that is provided by `make_matrices()`. This could potentially be a list of length two if the two spline coefficient matrices were penalised differently (e.g. by us using a different spline basis). In this case, however, they are the same and we only pass the list of length one. It does not matter to `penalty()` if we pass a list of length one or just one matrix.
@@ -358,7 +358,7 @@ system.time(
 ```
 
 Having fitted the model, we can visualise the results. We first decode the most probable state sequence and then plot the estimated state-dependent densities as a function of the oil price, as well as the decoded time series.
-For the former, we create a fine grid of oil price values and use the `pred_matric()` function to build the associated interpolating design matrix.
+For the former, we create a fine grid of oil price values and use the `pred_matrix()` function to build the associated interpolating design matrix.
 
 ```{r energy_results, fig.width = 9, fig.height = 5}
 xseq = seq(min(energy$Oil), max(energy$Oil), length = 200) # sequence for prediction

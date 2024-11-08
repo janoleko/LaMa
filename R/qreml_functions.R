@@ -241,7 +241,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  random, # names of parameters in par that are random effects/ penalized
                  psname = "lambda", # name given to the psname parameter in dat
                  alpha = 0, # exponential smoothing parameter
-                 smooth_factor = 1,
+                 smoothing_factor = 1,
                  maxiter = 100, # maximum number of iterations
                  tol = 1e-4, # tolerance for convergence
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization

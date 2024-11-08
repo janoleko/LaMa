@@ -11,7 +11,7 @@ qreml(
   random,
   psname = "lambda",
   alpha = 0,
-  smoothing_factor = 1,
+  smoothing = 1,
   maxiter = 100,
   tol = 1e-04,
   control = list(reltol = 1e-10, maxit = 1000),
@@ -44,9 +44,9 @@ Its length needs to match the to the total number of random effects.}
 
 For larger values smoother convergence is to be expected but the algorithm may need more iterations.}
 
-\item{smoothing_factor}{optional scaling factor for the final penalty strength parameters
+\item{smoothing}{optional scaling factor for the final penalty strength parameters
 
-Increasing this beyond one will lead to a smoother final model.}
+Increasing this beyond one will lead to a smoother final model. Can be an integer or a vector of length equal to the length of the penalty strength parameter.}
 
 \item{maxiter}{maximum number of iterations in the outer optimisation over the penalty strength parameters.}
 

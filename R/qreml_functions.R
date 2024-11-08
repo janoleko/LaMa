@@ -179,6 +179,9 @@ penalty = function(re_coef, S, lambda) {
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths
 #'
 #' For larger values smoother convergence is to be expected but the algorithm may need more iterations.
+#' @param smoothing_factor optional scaling factor for the final penalty strength parameters
+#' 
+#' Increasing this beyond one will lead to a smoother final model.
 #' @param maxiter maximum number of iterations in the outer optimisation over the penalty strength parameters.
 #' @param tol Convergence tolerance for the penalty strength parameters.
 #' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
@@ -238,6 +241,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  random, # names of parameters in par that are random effects/ penalized
                  psname = "lambda", # name given to the psname parameter in dat
                  alpha = 0, # exponential smoothing parameter
+                 smooth_factor = 1,
                  maxiter = 100, # maximum number of iterations
                  tol = 1e-4, # tolerance for convergence
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
@@ -424,6 +428,41 @@ qreml = function(pnll, # penalized negative log-likelihood function
     
     if(k == maxiter) warning("No convergence\n")
   }
+  
+  # final model fit
+  lambda = lambda * smoothing_factor # scaling lambda by smoothing factor
+  
+  if(silent < 2){
+    cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
+    if(smoothing_factor != 1){
+      cat("Smoothing factor:", smoothing_factor, "\n")
+    }
+  }
+  
+  # fitting the model conditional on lambda: current local lambda will be pulled by f
+  opt = stats::optim(newpar, obj$fn, newgrad, 
+                     method = "BFGS", hessian = TRUE, # return hessian in the end
+                     control = control)
+  
+  # setting new optimum par for next iteration
+  newpar = opt$par 
+  
+  # reporting to extract penalties
+  mod = obj$report() 
+  
+  # evaluating current Hessian
+  # J = obj$he()
+  J = opt$hessian
+  
+  # computing inverse Hessian
+  J_inv = MASS::ginv(J) 
+  
+  # saving entire model object
+  if(saveall){
+    allmods[[k+1]] = mod
+  }
+  
+  #############################################
   
   # assign RTMB obj to return object
   mod$obj <- obj

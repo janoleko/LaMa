@@ -11,6 +11,7 @@ qreml(
   random,
   psname = "lambda",
   alpha = 0,
+  smooth_factor = 1,
   maxiter = 100,
   tol = 1e-04,
   control = list(reltol = 1e-10, maxit = 1000),
@@ -56,6 +57,10 @@ We advise against changing the default values of \code{reltol} and \code{maxit} 
 \item{joint_unc}{logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification}
 
 \item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
+
+\item{smoothing_factor}{optional scaling factor for the final penalty strength parameters
+
+Increasing this beyond one will lead to a smoother final model.}
 }
 \value{
 returns a model list influenced by the users report statements in \code{pnll}

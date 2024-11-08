@@ -294,7 +294,6 @@ $$
 not covering other potential explanatory covariates for the sake of simplicity.
 
 ```{r energy_data}
-library(MSwM)
 data(energy, package = "MSwM")
 head(energy)
 ```

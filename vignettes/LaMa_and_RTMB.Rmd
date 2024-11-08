@@ -48,7 +48,7 @@ The workflow with `RTMB` is basically always the same. We need to
 
 ### Simple HMM
 
-We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains the data and potential hyperparamters -- here $N$, the number of hidden states. The names `par` and `dat` are of course arbitrary.
+We start by fitting a super simple stationary HMM with state-dependent gamma distributions for the step lengths and von Mises distributions for the turning angles. As a first step, we define the initial parameter list `par` and a `dat` list that contains the data and potential hyperparameters -- here $N$, the number of hidden states. The names `par` and `dat` are of course arbitrary.
 
 ```{r parameters}
 par = list(

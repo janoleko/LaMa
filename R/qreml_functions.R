@@ -426,7 +426,10 @@ qreml = function(pnll, # penalized negative log-likelihood function
       break
     }
     
-    if(k == maxiter) warning("No convergence\n")
+    if(k == maxiter){
+      cat("No convergence\n")
+      warning("No convergence\n")
+    } 
   }
   
   # final model fit

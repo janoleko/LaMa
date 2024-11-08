@@ -433,10 +433,10 @@ qreml = function(pnll, # penalized negative log-likelihood function
   lambda = lambda * smoothing # scaling lambda by smoothing factor
   
   if(silent < 2){
-    cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
-    if(smoothing_factor != 1){
+    if(smoothing != 1){
       cat("Smoothing factor:", smoothing, "\n")
     }
+    cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
   }
   
   # fitting the model conditional on lambda: current local lambda will be pulled by f

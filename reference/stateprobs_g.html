@@ -56,7 +56,7 @@ for inhomogeneous HMMs</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs_g</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, trackID <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs_g</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, trackID <span class="op">=</span> <span class="cn">NULL</span>, mod <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,6 +79,12 @@ for inhomogeneous HMMs</p>
 
 <dt id="arg-trackid">trackID<a class="anchor" aria-label="anchor" href="#arg-trackid"></a></dt>
 <dd><p>optional vector of k track IDs, if multiple tracks need to be decoded separately</p></dd>
+
+
+<dt id="arg-mod">mod<a class="anchor" aria-label="anchor" href="#arg-mod"></a></dt>
+<dd><p>optional model object containing initial distribution <code>delta</code>, transition probability matrix <code>Gamma</code>, matrix of state-dependent probabilities <code>allprobs</code>, and potentially a <code>trackID</code> variable</p>
+<p>If you are using automatic differentiation either with <code>RTMB::MakeADFun</code> or <code><a href="qreml.html">qreml</a></code> and include <code><a href="forward_g.html">forward_g</a></code> in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running <code>RTMB::report()</code> or from <code><a href="qreml.html">qreml</a></code> directly to this function.</p></dd>
 
 </dl></div>
     <div class="section level2">

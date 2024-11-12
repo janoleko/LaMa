@@ -56,7 +56,7 @@ for homogeneous HMMs</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, trackID <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stateprobs</span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, trackID <span class="op">=</span> <span class="cn">NULL</span>, mod <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,6 +80,12 @@ for homogeneous HMMs</p>
 <p>If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 In this case, <code>Gamma</code> can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
 Furthermore, instead of a single vector <code>delta</code> corresponding to the initial distribution, a <code>delta</code> matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.</p></dd>
+
+
+<dt id="arg-mod">mod<a class="anchor" aria-label="anchor" href="#arg-mod"></a></dt>
+<dd><p>optional model object containing initial distribution <code>delta</code>, transition probability matrix <code>Gamma</code>, matrix of state-dependent probabilities <code>allprobs</code>, and potentially a <code>trackID</code> variable</p>
+<p>If you are using automatic differentiation either with <code>RTMB::MakeADFun</code> or <code><a href="qreml.html">qreml</a></code> and include <code><a href="forward.html">forward</a></code> in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running <code>RTMB::report()</code> or from <code><a href="qreml.html">qreml</a></code> directly to this function.</p></dd>
 
 </dl></div>
     <div class="section level2">

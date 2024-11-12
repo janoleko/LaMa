@@ -539,4 +539,4 @@ Some more minor things:
 * most of the standard distributions are available in `RTMB`. If you need a non-standard one, try implementing the density function yourself using plain R code. 
 `RTMB` also provides AD versions of many building-block functions (like the Gamma or Bessel function) which might help with this.
 
-For more information on `RTMB`, check out its [documentation](https://cran.r-project.org/web/packages/RTMB/index.html) or the [TMB users Google group](https://groups.google.com/g/tmb-users).
+For more information on `RTMB`, check out its [documentation](https://CRAN.R-project.org/package=RTMB) or the [TMB users Google group](https://groups.google.com/g/tmb-users).

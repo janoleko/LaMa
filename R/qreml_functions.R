@@ -436,7 +436,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   lambda = lambda * smoothing # scaling lambda by smoothing factor
   
   if(silent < 2){
-    if(smoothing != 1){
+    if(any(smoothing != 1)){
       cat("Smoothing factor:", smoothing, "\n")
     }
     cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")

@@ -74,5 +74,5 @@ mllk = function(theta.star, x, sizes, tod){
 ## fitting an HSMM to the data
 theta.star = c(1, 4, log(2), log(2), # state-dependent parameters
                  log(4), log(6), rep(0,4)) # state process parameters dm
-mod = nlm(mllk, theta.star, x = x, sizes = c(10, 15), tod = tod, stepmax = 5)
+# mod = nlm(mllk, theta.star, x = x, sizes = c(10, 15), tod = tod, stepmax = 5)
 }

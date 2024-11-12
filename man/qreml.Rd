@@ -97,7 +97,7 @@ modmat = make_matrices(~ s(tod, bs = "cp"),
 dat$Z = modmat$Z # spline design matrix
 dat$S = modmat$S # penalty matrix
 
-# penalized negative log-likelihood function
+# penalised negative log-likelihood function
 pnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities

@@ -64,9 +64,10 @@ and can be used to quantify whether an observation is extreme relative to its mo
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pseudo_res</span><span class="op">(</span></span>
 <span>  <span class="va">obs</span>,</span>
-<span>  <span class="va">stateprobs</span>,</span>
 <span>  <span class="va">dist</span>,</span>
 <span>  <span class="va">par</span>,</span>
+<span>  stateprobs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mod <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  normal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  discrete <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  randomise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -82,10 +83,6 @@ and can be used to quantify whether an observation is extreme relative to its mo
 <dd><p>vector of continuous-valued observations (of length n)</p></dd>
 
 
-<dt id="arg-stateprobs">stateprobs<a class="anchor" aria-label="anchor" href="#arg-stateprobs"></a></dt>
-<dd><p>matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by <code><a href="stateprobs.html">stateprobs</a></code>, <code><a href="stateprobs_g.html">stateprobs_g</a></code> or <code><a href="stateprobs_p.html">stateprobs_p</a></code></p></dd>
-
-
 <dt id="arg-dist">dist<a class="anchor" aria-label="anchor" href="#arg-dist"></a></dt>
 <dd><p>character string specifying which parametric CDF to use (e.g., <code>"norm"</code> for normal or <code>"pois"</code> for Poisson)</p></dd>
 
@@ -94,6 +91,17 @@ and can be used to quantify whether an observation is extreme relative to its mo
 <dd><p>named parameter list for the parametric CDF</p>
 <p>Names need to correspond to the parameter names in the specified distribution (e.g. <code>list(mean = c(1,2), sd = c(1,1))</code> for a normal distribution and 2 states).
 This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.</p></dd>
+
+
+<dt id="arg-stateprobs">stateprobs<a class="anchor" aria-label="anchor" href="#arg-stateprobs"></a></dt>
+<dd><p>matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by <code><a href="stateprobs.html">stateprobs</a></code>, <code><a href="stateprobs_g.html">stateprobs_g</a></code> or <code><a href="stateprobs_p.html">stateprobs_p</a></code></p></dd>
+
+
+<dt id="arg-mod">mod<a class="anchor" aria-label="anchor" href="#arg-mod"></a></dt>
+<dd><p>optional model object containing initial distribution <code>delta</code>, transition probability matrix <code>Gamma</code>, matrix of state-dependent probabilities <code>allprobs</code>, and potentially a <code>trackID</code> variable</p>
+<p>If you are using automatic differentiation either with <code>RTMB::MakeADFun</code> or <code><a href="qreml.html">qreml</a></code> and include <code><a href="forward.html">forward</a></code>, <code><a href="forward_g.html">forward_g</a></code> or <code><a href="forward_p.html">forward_p</a></code> in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running <code>RTMB::report()</code> or from <code><a href="qreml.html">qreml</a></code> directly to this function and avoid calculating local state proabilities manually.
+In this case, a call should look like <code>pseudo_res(obs, "norm", par, mod = mod)</code>.</p></dd>
 
 
 <dt id="arg-normal">normal<a class="anchor" aria-label="anchor" href="#arg-normal"></a></dt>
@@ -130,13 +138,13 @@ When used with a special discrete distribution, set to <code>TRUE</code> manuall
 <span class="r-in"><span><span class="va">obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">stateprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.5</span>, nrow <span class="op">=</span> <span class="fl">100</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res</span><span class="op">(</span><span class="va">obs</span>, <span class="va">stateprobs</span>, <span class="st">"norm"</span>, <span class="va">par</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res</span><span class="op">(</span><span class="va">obs</span>, <span class="st">"norm"</span>, <span class="va">par</span>, <span class="va">stateprobs</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## discrete-valued observations</span></span></span>
 <span class="r-in"><span><span class="va">obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">100</span>, lambda <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">stateprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.5</span>, nrow <span class="op">=</span> <span class="fl">100</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res</span><span class="op">(</span><span class="va">obs</span>, <span class="va">stateprobs</span>, <span class="st">"pois"</span>, <span class="va">par</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res</span><span class="op">(</span><span class="va">obs</span>, <span class="st">"pois"</span>, <span class="va">par</span>, <span class="va">stateprobs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Discrete pseudo-residuals are calculated</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Randomised between lower and upper</span>
 </code></pre></div>

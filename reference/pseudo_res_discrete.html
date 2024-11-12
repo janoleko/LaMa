@@ -64,9 +64,9 @@ and can be used to quantify whether an observation is extreme relative to its mo
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pseudo_res_discrete</span><span class="op">(</span></span>
 <span>  <span class="va">obs</span>,</span>
-<span>  <span class="va">stateprobs</span>,</span>
 <span>  <span class="va">dist</span>,</span>
 <span>  <span class="va">par</span>,</span>
+<span>  <span class="va">stateprobs</span>,</span>
 <span>  normal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  randomise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -81,10 +81,6 @@ and can be used to quantify whether an observation is extreme relative to its mo
 <dd><p>vector of discrete-valued observations (of length n)</p></dd>
 
 
-<dt id="arg-stateprobs">stateprobs<a class="anchor" aria-label="anchor" href="#arg-stateprobs"></a></dt>
-<dd><p>matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)</p></dd>
-
-
 <dt id="arg-dist">dist<a class="anchor" aria-label="anchor" href="#arg-dist"></a></dt>
 <dd><p>character string specifying which parametric CDF to use (e.g., <code>"norm"</code> for normal or <code>"pois"</code> for Poisson)</p></dd>
 
@@ -93,6 +89,10 @@ and can be used to quantify whether an observation is extreme relative to its mo
 <dd><p>named parameter list for the parametric CDF</p>
 <p>Names need to correspond to the parameter names in the specified distribution (e.g. <code>list(mean = c(1,2), sd = c(1,1))</code> for a normal distribution and 2 states).
 This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.</p></dd>
+
+
+<dt id="arg-stateprobs">stateprobs<a class="anchor" aria-label="anchor" href="#arg-stateprobs"></a></dt>
+<dd><p>matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)</p></dd>
 
 
 <dt id="arg-normal">normal<a class="anchor" aria-label="anchor" href="#arg-normal"></a></dt>
@@ -125,7 +125,7 @@ If <code>randomise</code> is set to <code>FALSE</code>, the lower, upper and mea
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">obs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fl">100</span>, lambda <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">stateprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0.5</span>, nrow <span class="op">=</span> <span class="fl">100</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res_discrete</span><span class="op">(</span><span class="va">obs</span>, <span class="va">stateprobs</span>, <span class="st">"pois"</span>, <span class="va">par</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pres</span> <span class="op">=</span> <span class="fu">pseudo_res_discrete</span><span class="op">(</span><span class="va">obs</span>, <span class="st">"pois"</span>, <span class="va">par</span>, <span class="va">stateprobs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Randomised between lower and upper</span>
 </code></pre></div>
     </div>

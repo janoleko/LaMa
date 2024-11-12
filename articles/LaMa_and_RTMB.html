@@ -341,7 +341,7 @@ the parameters, we can plot the decoded time series</p>
 <p><img src="LaMa_and_RTMB_files/figure-html/statedepdist-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span> <span class="co"># resetting to default</span></span></code></pre></div>
-<p>Lastly, we can also use the <code>sdreport()</code> function to
+<p>Moreover, we can also use the <code>sdreport()</code> function to
 directly give us standard errors for our unconstrained parameters and
 everything we <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code>ed. </p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -380,6 +380,23 @@ format, type</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Estimate"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># their standard errors</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Std"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Lastly, the automatic reporting with <code>LaMa</code> and
+<code>RTMB</code> together makes calculating pseudo-residuals really
+convenient:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pres_step</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span>, <span class="st">"gamma2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">mu</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
+<span><span class="va">pres_angle</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="st">"vm"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="va">kappa</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">pres_step</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
+<span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">"pseudo-residuals"</span>, xlab <span class="op">=</span> <span class="st">"step length"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">pres_angle</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
+<span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">"pseudo-residuals"</span>, xlab <span class="op">=</span> <span class="st">"turning angle"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="LaMa_and_RTMB_files/figure-html/pres-1.png" width="85%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="covariate-effects">Covariate effects<a class="anchor" aria-label="anchor" href="#covariate-effects"></a>
@@ -401,7 +418,7 @@ design matrix <code>Z</code> corresponding to above predictor and add
 the time of day to the <code>dat</code> list for indexing inside the
 likelihood function. The <code>LaMa</code> function
 <code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> does this very conveniently.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># building trigonometric basis desing matrix (in this case no intercept column)</span></span>
 <span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/trigBasisExp.html">trigBasisExp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># convenience function from LaMa</span></span>
 <span><span class="co"># only compute the 24 unique values and index later for entire time series</span></span>
@@ -421,7 +438,7 @@ based on the design and parameter matrix. Another lovely convenience
 that <code>RTMB</code> allows for is that, in our parameter list, we can
 have matrices, making reshaping of vectors to matrices inside the
 likelihood function unnessesary.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logmu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           logkappa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -435,7 +452,7 @@ transition matrix calculation. This leads to us using
 <code><a href="../reference/stationary_p.html">stationary_p()</a></code> instead of <code><a href="../reference/stationary.html">stationary()</a></code> to
 calculate the initial distribuion and <code><a href="../reference/forward_g.html">forward_g()</a></code> instead
 of <code><a href="../reference/forward.html">forward()</a></code> to calculate the log-likelihood.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span> <span class="co"># makes everything contained available without $</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z</span>, <span class="va">beta</span><span class="op">)</span> <span class="co"># covariate-dependent tpms (in this case only 24 unique)</span></span>
@@ -457,13 +474,13 @@ of <code><a href="../reference/forward.html">forward()</a></code> to calculate t
 <span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span><span class="op">[</span>,,<span class="va">tod</span><span class="op">]</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="co"># indexing 24 unique tpms by tod in data</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Having done this, the model fit is then essentially the same:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj2</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll2</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span>
 <span><span class="va">opt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj2</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimization</span></span></code></pre></div>
 <p>and we can look at the reported results. In this case, for simplicity
 I get standard errors for <code>Gamma</code> with the delta method
 while, in general, this is not advisable.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod2</span> <span class="op">=</span> <span class="va">obj2</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sdr</span> <span class="op">=</span> <span class="fu">sdreport</span><span class="op">(</span><span class="va">obj2</span><span class="op">)</span></span>
@@ -488,7 +505,7 @@ while, in general, this is not advisable.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="LaMa_and_RTMB_files/figure-html/MLE2-1.png" width="85%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
 <span>     col <span class="op">=</span> <span class="st">"deepskyblue"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, xaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, y0 <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">-</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Deltasd</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -640,14 +657,14 @@ need to be overloaded to allow for automatic differentiation which
 cannot be done by default. In typical model setups <code>LaMa</code>
 functions do this themselves, but if you go a very individualistic route
 and get an error like</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid argument to 'advector' (lost class attribute?)"</span><span class="op">)</span></span></code></pre></div>
 <p>you might have to overload the operator yourself. To do this put</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"[&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"[&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>as the first line of your likelihood function. If the error still
 prevails also add</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"c"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span></span>
 <span><span class="st">"diag&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"diag&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>which should hopefully fix the error.</p>
@@ -657,12 +674,12 @@ prevails also add</p>
 which screws up the automatic differentiation due to the mismatching
 types. To avoid this, always initiate with <code>numeric</code> or
 <code>NaN</code> values. For example, don’t do</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># which is the same as</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>but rather</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NaN</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -678,7 +695,7 @@ from the one at a different parameter value. Often, you can remedy this
 behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
 differentiable (in code). For example, you can create the differentiable
 <code>max</code> alternative:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">y</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -689,7 +706,7 @@ the optimisation.</p>
 <p>Furthermore, there are some unfortunate side effects of R’s ‘byte
 compiler’ (enabled by default in R). So if you encounter an error not
 matching the previous ones, try disabling the byte compiler with</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">compiler</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/compiler/compile.html" class="external-link">enableJIT</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>and see if the error is resolved.</p>

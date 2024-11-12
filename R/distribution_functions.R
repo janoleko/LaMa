@@ -40,9 +40,24 @@ dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
 #' @export
 #' @importFrom circular pvonmises
 pvm = function(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20) {
+  # NA handling
+  ind = which(!is.na(q))
+  
+  if(is.matrix(mu)){
+    mu = mu[ind,]
+  }
+  if(is.matrix(kappa)){
+    kappa = kappa[ind,]
+  }
+  
+  probs = numeric(length(q))
+  
   suppressWarnings(
-    probs <- circular::pvonmises(q, mu, kappa, from = from, tol = tol)
+    probs[ind] <- circular::pvonmises(q[ind], mu, kappa, from = from, tol = tol)
   )
+  
+  probs[-ind] = NA
+  
   as.numeric(probs)
 }
 

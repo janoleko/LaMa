@@ -6,9 +6,10 @@
 \usage{
 pseudo_res(
   obs,
-  stateprobs,
   dist,
   par,
+  stateprobs = NULL,
+  mod = NULL,
   normal = TRUE,
   discrete = NULL,
   randomise = TRUE,
@@ -18,14 +19,20 @@ pseudo_res(
 \arguments{
 \item{obs}{vector of continuous-valued observations (of length n)}
 
-\item{stateprobs}{matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by \code{\link{stateprobs}}, \code{\link{stateprobs_g}} or \code{\link{stateprobs_p}}}
-
 \item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)}
 
 \item{par}{named parameter list for the parametric CDF
 
 Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
 This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.}
+
+\item{stateprobs}{matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by \code{\link{stateprobs}}, \code{\link{stateprobs_g}} or \code{\link{stateprobs_p}}}
+
+\item{mod}{optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+
+If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward}}, \code{\link{forward_g}} or \code{\link{forward_p}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function and avoid calculating local state proabilities manually.
+In this case, a call should look like \code{pseudo_res(obs, "norm", par, mod = mod)}.}
 
 \item{normal}{logical, if \code{TRUE}, returns Gaussian pseudo residuals
 
@@ -59,11 +66,11 @@ When used for discrete pseudo-residuals, this function is just a wrapper for \co
 obs = rnorm(100)
 stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 par = list(mean = c(1,2), sd = c(1,1))
-pres = pseudo_res(obs, stateprobs, "norm", par)
+pres = pseudo_res(obs, "norm", par, stateprobs)
 
 ## discrete-valued observations
 obs = rpois(100, lambda = 1)
 stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 par = list(lambda = c(1,2))
-pres = pseudo_res(obs, stateprobs, "pois", par)
+pres = pseudo_res(obs, "pois", par, stateprobs)
 }

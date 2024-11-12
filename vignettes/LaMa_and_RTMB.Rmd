@@ -187,7 +187,7 @@ curve(delta[1]*dvm(x, 0, kappa[1]) + delta[2]*dvm(x, 0, kappa[2]),
 par(oldpar) # resetting to default
 ```
 
-Lastly, we can also use the `sdreport()` function to directly give us standard errors for our unconstrained parameters and everything we `ADREPORT()`ed. 
+Moreover, we can also use the `sdreport()` function to directly give us standard errors for our unconstrained parameters and everything we `ADREPORT()`ed. 
 ```{r sdreport}
 sdr = sdreport(obj)
 ```
@@ -209,6 +209,23 @@ and to get the estimates and standard errors for `ADREPORT()`ed quantities in li
 as.list(sdr, "Estimate", report = TRUE)
 # their standard errors
 as.list(sdr, "Std", report = TRUE)
+```
+
+
+Lastly, the automatic reporting with `LaMa` and `RTMB` together makes calculating pseudo-residuals really convenient:
+
+```{r pres, fig.width = 8, fig.height = 4}
+pres_step = pseudo_res(trex$step, "gamma2", list(mean = mu, sd = sigma), mod = mod)
+pres_angle = pseudo_res(trex$angle, "vm", list(mu = 0, kappa = kappa), mod = mod)
+
+oldpar = par(mfrow = c(1,2))
+hist(pres_step, prob = TRUE, breaks = 40, 
+     bor = "white", main = "pseudo-residuals", xlab = "step length")
+curve(dnorm(x, 0, 1), lwd = 2, add = T, lty = 2)
+hist(pres_angle, prob = TRUE, breaks = 40, 
+     bor = "white", main = "pseudo-residuals", xlab = "turning angle")
+curve(dnorm(x, 0, 1), lwd = 2, add = T, lty = 2)
+par(oldpar)
 ```
 
 

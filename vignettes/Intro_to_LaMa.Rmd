@@ -173,9 +173,9 @@ Then, we can pass the observations, the state probabilities, the parametric fami
 
 ```{r pseudores}
 pres = pseudo_res(x, # observations
-                  probs, # local state probabilities
                   "norm", # parametric distribution to use
-                  list(mean = mu, sd = sigma)) # parameters for that distribution
+                  list(mean = mu, sd = sigma), # parameters for that distribution
+                  probs) # local state probabilities
 
 oldpar = par(mfrow = c(1,2))
 hist(pres, prob = TRUE, bor = "white")

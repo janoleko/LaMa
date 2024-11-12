@@ -6,9 +6,9 @@
 \usage{
 pseudo_res_discrete(
   obs,
-  stateprobs,
   dist,
   par,
+  stateprobs,
   normal = TRUE,
   randomise = TRUE,
   seed = NULL
@@ -17,14 +17,14 @@ pseudo_res_discrete(
 \arguments{
 \item{obs}{vector of discrete-valued observations (of length n)}
 
-\item{stateprobs}{matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)}
-
 \item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)}
 
 \item{par}{named parameter list for the parametric CDF
 
 Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
 This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.}
+
+\item{stateprobs}{matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)}
 
 \item{normal}{logical, if \code{TRUE}, returns Gaussian pseudo residuals
 
@@ -55,5 +55,5 @@ If \code{randomise} is set to \code{FALSE}, the lower, upper and mean pseudo-res
 obs = rpois(100, lambda = 1)
 stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 par = list(lambda = c(1,2))
-pres = pseudo_res_discrete(obs, stateprobs, "pois", par)
+pres = pseudo_res_discrete(obs, "pois", par, stateprobs)
 }

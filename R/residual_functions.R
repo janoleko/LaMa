@@ -12,12 +12,17 @@
 #' When used for discrete pseudo-residuals, this function is just a wrapper for \code{\link{pseudo_res_discrete}}.
 #'
 #' @param obs vector of continuous-valued observations (of length n)
-#' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by \code{\link{stateprobs}}, \code{\link{stateprobs_g}} or \code{\link{stateprobs_p}}
 #' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
 #' @param par named parameter list for the parametric CDF
 #' 
 #' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
 #' This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.
+#' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states) as computed by \code{\link{stateprobs}}, \code{\link{stateprobs_g}} or \code{\link{stateprobs_p}}
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward}}, \code{\link{forward_g}} or \code{\link{forward_p}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function and avoid calculating local state proabilities manually.
+#' In this case, a call should look like \code{pseudo_res(obs, "norm", par, mod = mod)}.
 #' @param normal logical, if \code{TRUE}, returns Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.
@@ -36,21 +41,60 @@
 #' obs = rnorm(100)
 #' stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 #' par = list(mean = c(1,2), sd = c(1,1))
-#' pres = pseudo_res(obs, stateprobs, "norm", par)
+#' pres = pseudo_res(obs, "norm", par, stateprobs)
 #'
 #' ## discrete-valued observations
 #' obs = rpois(100, lambda = 1)
 #' stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 #' par = list(lambda = c(1,2))
-#' pres = pseudo_res(obs, stateprobs, "pois", par)
+#' pres = pseudo_res(obs, "pois", par, stateprobs)
 pseudo_res = function(obs, 
-                      stateprobs, 
                       dist, 
                       par,
+                      stateprobs = NULL,
+                      mod = NULL,
                       normal = TRUE,
                       discrete = NULL, 
                       randomise = TRUE,
                       seed = NULL) {
+  
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$type)){
+      stop("Model object contains no type.")
+    }
+    if(!(mod$type) %in% c("homogeneous", "inhomogeneous", "periodic")){
+      stop("Model object contains invalid type.")
+    }
+    
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    
+    if(mod$type == "periodic"){
+      if(is.null(mod$tod)){
+        stop("Model object contains no cyclic indexing variable.")
+      }
+    }
+    
+    # calculate state probabilities based on model object
+    if(mod$type == "homogeneous"){
+      stateprobs = stateprobs(mod = mod)
+    }
+    if(mod$type == "inhomogeneous"){
+      stateprobs = stateprobs_g(mod = mod)
+    }
+    if(mod$type == "periodic"){
+      stateprobs = stateprobs_p(mod = mod)
+    }
+  }
   
   # if discrete is not specified, try to determine
   if(is.null(discrete)){
@@ -61,9 +105,9 @@ pseudo_res = function(obs,
     cat("Discrete pseudo-residuals are calculated\n")
     
     return(pseudo_res_discrete(obs, 
-                               stateprobs, 
                                dist, 
                                par, 
+                               stateprobs,
                                normal,
                                randomise,
                                seed))
@@ -142,12 +186,12 @@ pseudo_res = function(obs,
 #' If \code{randomise} is set to \code{FALSE}, the lower, upper and mean pseudo-residuasl are returned.
 #'
 #' @param obs vector of discrete-valued observations (of length n)
-#' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)
 #' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
 #' @param par named parameter list for the parametric CDF
 #' 
 #' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
 #' This argument is as flexible as the parametric distribution allows. For example you can have a matrix of parameters with one row for each observation and one column for each state.
+#' @param stateprobs matrix of local state probabilities for each observation (of dimension c(n,N), where N is the number of states)
 #' @param normal logical, if \code{TRUE}, returns Gaussian pseudo residuals
 #'
 #' These will be approximately standard normally distributed if the model is correct.
@@ -161,14 +205,15 @@ pseudo_res = function(obs,
 #' obs = rpois(100, lambda = 1)
 #' stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 #' par = list(lambda = c(1,2))
-#' pres = pseudo_res_discrete(obs, stateprobs, "pois", par)
+#' pres = pseudo_res_discrete(obs, "pois", par, stateprobs)
 pseudo_res_discrete <- function(obs, 
-                                stateprobs, 
-                                dist, 
+                                dist,
                                 par,
+                                stateprobs,
                                 normal = TRUE,
                                 randomise = TRUE,
                                 seed = NULL) {
+  
   # Number of observations and number of states
   nObs <- length(obs)              # Length of observations
   N <- ncol(stateprobs)            # Number of states (columns in stateprobs)

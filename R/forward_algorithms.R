@@ -56,6 +56,8 @@ forward = function(delta, Gamma, allprobs,
     if(!is.null(trackID)){
       RTMB::REPORT(trackID)
     }
+    type = "homogeneous"
+    REPORT(type)
   }
   
   # if ad is not explicitly provided, check if delta is an advector
@@ -267,6 +269,8 @@ forward_g = function(delta, Gamma, allprobs,
     if(!is.null(trackID)){
       RTMB::REPORT(trackID)
     }
+    type = "inhomogeneous"
+    REPORT(type)
   }
   
   # if ad is not explicitly provided, check if delta is an advector
@@ -470,6 +474,8 @@ forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, rep
   
   if(report){
     RTMB::REPORT(tod)
+    type = "periodic"
+    REPORT(type)
   }
   
   forward_g(delta, Gammanew, allprobs, 

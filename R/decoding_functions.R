@@ -13,6 +13,10 @@
 #' @param Gamma transition probability matrix of dimension c(N,N) or array of transition probability matrices of dimension c(N,N,k) if \code{trackID} is provided
 #' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #'
 #' @return vector of decoded states of length n
 #' @export
@@ -22,7 +26,28 @@
 #' Gamma = matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' states = viterbi(delta, Gamma, allprobs)
-viterbi = function(delta, Gamma, allprobs, trackID = NULL){
+viterbi = function(delta, Gamma, allprobs, trackID = NULL,
+                   mod = NULL){
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -59,6 +84,10 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL){
 #' If \code{trackID} is provided, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.
 #' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_g}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #'
 #' @return vector of decoded states of length n
 #' @export
@@ -73,7 +102,28 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL){
 #' }
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' states = viterbi_g(delta, Gamma, allprobs)
-viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
+viterbi_g = function(delta, Gamma, allprobs, trackID = NULL,
+                     mod = NULL){
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -162,6 +212,10 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' 
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
 #' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_p}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #'
 #' @return vector of decoded states of length n
 #' @export
@@ -177,7 +231,32 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' 
 #' allprobs = matrix(runif(2*n), nrow = n, ncol = 2)
 #' states = viterbi_p(delta, Gamma, allprobs, tod)
-viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
+viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL,
+                     mod = NULL){
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    if(is.null(mod$tod)){
+      stop("Model object contains no cyclic indexing variable.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    tod = mod$tod
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -213,6 +292,10 @@ viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
 #' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
 #' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #'
 #' @return matrix of conditional state probabilities of dimension c(n,N)
 #' @export
@@ -223,7 +306,28 @@ viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' 
 #' probs = stateprobs(delta, Gamma, allprobs)
-stateprobs = function(delta, Gamma, allprobs, trackID = NULL){
+stateprobs = function(delta, Gamma, allprobs, trackID = NULL,
+                      mod = NULL) {
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -262,6 +366,10 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL){
 #' If \code{trackID} is provided, \code{Gamma} needs to be an array of dimension c(N,N,n), where n is the number of rows in \code{allprobs}. Then for each track the first transition matrix will be ignored.
 #' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
 #' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_g}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #'
 #' @return matrix of conditional state probabilities of dimension c(n,N)
 #' @export
@@ -272,7 +380,28 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL){
 #' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
 #' 
 #' probs = stateprobs_g(delta, Gamma, allprobs)
-stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
+stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL,
+                        mod = NULL) {
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   
@@ -386,6 +515,10 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' @param tod (Integer valued) variable for cycle indexing in 1, ..., L, mapping the data index to a generalised time of day (length n).
 #' For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.
 #' @param trackID optional vector of k track IDs, if multiple tracks need to be decoded separately
+#' @param mod optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+#' 
+#' If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_p}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+#' Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.
 #' 
 #' @return matrix of conditional state probabilities of dimension c(n,N)
 #' @export
@@ -400,7 +533,32 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL){
 #' 
 #' probs = stateprobs_p(delta, Gamma, allprobs, tod)
 
-stateprobs_p = function(delta, Gamma, allprobs, tod, trackID = NULL){
+stateprobs_p = function(delta, Gamma, allprobs, tod, trackID = NULL,
+                        mod = NULL) {
+  
+  # check if a model with delta, Gamma and allprobs is provided
+  if(!is.null(mod)){
+    if(is.null(mod$delta)){
+      stop("Model object contains no initial distribution.")
+    }
+    if(is.null(mod$Gamma)){
+      stop("Model object contains no transition matrix.")
+    }
+    if(is.null(mod$allprobs)){
+      stop("Model object contains no state-dependent probabilities.")
+    }
+    if(is.null(mod$tod)){
+      stop("Model object contains no cyclic indexing variable.")
+    }
+    
+    # if suitable model object is provided, overwrite inputs with model object
+    delta = mod$delta
+    Gamma = mod$Gamma
+    allprobs = mod$allprobs
+    tod = mod$tod
+    trackID = mod$trackID
+  }
+  
   n = nrow(allprobs)
   N = ncol(allprobs)
   

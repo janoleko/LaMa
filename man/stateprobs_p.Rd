@@ -4,7 +4,7 @@
 \alias{stateprobs_p}
 \title{Calculate conditional local state probabilities for periodically inhomogeneous HMMs}
 \usage{
-stateprobs_p(delta, Gamma, allprobs, tod, trackID = NULL)
+stateprobs_p(delta, Gamma, allprobs, tod, trackID = NULL, mod = NULL)
 }
 \arguments{
 \item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
@@ -19,6 +19,11 @@ This could e.g. be the periodically stationary distribution (for each track) as 
 For half-hourly data L = 48. It could, however, also be day of year for daily data and L = 365.}
 
 \item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
+
+\item{mod}{optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+
+If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_p}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.}
 }
 \value{
 matrix of conditional state probabilities of dimension c(n,N)

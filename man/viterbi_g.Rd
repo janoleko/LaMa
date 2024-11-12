@@ -4,7 +4,7 @@
 \alias{viterbi_g}
 \title{Viterbi algorithm for state decoding in inhomogeneous HMMs}
 \usage{
-viterbi_g(delta, Gamma, allprobs, trackID = NULL)
+viterbi_g(delta, Gamma, allprobs, trackID = NULL, mod = NULL)
 }
 \arguments{
 \item{delta}{initial distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
@@ -18,6 +18,11 @@ If \code{trackID} is provided, \code{Gamma} needs to be an array of dimension c(
 \item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
 
 \item{trackID}{optional vector of k track IDs, if multiple tracks need to be decoded separately}
+
+\item{mod}{optional model object containing initial distribution \code{delta}, transition probability matrix \code{Gamma}, matrix of state-dependent probabilities \code{allprobs}, and potentially a \code{trackID} variable
+
+If you are using automatic differentiation either with \code{RTMB::MakeADFun} or \code{\link{qreml}} and include \code{\link{forward_g}} in your likelihood function, the objects needed for state decoding are automatically reported after model fitting.
+Hence, you can pass the model object obtained from running \code{RTMB::report()} or from \code{\link{qreml}} directly to this function.}
 }
 \value{
 vector of decoded states of length n

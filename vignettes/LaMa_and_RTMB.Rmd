@@ -149,10 +149,14 @@ mod = obj$report() # runs the reporting from the negative log-likelihood once
 (kappa = mod$kappa)
 ```
 
-which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs. As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having all the parameters, we can plot the decoded time series
+which works because of the `REPORT()` statements in the likelihood function. Note that `delta`, `Gamma` and `allprobs` are always reported by default when using `forward()` which is very useful for e.g. state decoding with `viterbi()`, because many downstream `LaMa` functions take these arguments as inputs. Functions of the `viterbi` and `stateprobs` family can also take the reported list object as an input. As the state-dependent parameters depend on the specific model formulation, these need to be reported manually by the user specifying the negative log-likelihood. Having all the parameters, we can plot the decoded time series
 
 ```{r decoding, fig.width = 7, fig.height = 4}
+# manually
 mod$states = viterbi(mod$delta, mod$Gamma, mod$allprobs)
+
+# or simpler
+mod$states = viterbi(mod = mod)
 
 # defining color vector
 color = c("orange", "deepskyblue")

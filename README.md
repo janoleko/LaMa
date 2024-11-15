@@ -25,9 +25,9 @@ This `R` package solves these issues by providing easy-to-use functions
 (written in C++ for speed) for common tasks like the forward algorithm.
 These functions can be combined into custom models in a Lego-type
 approach, offering up to 10-20 times faster estimation via standard
-numerical optimisers. The development version now also allows for
+numerical optimisers. In its most recent iteration, `LaMa` allows for
 automatic differentiation with the `RTMB` package which drastically
-increases speed and accuracy.
+increases speed and accuracy even more.
 
 The most important families of functions are
 
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.364   0.009   0.373
+#>   0.365   0.009   0.376
 ```
 
 Really fast for 10.000 data points!

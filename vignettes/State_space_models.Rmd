@@ -78,7 +78,7 @@ par(oldpar)
 
 ### Writing the negative log-likelihood function
 
-This likelihood formulation corresponds to a fine discretization of the continuous state space into the intervals `b` with width `h` and midpoints `bstar`.
+To calculate the likelihood, we need to integrate over the state space. We approximate this high-dimensional integral using a midpoint quadrature which ultimately results in a fine discretisation of the continuous state space into the intervals `b` with width `h` and midpoints `bstar` [@langrock2011some]. Thus, the likelihood below corresponds to a basis HMM likelihood with a large number of states.
 
 ```{r mllk}
 nll = function(par, y, bm, m){

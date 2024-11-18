@@ -58,12 +58,16 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL,
     uID = unique(trackID)
     k = length(uID) # number of tracks
     
-    if(dim(Gamma)[3] != k) stop("Number of distinct transition matrices does not match the number of tracks.")
-    
-    ## construct integer trackID
-    integerID = match(trackID, uID)
-    
-    Gammanew = Gamma[,,integerID]
+    if(is.matrix(Gamma)){
+      Gammanew = array(Gamma, dim = c(N, N, n))
+    } else if(is.array(Gamma)){
+      if(dim(Gamma)[3] != k) stop("Number of distinct transition matrices does not match the number of tracks.")
+      
+      ## construct integer trackID
+      integerID = match(trackID, uID)
+      
+      Gammanew = Gamma[,,integerID]
+    }
   }
   
   viterbi_g(delta, Gammanew, allprobs, trackID)
@@ -338,12 +342,16 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL,
     uID = unique(trackID)
     k = length(uID) # number of tracks
     
-    if(dim(Gamma)[3] != k) stop("Number of distinct transition matrices does not match the number of tracks.")
-    
-    ## construct integer trackID
-    integerID = match(trackID, uID)
-    
-    Gammanew = Gamma[,,integerID]
+    if(is.matrix(Gamma)){
+      Gammanew = array(Gamma, dim = c(N, N, n))
+    } else if(is.array(Gamma)){
+      if(dim(Gamma)[3] != k) stop("Number of distinct transition matrices does not match the number of tracks.")
+      
+      ## construct integer trackID
+      integerID = match(trackID, uID)
+      
+      Gammanew = Gamma[,,integerID]
+    }
   }
   
   stateprobs_g(delta, Gammanew, allprobs, trackID)

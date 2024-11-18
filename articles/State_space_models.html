@@ -155,7 +155,7 @@ space. We approximate this high-dimensional integral using a midpoint
 quadrature which ultimately results in a fine discretisation of the
 continuous state space into the intervals <code>b</code> with width
 <code>h</code> and midpoints <code>bstar</code> <span class="citation">(<a href="#ref-langrock2011some">Langrock
-2011</a>)</span>. Thus, the likelihood below corresponds to a basis HMM
+2011</a>)</span>. Thus, the likelihood below corresponds to a basic HMM
 likelihood with a large number of states.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">y</span>, <span class="va">bm</span>, <span class="va">m</span><span class="op">)</span><span class="op">{</span></span>
@@ -186,7 +186,7 @@ likelihood with a large number of states.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">y</span>, bm <span class="op">=</span> <span class="va">bm</span>, m <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.455   2.366   0.983</span></span></code></pre></div>
+<span><span class="co">#&gt;   1.458   2.331   0.973</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>

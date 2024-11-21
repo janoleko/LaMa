@@ -236,7 +236,7 @@ pseudo_res_discrete <- function(obs,
   cdf_values_lower <- cdf_values_upper <- matrix(0, nrow = nObs, ncol = N)
   cdf_values_random <- matrix(0, nrow = nObs, ncol = N)
   
-  # Set the random seed if specified
+  # Set the random seed if specified #
   if (!is.null(seed)) {
     set.seed(seed)
   }

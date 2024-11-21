@@ -107,7 +107,7 @@ dat = list(step = trex$step, # observed steps
            lambda = rep(100, 2)) # initial penalty strength
 ```
 
-The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength parameter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm described in Koslik (2024) to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength parameter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm [@koslik2024efficient] to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `qreml()`:
 

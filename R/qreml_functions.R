@@ -403,12 +403,12 @@ qreml = function(pnll, # penalized negative log-likelihood function
         
         # check for cycling behaviour
         if(k > 2){
-          if(abs((lambdas_k[[i]][j] - Lambdas[[k-2]][[i]][j]) / Lambdas[[k-2]][[i]][j]) < epsilon[1] & # change to lambda_t-2 is small
-             abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) > epsilon[2]) # but change to lambda_t-1 is large
+          if(abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) < epsilon[1] & # change to lambda_t-2 is small
+             abs((lambdas_k[[i]][j] - Lambdas[[k]][[i]][j]) / Lambdas[[k]][[i]][j]) > epsilon[2]) # but change to lambda_t-1 is large
             {
             cat("Cycling detected - averaging for faster convergence\n")
             # replacing with mean to prevent cycling
-            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k-2]][[i]][j]) / 2 
+            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k-1]][[i]][j]) / 2 
           }
         }
         

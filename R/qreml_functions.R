@@ -190,6 +190,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param joint_unc logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
+#' @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
 #'
 #' @return returns a model list influenced by the users report statements in \code{pnll}
 #' @export
@@ -247,7 +248,8 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                  silent = 1, # print level
                  joint_unc = TRUE, # should joint object be returned?
-                 saveall = FALSE) # save all intermediate models?
+                 saveall = FALSE, # save all intermediate models?
+                 epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
 {
   
   # setting the argument name for par because later updated par is returned
@@ -398,6 +400,18 @@ qreml = function(pnll, # penalized negative log-likelihood function
         
         # potentially smoothing new lambda
         lambdas_k[[i]][j] = (1-alpha) * lambda_new + alpha * Lambdas[[k]][[i]][j]
+        
+        # check for cycling behaviour
+        if(k > 2){
+          if(abs((lambdas_k[[i]][j] - Lambdas[[k-2]][[i]][j]) / Lambdas[[k-2]][[i]][j]) < eps & # change to lambda_t-2 is small
+             abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) > delta) # but change to lambda_t-1 is large
+            {
+            cat("Cycling detected - averaging for faster convergence\n")
+            # replacing with mean to prevent cycling
+            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k-2]][[i]][j]) / 2 
+          }
+        }
+        
       }
       
       # minimum of zero for penalty strengths

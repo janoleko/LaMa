@@ -408,7 +408,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
             {
             cat("Cycling detected - averaging for faster convergence\n")
             # replacing with mean to prevent cycling
-            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k-1]][[i]][j]) / 2 
+            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k]][[i]][j]) / 2 
           }
         }
         

@@ -115,6 +115,7 @@ pseudo_res = function(obs,
     # Number of observations and number of states
     nObs <- length(obs)              # Length of observations
     N <- ncol(stateprobs)            # Number of states (columns in stateprobs)
+    ind <- which(!is.na(obs))
     
     # Check that the number of rows in `stateprobs` matches the length of `obs`
     if (nrow(stateprobs) != nObs) {
@@ -154,7 +155,7 @@ pseudo_res = function(obs,
       })
       
       # evaluate the CDF function at each observation with these parameters
-      cdf_values[, state] <- do.call(cdf_func, args = c(list(obs), current_par))
+      cdf_values[ind, state] <- do.call(cdf_func, args = c(list(obs[ind]), current_par))
     }
     
     # Compute pseudo-residuals by weighting CDF values with state probabilities
@@ -217,6 +218,7 @@ pseudo_res_discrete <- function(obs,
   # Number of observations and number of states
   nObs <- length(obs)              # Length of observations
   N <- ncol(stateprobs)            # Number of states (columns in stateprobs)
+  ind <- which(!is.na(obs))
   
   # Check that the number of rows in `stateprobs` matches the length of `obs`
   if (nrow(stateprobs) != nObs) {
@@ -269,16 +271,16 @@ pseudo_res_discrete <- function(obs,
     
     # Use `mapply` to evaluate the CDF function at each observation with these parameters
     # safe evaluation of CDF at `obs - 1` in case of errors
-    cdf_values_lower[, state] <- tryCatch(
-      do.call(cdf_func, args = c(list(obs-1), current_par)),
-      error = function(e) do.call(cdf_func, args = c(list(pmax(obs-1, 0)), current_par))
+    cdf_values_lower[ind, state] <- tryCatch(
+      do.call(cdf_func, args = c(list(obs[ind] - 1), current_par)),
+      error = function(e) do.call(cdf_func, args = c(list(pmax(obs[ind] - 1, 0)), current_par))
     )
     
-    cdf_values_upper[, state] <- do.call(cdf_func, args = c(list(obs), current_par))
+    cdf_values_upper[ind, state] <- do.call(cdf_func, args = c(list(obs[ind]), current_par))
     
     if (randomise) {
-      cdf_values_random[, state] <- sapply(1:nObs, function(i) {
-        stats::runif(1, cdf_values_lower[i, state], cdf_values_upper[i, state])
+      cdf_values_random[ind, state] <- sapply(1:length(ind), function(i) {
+        stats::runif(1, cdf_values_lower[ind[i], state], cdf_values_upper[ind[i], state])
       })
     }
   }

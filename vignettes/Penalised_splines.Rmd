@@ -34,13 +34,13 @@ if(!require("scales")){
 
 > Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa**, **Inhomogeneous HMMs**, **Periodic HMMs** and **LaMa and RTMB**.
 
-This vignette explores how `LaMa` can be used to fit models involving nonparameteric components, represented by **penalised splines**. The main idea here is that it may be useful to represent some relationships in our model by smooth functions for which the functional form is not pre-specified, but flexibly estimated from the data. For HMM-like models, this is particularly valuable, as the latent nature of the state process makes modelling choices more difficult. For example, choosing an appropriate parametric family for the state-dependent distributions may be difficult, as we cannot do state-specific EDA before fitting the model. Also very difficult is the dependence of transition probabilities on covariates, as the transitions are not directly observed. Hence, the obvious alternative is to model these kind of relationships flexibly using splines but imposing a penalty on the smoothness of the estimated functions. This leads us to **penalised splines**.
+This vignette explores how `LaMa` can be used to fit models involving nonparameteric components, represented by **penalised splines**. The main idea here is that it may be useful to represent some relationships in our model by smooth functions for which the functional form is not pre-specified, but flexibly estimated from the data. For HMM-like models, this is particularly valuable, as the latent nature of the state process makes modelling choices more difficult. For example, choosing an appropriate parametric family for the state-dependent distributions may be difficult as we cannot do state-specific EDA before fitting the model. Also very difficult is the dependence of transition probabilities on covariates as the transitions are not directly observed. Hence, the obvious alternative is to model these kind of relationships flexibly using splines but imposing a penalty on the smoothness of the estimated functions. This leads us to **penalised splines**.
 
 `LaMa` contains helper functions that build **design** and **penalty matrices** for given formulas (using `mgcv` under the hood) and also functions to estimate models involving penalised splines in a random effects framework. For the latter to work, the **penalised negative log-likelihood** needs to be compatible with the R package `RTMB` to allow for **automatic differentiation (AD)**. For more information on `RTMB`, see the vignette *LaMa and RTMB* or check out its [documentation](https://CRAN.R-project.org/package=RTMB). For more information on penalised splines, we recommend @wood2017generalized.
 
 ### Smooth transition probabilites
 
-We will start by investigating a 2-state HMM for the `trex` data set, containing hourly step lengths and turning angles of a Tyrannosaurus rex living 66 million years ago. The transition probabilities are modelled as smooth functions of the time of day using **cyclic P-Splines**. The relationship can then be summarised as
+We will start by investigating a 2-state HMM for the `trex` data set, containing hourly step lengths and turning angles of a Tyrannosaurus rex living 66 million years ago. The transition probabilities are modelled as smooth functions of the time of day using **cyclic P-Splines**. The relationship can be summarised as
 
 $$
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
@@ -63,7 +63,7 @@ Z = modmat$Z # spline design matrix
 S = modmat$S # penalty matrix
 ```
 
-We can now specify the **penalised negative log-likelihood function**. We can compute the transition probability matrix the regular way using `tpm_g()`. In the last line we need to add the curvature penalty based on `S`, which we can conveniently do using `penalty()`.
+We can now specify the **penalised negative log-likelihood function**. The transition probability matrix can be computed the regular way using `tpm_g()`. In the last line we need to add the curvature penalty based on `S`, which we can conveniently do using `penalty()`.
 
 ```{r mllk3}
 pnll = function(par) {
@@ -107,7 +107,7 @@ dat = list(step = trex$step, # observed steps
            lambda = rep(100, 2)) # initial penalty strength
 ```
 
-The model fit can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength parameter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm [@koslik2024efficient] to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
+The model fit with automatic smoothness selection can then be conducted by using the `qreml()` function contained in `LaMa`. The **quasi restricted maximum likelihood** algorithm finds a good penalty strength parameter `lambda` by treating the spline coefficients as random effects. Under the hood, `qreml()` also constructs an AD function with `RTMB` but uses the **qREML** algorithm [@koslik2024efficient] to fit the model. We have to tell the `qreml()` function which parameters are spline coefficients by providing the name of the corresponding list element of `par`.
 
 There are some rules to follow when using `qreml()`:
 
@@ -119,7 +119,7 @@ There are some rules to follow when using `qreml()`:
 
 5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail.
 
-6. By default, `qreml()` assmes that the penalisation hyperparameter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparameter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
+6. By default, `qreml()` assumes that the penalisation hyperparameter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparameter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
 
 ```{r trex_fit, message = FALSE}
 system.time(

@@ -87,10 +87,10 @@ for which the functional form is not pre-specified, but flexibly
 estimated from the data. For HMM-like models, this is particularly
 valuable, as the latent nature of the state process makes modelling
 choices more difficult. For example, choosing an appropriate parametric
-family for the state-dependent distributions may be difficult, as we
+family for the state-dependent distributions may be difficult as we
 cannot do state-specific EDA before fitting the model. Also very
-difficult is the dependence of transition probabilities on covariates,
-as the transitions are not directly observed. Hence, the obvious
+difficult is the dependence of transition probabilities on covariates as
+the transitions are not directly observed. Hence, the obvious
 alternative is to model these kind of relationships flexibly using
 splines but imposing a penalty on the smoothness of the estimated
 functions. This leads us to <strong>penalised splines</strong>.</p>
@@ -111,8 +111,8 @@ more information on penalised splines, we recommend <span class="citation">Wood 
 <code>trex</code> data set, containing hourly step lengths and turning
 angles of a Tyrannosaurus rex living 66 million years ago. The
 transition probabilities are modelled as smooth functions of the time of
-day using <strong>cyclic P-Splines</strong>. The relationship can then
-be summarised as</p>
+day using <strong>cyclic P-Splines</strong>. The relationship can be
+summarised as</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">logit</mtext><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mi>β</mi><mn>0</mn><mrow><mo stretchy="true" form="prefix">(</mo><mi>i</mi><mi>j</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>+</mo><msub><mi>s</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
 \text{logit}(\gamma_{ij}^{(t)}) = \beta_0^{(ij)} + s_{ij}(t),
 </annotation></semantics></math> where
@@ -150,7 +150,7 @@ both resulting matrices to the <code>dat</code> list.</p>
 <span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span> <span class="co"># spline design matrix</span></span>
 <span><span class="va">S</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">S</span> <span class="co"># penalty matrix</span></span></code></pre></div>
 <p>We can now specify the <strong>penalised negative log-likelihood
-function</strong>. We can compute the transition probability matrix the
+function</strong>. The transition probability matrix can be computed the
 regular way using <code><a href="../reference/tpm_g.html">tpm_g()</a></code>. In the last line we need to add
 the curvature penalty based on <code>S</code>, which we can conveniently
 do using <code><a href="../reference/penalty.html">penalty()</a></code>.</p>
@@ -199,12 +199,13 @@ do penalised ML for a <strong>fixed</strong> penalty strength
 <span>           Z <span class="op">=</span> <span class="va">Z</span>, <span class="co"># spline design matrix</span></span>
 <span>           S <span class="op">=</span> <span class="va">S</span>, <span class="co"># penalty matrix</span></span>
 <span>           lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial penalty strength</span></span></code></pre></div>
-<p>The model fit can then be conducted by using the <code><a href="../reference/qreml.html">qreml()</a></code>
-function contained in <code>LaMa</code>. The <strong>quasi restricted
-maximum likelihood</strong> algorithm finds a good penalty strength
-parameter <code>lambda</code> by treating the spline coefficients as
-random effects. Under the hood, <code><a href="../reference/qreml.html">qreml()</a></code> also constructs an
-AD function with <code>RTMB</code> but uses the <strong>qREML</strong>
+<p>The model fit with automatic smoothness selection can then be
+conducted by using the <code><a href="../reference/qreml.html">qreml()</a></code> function contained in
+<code>LaMa</code>. The <strong>quasi restricted maximum
+likelihood</strong> algorithm finds a good penalty strength parameter
+<code>lambda</code> by treating the spline coefficients as random
+effects. Under the hood, <code><a href="../reference/qreml.html">qreml()</a></code> also constructs an AD
+function with <code>RTMB</code> but uses the <strong>qREML</strong>
 algorithm <span class="citation">(<a href="#ref-koslik2024efficient">Koslik 2024</a>)</span> to fit the
 model. We have to tell the <code><a href="../reference/qreml.html">qreml()</a></code> function which
 parameters are spline coefficients by providing the name of the
@@ -232,7 +233,7 @@ parameter list – which is very useful when these are of same lengths and
 have the same penalty matrix – this matrix must be arranged <strong>by
 row</strong>, i.e. each row is one spline coefficient vector. If it is
 arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</p></li>
-<li><p>By default, <code><a href="../reference/qreml.html">qreml()</a></code> assmes that the penalisation
+<li><p>By default, <code><a href="../reference/qreml.html">qreml()</a></code> assumes that the penalisation
 hyperparameter in the <code>dat</code> object is called
 <code>lambda</code>. You can use a different name for <code>dat</code>
 (of course than changing it in your <code>pnll</code> as well), but if
@@ -255,7 +256,7 @@ call using the <code>psname</code> argument.</p></li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.113</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   7.958   0.100   8.058</span></span></code></pre></div>
+<span><span class="co">#&gt;   7.541   0.089   7.630</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -446,7 +447,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 1.608 1.375 2.367</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  21.479   2.865  20.991</span></span></code></pre></div>
+<span><span class="co">#&gt;  20.077   2.879  19.587</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -570,7 +571,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.575 7.212 8.276 4.168</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   7.695   3.645   7.108</span></span></code></pre></div>
+<span><span class="co">#&gt;   7.609   3.659   6.996</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

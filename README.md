@@ -1,5 +1,5 @@
 
-# LaMa <img src="man/figures/Logo_LaMa.png" align="right" height=150>
+# LaMa -- Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa.png" align="right" height=150>
 
 <!-- badges: start -->
 

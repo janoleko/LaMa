@@ -131,11 +131,11 @@ which calculates the log-likelihood via the forward algorithm.
 ``` r
 nll = function(par, step){
   # parameter transformations for unconstrained optimisation
-  Gamma = tpm(par[1:2]) # multinomial logit link
-  delta = stationary(Gamma) # stationary HMM
-  mu = exp(par[3:4])
-  sigma = exp(par[5:6])
-  # calculate all state-dependent probabilities
+  Gamma = tpm(par[1:2]) # rowwise softmax
+  delta = stationary(Gamma) # stationary distribution
+  mu = exp(par[3:4]) # state-dependent means
+  sigma = exp(par[5:6]) # state-dependent sds
+  # calculating all state-dependent probabilities
   allprobs = matrix(1, length(step), 2)
   ind = which(!is.na(step))
   for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.365   0.009   0.376
+#>   0.362   0.010   0.385
 ```
 
 Really fast for 10.000 data points!

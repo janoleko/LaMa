@@ -109,7 +109,7 @@ Other latent Markov model classes:
 We analyse the `trex` data set contained in the package. It contains
 hourly step lengths of a Tyrannosaurus rex, living 66 million years ago.
 To these data, we fit a simple 2-state HMM with state-dependent gamma
-distributions for the step-lengths.
+distributions for the step lengths.
 
 ``` r
 library(LaMa)
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.362   0.010   0.385
+#>   0.366   0.011   0.377
 ```
 
 Really fast for 10.000 data points!

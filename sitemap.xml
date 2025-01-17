@@ -17,6 +17,7 @@
 <url><loc>https://janoleko.github.io/reference/buildSmoothDens.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/calc_trackInd.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/dgmrf2.html</loc></url>
+<url><loc>https://janoleko.github.io/reference/dirichlet.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward_g.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/forward_hsmm.html</loc></url>
@@ -37,6 +38,7 @@
 <url><loc>https://janoleko.github.io/reference/pseudo_res_discrete.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/qreml.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/sdreportMC.html</loc></url>
+<url><loc>https://janoleko.github.io/reference/skewnorm.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/stateprobs.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/stateprobs_g.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/stateprobs_p.html</loc></url>
@@ -63,5 +65,6 @@
 <url><loc>https://janoleko.github.io/reference/viterbi_g.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/viterbi_p.html</loc></url>
 <url><loc>https://janoleko.github.io/reference/vm.html</loc></url>
+<url><loc>https://janoleko.github.io/reference/wrpcauchy.html</loc></url>
 </urlset>
 

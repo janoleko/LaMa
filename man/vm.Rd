@@ -42,7 +42,7 @@ The implementation of \code{dvm} allows for automatic differentiation with \code
 }
 \examples{
 set.seed(1)
-x = rvm(1000, 0, 1)
+x = rvm(10, 0, 1)
 d = dvm(x, 0, 1)
 p = pvm(x, 0, 1)
 }

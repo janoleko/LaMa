@@ -29,7 +29,8 @@ Imports:
     splines,
     methods,
     CircStats, 
-    circular
+    circular,
+    sn
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

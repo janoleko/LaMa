@@ -95,7 +95,7 @@ penalty = function(re_coef, S, lambda) {
   }
   
   re_coef = lapply(re_coef, function(x) {
-    if (is.vector(x)) {
+    if (is.vector(x)) { # doesn't work -> x is advector of course
       matrix(x, nrow = 1)  # Convert vectors to 1-row matrices
     } else {
       x  # Leave matrices unchanged
@@ -176,7 +176,7 @@ penalty = function(re_coef, S, lambda) {
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
 #' @param psname optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.
-#' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths
+#' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths.
 #'
 #' For larger values smoother convergence is to be expected but the algorithm may need more iterations.
 #' @param smoothing optional scaling factor for the final penalty strength parameters
@@ -241,7 +241,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  dat, # initial dat object, currently needs to be called dat!
                  random, # names of parameters in par that are random effects/ penalized
                  psname = "lambda", # name given to the psname parameter in dat
-                 alpha = 0, # exponential smoothing parameter
+                 alpha = 0.2, # exponential smoothing parameter
                  smoothing = 1,
                  maxiter = 100, # maximum number of iterations
                  tol = 1e-4, # tolerance for convergence
@@ -361,7 +361,6 @@ qreml = function(pnll, # penalized negative log-likelihood function
                        method = "BFGS", hessian = TRUE, # return hessian in the end
                        control = control)
 
-    
     # setting new optimum par for next iteration
     newpar = opt$par 
     
@@ -411,7 +410,6 @@ qreml = function(pnll, # penalized negative log-likelihood function
             lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k]][[i]][j]) / 2 
           }
         }
-        
       }
       
       # minimum of zero for penalty strengths

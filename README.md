@@ -156,13 +156,14 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.366   0.011   0.377
+#>   0.369   0.012   0.382
 ```
 
 Really fast for 10.000 data points!
 
-After tranforming the unconstrained parameters to working parameters
-using `tpm()` and `stationary()`, we can visualise the results:
+After tranforming the working (unconstrained) parameters to natural
+parameters using `tpm()` and `stationary()`, we can visualise the
+results:
 
 ``` r
 # transform parameters to working

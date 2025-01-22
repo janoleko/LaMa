@@ -123,7 +123,7 @@ system.time(
 ```
 Really fast for 10.000 data points!
 
-After tranforming the unconstrained parameters to working parameters using `tpm()` and `stationary()`, we can visualise the results:
+After tranforming the working (unconstrained) parameters to natural parameters using `tpm()` and `stationary()`, we can visualise the results:
 
 ```{r visualization}
 # transform parameters to working

@@ -71,7 +71,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  <span class="va">dat</span>,</span>
 <span>  <span class="va">random</span>,</span>
 <span>  psname <span class="op">=</span> <span class="st">"lambda"</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  smoothing <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  maxiter <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-04</span>,</span>
@@ -113,7 +113,7 @@ Its length needs to match the to the total number of random effects.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>optional hyperparamater for exponential smoothing of the penalty strengths</p>
+<dd><p>optional hyperparamater for exponential smoothing of the penalty strengths.</p>
 <p>For larger values smoother convergence is to be expected but the algorithm may need more iterations.</p></dd>
 
 

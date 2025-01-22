@@ -352,6 +352,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
     m[i] = nrow(S[[i]]) - Matrix::rankMatrix(S[[i]])
   } 
   
+  # initialising convergence check index (initially for all lambdas)
+  convInd <- seq_along(unlist(Lambdas[[1]]))
+  
   ### updating algorithm
   # loop over outer iterations until convergence or maxiter
   for(k in seq_len(maxiter)){
@@ -425,13 +428,28 @@ qreml = function(pnll, # penalized negative log-likelihood function
     # updating lambda vector locally for next iteration
     lambda = unlist(lambdas_k) 
     
+    # old length of convergence check indices
+    oldlength <- length(convInd)
+    
+    if(k > 2){ # after 2 iterations, check whether any lambda > 1e5 and exclude from check
+      convInd = which(lambda <= 1e5)
+    }
+    
     if(silent < 2){
       cat("outer", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
+      
+      # print only if something changes
+      if(length(convInd) != oldlength & length(seq_along(lambda)[-convInd]) > 0){
+        cat(psname, seq_along(lambda)[-convInd], "excluded from convergence check (> 1e5)", "\n")
+      }
     }
     
     # convergence check
     # if(all(abs(lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol)){
-    if(max(abs(lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol){
+    if(max(abs(
+      (lambda - unlist(Lambdas[[k]]))[convInd] / unlist(Lambdas[[k]])[convInd]
+    )) < tol){
+      
       if(silent < 2){
         cat("Converged\n")
       }

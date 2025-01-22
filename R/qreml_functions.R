@@ -343,7 +343,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   Lambdas[[1]] = reshape_lambda(re_lengths, lambda) # reshaping to match structure of random effects
   
   if(silent < 2){
-    cat("Initializing with", paste0(psname, ":"), round(lambda, 3), "\n")
+    cat("Initialising with", paste0(psname, ":"), round(lambda, 3), "\n")
   }
   
   # computing rank deficiency for each penalty matrix to use in correction term

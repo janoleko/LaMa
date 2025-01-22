@@ -10,7 +10,7 @@ qreml(
   dat,
   random,
   psname = "lambda",
-  alpha = 0,
+  alpha = 0.2,
   smoothing = 1,
   maxiter = 100,
   tol = 1e-04,
@@ -41,7 +41,7 @@ Its length needs to match the to the total number of random effects.}
 
 \item{psname}{optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
-\item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths
+\item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths.
 
 For larger values smoother convergence is to be expected but the algorithm may need more iterations.}
 

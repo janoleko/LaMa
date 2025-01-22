@@ -419,7 +419,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
       lambdas_k[[i]][which(lambdas_k[[i]] < 0)] = 0
       
       # maximum size of penalty strength
-      lambdas_k[[i]][which(lambdas_k[[i]] > 1e7)] = 1e7
+      # lambdas_k[[i]][which(lambdas_k[[i]] > 1e7)] = 1e7
     }
     
     # assigning new lambda to global list

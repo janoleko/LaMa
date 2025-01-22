@@ -95,7 +95,7 @@ penalty = function(re_coef, S, lambda) {
   }
   
   re_coef = lapply(re_coef, function(x) {
-    if (is.vector(x)) { # doesn't work -> x is advector of course
+    if (is.null(dim(x))) {
       matrix(x, nrow = 1)  # Convert vectors to 1-row matrices
     } else {
       x  # Leave matrices unchanged

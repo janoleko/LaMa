@@ -256,37 +256,21 @@ qreml = function(pnll, # penalized negative log-likelihood function
   argname_par = as.character(substitute(par))
   argname_dat = as.character(substitute(dat))
   
-  # setting the environment for mllk to be the local environment such that it pull the right lambda
-  # environment(pnll) = environment() 
-  
   # number of random effects, each one can be a matrix where each row is a random effect, but then they have the same penalty structure
   n_re = length(random) 
   
   # list to save all model objects
   allmods = list() 
   
-  # if name of penalty strength parameter is not specified, determine automatically
-  # if(is.null(penalty)){
-  #   # create inital obj to run reporting and get the argname of lambda
-  #   assign(argname_dat, dat, envir = environment())
-  #   obj_ini = MakeADFun(pnll, par)
-  #   report_ini = obj_ini$report()
-  #   penalty = report_ini$argname_lambda
-  # }
-  
   # initial lambda locally
   lambda = dat[[psname]]
-  
-  # experimentally, changing the name of the data object in pnll to dat
-  # if(argname_dat != "dat"){
-  #   body(pnll) <- parse(text=gsub(argname_dat, "dat", deparse(body(pnll))))
-  # }
   
   # creating the objective function as wrapper around pnll to pull lambda from local
   f = function(par){
     environment(pnll) = environment()
     
-    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    # overloading assignment operators, currently necessary
+    "[<-" <- ADoverload("[<-")
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
     
@@ -301,9 +285,14 @@ qreml = function(pnll, # penalized negative log-likelihood function
   }
   
   # creating the RTMB objective function
-  if(silent %in% 0:1) cat("Creating AD function\n")
+  if(silent %in% 0:1){
+    cat("Creating AD function\n")
+  } 
   
-  obj = MakeADFun(func = f, parameters = par, silent = TRUE) # silent and replacing with own prints
+  obj = MakeADFun(func = f, 
+                  parameters = par, 
+                  silent = TRUE) # silent and replacing with own prints
+  
   newpar = obj$par # saving initial parameter value as vector to initialize optimization in loop
   
   # own printing of maximum gradient component if silent = 0

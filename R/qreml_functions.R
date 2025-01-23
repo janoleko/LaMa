@@ -571,7 +571,8 @@ qreml = function(pnll, # penalized negative log-likelihood function
       
       environment(pnll) = environment()
       
-      "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+      # overloading assignment operators, currently necessary
+      "[<-" <- ADoverload("[<-") 
       "c" <- ADoverload("c")
       "diag<-" <- ADoverload("diag<-")
       
@@ -607,6 +608,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     mod$obj_joint = obj_joint
   }
   
+  class(mod) = "qreml model"
   return(mod)
 }
 

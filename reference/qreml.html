@@ -70,6 +70,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  <span class="va">par</span>,</span>
 <span>  <span class="va">dat</span>,</span>
 <span>  <span class="va">random</span>,</span>
+<span>  map <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  psname <span class="op">=</span> <span class="st">"lambda"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  smoothing <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -106,6 +107,10 @@ Its length needs to match the to the total number of random effects.</p></dd>
 <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
 <dd><p>vector of names of the random effects/ penalised parameters in <code>par</code></p>
 <p><strong>Caution:</strong> The ordering of <code>random</code> needs to match the order of the random effects passed to <code><a href="penalty.html">penalty</a></code> inside the likelihood function.</p></dd>
+
+
+<dt id="arg-map">map<a class="anchor" aria-label="anchor" href="#arg-map"></a></dt>
+<dd><p>optional map for fixed effects in the likelihood function</p></dd>
 
 
 <dt id="arg-psname">psname<a class="anchor" aria-label="anchor" href="#arg-psname"></a></dt>

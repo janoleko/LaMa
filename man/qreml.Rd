@@ -9,6 +9,7 @@ qreml(
   par,
   dat,
   random,
+  map = NULL,
   psname = "lambda",
   alpha = 0.2,
   smoothing = 1,
@@ -38,6 +39,8 @@ Its length needs to match the to the total number of random effects.}
 \item{random}{vector of names of the random effects/ penalised parameters in \code{par}
 
 \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
+
+\item{map}{optional map for fixed effects in the likelihood function}
 
 \item{psname}{optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.}
 

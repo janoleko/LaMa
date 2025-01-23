@@ -175,6 +175,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
+#' @param map optional map for fixed effects in the likelihood function
 #' @param psname optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths.
 #'
@@ -240,6 +241,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  par, # initial parameter list
                  dat, # initial dat object, currently needs to be called dat!
                  random, # names of parameters in par that are random effects/ penalized
+                 map = NULL, # map for fixed effects
                  psname = "lambda", # name given to the psname parameter in dat
                  alpha = 0.2, # exponential smoothing parameter
                  smoothing = 1,
@@ -289,9 +291,20 @@ qreml = function(pnll, # penalized negative log-likelihood function
     cat("Creating AD function\n")
   } 
   
+  if(!is.null(map)){
+    # check that no random effects are fixed
+    if(any(names(map) %in% random)){
+      msg <- "'map' cannot contain random effects or spline parameters"
+      stop(msg)
+    }
+    # make factor
+    map = lapply(map, factor)
+  }
+  
   obj = MakeADFun(func = f, 
                   parameters = par, 
-                  silent = TRUE) # silent and replacing with own prints
+                  silent = TRUE,
+                  map = map) # silent and replacing with own prints
   
   newpar = obj$par # saving initial parameter value as vector to initialize optimization in loop
   
@@ -352,7 +365,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     opt = stats::optim(newpar, obj$fn, newgrad, 
                        method = "BFGS", hessian = TRUE, # return hessian in the end
                        control = control)
-
+    
     # setting new optimum par for next iteration
     newpar = opt$par 
     
@@ -396,7 +409,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
         if(k > 2){
           if(abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) < epsilon[1] & # change to lambda_t-2 is small
              abs((lambdas_k[[i]][j] - Lambdas[[k]][[i]][j]) / Lambdas[[k]][[i]][j]) > epsilon[2]) # but change to lambda_t-1 is large
-            {
+          {
             cat("Cycling detected - averaging for faster convergence\n")
             # replacing with mean to prevent cycling
             lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k]][[i]][j]) / 2 
@@ -505,9 +518,12 @@ qreml = function(pnll, # penalized negative log-likelihood function
   dat[[psname]] = lambda
   
   # format parameter to list
-  skeleton = utils::as.relistable(par)
-  parlist = utils::relist(opt$par, skeleton)
+  # skeleton = utils::as.relistable(par)
+  # parlist = utils::relist(opt$par, skeleton)
+  parlist = obj$env$parList(opt$par)
   mod[[argname_par]] = parlist # and assing to return object
+  
+  mod[[paste0("relist_", argname_par)]] = obj$env$parList
   
   # assign estimated parameter as vector
   mod[[paste0(argname_par, "_vec")]] = opt$par
@@ -527,7 +543,8 @@ qreml = function(pnll, # penalized negative log-likelihood function
   }
   
   # number of fixed parameters
-  mod$n_fixpar = length(unlist(par[!(names(par) %in% random)]))
+  # mod$n_fixpar = length(unlist(par[!(names(par) %in% random)]))
+  mod$n_fixpar = length(opt$par)
   
   # assing conditinoal Hessian
   mod$Hessian_conditional = J

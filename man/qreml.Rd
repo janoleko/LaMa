@@ -11,7 +11,7 @@ qreml(
   random,
   map = NULL,
   psname = "lambda",
-  alpha = 0.2,
+  alpha = 0.15,
   smoothing = 1,
   maxiter = 100,
   tol = 1e-04,

@@ -113,13 +113,13 @@ There are some rules to follow when using `qreml()`:
 
 1. The likelihood function needs to be `RTMB`-compatible, i.e. have the same structure as the likelihood functions in the vignette *LaMa and RTMB*. Most importantly, it should be a function of the parameter list only.
 
-3. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of `betaSpline`, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
+2. The penalty strength vector `lambda` needs its length to correspond to the *total* number of spline coefficient vectors used. In our case, this is the number of rows of `betaSpline`, but if we additionally had a different spline coefficient (with a different name) in our parameter list, possibly with a different length and a different penalty matrix, we would have needed more elements in `lambda`.
 
-4. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices. This is shown in the third example in this vignette.
+3. The `penalty()` function can only be called *once* in the likelihood. If several spline coefficients are penalised, `penalty()` expects a list of coefficient matrices or vectors and a list of penalty matrices. This is shown in the third example in this vignette.
 
 <!-- 5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail. -->
 
-5. By default, `qreml()` assumes that the penalisation hyperparameter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparameter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
+4. By default, `qreml()` assumes that the penalisation hyperparameter in the `dat` object is called `lambda`. You can use a different name for `dat` (of course than changing it in your `pnll` as well), but if you want to use a different name for the penalisation hyperparameter, you have to specify it as a character string in the `qreml()` call using the `psname` argument.
 
 ```{r trex_fit, message = FALSE}
 system.time(

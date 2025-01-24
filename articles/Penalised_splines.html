@@ -228,18 +228,15 @@ more elements in <code>lambda</code>.</p></li>
 penalised, <code><a href="../reference/penalty.html">penalty()</a></code> expects a list of coefficient matrices
 or vectors and a list of penalty matrices. This is shown in the third
 example in this vignette.</p></li>
-<li><p>When we summarise multiple spline coefficients in a matrix in our
-parameter list – which is very useful when these are of same lengths and
-have the same penalty matrix – this matrix must be arranged <strong>by
-row</strong>, i.e. each row is one spline coefficient vector. If it is
-arranged by column, <code><a href="../reference/qreml.html">qreml()</a></code> will fail.</p></li>
-<li><p>By default, <code><a href="../reference/qreml.html">qreml()</a></code> assumes that the penalisation
+</ol>
+<!-- 5. When we summarise multiple spline coefficients in a matrix in our parameter list -- which is very useful when these are of same lengths and have the same penalty matrix -- this matrix must be arranged **by row**, i.e. each row is one spline coefficient vector. If it is arranged by column, `qreml()` will fail. --><ol start="5" style="list-style-type: decimal">
+<li>By default, <code><a href="../reference/qreml.html">qreml()</a></code> assumes that the penalisation
 hyperparameter in the <code>dat</code> object is called
 <code>lambda</code>. You can use a different name for <code>dat</code>
 (of course than changing it in your <code>pnll</code> as well), but if
 you want to use a different name for the penalisation hyperparameter,
 you have to specify it as a character string in the <code><a href="../reference/qreml.html">qreml()</a></code>
-call using the <code>psname</code> argument.</p></li>
+call using the <code>psname</code> argument.</li>
 </ol>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
@@ -263,7 +260,7 @@ call using the <code>psname</code> argument.</p></li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.111</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  12.521   0.073  12.594</span></span></code></pre></div>
+<span><span class="co">#&gt;  12.462   0.083  12.545</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -457,7 +454,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 1.611 1.375 2.369</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  25.785   3.756  25.209</span></span></code></pre></div>
+<span><span class="co">#&gt;  25.555   3.782  24.968</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -586,7 +583,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.585 7.212 8.274 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  10.300   5.020   9.513</span></span></code></pre></div>
+<span><span class="co">#&gt;  10.358   5.072   9.539</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

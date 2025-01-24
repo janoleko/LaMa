@@ -87,7 +87,7 @@ data = trex[1:1000,] # subset
 # initial parameter list
 par = list(logmu = log(c(0.3, 1)), # step mean
            logsigma = log(c(0.2, 0.7)), # step sd
-           beta0 = c(-2,2), # state process intercept
+           beta0 = c(-2,-2), # state process intercept
            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
           
 # data object with initial penalty strength lambda

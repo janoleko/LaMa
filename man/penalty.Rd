@@ -55,7 +55,7 @@ data = trex[1:1000,] # subset
 # initial parameter list
 par = list(logmu = log(c(0.3, 1)), # step mean
            logsigma = log(c(0.2, 0.7)), # step sd
-           beta0 = c(-2,2), # state process intercept
+           beta0 = c(-2,-2), # state process intercept
            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
           
 # data object with initial penalty strength lambda
@@ -74,8 +74,8 @@ dat$S = modmat$S # penalty matrix
 # penalised negative log-likelihood function
 pnll = function(par) {
   getAll(par, dat) # makes everything contained available without $
-  Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
-  delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
+  Gamma = tpm_g(Z, cbind(beta0, betaspline)) # transition probabilities
+  delta = stationary_p(Gamma, t = 1) # initial distribution
   mu = exp(logmu) # step mean
   sigma = exp(logsigma) # step sd
   # calculating all state-dependent densities

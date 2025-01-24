@@ -51,7 +51,7 @@
 #' # initial parameter list
 #' par = list(logmu = log(c(0.3, 1)), # step mean
 #'            logsigma = log(c(0.2, 0.7)), # step sd
-#'            beta0 = c(-2,2), # state process intercept
+#'            beta0 = c(-2,-2), # state process intercept
 #'            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
 #'           
 #' # data object with initial penalty strength lambda
@@ -70,8 +70,8 @@
 #' # penalised negative log-likelihood function
 #' pnll = function(par) {
 #'   getAll(par, dat) # makes everything contained available without $
-#'   Gamma = tpm_g(Z, cbind(beta0, betaspline), ad = TRUE) # transition probabilities
-#'   delta = stationary_p(Gamma, t = 1, ad = TRUE) # initial distribution
+#'   Gamma = tpm_g(Z, cbind(beta0, betaspline)) # transition probabilities
+#'   delta = stationary_p(Gamma, t = 1) # initial distribution
 #'   mu = exp(logmu) # step mean
 #'   sigma = exp(logsigma) # step sd
 #'   # calculating all state-dependent densities
@@ -105,13 +105,6 @@ penalty = function(re_coef, S, lambda) {
   # Get number of distinct random effects (of the same structure)
   n_re = length(re_coef)
   
-  # Get the number of similar random effects for each distinct random effect
-  re_lengths = sapply(re_coef, nrow)  # All elements are matrices now
-  
-  # Precompute start and end indices for lambda
-  end = cumsum(re_lengths)
-  start = c(1, end[-length(end)] + 1)
-  
   # Ensure S is a list of length n_re, replicating it if necessary
   if (!is.list(S)) {
     S = list(S)
@@ -120,6 +113,24 @@ penalty = function(re_coef, S, lambda) {
     S = rep(S, n_re)
   }
   
+  # transpose if necessary to match S
+  re_coef <- lapply(seq_len(n_re), function(i) {
+    if (ncol(re_coef[[i]]) != nrow(S[[i]])) {
+      t(re_coef[[i]])
+    } else if (nrow(re_coef[[i]]) != nrow(S[[i]])) {
+      re_coef[[i]]
+    } else{
+      stop("The coefficient structure does not match the provided penalty matrices.")
+    }
+  })
+  
+  # Get the number of similar random effects for each distinct random effect
+  re_lengths = sapply(re_coef, nrow)  # All elements are matrices now
+  
+  # Precompute start and end indices for lambda
+  end = cumsum(re_lengths)
+  start = c(1, end[-length(end)] + 1)
+  
   RTMB::REPORT(S) # Report penalty matrix list
   
   # Initialize penalty variables
@@ -127,9 +138,9 @@ penalty = function(re_coef, S, lambda) {
   pen = 0
   
   # check if re_coef and S match
-  if(any(sapply(re_coef, ncol) != sapply(S, nrow))){
-    stop("The coefficient structure does not match the provided penalty matrices.\n Are the coefficients arranged by row?")
-  }
+  # if(any(sapply(re_coef, ncol) != sapply(S, nrow))){
+  #   stop("The coefficient structure does not match the provided penalty matrices.\n Are the coefficients arranged by row?")
+  # }
   
   # Loop over distinct random effects - each now a matrix
   for (i in 1:n_re) {
@@ -204,7 +215,7 @@ penalty = function(re_coef, S, lambda) {
 #' # initial parameter list
 #' par = list(logmu = log(c(0.3, 1)), # step mean
 #'            logsigma = log(c(0.2, 0.7)), # step sd
-#'            beta0 = c(-2,2), # state process intercept
+#'            beta0 = c(-2,-2), # state process intercept
 #'            betaspline = matrix(rep(0, 18), nrow = 2)) # state process spline coefs
 #'           
 #' # data object with initial penalty strength lambda
@@ -326,15 +337,33 @@ qreml = function(pnll, # penalized negative log-likelihood function
   
   # finding the indices of the random effects to later index Hessian
   re_inds = list() 
-  for(i in 1:n_re){
-    re_dim = dim(as.matrix(par[[random[i]]]))
+  for(i in seq_len(n_re)){
+    if(is.vector(par[[random[i]]])){
+      re_dim = c(1, length(par[[random[i]]]))
+    } else if(is.matrix(par[[random[i]]])){
+      re_dim = dim(par[[random[i]]])
+    } else{
+      stop(paste0(random[i], " must be a vector or matrix"))
+    }
+    
+    byrow = FALSE
+    if(re_dim[1] == nrow(S[[i]])){
+      byrow = TRUE
+    }
+    #re_dim = dim(as.matrix(par[[random[i]]]))
+    
+    # which(re_dim == nrow(S[[i]])) - 1
+    
     # if(re_dim[2] == S_dims[i]){
     #   byrow = FALSE
     # } else{
     #   byrow = TRUE
     # }
-    re_inds[[i]] = matrix(which(names(obj$par) == random[i]), nrow = re_dim[1], ncol = re_dim[2])# , byrow = byrow)
-    if(dim(re_inds[[i]])[2] == 1) re_inds[[i]] = t(re_inds[[i]]) # if only one column, then transpose
+    re_inds[[i]] = matrix(which(names(obj$par) == random[i]), nrow = re_dim[1], ncol = re_dim[2])#, byrow = byrow)
+    if(byrow) {
+      re_inds[[i]] = t(re_inds[[i]]) # if byrow, then transpose
+    }
+    # if(dim(re_inds[[i]])[2] == 1) re_inds[[i]] = t(re_inds[[i]]) # if only one column, then transpose
   }
   
   # get number of similar random effects for each distinct random effect (of same structure)
@@ -611,4 +640,6 @@ qreml = function(pnll, # penalized negative log-likelihood function
   class(mod) = "qreml model"
   return(mod)
 }
+
+
 

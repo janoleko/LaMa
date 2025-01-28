@@ -1,1 +1,1 @@
-Important bug fix in decoding functions
+Minor efficiency and stability upgrades 

@@ -44,18 +44,28 @@ reshape_lambda <- function(num_elements, lambda) {
   return(result)
 }
 
-# helper function to compute generalized determinant
-gdeterminant <- function(x, 
-                         eps = 1e-10, # eigenvalues smaller than this will be treated as zero
-                         log = TRUE){
-  svd = eigen(x)
-  values = svd$values
-  
-  logdet = sum(log(values[values > eps]))
-  
-  if(!log){
-    return(exp(logdet))
-  } else{
-    return(logdet)
+#' Computes generalised determinant
+#'
+#' @param x square matrix
+#' @param eps eigenvalues smaller than this will be treated as zero
+#' @param log logical. If \code{TRUE}, the log-determinant is returned. If \code{FALSE}, the determinant is returned.
+#'
+#' @return generalised log-determinant of \code{x}
+#' 
+#' @importFrom RTMB eigen
+gdeterminant <- function(x, eps = 1e-10, log = TRUE) {
+  if(is.null(x)) {
+    return(NULL)
+  } else {
+    # Compute sum of log of non-zero eigenvalues
+    # (i.e., log generalized determinant)
+    eigenpairs <- eigen(x)
+    eigenvalues <- eigenpairs$values
+    logdet <- sum(log(eigenvalues[eigenvalues > eps]))
+    if(!log) {
+      return(exp(logdet))
+    } else{
+      return(logdet)
+    }        
   }
 }

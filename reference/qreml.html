@@ -100,7 +100,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 
 <dt id="arg-dat">dat<a class="anchor" aria-label="anchor" href="#arg-dat"></a></dt>
 <dd><p>initial data list that contains the data used in the likelihood function, hyperparameters, and the <strong>initial penalty strength</strong> vector</p>
-<p>If the initial penalty strength vector is <strong>not</strong> called <code>lambda</code>, the name it has in <code>dat</code> needs to be specified using the <code>penalty</code> argument below.
+<p>If the initial penalty strength vector is <strong>not</strong> called <code>lambda</code>, the name it has in <code>dat</code> needs to be specified using the <code>psname</code> argument below.
 Its length needs to match the to the total number of random effects.</p></dd>
 
 
@@ -145,7 +145,7 @@ Its length needs to match the to the total number of random effects.</p></dd>
 
 
 <dt id="arg-joint-unc">joint_unc<a class="anchor" aria-label="anchor" href="#arg-joint-unc"></a></dt>
-<dd><p>logical, if <code>TRUE</code>, joint RTMB object is returned allowing for joint uncertainty quantification</p></dd>
+<dd><p>logical, if <code>TRUE</code>, joint <code>RTMB</code> object is returned allowing for joint uncertainty quantification</p></dd>
 
 
 <dt id="arg-saveall">saveall<a class="anchor" aria-label="anchor" href="#arg-saveall"></a></dt>

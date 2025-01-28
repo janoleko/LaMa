@@ -359,11 +359,11 @@ dgmrf2 = function(x,
   
   x_centered = x - mu # center data
   
-  if(is.matrix(x_centered)){
+  if(is.null(dim(x_centered))){ # vector
+    quadform = lambda * crossprod(x_centered, S %*% x_centered)
+  } else{ # matrix
     y = S %*% t(x_centered)
     quadform = lambda * rowSums(x_centered * t(y))
-  } else{
-    quadform = lambda * crossprod(x_centered, S %*% x_centered)
   }
   
   logdens = as.numeric(0.5 * (-k * log(2*pi) + k * log(lambda) + logdetS - quadform))

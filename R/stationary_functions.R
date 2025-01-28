@@ -99,7 +99,8 @@ stationary_p = function(Gamma, t = NULL, ad = NULL){
     }
   } else if(ad) {
     
-    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    # overloading assignment operators, currently necessary
+    "[<-" <- ADoverload("[<-")
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
     

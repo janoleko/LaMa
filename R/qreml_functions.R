@@ -85,9 +85,32 @@
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
 penalty = function(re_coef, S, lambda) {
-  # getting the argname of the penalty strength parameter
-  # argname_lambda = as.character(substitute(lambda))
-  # RTMB::REPORT(argname_lambda) # Report the name of the penalty strength parameter
+  # Capture the argument name used in the call to `penalty`
+  # current_name <- as.character(substitute(lambda))
+  # 
+  # # Try to recover the original name by searching the parent frame
+  # recover_original_name <- function(value, env) {
+  #   # Search for all objects in the parent frame
+  #   all_objects <- ls(env)
+  #   for (obj in all_objects) {
+  #     # Check if the object matches the value of `lambda`
+  #     if (identical(get(obj, envir = env), value)) {
+  #       return(obj)  # Return the name of the matching object
+  #     }
+  #   }
+  #   NULL  # Return NULL if no match is found
+  # }
+  # 
+  # # Attempt to recover the original name
+  # original_name <- recover_original_name(lambda, parent.frame())
+  # if (!is.null(original_name)) {
+  #   argname_lambda <- original_name
+  # } else {
+  #   argname_lambda <- current_name
+  # }
+  # 
+  # # Store the recovered name in the penalty metadata environment
+  # assign("argname_lambda", argname_lambda, envir = penalty_metadata)
   
   # Convert re_coef to a list of matrices (even if originally a vector)
   if (!is.list(re_coef)) {
@@ -181,7 +204,7 @@ penalty = function(re_coef, S, lambda) {
 #' The random effects/ spline coefficients can be vectors or matrices, the latter summarising several random effects of the same structure, each one being a row in the matrix.
 #' @param dat initial data list that contains the data used in the likelihood function, hyperparameters, and the \strong{initial penalty strength} vector
 #'
-#' If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{penalty} argument below.
+#' If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{psname} argument below.
 #' Its length needs to match the to the total number of random effects.
 #' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
@@ -200,7 +223,7 @@ penalty = function(re_coef, S, lambda) {
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
-#' @param joint_unc logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification
+#' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #' @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
 #'
@@ -276,6 +299,13 @@ qreml = function(pnll, # penalized negative log-likelihood function
   allmods = list() 
   
   # initial lambda locally
+  # Define a global environment to store the captured names
+  # penalty_metadata <- new.env(parent = emptyenv())
+  # if(is.null(psname)){
+  #   pnll(par) # call once to get the name of the lambda parameter
+  #   psname = get("argname_lambda", envir = penalty_metadata)
+  # }
+  
   lambda = dat[[psname]]
   
   # creating the objective function as wrapper around pnll to pull lambda from local
@@ -640,6 +670,5 @@ qreml = function(pnll, # penalized negative log-likelihood function
   class(mod) = "qreml model"
   return(mod)
 }
-
 
 

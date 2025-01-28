@@ -33,7 +33,7 @@ The random effects/ spline coefficients can be vectors or matrices, the latter s
 
 \item{dat}{initial data list that contains the data used in the likelihood function, hyperparameters, and the \strong{initial penalty strength} vector
 
-If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{penalty} argument below.
+If the initial penalty strength vector is \strong{not} called \code{lambda}, the name it has in \code{dat} needs to be specified using the \code{psname} argument below.
 Its length needs to match the to the total number of random effects.}
 
 \item{random}{vector of names of the random effects/ penalised parameters in \code{par}
@@ -62,7 +62,7 @@ We advise against changing the default values of \code{reltol} and \code{maxit} 
 
 \item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
 
-\item{joint_unc}{logical, if \code{TRUE}, joint RTMB object is returned allowing for joint uncertainty quantification}
+\item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 
 \item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
 

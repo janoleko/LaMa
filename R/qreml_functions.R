@@ -493,7 +493,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     oldlength <- length(convInd)
     
     if(k > 2){ # after 2 iterations, check whether any lambda > 1e5 and exclude from check
-      convInd = which(lambda <= 1e5)
+      convInd = which(lambda <= 1e6)
     }
     
     if(silent < 2){
@@ -501,7 +501,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
       
       # print only if something changes
       if(length(convInd) != oldlength & length(seq_along(lambda)[-convInd]) > 0){
-        cat(psname, seq_along(lambda)[-convInd], "excluded from convergence check (> 1e5)", "\n")
+        cat(psname, seq_along(lambda)[-convInd], "excluded from convergence check (> 1e6)", "\n")
       }
     }
     

@@ -79,8 +79,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>reltol <span class="op">=</span> <span class="fl">1e-10</span>, maxit <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  joint_unc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  epsilon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,7 +109,9 @@ Its length needs to match the to the total number of random effects.</p></dd>
 
 
 <dt id="arg-map">map<a class="anchor" aria-label="anchor" href="#arg-map"></a></dt>
-<dd><p>optional map for fixed effects in the likelihood function</p></dd>
+<dd><p>optional map argument, containing factor vectors to indicate parameter sharing or fixing.</p>
+<p>Needs to be a named list for a subset of fixed effect parameters or penalty strength parameters.
+For example, if the model has four penalty strength parameters, <code>map[[psname]]</code> could be <code>factor(c(NA, 1, 1, 2))</code> to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.</p></dd>
 
 
 <dt id="arg-psname">psname<a class="anchor" aria-label="anchor" href="#arg-psname"></a></dt>
@@ -149,11 +150,8 @@ Its length needs to match the to the total number of random effects.</p></dd>
 
 
 <dt id="arg-saveall">saveall<a class="anchor" aria-label="anchor" href="#arg-saveall"></a></dt>
-<dd><p>logical, if <code>TRUE</code>, then all model objects from each iteration are saved in the final model object.</p></dd>
-
-
-<dt id="arg-epsilon">epsilon<a class="anchor" aria-label="anchor" href="#arg-epsilon"></a></dt>
-<dd><p>vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than <code>epsilon[1]</code> but the change to the one before is smaller than <code>epsilon[2]</code>, the algorithm will average the two last values to prevent cycling.</p></dd>
+<dd><p>logical, if <code>TRUE</code>, then all model objects from each iteration are saved in the final model object.
+# @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than <code>epsilon[1]</code> but the change to the one before is smaller than <code>epsilon[2]</code>, the algorithm will average the two last values to prevent cycling.</p></dd>
 
 </dl></div>
     <div class="section level2">

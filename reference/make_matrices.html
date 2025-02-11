@@ -73,7 +73,8 @@ See <code>mgcv</code> documentation for more details.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>a list containing the design matrix <code>Z</code>, a (potentially nested) list of penalty matrices <code>S</code>, the <code>formula</code>, the <code>data</code>, the <code>knots</code>, and the original <code>mod</code> object returned by <code>mgcv</code>.</p>
+    <p>a list containing the design matrix <code>Z</code>, a (potentially nested) list of penalty matrices <code>S</code>, the <code>formula</code>, the <code>data</code>, the <code>knots</code>, and the original <code>mod</code> object returned by <code>mgcv</code>.
+Note that for tensorproduct smooths, the corresponding list entry is itself a list, containing the d marginal penalty matrices if d is the dimension of the tensor product.</p>
     </div>
 
     <div class="section level2">

@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_matrix_functions.R
 \name{make_matrices}
 \alias{make_matrices}
-\title{Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set}
+\title{Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set}
 \usage{
 make_matrices(formula, data, knots = NULL)
 }
@@ -13,15 +13,26 @@ make_matrices(formula, data, knots = NULL)
 
 \item{knots}{optional list containing user specified knot values to be used for basis construction
 
-For most bases the user simply supplies the knots to be used, which must match up with the k value supplied (note that the number of knots is not always just k).
+For most bases the user simply supplies the \code{knots} to be used, which must match up with the \code{k} value supplied (note that the number of knots is not always just \code{k}).
 See \code{mgcv} documentation for more details.}
 }
 \value{
-a list containing the design matrix \code{Z}, the penalty matrix \code{S}, the \code{formula}, the \code{data} and the \code{knots}
+a list containing the design matrix \code{Z}, a (potentially nested) list of penalty matrices \code{S}, the \code{formula}, the \code{data}, the \code{knots}, and the original \code{mod} object returned by \code{mgcv}.
 }
 \description{
-Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set
+Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set
 }
 \examples{
-modmat = make_matrices(~ s(x), data.frame(x = 1:10))
+data = data.frame(x = runif(100), 
+                  y = runif(100),
+                  g = factor(rep(1:10, each = 10)))
+
+# unvariate thin plate regression spline
+modmat = make_matrices(~ s(x), data)
+# univariate P-spline
+modmat = make_matrices(~ s(x, bs = "ps"), data)
+# adding random intercept
+modmat = make_matrices(~ s(g, bs = "re") + s(x, bs = "ps"), data)
+# tensorproduct of x and y
+modmat = make_matrices(~ s(x) + s(y) + ti(x,y), data)
 }

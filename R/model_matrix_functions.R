@@ -2,16 +2,16 @@
 # Regression setting ------------------------------------------------------
 
 
-#' Build the design matrix and the penalty matrix for models involving penalised splines based on a formula and a data set
+#' Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set
 #'
 #' @param formula right side of a formula as used in \code{mgcv}
 #' @param data data frame containing the variables in the formula
 #' @param knots optional list containing user specified knot values to be used for basis construction
 #' 
-#' For most bases the user simply supplies the knots to be used, which must match up with the k value supplied (note that the number of knots is not always just k).
+#' For most bases the user simply supplies the \code{knots} to be used, which must match up with the \code{k} value supplied (note that the number of knots is not always just \code{k}).
 #' See \code{mgcv} documentation for more details.
 #'
-#' @return a list containing the design matrix \code{Z}, the penalty matrix \code{S}, the \code{formula}, the \code{data} and the \code{knots}
+#' @return a list containing the design matrix \code{Z}, a (potentially nested) list of penalty matrices \code{S}, the \code{formula}, the \code{data}, the \code{knots}, and the original \code{mod} object returned by \code{mgcv}.
 #' @export
 #' 
 #' @importFrom mgcv gam
@@ -19,25 +19,57 @@
 #' @importFrom stats update
 #'
 #' @examples
-#' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
+#' data = data.frame(x = runif(100), 
+#'                   y = runif(100),
+#'                   g = factor(rep(1:10, each = 10)))
+#'
+#' # unvariate thin plate regression spline
+#' modmat = make_matrices(~ s(x), data)
+#' # univariate P-spline
+#' modmat = make_matrices(~ s(x, bs = "ps"), data)
+#' # adding random intercept
+#' modmat = make_matrices(~ s(g, bs = "re") + s(x, bs = "ps"), data)
+#' # tensorproduct of x and y
+#' modmat = make_matrices(~ s(x) + s(y) + ti(x,y), data)
 make_matrices = function(formula, 
                          data, 
                          knots = NULL
                          ){
+  
+  ## setting up the model using mgcv
   gam_setup = mgcv::gam(formula = stats::update(formula, dummy ~ .),
                         data = cbind(dummy = 1, data), 
                         knots = knots,
                         fit = FALSE)
   
+  
+  ## assiging design matrix
+  term_names = gam_setup$term.names
   Z = gam_setup$X
-  S = gam_setup$S
-  formula = gam_setup$formula
+  colnames(Z) = term_names
+
+  
+  ## dealing with the penalty matrices
+  term_labels = sapply(gam_setup$smooth, function(x) x$label)
+  
+  S = lapply(gam_setup$smooth, function(x){
+    if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
+      return(x$S[[1]])
+    } else{ # multivariate smooth -> several penalty matrices
+      S_sublist = lapply(x$margin, function(y) y$S[[1]])
+      margin_names = sapply(x$margin, function(y) y$term)
+      names(S_sublist) = margin_names
+      return(S_sublist)
+    }
+  })
+  names(S) = term_labels
   
   return(list(Z = Z, 
               S = S, 
-              formula = formula, 
+              formula = gam_setup$formula, 
               data = data, 
-              knots = knots))
+              knots = knots,
+              mod = gam_setup))
 }
 
 

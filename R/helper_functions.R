@@ -32,7 +32,7 @@ calc_trackInd = function(ID){
   return(trackInd)
 }
 
-# helper function for penalty and qreml
+# helper functions for penalty and qreml
 reshape_lambda <- function(num_elements, lambda) {
   start <- 1
   result <- lapply(num_elements, function(len) {
@@ -42,6 +42,25 @@ reshape_lambda <- function(num_elements, lambda) {
     return(sub_vector)
   })
   return(result)
+}
+map_lambda = function(lambda, map){
+  lambda_mapped = numeric(length(levels(map)))
+  lambda_levels = levels(map)
+  for(l in seq_along(lambda_levels)){
+    lambda_mapped[l] = mean(lambda[which(map == lambda_levels[l])])
+  }
+  names(lambda_mapped) = levels(map)
+  return(lambda_mapped)
+}
+unmap_lambda = function(lambda_mapped, map, lambda0){
+  lambda = rep(NA, length(lambda0))
+  lambda_levels = levels(map)
+  for(l in seq_along(lambda_levels)){
+    lambda[which(map == lambda_levels[l])] = lambda_mapped[l]
+  }
+  NA_ind = which(is.na(lambda))
+  lambda[NA_ind] = lambda0[NA_ind]
+  return(lambda)
 }
 
 #' Computes generalised determinant

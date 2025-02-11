@@ -18,8 +18,7 @@ qreml(
   control = list(reltol = 1e-10, maxit = 1000),
   silent = 1,
   joint_unc = TRUE,
-  saveall = FALSE,
-  epsilon = c(0.01, 0.1)
+  saveall = FALSE
 )
 }
 \arguments{
@@ -40,7 +39,10 @@ Its length needs to match the to the total number of random effects.}
 
 \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.}
 
-\item{map}{optional map for fixed effects in the likelihood function}
+\item{map}{optional map argument, containing factor vectors to indicate parameter sharing or fixing.
+
+Needs to be a named list for a subset of fixed effect parameters or penalty strength parameters. 
+For example, if the model has four penalty strength parameters, \code{map[[psname]]} could be \code{factor(c(NA, 1, 1, 2))} to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.}
 
 \item{psname}{optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
@@ -64,9 +66,8 @@ We advise against changing the default values of \code{reltol} and \code{maxit} 
 
 \item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 
-\item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
-
-\item{epsilon}{vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.}
+\item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
+# @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.}
 }
 \value{
 returns a model list influenced by the users report statements in \code{pnll}

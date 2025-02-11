@@ -209,7 +209,10 @@ penalty = function(re_coef, S, lambda) {
 #' @param random vector of names of the random effects/ penalised parameters in \code{par}
 #' 
 #' \strong{Caution:} The ordering of \code{random} needs to match the order of the random effects passed to \code{\link{penalty}} inside the likelihood function.
-#' @param map optional map for fixed effects in the likelihood function
+#' @param map optional map argument, containing factor vectors to indicate parameter sharing or fixing.
+#' 
+#' Needs to be a named list for a subset of fixed effect parameters or penalty strength parameters. 
+#' For example, if the model has four penalty strength parameters, \code{map[[psname]]} could be \code{factor(c(NA, 1, 1, 2))} to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.
 #' @param psname optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths.
 #'
@@ -225,7 +228,7 @@ penalty = function(re_coef, S, lambda) {
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
-#' @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
+#' # @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
 #'
 #' @return returns a model list influenced by the users report statements in \code{pnll}
 #' @export
@@ -284,8 +287,8 @@ qreml = function(pnll, # penalized negative log-likelihood function
                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                  silent = 1, # print level
                  joint_unc = TRUE, # should joint object be returned?
-                 saveall = FALSE, # save all intermediate models?
-                 epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
+                 saveall = FALSE)# , # save all intermediate models?
+                 #epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
 {
   
   # setting the argument name for par because later updated par is returned
@@ -307,6 +310,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
   # }
   
   lambda = dat[[psname]]
+  lambda0 = lambda # saving initial lambda so that fixed pars can always be refilled
   
   # creating the objective function as wrapper around pnll to pull lambda from local
   f = function(par){
@@ -332,6 +336,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
     cat("Creating AD function\n")
   } 
   
+  ## mapping
+  # map can contain fixed effects -> just passed to MakeADFun
+  # and it can contain penalty strength parameters
   if(!is.null(map)){
     # check that no random effects are fixed
     if(any(names(map) %in% random)){
@@ -339,7 +346,23 @@ qreml = function(pnll, # penalized negative log-likelihood function
       stop(msg)
     }
     # make factor
+    if(!all(sapply(map, is.factor))){
+      message("Converting map to factor")
+    }
     map = lapply(map, factor)
+  } else {
+    map[[psname]] = factor(seq_along(lambda))
+  }
+  lambda_map = map[[psname]]
+  
+  # pop lambda_map from map list
+  map = map[names(map) != psname]
+  if(length(map) == 0) map = NULL
+  
+  # deal with mapping of penalty strength parameters
+  lambda_mapped = map_lambda(lambda, lambda_map)
+  if(length(lambda_mapped) < 1){
+    stop("No penalty paramters estimated as all are fixed.")
   }
   
   obj = MakeADFun(func = f, 
@@ -447,6 +470,10 @@ qreml = function(pnll, # penalized negative log-likelihood function
     lambdas_k = list() # temporary lambda list
     
     # looping over distinct random effects (matrices)
+    edoF = rep(NA, length(lambda0)) # initialise edoF vector
+    pens = rep(NA, length(lambda0)) # initialise penalty vector
+    l = 1 # counter for lambda
+    
     for(i in 1:n_re){
       # initializing lambda vector for i-th random effect
       lambdas_k[[i]] = numeric(nrow(re_inds[[i]]))
@@ -456,38 +483,60 @@ qreml = function(pnll, # penalized negative log-likelihood function
         idx = re_inds[[i]][j,] # indices of this random effect
         
         # effective degrees of freedom for this random effect: J^-1_p J
-        edoF = nrow(S[[i]]) - Lambdas[[k]][[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]])) # trace(J^-1 \lambda S)
+        edoF[l] = nrow(S[[i]]) - m[i] - Lambdas[[k]][[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]])) # trace(J^-1 \lambda S)
         
-        # calculating new lambda based on updating rule
-        lambda_new = as.numeric((edoF - m[i]) / mod$Pen[[i]][j]) # m is correction if S_i does not have full rank
+        # penalty
+        pens[l] = mod$Pen[[i]][j]
         
-        # potentially smoothing new lambda
-        lambdas_k[[i]][j] = (1-alpha) * lambda_new + alpha * Lambdas[[k]][[i]][j]
+        l = l+1
         
-        # check for cycling behaviour
-        if(k > 2){
-          if(abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) < epsilon[1] & # change to lambda_t-2 is small
-             abs((lambdas_k[[i]][j] - Lambdas[[k]][[i]][j]) / Lambdas[[k]][[i]][j]) > epsilon[2]) # but change to lambda_t-1 is large
-          {
-            cat("Cycling detected - averaging for faster convergence\n")
-            # replacing with mean to prevent cycling
-            lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k]][[i]][j]) / 2 
-          }
-        }
+      #   # effective degrees of freedom for this random effect: J^-1_p J
+      #   edoF = nrow(S[[i]]) - Lambdas[[k]][[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]])) # trace(J^-1 \lambda S)
+      #   
+      #   # calculating new lambda based on updating rule
+      #   lambda_new = as.numeric((edoF - m[i]) / mod$Pen[[i]][j]) # m is correction if S_i does not have full rank
+      #   
+      #   # potentially smoothing new lambda
+      #   lambdas_k[[i]][j] = (1-alpha) * lambda_new + alpha * Lambdas[[k]][[i]][j]
+      #   
+      #   # check for cycling behaviour
+      #   if(k > 2){
+      #     if(abs((lambdas_k[[i]][j] - Lambdas[[k-1]][[i]][j]) / Lambdas[[k-1]][[i]][j]) < epsilon[1] & # change to lambda_t-2 is small
+      #        abs((lambdas_k[[i]][j] - Lambdas[[k]][[i]][j]) / Lambdas[[k]][[i]][j]) > epsilon[2]) # but change to lambda_t-1 is large
+      #     {
+      #       cat("Cycling detected - averaging for faster convergence\n")
+      #       # replacing with mean to prevent cycling
+      #       lambdas_k[[i]][j] = (lambdas_k[[i]][j] + Lambdas[[k]][[i]][j]) / 2 
+      #     }
+      #   }
       }
-      
-      # minimum of zero for penalty strengths
-      lambdas_k[[i]][which(lambdas_k[[i]] < 0)] = 0
-      
-      # maximum size of penalty strength
-      # lambdas_k[[i]][which(lambdas_k[[i]] > 1e7)] = 1e7
     }
     
+    # now loop over actual lambda_mapped to update
+    for(i in seq_along(lambda_mapped)){
+      this_level = levels(lambda_map)[i]
+      this_ind = which(lambda_map == this_level)
+      
+      this_edoF = sum(edoF[this_ind])
+      this_pen = sum(pens[this_ind])
+      
+      lambda_new = this_edoF / this_pen
+      
+      # smoothing lambda
+      lambda_mapped[i] = (1-alpha) * lambda_new + alpha * lambda_mapped[i]
+    }
+    
+    # unmap lambda
+    lambdas_k = unmap_lambda(lambda_mapped, lambda_map, lambda0)
+    
+    # minimum of zero for penalty strengths
+    lambdas_k[which(lambdas_k < 0)] = 0
+    
     # assigning new lambda to global list
-    Lambdas[[k+1]] = lambdas_k
+    Lambdas[[k+1]] = relist(lambdas_k, Lambdas[[1]])
     
     # updating lambda vector locally for next iteration
-    lambda = unlist(lambdas_k) 
+    lambda = lambdas_k
     
     # old length of convergence check indices
     oldlength <- length(convInd)
@@ -659,9 +708,16 @@ qreml = function(pnll, # penalized negative log-likelihood function
       -l_joint
     }
     
+    if(is.null(map)){
+      map = list(loglambda = lambda_map)
+    } else{
+      map$loglambda = lambda_map
+    }
+    
     # creating joint AD object
     obj_joint = MakeADFun(jnll, parlist,
-                          random = names(par)[names(par) != "loglambda"]) # REML, everything random except lambda
+                          random = names(par)[names(par) != "loglambda"], # REML, everything random except lambda
+                          map = map)
     
     # assigning object to return object
     mod$obj_joint = obj_joint

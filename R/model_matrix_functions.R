@@ -12,6 +12,7 @@
 #' See \code{mgcv} documentation for more details.
 #'
 #' @return a list containing the design matrix \code{Z}, a (potentially nested) list of penalty matrices \code{S}, the \code{formula}, the \code{data}, the \code{knots}, and the original \code{mod} object returned by \code{mgcv}.
+#' Note that for tensorproduct smooths, the corresponding list entry is itself a list, containing the d marginal penalty matrices if d is the dimension of the tensor product.
 #' @export
 #' 
 #' @importFrom mgcv gam

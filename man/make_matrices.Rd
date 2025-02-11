@@ -18,6 +18,7 @@ See \code{mgcv} documentation for more details.}
 }
 \value{
 a list containing the design matrix \code{Z}, a (potentially nested) list of penalty matrices \code{S}, the \code{formula}, the \code{data}, the \code{knots}, and the original \code{mod} object returned by \code{mgcv}.
+Note that for tensorproduct smooths, the corresponding list entry is itself a list, containing the d marginal penalty matrices if d is the dimension of the tensor product.
 }
 \description{
 Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set

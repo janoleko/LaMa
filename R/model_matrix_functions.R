@@ -53,6 +53,8 @@ make_matrices = function(formula,
   ## dealing with the penalty matrices
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
   
+  # first: tensorproducts -> save marginal penalty matrices
+  
   S = lapply(gam_setup$smooth, function(x){
     if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
       return(x$S[[1]])
@@ -65,8 +67,28 @@ make_matrices = function(formula,
   })
   names(S) = term_labels
   
+  # second: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
+  S2 = list()
+  counter = 1
+  for(i in seq_along(gam_setup$smooth)){
+    sm = gam_setup$smooth[[i]]
+    if(is.null(sm$margin)){
+      S2[[i]] = gam_setup$S[[counter]]
+      counter = counter + 1
+    } else{
+      nPenMat = length(sm$margin)
+      S_sublist = gam_setup$S[counter:(counter + nPenMat - 1)]
+      margin_names = sapply(sm$margin, function(y) y$term)
+      names(S_sublist) = margin_names
+      S2[[i]] = S_sublist
+      counter = counter + nPenMat
+    }
+  }
+  names(S2) = term_labels
+  
   return(list(Z = Z, 
               S = S, 
+              S2 = S2,
               formula = gam_setup$formula, 
               data = data, 
               knots = knots,

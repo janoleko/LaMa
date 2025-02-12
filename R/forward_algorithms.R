@@ -18,7 +18,11 @@
 #' In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
 #' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
-#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#' @param report logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
+#' Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 
+#' 
+#' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
+#' \code{forward} should only be called \strong{once} with a \code{trackID} argument.
 #'
 #' @return log-likelihood for given data and parameters
 #' @export
@@ -229,8 +233,12 @@ forward = function(delta, Gamma, allprobs,
 #' In this case, \code{Gamma} needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs. For each track, the transition matrix at the beginning of the track will be ignored (as there is no transition between tracks).
 #' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
-#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
-#'
+#' @param report logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
+#' Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 
+#' 
+#' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi_g}}, \code{\link{stateprobs_g}} or \code{\link{pseudo_res}}, 
+#' \code{forward_g} should only be called \strong{once} with a \code{trackID} argument.
+#' 
 #' @return log-likelihood for given data and parameters
 #' @export
 #' @import RTMB
@@ -441,8 +449,11 @@ forward_g = function(delta, Gamma, allprobs,
 #' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
 #' Instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
-#' @param report logical, indicating whether \code{delta}, \code{Gamma} and \code{allprobs} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
-#'
+#' @param report logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
+#' Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 
+#' 
+#' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi_p}}, \code{\link{stateprobs_p}} or \code{\link{pseudo_res}}, 
+#' \code{forward_p} should only be called \strong{once} with a \code{trackID} argument.
 #'
 #' @return log-likelihood for given data and parameters
 #' @export

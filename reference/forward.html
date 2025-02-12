@@ -81,7 +81,10 @@ Furthermore, instead of a single vector <code>delta</code> corresponding to the 
 
 
 <dt id="arg-report">report<a class="anchor" aria-label="anchor" href="#arg-report"></a></dt>
-<dd><p>logical, indicating whether <code>delta</code>, <code>Gamma</code> and <code>allprobs</code> should be reported from the fitted model. Defaults to <code>TRUE</code>, but only works if <code>ad = TRUE</code>.</p></dd>
+<dd><p>logical, indicating whether <code>delta</code>, <code>Gamma</code>, <code>allprobs</code>, and potentially <code>trackID</code> should be reported from the fitted model.
+Defaults to <code>TRUE</code>, but only works if <code>ad = TRUE</code>, as it uses the <code>RTMB</code> package.</p>
+<p><strong>Caution:</strong> When there are multiple tracks, for compatibility with downstream functions like <code><a href="viterbi.html">viterbi</a></code>, <code><a href="stateprobs.html">stateprobs</a></code> or <code><a href="pseudo_res.html">pseudo_res</a></code>,
+<code>forward</code> should only be called <strong>once</strong> with a <code>trackID</code> argument.</p></dd>
 
 </dl></div>
     <div class="section level2">

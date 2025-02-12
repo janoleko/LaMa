@@ -377,10 +377,15 @@ qreml = function(pnll, # penalized negative log-likelihood function
   newpar = obj$par # saving initial parameter value as vector to initialize optimization in loop
   
   # own printing of maximum gradient component if silent = 0
+  gradcounter = 1
   if(silent == 0){
     newgrad = function(par){
       gr = obj$gr(par)
-      cat(" inner mgc:", max(abs(gr)), "\n")
+      if(gradcounter %% 10 == 0){
+        iter = gradcounter / 10
+        cat("  iter:", iter, "-", "inner mgc:", max(abs(gr)), "\n")
+      }
+      gradcounter <<- gradcounter + 1
       gr
     }
   } else{
@@ -448,9 +453,14 @@ qreml = function(pnll, # penalized negative log-likelihood function
   for(k in seq_len(maxiter)){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
+    gradcounter = 1
     opt = stats::optim(newpar, obj$fn, newgrad, 
                        method = "BFGS", hessian = TRUE, # return hessian in the end
                        control = control)
+    if(silent == 0){
+      gr = obj$gr(opt$par)
+      cat("  final inner mgc:", max(abs(gr)), "\n")
+    }
     
     # setting new optimum par for next iteration
     newpar = opt$par 
@@ -517,6 +527,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     }
     
     # now loop over actual lambda_mapped to update
+    outer_gr = numeric(length(lambda_mapped))
     for(i in seq_along(lambda_mapped)){
       this_level = levels(lambda_map)[i]
       this_ind = which(lambda_map == this_level)
@@ -528,6 +539,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
       
       # smoothing lambda
       lambda_mapped[i] = (1-alpha) * lambda_new + alpha * lambda_mapped[i]
+      
+      # gradient
+      outer_gr[i] = -0.5 * this_pen + 1/(2*lambda_mapped[i]) * this_edoF
     }
     
     # unmap lambda
@@ -551,6 +565,9 @@ qreml = function(pnll, # penalized negative log-likelihood function
     
     if(silent < 2){
       cat("outer", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
+      if(silent == 0){
+        cat("outer mgc:", max(abs(outer_gr)), "\n")
+      }
       
       # print only if something changes
       if(length(convInd) != oldlength & length(seq_along(lambda)[-convInd]) > 0){
@@ -587,9 +604,14 @@ qreml = function(pnll, # penalized negative log-likelihood function
   }
   
   # fitting the model conditional on lambda: current local lambda will be pulled by f
+  gradcounter = 1
   opt = stats::optim(newpar, obj$fn, newgrad, 
                      method = "BFGS", hessian = TRUE, # return hessian in the end
                      control = control)
+  if(silent == 0){
+    gr = obj$gr(opt$par)
+    cat("  final inner mgc:", max(abs(gr)), "\n")
+  }
   
   # setting new optimum par for next iteration
   newpar = opt$par 

@@ -130,7 +130,6 @@ The `mod` object is now a list that contains everything that is reported by the 
 <!-- Uncertainty quantification can be based on the Hessian of the penalised likelihood function, returned as `Hessian_conditional` in the `mod` object. To easily relist the sampled parameter vector to the original named-list structure, the function `relist_par()` is contained in the `mod` object. -->
 
 ```{r results qreml, fig.width = 9, fig.height = 5}
-# Gamma = mod1$Gamma
 Delta = mod1$Delta
 
 tod_seq = seq(0, 24, length = 100)
@@ -147,7 +146,6 @@ plot(Delta[,2], type = "b", lwd = 2, pch = 16, xlab = "time of day", ylab = "Pr(
      col = "deepskyblue", bty = "n", xaxt = "n")
 axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 ```
-
 
 ### Smooth density estimation
 
@@ -363,7 +361,7 @@ For the former, we create a fine grid of oil price values and use the `pred_matr
 xseq = seq(min(energy$Oil), max(energy$Oil), length = 200) # sequence for prediction
 Z_pred = pred_matrix(modmat, newdata = data.frame(Oil = xseq)) # prediction design matrix
 
-mod3$states = viterbi(mod3$delta, mod3$Gamma, mod3$allprobs) # decoding most probable state sequence
+energy$states = viterbi(mod = mod3) # decoding most probable state sequence
 
 Mu_plot = Z_pred %*% t(mod3$beta)
 Sigma_plot = exp(Z_pred %*% t(mod3$alpha))
@@ -373,7 +371,7 @@ library(scales) # to make colors semi-transparent
 par(mfrow = c(1,2))
 
 # state-dependent distribution as a function of oil price
-plot(energy$Oil, energy$Price, pch = 20, bty = "n", col = alpha(color[mod3$states], 0.1),
+plot(energy$Oil, energy$Price, pch = 20, bty = "n", col = alpha(color[energy$states], 0.1),
      xlab = "oil price", ylab = "energy price")
 for(j in 1:2) lines(xseq, Mu_plot[,j], col = color[j], lwd = 3) # means
 qseq = qnorm(seq(0.5, 0.95, length = 4)) # sequence of quantiles
@@ -388,7 +386,7 @@ plot(NA, xlim = c(0, nrow(energy)), ylim = c(1,10), bty = "n",
      xlab = "time", ylab = "energy price")
 segments(x0 = 1:(nrow(energy)-1), x1 = 2:nrow(energy),
          y0 = energy$Price[-nrow(energy)], y1 = energy$Price[-1], 
-         col = color[mod3$states[-1]], lwd = 0.5)
+         col = color[energy$states[-1]], lwd = 0.5)
 
 ```
 

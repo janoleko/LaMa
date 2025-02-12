@@ -53,8 +53,7 @@ make_matrices = function(formula,
   ## dealing with the penalty matrices
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
   
-  # first: tensorproducts -> save marginal penalty matrices
-  
+  # first option: tensorproducts -> save marginal penalty matrices
   S = lapply(gam_setup$smooth, function(x){
     if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
       return(x$S[[1]])
@@ -67,7 +66,7 @@ make_matrices = function(formula,
   })
   names(S) = term_labels
   
-  # second: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
+  # second option: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
   S2 = list()
   counter = 1
   for(i in seq_along(gam_setup$smooth)){

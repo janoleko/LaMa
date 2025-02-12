@@ -354,6 +354,10 @@ qreml = function(pnll, # penalized negative log-likelihood function
     map[[psname]] = factor(seq_along(lambda))
   }
   lambda_map = map[[psname]]
+  if(length(lambda_map) != length(lambda)){
+    msg = paste0("Length of map argument for ", psname, " has wrong length.")
+    stop(msg)
+  }
   
   # pop lambda_map from map list
   map = map[names(map) != psname]

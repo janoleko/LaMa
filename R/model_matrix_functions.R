@@ -85,9 +85,18 @@ make_matrices = function(formula,
   }
   names(S2) = term_labels
   
+  pardim = sapply(S2, function(x){
+    if(is.matrix(x)){
+      return(nrow(x))
+    } else{
+      return(nrow(x[[1]]))
+    }
+  })
+  
   return(list(Z = Z, 
               S = S, 
               S2 = S2,
+              pardim = pardim,
               formula = gam_setup$formula, 
               data = data, 
               knots = knots,

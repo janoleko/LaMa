@@ -551,7 +551,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     lambdas_k[which(lambdas_k < 0)] = 0
     
     # assigning new lambda to global list
-    Lambdas[[k+1]] = relist(lambdas_k, Lambdas[[1]])
+    Lambdas[[k+1]] = utils::relist(lambdas_k, Lambdas[[1]])
     
     # updating lambda vector locally for next iteration
     lambda = lambdas_k

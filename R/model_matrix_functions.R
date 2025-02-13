@@ -1,6 +1,62 @@
 
 # Regression setting ------------------------------------------------------
 
+# hidden helper function 
+# -> just to turn cosinor(hour, period) terms into sine/ cos terms
+process_cosinor <- function(formula){
+  # Extract formula terms
+  Terms <- terms(formula, specials = "cosinor")
+  term_names <- attr(Terms, "term.labels")
+  
+  # Identify cosinor terms
+  cosInd <- grep("cosinor\\(", term_names)
+  
+  # Separate regular terms
+  mainpart <- if(length(cosInd) > 0) term_names[-cosInd] else term_names
+  
+  # Expand cosinor terms while preserving interactions
+  expanded_terms <- c()
+  for(name in term_names[cosInd]){
+    # Extract the cosinor(...) call using regex
+    match <- regmatches(name, regexpr("cosinor\\(.*\\)", name))
+    
+    # Evaluate cosinor() replacement
+    replace <- eval(parse(text = match), envir = list(cosinor = cosinor))
+    
+    # Preserve interactions (all are converted to ":" by terms())
+    if (grepl(":", name)) {
+      parts <- unlist(strsplit(name, ":"))  # Split interaction terms
+      other_factors <- parts[parts != match]  # Extract non-cosinor parts
+      
+      # Rebuild interactions with expanded terms
+      expanded_terms <- c(expanded_terms, sapply(replace, function(rt) paste(c(other_factors, rt), collapse = ":")))
+    } else {
+      expanded_terms <- c(expanded_terms, replace)
+    }
+  }
+  
+  # Final expanded formula
+  final_terms <- c(mainpart, expanded_terms)
+  expanded_formula <- as.formula(paste("~", paste(final_terms, collapse = " + ")))
+  
+  expanded_formula
+}
+
+# evaluation function of cosior terms
+cosinor = function(x = 0, period = 24){
+  # get the name of input varible
+  xname = deparse(substitute(x))
+  
+  out = c()
+  # Loop over periods and construct sine and cosine strings
+  for(p in period){
+    out = c(out,
+            paste0("sin(2*pi*", xname, "/", p, ")"),
+            paste0("cos(2*pi*", xname, "/", p, ")"))
+  }
+  out
+}
+
 
 #' Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set
 #'
@@ -36,6 +92,9 @@ make_matrices = function(formula,
                          data, 
                          knots = NULL
                          ){
+  
+  ## Potenially expand cosinor terms
+  formula = process_cosinor(formula)
   
   ## setting up the model using mgcv
   gam_setup = mgcv::gam(formula = stats::update(formula, dummy ~ .),

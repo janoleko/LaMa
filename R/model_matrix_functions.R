@@ -5,8 +5,9 @@
 # -> just to turn cosinor(hour, period) terms into sine/ cos terms
 process_cosinor <- function(formula){
   # Extract formula terms
-  Terms <- terms(formula, specials = "cosinor")
+  Terms <- stats::terms(formula, specials = "cosinor")
   term_names <- attr(Terms, "term.labels")
+  var_names <- all.vars(formula)
   
   # Identify cosinor terms
   cosInd <- grep("cosinor\\(", term_names)
@@ -20,8 +21,13 @@ process_cosinor <- function(formula){
     # Extract the cosinor(...) call using regex
     match <- regmatches(name, regexpr("cosinor\\(.*\\)", name))
     
-    # Evaluate cosinor() replacement
-    replace <- eval(parse(text = match), envir = list(cosinor = cosinor))
+    if (!grepl(", eval = FALSE", match)) {
+      # If not, insert `, eval = FALSE` just before the last closing parenthesis
+      new_match <- sub("(cosinor\\(.*)(\\))", "\\1, eval = FALSE\\2", match)
+    }
+    
+    # Evaluate the expression using the data environment
+    replace <- eval(parse(text = new_match), envir = list(cosinor = cosinor))
     
     # Preserve interactions (all are converted to ":" by terms())
     if (grepl(":", name)) {
@@ -37,24 +43,69 @@ process_cosinor <- function(formula){
   
   # Final expanded formula
   final_terms <- c(mainpart, expanded_terms)
-  expanded_formula <- as.formula(paste("~", paste(final_terms, collapse = " + ")))
+  expanded_formula <- stats::as.formula(paste("~", paste(final_terms, collapse = " + ")))
   
   expanded_formula
 }
 
-# evaluation function of cosior terms
-cosinor = function(x = 0, period = 24){
+#' Evaluate trigonometric basis expansion
+#' 
+#' This function can be used to evaluate a trigonometric basis expansion for a given periodic variable and period. 
+#' It can also be used in formulas passed to \code{\link{make_matrices}}.
+#' 
+#' The returned basis can be used for linear predictors of the form
+#' \deqn{ 
+#'  \eta^{(t)} = \beta_0 + \sum_{k} \bigl( \beta_{1k} \sin(\frac{2 \pi t}{period_k}) + \beta_{2k} \cos(\frac{2 \pi t}{period_k}) \bigr). 
+#' }
+#' This is relevant for modeling e.g. diurnal variation and the flexibility can be increased by adding smaller frequencies (i.e. increasing the length of \code{period}).
+#'  
+#' @param x vector of periodic variable values
+#' @param period vector of period length. For example for time of day \code{period = 24}, or \code{period = c(24,12)} for more flexibility.
+#' @param eval logical, should not be changed. If \code{TRUE} the function returns the evaluated cosinor terms, if \code{FALSE} the function returns the terms as strings which is used internally form formula evaluation.
+#'
+#' @return either a desing matrix with the evaluated cosinor terms (\code{eval = TRUE}) or a character vector with the terms as strings (\code{eval = FALSE}).
+#' @export
+#'
+#' @examples
+#' ## Evaluate cosinor terms
+#' # builds design matrix
+#' X = cosinor(1:24, period = 24)
+#' X = cosinor(1:24, period = c(24, 12, 6))
+#' 
+#' ## Usage in model formulas
+#' form = ~ x + temp * cosinor(hour, c(24, 12))
+#' data = data.frame(x = runif(24), temp = rnorm(24,20), hour = 1:24)
+#' modmat = make_matrices(form, data = data)
+cosinor = function(x = 1:24, period = 24, eval = TRUE){
   # get the name of input varible
   xname = deparse(substitute(x))
   
-  out = c()
-  # Loop over periods and construct sine and cosine strings
-  for(p in period){
-    out = c(out,
-            paste0("sin(2*pi*", xname, "/", p, ")"),
-            paste0("cos(2*pi*", xname, "/", p, ")"))
+  if(eval == FALSE){
+    out = c()
+    # Loop over periods and construct sine and cosine strings
+    for(p in period){
+      out = c(out,
+              paste0("sin(2*pi*", xname, "/", p, ")"),
+              paste0("cos(2*pi*", xname, "/", p, ")"))
+    }
+    return(out)
+  } else{
+    # Evaluate the cosinor terms
+    # x might be a vector
+    out = matrix(NA, nrow = length(x), ncol = 0)
+    names = c()
+    for(p in period){
+      out = cbind(out,
+                  sin(2*pi*x/p),
+                  cos(2*pi*x/p))
+      
+      names = c(names,
+                paste0("sin(2*pi*", xname, "/", p, ")"),
+                paste0("cos(2*pi*", xname, "/", p, ")"))
+    }
+    colnames(out) = names
+    return(out)
   }
-  out
 }
 
 

@@ -2,6 +2,7 @@
 
 export(buildSmoothDens)
 export(calc_trackInd)
+export(cosinor)
 export(ddirichlet)
 export(dgamma2)
 export(dgmrf2)

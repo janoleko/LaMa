@@ -2,7 +2,7 @@
 # Regression setting ------------------------------------------------------
 
 # hidden helper function 
-# -> just to turn cosinor(hour, period) terms into sine/ cos terms
+# -> just to turn cosinor(x, period) terms into sine/ cosine terms
 process_cosinor <- function(formula){
   # Extract formula terms
   Terms <- stats::terms(formula, specials = "cosinor")
@@ -80,7 +80,8 @@ process_cosinor <- function(formula){
 #' X = cosinor(1:24, period = c(24, 12, 6))
 #' 
 #' ## Usage in model formulas
-#' form = ~ x + temp * cosinor(hour, c(24, 12))
+#' # e.g. frequencies of 24 and 12 hours + interaction with temperature
+#' form = ~ x + temp * cosinor(hour, c(24, 12)) 
 #' data = data.frame(x = runif(24), temp = rnorm(24,20), hour = 1:24)
 #' modmat = make_matrices(form, data = data)
 cosinor = function(x = 1:24, period = 24, eval = TRUE){

@@ -150,6 +150,30 @@ plot(Delta_hat[,1], type = "b", lwd = 2, pch = 16, col = color[1], bty = "n",
 par(oldpar)
 ```
 
+## Efficieny and convenience
+
+While it is convenient to use `tpm_p()`, it performs the basis expansion into sine and cosine terms each time it is evaluated.
+This is wasteful in model estimation as these terms stay fixed. A better alternative is to first build the corresponding design matrix. This can be done conveniently using the `cosinor()` function, either by itself or in a formula passed to `make_matrices()`. First let's call `cosinor()` by itself:
+
+```{r cosinor}
+tod = 1:24 # cyclic time of day variable
+Z = cosinor(tod, period = c(24, 12)) # design matrix
+Z = cbind(intercept = 1, Z)
+head(Z, 2)
+```
+
+The cosinor function excepts a `period` argument which specifies the period of the trigonometric functions. As you can see, `period` can be a vector, leading to a larger basis expansion, i.e. more flexibility. If your model involves other covariates than time of day, say temperature (`temp`), it might be more convenient to use `make_matrices()` with a formula:
+
+
+```{r cosinor_form}
+data = data.frame(tod = rep(1:24, 2), 
+                  temp = rnorm(48, 20, 5))
+modmat = make_matrices(~ temp * cosinor(tod, 24), data)
+head(modmat$Z, 2)
+```
+
+
+
 <!-- ## Nonparametric modeling of the transition probalities -->
 
 <!-- `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`. -->

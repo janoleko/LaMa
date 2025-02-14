@@ -34,7 +34,8 @@ X = cosinor(1:24, period = 24)
 X = cosinor(1:24, period = c(24, 12, 6))
 
 ## Usage in model formulas
-form = ~ x + temp * cosinor(hour, c(24, 12))
+# e.g. frequencies of 24 and 12 hours + interaction with temperature
+form = ~ x + temp * cosinor(hour, c(24, 12)) 
 data = data.frame(x = runif(24), temp = rnorm(24,20), hour = 1:24)
 modmat = make_matrices(form, data = data)
 }

@@ -200,7 +200,7 @@ that specifies which time point to compute.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.789   0.009   0.798</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.777   0.019   0.796</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>
@@ -234,6 +234,47 @@ tranform the parameters.</p>
 <p><img src="Periodic_HMMs_files/figure-html/visualization-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="efficieny-and-convenience">Efficieny and convenience<a class="anchor" aria-label="anchor" href="#efficieny-and-convenience"></a>
+</h2>
+<p>While it is convenient to use <code><a href="../reference/tpm_p.html">tpm_p()</a></code>, it performs the
+basis expansion into sine and cosine terms each time it is evaluated.
+This is wasteful in model estimation as these terms stay fixed. A better
+alternative is to first build the corresponding design matrix. This can
+be done conveniently using the <code><a href="../reference/cosinor.html">cosinor()</a></code> function, either
+by itself or in a formula passed to <code><a href="../reference/make_matrices.html">make_matrices()</a></code>. First
+let’s call <code><a href="../reference/cosinor.html">cosinor()</a></code> by itself:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tod</span> <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span> <span class="co"># cyclic time of day variable</span></span>
+<span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="va">tod</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="co"># design matrix</span></span>
+<span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>intercept <span class="op">=</span> <span class="fl">1</span>, <span class="va">Z</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Z</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      intercept sin(2*pi*tod/24) cos(2*pi*tod/24) sin(2*pi*tod/12)</span></span>
+<span><span class="co">#&gt; [1,]         1         0.258819        0.9659258        0.5000000</span></span>
+<span><span class="co">#&gt; [2,]         1         0.500000        0.8660254        0.8660254</span></span>
+<span><span class="co">#&gt;      cos(2*pi*tod/12)</span></span>
+<span><span class="co">#&gt; [1,]        0.8660254</span></span>
+<span><span class="co">#&gt; [2,]        0.5000000</span></span></code></pre></div>
+<p>The cosinor function excepts a <code>period</code> argument which
+specifies the period of the trigonometric functions. As you can see,
+<code>period</code> can be a vector, leading to a larger basis
+expansion, i.e. more flexibility. If your model involves other
+covariates than time of day, say temperature (<code>temp</code>), it
+might be more convenient to use <code><a href="../reference/make_matrices.html">make_matrices()</a></code> with a
+formula:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, <span class="fl">2</span><span class="op">)</span>, </span>
+<span>                  temp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">48</span>, <span class="fl">20</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="va">temp</span> <span class="op">*</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="va">tod</span>, <span class="fl">24</span><span class="op">)</span>, <span class="va">data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">modmat</span><span class="op">$</span><span class="va">Z</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      (Intercept)     temp sin(2 * pi * tod/24) cos(2 * pi * tod/24)</span></span>
+<span><span class="co">#&gt; [1,]           1 18.93188             0.258819            0.9659258</span></span>
+<span><span class="co">#&gt; [2,]           1 25.98938             0.500000            0.8660254</span></span>
+<span><span class="co">#&gt;      temp:sin(2 * pi * tod/24) temp:cos(2 * pi * tod/24)</span></span>
+<span><span class="co">#&gt; [1,]                  4.899932                  18.28680</span></span>
+<span><span class="co">#&gt; [2,]                 12.994690                  22.50746</span></span></code></pre></div>
 <!-- ## Nonparametric modeling of the transition probalities -->
 <!-- `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`. -->
 <!-- ### Building the cyclic spline design matrix -->
@@ -293,7 +334,6 @@ tranform the parameters.</p>
 <!-- # parametric fit -->
 <!-- lines(Delta_hat[,1], lwd = 3, col = color[1]) -->
 <!-- ``` -->
-</div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

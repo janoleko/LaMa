@@ -200,7 +200,7 @@ that specifies which time point to compute.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.777   0.019   0.796</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.795   0.016   0.811</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>
@@ -268,13 +268,25 @@ formula:</p>
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, <span class="fl">2</span><span class="op">)</span>, </span>
 <span>                  temp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">48</span>, <span class="fl">20</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="va">temp</span> <span class="op">*</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="va">tod</span>, <span class="fl">24</span><span class="op">)</span>, <span class="va">data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">modmat</span><span class="op">$</span><span class="va">Z</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">Z</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      (Intercept)     temp sin(2 * pi * tod/24) cos(2 * pi * tod/24)</span></span>
 <span><span class="co">#&gt; [1,]           1 18.93188             0.258819            0.9659258</span></span>
 <span><span class="co">#&gt; [2,]           1 25.98938             0.500000            0.8660254</span></span>
 <span><span class="co">#&gt;      temp:sin(2 * pi * tod/24) temp:cos(2 * pi * tod/24)</span></span>
 <span><span class="co">#&gt; [1,]                  4.899932                  18.28680</span></span>
 <span><span class="co">#&gt; [2,]                 12.994690                  22.50746</span></span></code></pre></div>
+<p>In both cases, the transition probability matrix can then be
+calculated using <code><a href="../reference/tpm_g.html">tpm_g()</a></code> or <code><a href="../reference/tpm_p.html">tpm_p()</a></code>:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># coefficient matrix</span></span>
+<span><span class="op">(</span><span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1]      [,2]      [,3]       [,4]      [,5]      [,6]</span></span>
+<span><span class="co">#&gt; [1,]   -2 0.5438832 0.3935516 0.75556189 0.8233689 0.7234530</span></span>
+<span><span class="co">#&gt; [2,]   -2 0.2698139 0.3127479 0.05147858 0.9122313 0.1442263</span></span>
+<span><span class="co"># constructing t.p.m.s</span></span>
+<span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_p.html">tpm_p</a></span><span class="op">(</span>Z <span class="op">=</span> <span class="va">Z</span>, beta <span class="op">=</span> <span class="va">beta</span><span class="op">)</span> <span class="co"># not first arguments in tpm_p</span></span>
+<span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z</span>, <span class="va">beta</span><span class="op">)</span> <span class="co"># but first arguments in tpm_g</span></span></code></pre></div>
 <!-- ## Nonparametric modeling of the transition probalities -->
 <!-- `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`. -->
 <!-- ### Building the cyclic spline design matrix -->

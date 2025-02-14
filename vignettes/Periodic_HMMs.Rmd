@@ -169,8 +169,22 @@ The cosinor function excepts a `period` argument which specifies the period of t
 data = data.frame(tod = rep(1:24, 2), 
                   temp = rnorm(48, 20, 5))
 modmat = make_matrices(~ temp * cosinor(tod, 24), data)
-head(modmat$Z, 2)
+Z = modmat$Z
+head(Z, 2)
 ```
+
+In both cases, the transition probability matrix can then be calculated using `tpm_g()` or `tpm_p()`:
+
+```{r tpm}
+# coefficient matrix
+(beta = matrix(c(-2,-2, runif(2*(ncol(Z)-1))), nrow = 2))
+# constructing t.p.m.s
+Gamma = tpm_p(Z = Z, beta = beta) # not first arguments in tpm_p
+Gamma = tpm_g(Z, beta) # but first arguments in tpm_g
+```
+
+
+
 
 
 

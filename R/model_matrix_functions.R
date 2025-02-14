@@ -21,9 +21,16 @@ process_cosinor <- function(formula){
     # Extract the cosinor(...) call using regex
     match <- regmatches(name, regexpr("cosinor\\(.*\\)", name))
     
-    if (!grepl(", eval = FALSE", match)) {
-      # If not, insert `, eval = FALSE` just before the last closing parenthesis
+    # Check if ", eval = TRUE" is present
+    if (grepl(", eval = TRUE", match)) {
+      # Replace ", eval = TRUE" with ", eval = FALSE"
+      new_match <- sub(", eval = TRUE", ", eval = FALSE", match)
+    } else if (!grepl(", eval = FALSE", match)) {
+      # If ", eval = FALSE" is not present, insert it
       new_match <- sub("(cosinor\\(.*)(\\))", "\\1, eval = FALSE\\2", match)
+    } else {
+      # If ", eval = FALSE" is already present, keep it as is
+      new_match <- match
     }
     
     # Evaluate the expression using the data environment

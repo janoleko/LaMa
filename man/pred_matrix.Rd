@@ -4,12 +4,14 @@
 \alias{pred_matrix}
 \title{Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}}
 \usage{
-pred_matrix(model_matrices, newdata)
+pred_matrix(model_matrices, newdata, exlude = NULL)
 }
 \arguments{
 \item{model_matrices}{model_matrices object as returned from \code{\link{make_matrices}}}
 
 \item{newdata}{data frame containing the variables in the formula and new data for which to evaluate the basis}
+
+\item{exclude}{optional vector of terms to set to zero in the predicted design matrix. Useful for predicting main effects only when e.g. \code{sd(..., bs = "re")} terms are present. See \code{mgcv::predict.gam} for more details.}
 }
 \value{
 prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}

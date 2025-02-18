@@ -226,7 +226,7 @@ make_matrices = function(formula,
 #'
 #' @param model_matrices model_matrices object as returned from \code{\link{make_matrices}}
 #' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
-#'
+#' @param exclude optional vector of terms to set to zero in the predicted design matrix. Useful for predicting main effects only when e.g. \code{sd(..., bs = "re")} terms are present. See \code{mgcv::predict.gam} for more details.
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
 #' 
@@ -238,14 +238,16 @@ make_matrices = function(formula,
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 pred_matrix = function(model_matrices, 
-                       newdata) {
+                       newdata,
+                       exlude = NULL) {
   gam_setup0 = mgcv::gam(model_matrices$formula, 
                          data = cbind(dummy = 1, model_matrices$data),
                          knots = model_matrices$knots)
   
   stats::predict(gam_setup0, 
                  newdata = cbind(dummy = 1, newdata), 
-                 type = "lpmatrix")
+                 type = "lpmatrix",
+                 exclude = exclude)
 }
 
 

@@ -4,7 +4,7 @@
 \alias{pred_matrix}
 \title{Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}}
 \usage{
-pred_matrix(model_matrices, newdata, exlude = NULL)
+pred_matrix(model_matrices, newdata, exclude = NULL)
 }
 \arguments{
 \item{model_matrices}{model_matrices object as returned from \code{\link{make_matrices}}}

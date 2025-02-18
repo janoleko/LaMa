@@ -232,22 +232,22 @@ make_matrices = function(formula,
 #' 
 #' @importFrom mgcv gam
 #' @importFrom mgcv s
-#' @importFrom stats predict
+#' @importFrom mgcv predict.gam
 #'
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 pred_matrix = function(model_matrices, 
                        newdata,
-                       exlude = NULL) {
+                       exclude = NULL) {
   gam_setup0 = mgcv::gam(model_matrices$formula, 
                          data = cbind(dummy = 1, model_matrices$data),
                          knots = model_matrices$knots)
   
-  stats::predict(gam_setup0, 
-                 newdata = cbind(dummy = 1, newdata), 
-                 type = "lpmatrix",
-                 exclude = exclude)
+  predict.gam(gam_setup0, 
+              newdata = cbind(dummy = 1, newdata), 
+              type = "lpmatrix",
+              exclude = exclude)
 }
 
 

@@ -1180,20 +1180,21 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   newpar <- obj$par # saving initial parameter value as vector to initialize optimization in loop
   
   # own printing of maximum gradient component if silent = 0
-  gradcounter <- 1
-  if(silent == 0){
-    newgrad <- function(par){
-      gr <- obj$gr(par)
-      if(gradcounter %% 10 == 0){
-        iter <- gradcounter / 10
-        cat("  iter:", iter, "-", "inner mgc:", max(abs(gr)), "\n")
-      }
-      gradcounter <<- gradcounter + 1
-      gr
-    }
-  } else{
-    newgrad <- obj$gr
-  }
+  # gradcounter <- 1
+  # if(silent == 0){
+  #   newgrad <- function(par){
+  #     gr <- obj$gr(par)
+  #     if(gradcounter %% 10 == 0){
+  #       iter <- gradcounter / 10
+  #       cat("  iter:", iter, "-", "inner mgc:", max(abs(gr)), "\n")
+  #     }
+  #     gradcounter <<- gradcounter + 1
+  #     gr
+  #   }
+  # } else{
+  #   newgrad <- obj$gr
+  # }
+  newgrad <- obj$gr
   
   # prepwork -> running reporting to get necessary quantities
   mod0 <- obj$report() # getting all necessary information from penalty report
@@ -1263,18 +1264,30 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   # initialising convergence check index (initially for all lambdas)
   convInd <- seq_along(lambda_mapped)
   
+  # controlling optim printing
+  if(silent == 0){
+    control = c(control,
+                list(
+                  trace = 1,
+                  REPORT = 10
+                ))
+  }
+  
   ### updating algorithm
   # loop over outer iterations until convergence or maxiter
   for(k in seq_len(maxiter)){
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
-    gradcounter <- 1
+    # gradcounter <- 1
+    if(silent == 0){
+      cat("\nInner optimisation:", "\n")
+    }
     opt <- stats::optim(newpar, obj$fn, newgrad, 
                         method = "BFGS", hessian = TRUE, # return hessian in the end
                         control = control)
     if(silent == 0){
       gr <- obj$gr(opt$par)
-      cat("  final inner mgc:", max(abs(gr)), "\n")
+      cat("final inner mgc:", max(abs(gr)), "\n")
     }
     
     # setting new optimum par for next iteration
@@ -1408,11 +1421,11 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     mgc <- max(abs(outer_gr[convInd]))
     
     if(silent < 2){
-      cat("outer", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
+      cat("\nouter", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
       if(silent == 0){
         #   cat("  gradient:", outer_gr, "\n")
         # } else{
-        cat("mgc:", mgc, "\n")
+        cat("outer mgc:", mgc, "\n")
       }
       
       # print only if something changes
@@ -1456,7 +1469,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
                       control = control)
   if(silent == 0){
     gr = obj$gr(opt$par)
-    cat("  final inner mgc:", max(abs(gr)), "\n")
+    cat("final inner mgc:", max(abs(gr)), "\n")
   }
   
   # setting new optimum par for next iteration

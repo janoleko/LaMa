@@ -1537,7 +1537,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   # removing unnecessary elements that are only reported for qreml
   mod <- mod[!names(mod) %in% c("Pen", "S")] 
   
-  if(length(tp_ind) > 0){ # only simple smooths, joint uncertainty possible
+  if(length(tp_ind) == 0){ # only simple smooths, joint uncertainty possible
     if(joint_unc){
       ### constructing joint object
       parlist$loglambda <- log(mod[[psname]])

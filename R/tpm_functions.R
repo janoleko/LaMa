@@ -74,6 +74,7 @@ tpm = function(param, byrow = FALSE) {
 #' @return array of transition probability matrices of dimension c(N,N,n)
 #' @export
 #' @import RTMB
+#' @importFrom stats na.omit
 #'
 #' @examples
 #' Z = matrix(runif(200), ncol = 2)
@@ -95,12 +96,16 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
   
   # report quantities for easy use later
   if(report) {
-    # Setting colnames for beta: Inherit colnames from Z
-    colnames(beta) <- colnames(Z)
-    # Setting rownames depends on byrow
-    names <- outer(paste0("S", 1:N, ">"), paste0("S", 1:N), FUN = paste0)
-    diag(names) <- NA
-    rownames(beta) <- na.omit(if (byrow) c(t(names)) else c(names))
+    if(is.null(colnames(beta))){
+      # Setting colnames for beta: Inherit colnames from Z
+      colnames(beta) <- colnames(Z)
+    }
+    if(is.null(rownames(beta))){
+      # Setting rownames: depends on byrow
+      names <- outer(paste0("S", 1:N, ">"), paste0("S", 1:N), FUN = paste0) # matrix
+      diag(names) <- NA
+      rownames(beta) <- na.omit(if (byrow) c(t(names)) else c(names))
+    }
     RTMB::REPORT(beta)
   }
   

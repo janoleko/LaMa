@@ -95,6 +95,12 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
   
   # report quantities for easy use later
   if(report) {
+    # Setting colnames for beta: Inherit colnames from Z
+    colnames(beta) <- colnames(Z)
+    # Setting rownames depends on byrow
+    names <- outer(paste0("S", 1:N, ">"), paste0("S", 1:N), FUN = paste0)
+    diag(names) <- NA
+    rownames(beta) <- na.omit(if (byrow) c(t(names)) else c(names))
     RTMB::REPORT(beta)
   }
   

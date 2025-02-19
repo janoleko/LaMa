@@ -203,13 +203,17 @@ make_matrices = function(formula,
   }
   names(S2) = term_labels
   
-  pardim = sapply(S2, function(x){
+  pardim <- list(fixed_eff = gam_setup$nsdf)
+  
+  pardim_smooth = sapply(S2, function(x){
     if(is.matrix(x)){
       return(nrow(x))
     } else{
       return(nrow(x[[1]]))
     }
   })
+  
+  pardim = c(pardim, pardim_smooth)
   
   return(list(Z = Z, 
               S = S, 

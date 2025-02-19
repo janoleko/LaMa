@@ -758,32 +758,43 @@ qreml = function(pnll, # penalized negative log-likelihood function
 #'
 #' @param object a fitted model object returned by \code{\link{qreml}}
 #' @param k numeric, the penalty per parameter to be used; the default \code{k = 2} is the classical AIC.
+#' @param ... can include \code{nObs} number of observations, only used for BIC. If not provided, the function tries to extract it from the model object.
 #'
 #' @return numeric value with the corresponding AIC (or BIC, or ..., depending on k)
-#' @export
 #'
 #' @examples
 #' ## no examples
+#' @name AIC.BIC.qremlModel
+NULL
+
+#' @rdname AIC.BIC.qremlModel
+#' @export
 AIC.qremlModel <- function(object, k = 2){
   message("Computing conditional AIC (not marginal)")
-  message("Models with different fixed effect structures are not comparible when estimated by REML.")
+  message("Models with different fixed effect structures are not comparable when estimated by REML.")
   -2 * object$llk + k * object$edf
 }
 
-
-# BIC.qremlModel <- function(object, nObs = NULL){
-#   message("Computing conditional BIC (not marginal)")
-#   message("Models with different fixed effect structures are not comparible when estimated by REML.")
-#   if(is.null(nObs)){
-#     if(is.null(object$allprobs)){
-#       stop("Could not determine the number of observations.\n")
-#     } else{
-#       nObs = nrow(object$allprobs)
-#     }
-#   }
-#   -2 * object$llk + log(nObs) * object$edf
-# }
-
+#' @rdname AIC.BIC.qremlModel
+#' @export
+#' @importFrom stats BIC
+BIC.qremlModel <- function(object, ...) {
+  message("Computing conditional AIC (not marginal)")
+  message("Models with different fixed effect structures are not comparable when estimated by REML.")
+  
+  args <- list(...)  # Capture additional arguments
+  nObs <- args$nObs  # Extract nObs if provided
+  
+  if (is.null(nObs)) {
+    if (is.null(object$allprobs)) {
+      stop("Could not determine the number of observations\n")
+    } else {
+      nObs <- nrow(object$allprobs)
+    }
+  }
+  
+  AIC.qremlModel(object, k = log(nObs))
+}
 
 #' Computes generalised quadratic-form penalties
 #'
@@ -1266,11 +1277,12 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   
   # controlling optim printing
   if(silent == 0){
-    control = c(control,
-                list(
-                  trace = 1,
-                  REPORT = 10
-                ))
+    if(is.null(control$trace)){
+      control$trace = 1
+    } 
+    if(is.null(control$REPORT)){
+      control$REPORT = 10
+    }
   }
   
   ### updating algorithm
@@ -1458,6 +1470,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   if(silent < 2){
     if(any(smoothing != 1)){
       cat("Smoothing factor:", smoothing, "\n")
+      cat("\n")
     }
     cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
   }

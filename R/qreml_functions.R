@@ -1470,13 +1470,16 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   if(silent < 2){
     if(any(smoothing != 1)){
       cat("Smoothing factor:", smoothing, "\n")
-      cat("\n")
     }
-    cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
+    if(silent == 0){
+      cat("\nFinal model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
+    } else{
+      cat("Final model fit with", paste0(psname, ":"), round(lambda, 3), "\n")
+    }
   }
   
   # fitting the model conditional on lambda: current local lambda will be pulled by f
-  gradcounter <- 1
+  # gradcounter <- 1
   opt <- stats::optim(newpar, obj$fn, newgrad, 
                       method = "BFGS", hessian = TRUE, # return hessian in the end
                       control = control)

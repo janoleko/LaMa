@@ -779,7 +779,7 @@ AIC.qremlModel <- function(object, k = 2){
 #' @export
 #' @importFrom stats BIC
 BIC.qremlModel <- function(object, ...) {
-  message("Computing conditional AIC (not marginal)")
+  message("Computing conditional BIC (not marginal)")
   message("Models with different fixed effect structures are not comparable when estimated by REML.")
   
   args <- list(...)  # Capture additional arguments
@@ -793,7 +793,7 @@ BIC.qremlModel <- function(object, ...) {
     }
   }
   
-  AIC.qremlModel(object, k = log(nObs))
+  -2 * object$llk + log(nObs) * object$edf
 }
 
 #' Computes generalised quadratic-form penalties

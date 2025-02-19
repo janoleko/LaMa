@@ -1601,7 +1601,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     }
   } else{
     if(joint_unc){
-      cat("Joint uncercainty is currently not possible for models involving tensor products.", "\n")
+      message("Joint uncercainty is currently not possible for models involving tensor products.")
     }
   }
   

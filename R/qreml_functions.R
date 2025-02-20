@@ -345,22 +345,29 @@ qreml = function(pnll, # penalized negative log-likelihood function
       msg <- "'map' cannot contain random effects or spline parameters"
       stop(msg)
     }
-    # make factor
+    # make factor if not
     if(!all(sapply(map, is.factor))){
       message("Converting map to factor")
     }
-    map = lapply(map, factor)
+    map <- lapply(map, factor)
+    # if there is mapping but no psname map, add psname map
+    if(is.null(map[[psname]])){
+      map[[psname]] = factor(seq_along(lambda))
+    }
   } else {
+    # initialises a list only having named element psname
     map[[psname]] = factor(seq_along(lambda))
   }
-  lambda_map = map[[psname]]
+  # separate out psname map
+  lambda_map <- map[[psname]]
   if(length(lambda_map) != length(lambda)){
-    msg = paste0("Length of map argument for ", psname, " has wrong length.")
+    msg <- paste0("Length of map argument for ", psname, " has wrong length.")
     stop(msg)
   }
   
   # pop lambda_map from map list
-  map = map[names(map) != psname]
+  map <- map[names(map) != psname]
+  # if the remaining map is now an empty list, set to NULL to work with MakeADFun
   if(length(map) == 0) map = NULL
   
   # deal with mapping of penalty strength parameters
@@ -1158,14 +1165,20 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
       msg <- "'map' cannot contain random effects or spline parameters"
       stop(msg)
     }
-    # make factor
+    # make factor if not
     if(!all(sapply(map, is.factor))){
       message("Converting map to factor")
     }
     map <- lapply(map, factor)
+    # if there is mapping but no psname map, add psname map
+    if(is.null(map[[psname]])){
+      map[[psname]] = factor(seq_along(lambda))
+    }
   } else {
+    # initialises a list only having named element psname
     map[[psname]] = factor(seq_along(lambda))
   }
+  # separate out psname map
   lambda_map <- map[[psname]]
   if(length(lambda_map) != length(lambda)){
     msg <- paste0("Length of map argument for ", psname, " has wrong length.")
@@ -1174,6 +1187,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   
   # pop lambda_map from map list
   map <- map[names(map) != psname]
+  # if the remaining map is now an empty list, set to NULL to work with MakeADFun
   if(length(map) == 0) map = NULL
   
   # deal with mapping of penalty strength parameters

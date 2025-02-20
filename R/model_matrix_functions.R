@@ -205,7 +205,7 @@ make_matrices = function(formula,
   
   pardim <- list(fixed_eff = gam_setup$nsdf)
   
-  pardim_smooth = sapply(S2, function(x){
+  pardim_smooth = sapply(S, function(x){
     if(is.matrix(x)){
       return(nrow(x))
     } else{

@@ -958,7 +958,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
     
     # Vectorised calculation of penalty for each random effect
     quadform = rowSums(current_re %*% S[[i]] * current_re)
-    Pen[[ind]] = quadform
+    Pen[[i]] = quadform
     
     # Apply lambda directly using precomputed indices
     pen = pen + sum(thislambda * quadform)

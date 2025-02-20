@@ -230,7 +230,21 @@ penalty = function(re_coef, S, lambda) {
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #' # @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
 #'
-#' @return returns a model list influenced by the users report statements in \code{pnll}
+#' @return model object of class 'qremlModel'. This is a list containing:
+#' \item{...}{everything that is reported inside \code{pnll} using \code{RTMB::REPORT()}. When using \code{forward}, \code{tpm_g}, etc., this may involve automatically reported objects.}
+#' \item{obj}{\code{RTMB} AD object containing the final conditional model fit}
+#' \item{psname}{final penalty strength parameter vector}
+#' \item{all_psname}{list of all penalty strength parameter vectors over the iterations}
+#' \item{par}{named estimated parameter list in the same structure as the initial \code{par}. Note that the name \code{par} is not fixed but depends on the original name of your \code{par} list.}
+#' \item{relist_par}{function to convert the estimated parameter vector to the estimated parameter list. This is useful for uncertainty quantification based on sampling from a multivariate normal distribution.}
+#' \item{par_vec}{estimated parameter vector}
+#' \item{llk}{unpenalised log-likelihood at the optimum}
+#' \item{n_fixpar}{number of fixed, i.e. unpenalised, parameters}
+#' \item{edf}{overall effective number of parameters}
+#' \item{all_edf}{list of effective number of parameters for each smooth}
+#' \item{Hessian_condtional}{final Hessian of the conditional penalised fit}
+#' \item{obj_joint}{if \code{joint_unc = TRUE}, joint \code{RTMB} object for joint uncertainty quantification in model and penalty parameters.}
+#' 
 #' @export
 #'
 #' @import RTMB
@@ -248,7 +262,7 @@ penalty = function(re_coef, S, lambda) {
 #' dat = list(step = data$step, # step length
 #'            tod = data$tod, # time of day covariate
 #'            N = 2, # number of states
-#'            lambda = rep(10,2)) # initial penalty strength
+#'            lambda = rep(100,2)) # initial penalty strength
 #'
 #' # building model matrices
 #' modmat = make_matrices(~ s(tod, bs = "cp"), 
@@ -1019,7 +1033,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' Under the hood, \code{qreml} uses the R package \code{RTMB} for automatic differentiation in the inner optimisation.
 #' The user has to specify the \strong{penalised negative log-likelihood function} \code{pnll} structured as dictated by \code{RTMB} and use the \code{\link{penalty}} function to compute the quadratic-form penalty inside the likelihood.
 #' 
-#' @seealso \code{\link{penalty}} to compute the penalty inside the likelihood function
+#' @seealso \code{\link{penalty}} and \code{\link{penalty2}} to compute the penalty inside the likelihood function
 #'
 #' @param pnll penalised negative log-likelihood function that is structured as dictated by \code{RTMB} and uses the \code{\link{penalty}} function from \code{LaMa} to compute the penalty
 #'
@@ -1055,7 +1069,21 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #' # @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
 #'
-#' @return returns a model list influenced by the users report statements in \code{pnll}
+#' @return model object of class 'qremlModel'. This is a list containing:
+#' \item{...}{everything that is reported inside \code{pnll} using \code{RTMB::REPORT()}. When using \code{forward}, \code{tpm_g}, etc., this may involve automatically reported objects.}
+#' \item{obj}{\code{RTMB} AD object containing the final conditional model fit}
+#' \item{psname}{final penalty strength parameter vector}
+#' \item{all_psname}{list of all penalty strength parameter vectors over the iterations}
+#' \item{par}{named estimated parameter list in the same structure as the initial \code{par}. Note that the name \code{par} is not fixed but depends on the original name of your \code{par} list.}
+#' \item{relist_par}{function to convert the estimated parameter vector to the estimated parameter list. This is useful for uncertainty quantification based on sampling from a multivariate normal distribution.}
+#' \item{par_vec}{estimated parameter vector}
+#' \item{llk}{unpenalised log-likelihood at the optimum}
+#' \item{n_fixpar}{number of fixed, i.e. unpenalised, parameters}
+#' \item{edf}{overall effective number of parameters}
+#' \item{all_edf}{list of effective number of parameters for each smooth}
+#' \item{Hessian_condtional}{final Hessian of the conditional penalised fit}
+#' \item{obj_joint}{if \code{joint_unc = TRUE}, joint \code{RTMB} object for joint uncertainty quantification in model and penalty parameters.}
+#'
 #' @export
 #'
 #' @import RTMB
@@ -1098,7 +1126,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' }
 #'
 #' # model fitting
-#' mod = qreml(pnll, par, dat, random = "betaspline")
+#' mod = qreml2(pnll, par, dat, random = "betaspline")
 qreml2 <- function(pnll, # penalized negative log-likelihood function
                    par, # initial parameter list
                    dat, # initial dat object, currently needs to be called dat!
@@ -1447,7 +1475,8 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     mgc <- max(abs(outer_gr[convInd]))
     
     if(silent < 2){
-      cat("\nouter", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
+      if(silent == 0) cat("\n")
+      cat("outer", k, "-", paste0(psname, ":"), round(lambda, 3), "\n")
       if(silent == 0){
         #   cat("  gradient:", outer_gr, "\n")
         # } else{
@@ -1553,6 +1582,10 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   # assign log-likelihood at optimum to return object
   mod$llk <- -pnll(parlist)
   
+  # number of fixed parameters
+  mod$n_fixpar <- length(unlist(par[!(names(par) %in% random)]))
+  # mod$n_fixpar = length(opt$par)
+  
   ## calculating effective degrees of freedom for final model
   # mod$edf = list()
   # l = 1
@@ -1566,13 +1599,10 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   #   mod$edf[[i]] = edoF_i
   # }
   # this is probaly not correct
+  
+  mod$edf <- mod$n_fixpar + sum(edoF)
+  
   mod$all_edf <- edoF
-  
-  # number of fixed parameters
-  mod$n_fixpar <- length(unlist(par[!(names(par) %in% random)]))
-  # mod$n_fixpar = length(opt$par)
-  
-  mod$edf <- mod$n_fixpar + sum(mod$all_edf)
   
   # assing conditinoal Hessian
   mod$Hessian_conditional <- J

@@ -70,7 +70,20 @@ We advise against changing the default values of \code{reltol} and \code{maxit} 
 # @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.}
 }
 \value{
-returns a model list influenced by the users report statements in \code{pnll}
+model object of class 'qremlModel'. This is a list containing:
+\item{...}{everything that is reported inside \code{pnll} using \code{RTMB::REPORT()}. When using \code{forward}, \code{tpm_g}, etc., this may involve automatically reported objects.}
+\item{obj}{\code{RTMB} AD object containing the final conditional model fit}
+\item{psname}{final penalty strength parameter vector}
+\item{all_psname}{list of all penalty strength parameter vectors over the iterations}
+\item{par}{named estimated parameter list in the same structure as the initial \code{par}. Note that the name \code{par} is not fixed but depends on the original name of your \code{par} list.}
+\item{relist_par}{function to convert the estimated parameter vector to the estimated parameter list. This is useful for uncertainty quantification based on sampling from a multivariate normal distribution.}
+\item{par_vec}{estimated parameter vector}
+\item{llk}{unpenalised log-likelihood at the optimum}
+\item{n_fixpar}{number of fixed, i.e. unpenalised, parameters}
+\item{edf}{overall effective number of parameters}
+\item{all_edf}{list of effective number of parameters for each smooth}
+\item{Hessian_condtional}{final Hessian of the conditional penalised fit}
+\item{obj_joint}{if \code{joint_unc = TRUE}, joint \code{RTMB} object for joint uncertainty quantification in model and penalty parameters.}
 }
 \description{
 This algorithm can be used very flexibly to fit statistical models that involve \strong{penalised splines} or simple \strong{i.i.d. random effects}, i.e. that have penalties of the form
@@ -95,7 +108,7 @@ par = list(logmu = log(c(0.3, 1)), # step mean
 dat = list(step = data$step, # step length
            tod = data$tod, # time of day covariate
            N = 2, # number of states
-           lambda = rep(10,2)) # initial penalty strength
+           lambda = rep(100,2)) # initial penalty strength
 
 # building model matrices
 modmat = make_matrices(~ s(tod, bs = "cp"), 

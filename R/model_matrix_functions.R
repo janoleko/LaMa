@@ -172,7 +172,7 @@ make_matrices = function(formula,
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
   
   # first option: tensorproducts -> save marginal penalty matrices
-  S = lapply(gam_setup$smooth, function(x){
+  S2 = lapply(gam_setup$smooth, function(x){
     if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
       return(x$S[[1]])
     } else{ # multivariate smooth -> several penalty matrices
@@ -182,26 +182,26 @@ make_matrices = function(formula,
       return(S_sublist)
     }
   })
-  names(S) = term_labels
+  names(S2) = term_labels
   
   # second option: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
-  S2 = list()
+  S = list()
   counter = 1
   for(i in seq_along(gam_setup$smooth)){
     sm = gam_setup$smooth[[i]]
     if(is.null(sm$margin)){
-      S2[[i]] = gam_setup$S[[counter]]
+      S[[i]] = gam_setup$S[[counter]]
       counter = counter + 1
     } else{
       nPenMat = length(sm$margin)
       S_sublist = gam_setup$S[counter:(counter + nPenMat - 1)]
       margin_names = sapply(sm$margin, function(y) y$term)
       names(S_sublist) = margin_names
-      S2[[i]] = S_sublist
+      S[[i]] = S_sublist
       counter = counter + nPenMat
     }
   }
-  names(S2) = term_labels
+  names(S) = term_labels
   
   pardim <- list(fixed_eff = gam_setup$nsdf)
   

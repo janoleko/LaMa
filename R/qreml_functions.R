@@ -1508,7 +1508,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     # if(max(abs(
     #   (lambda - unlist(Lambdas[[k]]))[convInd] / unlist(Lambdas[[k]])[convInd]
     # )) < tol){
-    if(k >= 5 & mgc < tol | opt$counts[2] < 3){
+    if(k >= 5 & mgc < tol | opt$counts[2] <= 5){
       if(silent < 2){
         cat("Converged\n")
       }

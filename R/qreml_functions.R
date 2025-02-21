@@ -1305,6 +1305,19 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   Lambdas <- list()
   Lambdas[[1]] <- reshape_lambda(lambda_lengths, lambda) # reshaping to match structure of random effects
   
+  # naming lambdas better:
+  # simple smooths: smooth_name.1, ..., smooth_name.re_lengths[[i]]
+  for(ind in seq_along(simple_ind)){
+    names(Lambdas[[1]][simple_ind][[ind]]) <- seq_along(Lambdas[[1]][simple_ind][[ind]])
+  }
+  # tensorproducts: same but additionally append margin name for clarity
+  for(ind in seq_along(tp_ind)){
+    margin_names <- names(S[[tp_ind[ind]]])
+    names(Lambdas[[1]][tp_ind][[ind]]) <- paste0(rep(1:re_lengths[tp_ind[ind]], each = length(margin_names)),".",
+                                                 rep(margin_names, re_lengths[tp_ind[ind]]))
+  }
+  lambda_names <- names(unlist(Lambdas[[1]]))
+  
   if(silent < 2){
     cat("Initialising with", paste0(psname, ":"), round(lambda, 3), "\n")
   }
@@ -1460,6 +1473,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     lambdas_k[which(lambdas_k < 0)] <- 0
     
     # assigning new lambda to global list
+    Lambdas[[k+1]] <- Lambdas[[k]] # just to get the nice naming
     Lambdas[[k+1]] <- reshape_lambda(lambda_lengths, lambdas_k)
     
     # updating lambda vector locally for next iteration
@@ -1559,6 +1573,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   }
   
   # assign final lambda to return object
+  names(lambda) <- lambda_names
   mod[[psname]] <- lambda
   
   # assigning all lambdas to return object

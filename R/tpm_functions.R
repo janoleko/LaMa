@@ -96,10 +96,10 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
   
   # report quantities for easy use later
   if(report) {
-    if(is.null(colnames(beta))){
+    #if(is.null(colnames(beta))){
       # Setting colnames for beta: Inherit colnames from Z
-      colnames(beta) <- colnames(Z)
-    }
+    colnames(beta) <- colnames(Z)
+    #}
     if(is.null(rownames(beta))){
       # Setting rownames: depends on byrow
       names <- outer(paste0("S", 1:N, ">"), paste0("S", 1:N), FUN = paste0) # matrix

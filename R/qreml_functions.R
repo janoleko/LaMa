@@ -1572,6 +1572,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     mod$allmods <- allmods
   }
   
+  
   # assign final lambda to return object
   names(lambda) <- lambda_names
   mod[[psname]] <- lambda
@@ -1621,6 +1622,81 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   
   # assing conditinoal Hessian
   mod$Hessian_conditional <- J
+  
+  # assign gradient function
+  mod$outer_gr <- function(lambda_mapped){
+    lambda <- unmap_lambda(lambda_mapped, lambda_map, lambda0)
+    Lambda <- reshape_lambda(lambda_lengths, lambda)
+    
+    # fitting the model conditional on lambda: current local lambda will be pulled by f
+    if(silent == 0) cat("\nInner optimisation:", "\n")
+    opt <- stats::optim(newpar, obj$fn, newgrad,
+                        method = "BFGS", hessian = TRUE, # return hessian in the end
+                        control = control)
+    if(silent == 0){
+      gr <- obj$gr(opt$par)
+      cat("final inner mgc:", max(abs(gr)), "\n")
+    }
+    # setting new optimum par for next iteration
+    newpar <- opt$par
+    thismod <- obj$report()
+    J <- opt$hessian
+    J_inv <- MASS::ginv(J)
+    # looping over distinct random effects (matrices)
+    edoF <- rep(NA, length(lambda)) # initialise edoF vector
+    pens <- rep(NA, length(lambda)) # initialise penalty vector
+    l <- 1 # counter for lambda vector
+    # Loop over random effects (list entries)
+    for(i in 1:n_re){
+      # simple random effects with one smoothing parameter
+      if(i %in% simple_ind){
+        for(j in 1:nrow(re_inds[[i]])){
+          # indices of this random effect
+          idx <- re_inds[[i]][j,]
+          # effective degrees of freedom for this random effect: J^-1_p J
+          edoF[l] <- ranks[i] - Lambda[[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]])) # trace(J^-1 \lambda S)
+          # quadratic penalty: b^t S b
+          pens[l] <- thismod$Pen[[i]][j]
+          l <- l+1
+        }
+      } else if(i %in% tp_ind){ # more complicated tensorproduct random effects with multiple smoothing parameters
+        # how many penalty matrices?
+        n_pen <- length(S[[i]])
+        # looping over similar random effects (rows of re_coefs[[i]])
+        for(j in 1:nrow(re_inds[[i]])){
+          # indices of this random effect
+          idx <- re_inds[[i]][j,]
+          oldlambda <- Lambda[[i]][(j-1) * n_pen + 1:n_pen]
+          # effective degrees of freedom for this random effect
+          # calculate (lambda_1* S_1 + ... + lambda_{n_pen} S_{n_pen})^-1
+          thisS <- oldlambda[1] * S[[i]][[1]]
+          for(pen in 2:n_pen) thisS <- thisS + oldlambda[pen] * S[[i]][[pen]]
+          thisS_inv <- MASS::ginv(thisS) # Moore-Penrose pseudo-inverse via SVD
+          edoFs <- numeric(n_pen)
+          for(pen in 1:n_pen){
+            edoFs[pen] <- oldlambda[pen] *
+              (sum(rowSums(thisS_inv * S[[i]][[pen]])) - # tr(S^-1 S_j)
+                 sum(rowSums(J_inv[idx, idx] * S[[i]][[pen]]))) # tr(J^-1 S_j)
+          }
+          edoF[l : (l + n_pen - 1)] <- edoFs
+          # quadratic penalty: b^t S b
+          pens[l : (l + n_pen - 1)] <- mod$Pen[[i]][[j]]
+          l <- l + n_pen
+        }
+      }
+    }
+    # now loop over actual lambda_mapped to update
+    outer_gr <- numeric(length(lambda_mapped))
+    for(i in seq_along(lambda_mapped)){
+      this_level <- levels(lambda_map)[i]
+      this_ind <- which(lambda_map == this_level)
+      this_edoF <- sum(edoF[this_ind])
+      this_pen <- sum(pens[this_ind])
+      # gradient
+      outer_gr[i] <- -0.5 * this_pen + 1 / (2 * lambda_mapped[i]) * this_edoF
+    }
+    outer_gr
+  }
   
   # removing unnecessary elements that are only reported for qreml
   mod <- mod[!names(mod) %in% c("Pen", "S")] 

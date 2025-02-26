@@ -1788,6 +1788,10 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
 #' Report uncertainty of the estimated smoothing parameters or variances
 #' 
 #' Computes standard deviations for the smoothing parameters of a model object returned by \code{qreml2} using the delta method.
+#' 
+#' @details
+#' The computations are based on the approximate gradient of the restricted log likelihood. The outer Hessian is computed by finite differencing of this gradient. If the inverse smoothing parameters are requested, the standard deviations are transformed to the variances using the delta method.
+#' 
 #'
 #' @param mod model objects as returned by \code{\link{qreml2}}
 #' @param invert optional logical; if \code{TRUE}, the inverse smoothing paramaters (variances) are returned along with the transformed standard deviations obtained via the delta method.

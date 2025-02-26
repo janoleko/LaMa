@@ -1813,7 +1813,13 @@ sdreport_outer <- function(mod, invert = FALSE){
   map_lambda <- mod[[paste0("map_", psname)]]
   outer_gr <- mod$outer_gr
 
+  # map lambda
   lambda_mapped <- map_lambda(mod[[psname]])
+  
+  # map names of lambda
+  lambda_names <- names(mod[[psname]])
+  names(lambda_names) <- lambda_names
+  mapped_names <- map_lambda(lambda_names)
 
   H <- - jacobian(outer_gr, lambda_mapped, method = "simple")
   I <- ginv(H)
@@ -1829,6 +1835,7 @@ sdreport_outer <- function(mod, invert = FALSE){
     sds <- sqrt(vars)
     self$report <- rbind(par = lambda_mapped, sd = sds)
   }
+  colnames(self$report) <- mapped_names
   
   self$Hessian <- H
   class(self) = "sdreport_outer"

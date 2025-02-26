@@ -1572,7 +1572,6 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     mod$allmods <- allmods
   }
   
-  obj2 <- lapply(obj, identity)
   # assign gradient function
   mod$outer_gr <- function(x){
     
@@ -1671,6 +1670,8 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   mod[[argname_par]] <- parlist # and assing to return object
   
   mod[[paste0("relist_", argname_par)]] <- obj$env$parList
+  mod[[paste0("map_", psname)]] <- function(lambda) map_lambda(lambda, lambda_map)
+  mod$psname <- psname
   
   # assign estimated parameter as vector
   mod[[paste0(argname_par, "_vec")]] <- opt$par
@@ -1782,3 +1783,50 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   return(mod)
 }
 
+
+
+#' Report uncertainty of the estimated smoothing parameters or variances
+#' 
+#' Computes standard deviations for the smoothing parameters of a model object returned by \code{qreml2} using the delta method.
+#'
+#' @param mod model objects as returned by \code{\link{qreml2}}
+#' @param invert optional logical; if \code{TRUE}, the inverse smoothing paramaters (variances) are returned along with the transformed standard deviations obtained via the delta method.
+#'
+#' @return list containing \code{report} matrix summarising parameters and standard deviations as well as the outer \code{Hessian} matrix.
+#' @export
+#' 
+#' @importFrom numDeriv jacobian
+#' @importFrom MASS ginv
+#'
+#' @examples
+#' ## no examples
+sdreport_outer <- function(mod, invert = FALSE){
+  if(!inherits(mod, "qremlModel")){
+    stop("Model object is not of class 'qremlModel'")
+  }
+  
+  psname <- mod$psname
+  map_lambda <- mod[[paste0("map_", psname)]]
+  outer_gr <- mod$outer_gr
+
+  lambda_mapped <- map_lambda(mod[[psname]])
+
+  H <- - jacobian(outer_gr, lambda_mapped, method = "simple")
+  I <- ginv(H)
+  vars <- diag(I)
+  
+  self <- list()
+  
+  if(invert){
+    vars <- vars * 1 / (2 * lambda_mapped)^2
+    sds <- sqrt(vars)
+    self$report <- rbind(par = 1/lambda_mapped, sd = sds)
+  } else{
+    sds <- sqrt(vars)
+    self$report <- rbind(par = lambda_mapped, sd = sds)
+  }
+  
+  self$Hessian <- H
+  class(self) = "sdreport_outer"
+  self
+}

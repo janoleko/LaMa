@@ -792,7 +792,8 @@ NULL
 #' @export
 AIC.qremlModel <- function(object, k = 2){
   message("Computing conditional AIC (not marginal)")
-  message("Models with different fixed effect structures are not comparable when estimated by REML.")
+  # message("Models with different fixed effect structures are not comparable when estimated by REML.")
+  
   -2 * object$llk + k * object$edf
 }
 
@@ -801,7 +802,7 @@ AIC.qremlModel <- function(object, k = 2){
 #' @importFrom stats BIC
 BIC.qremlModel <- function(object, ...) {
   message("Computing conditional BIC (not marginal)")
-  message("Models with different fixed effect structures are not comparable when estimated by REML.")
+  # message("Models with different fixed effect structures are not comparable when estimated by REML.")
   
   args <- list(...)  # Capture additional arguments
   nObs <- args$nObs  # Extract nObs if provided

@@ -1452,7 +1452,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
       lambda_mapped[i] <- (1-alpha) * lambda_new + alpha * lambda_mapped[i]
       
       # gradient
-      outer_gr[i] <- -0.5 * this_pen + 1/(2*lambda_mapped[i]) * this_edoF
+      outer_gr[i] <- -0.5 * this_pen + 1 / (2 * lambda_mapped[i]) * this_edoF
       
       # check for cycling behaviour
       # if(k > 2){
@@ -1546,7 +1546,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   }
   
   # setting new optimum par for next iteration
-  newpar <- opt$par 
+  # newpar <- opt$par 
   
   # reporting to extract penalties
   mod <- obj$report() 
@@ -1572,75 +1572,27 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     mod$allmods <- allmods
   }
   
-  
-  # assign final lambda to return object
-  names(lambda) <- lambda_names
-  mod[[psname]] <- lambda
-  
-  # assigning all lambdas to return object
-  mod[[paste0("all_", psname)]] <- Lambdas
-  
-  # calculating unpenalized log-likelihood at final parameter values
-  lambda <- rep(0, length(lambda))
-  dat[[psname]] <- lambda
-  
-  # format parameter to list
-  # skeleton = utils::as.relistable(par)
-  # parlist = utils::relist(opt$par, skeleton)
-  parlist <- obj$env$parList(opt$par)
-  mod[[argname_par]] <- parlist # and assing to return object
-  
-  mod[[paste0("relist_", argname_par)]] <- obj$env$parList
-  
-  # assign estimated parameter as vector
-  mod[[paste0(argname_par, "_vec")]] <- opt$par
-  
-  # assign log-likelihood at optimum to return object
-  mod$llk <- -pnll(parlist)
-  
-  # number of fixed parameters
-  mod$n_fixpar <- length(unlist(par[!(names(par) %in% random)]))
-  # mod$n_fixpar = length(opt$par)
-  
-  ## calculating effective degrees of freedom for final model
-  # mod$edf = list()
-  # l = 1
-  # for(i in 1:n_re){
-  #   edoF_i = numeric(nrow(re_inds[[i]]))
-  #   for(j in 1:nrow(re_inds[[i]])){
-  #     # idx = re_inds[[i]][j,]
-  #     # edoF_i[j] = nrow(S[[i]]) - Lambdas[[k]][[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]]))
-  #     
-  #   }
-  #   mod$edf[[i]] = edoF_i
-  # }
-  # this is probaly not correct
-  
-  mod$edf <- mod$n_fixpar + sum(edoF)
-  
-  mod$all_edf <- edoF
-  
-  # assing conditinoal Hessian
-  mod$Hessian_conditional <- J
-  
+  obj2 <- lapply(obj, identity)
   # assign gradient function
-  mod$outer_gr <- function(lambda_mapped){
-    lambda <- unmap_lambda(lambda_mapped, lambda_map, lambda0)
+  mod$outer_gr <- function(x){
+    
+    lambda <- unmap_lambda(x, lambda_map, lambda0)
     Lambda <- reshape_lambda(lambda_lengths, lambda)
+    
+    environment(obj) = environment()
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     if(silent == 0) cat("\nInner optimisation:", "\n")
-    opt <- stats::optim(newpar, obj$fn, newgrad,
-                        method = "BFGS", hessian = TRUE, # return hessian in the end
-                        control = control)
+    inner_opt <- stats::optim(newpar, obj$fn, newgrad,
+                              method = "BFGS", hessian = TRUE, # return hessian in the end
+                              control = control)
     if(silent == 0){
-      gr <- obj$gr(opt$par)
+      gr <- obj$gr(inner_opt$par)
       cat("final inner mgc:", max(abs(gr)), "\n")
     }
     # setting new optimum par for next iteration
-    newpar <- opt$par
-    thismod <- obj$report()
-    J <- opt$hessian
+    thismod <- obj$report(inner_opt$par)
+    J <- inner_opt$hessian
     J_inv <- MASS::ginv(J)
     # looping over distinct random effects (matrices)
     edoF <- rep(NA, length(lambda)) # initialise edoF vector
@@ -1680,23 +1632,80 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
           }
           edoF[l : (l + n_pen - 1)] <- edoFs
           # quadratic penalty: b^t S b
-          pens[l : (l + n_pen - 1)] <- mod$Pen[[i]][[j]]
+          pens[l : (l + n_pen - 1)] <- thismod$Pen[[i]][[j]]
           l <- l + n_pen
         }
       }
     }
     # now loop over actual lambda_mapped to update
-    outer_gr <- numeric(length(lambda_mapped))
-    for(i in seq_along(lambda_mapped)){
+    outer_gr <- numeric(length(x))
+    for(i in seq_along(x)){
       this_level <- levels(lambda_map)[i]
       this_ind <- which(lambda_map == this_level)
       this_edoF <- sum(edoF[this_ind])
       this_pen <- sum(pens[this_ind])
       # gradient
-      outer_gr[i] <- -0.5 * this_pen + 1 / (2 * lambda_mapped[i]) * this_edoF
+      outer_gr[i] <- -0.5 * this_pen + 1 / (2 * x[i]) * this_edoF
     }
+    attr(outer_gr, "estimate") <- inner_opt$par
     outer_gr
   }
+  environment(mod$outer_gr) <- environment()
+  
+  
+  # assign final lambda to return object
+  names(lambda) <- lambda_names
+  mod[[psname]] <- lambda
+  
+  # assigning all lambdas to return object
+  mod[[paste0("all_", psname)]] <- Lambdas
+  
+  # calculating unpenalized log-likelihood at final parameter values
+  lambda <- rep(0, length(lambda))
+  dat[[psname]] <- lambda
+  
+  # format parameter to list
+  # skeleton = utils::as.relistable(par)
+  # parlist = utils::relist(opt$par, skeleton)
+  parlist <- obj$env$parList(opt$par)
+  mod[[argname_par]] <- parlist # and assing to return object
+  
+  mod[[paste0("relist_", argname_par)]] <- obj$env$parList
+  
+  # assign estimated parameter as vector
+  mod[[paste0(argname_par, "_vec")]] <- opt$par
+  
+  # assign log-likelihood at optimum to return object
+  mod$llk <- -pnll(parlist)
+  
+  # reassigning the correct lambda
+  lambda <- mod$lambda
+  dat[[psname]] <- lambda
+  
+  # number of fixed parameters
+  mod$n_fixpar <- length(unlist(par[!(names(par) %in% random)]))
+  # mod$n_fixpar = length(opt$par)
+  
+  ## calculating effective degrees of freedom for final model
+  # mod$edf = list()
+  # l = 1
+  # for(i in 1:n_re){
+  #   edoF_i = numeric(nrow(re_inds[[i]]))
+  #   for(j in 1:nrow(re_inds[[i]])){
+  #     # idx = re_inds[[i]][j,]
+  #     # edoF_i[j] = nrow(S[[i]]) - Lambdas[[k]][[i]][j] * sum(rowSums(J_inv[idx, idx] * S[[i]]))
+  #     
+  #   }
+  #   mod$edf[[i]] = edoF_i
+  # }
+  # this is probaly not correct
+  
+  mod$edf <- mod$n_fixpar + sum(edoF)
+  
+  mod$all_edf <- edoF
+  
+  # assing conditinoal Hessian
+  mod$Hessian_conditional <- J
   
   # removing unnecessary elements that are only reported for qreml
   mod <- mod[!names(mod) %in% c("Pen", "S")] 

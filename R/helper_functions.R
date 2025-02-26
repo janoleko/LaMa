@@ -48,9 +48,9 @@ map_lambda = function(lambda, map){
   lambda_levels = levels(map)
   for(l in seq_along(lambda_levels)){
     thislambda <- lambda[which(map == lambda_levels[l])]
-    if(is.numeric(thislambda)){
+    if(is.numeric(thislambda)){ # if numeric, take mean
       lambda_mapped[l] = mean(thislambda)
-    } else if(is.character(thislambda)){
+    } else if(is.character(thislambda)){ # if character, collapse with &
       lambda_mapped[l] = paste(thislambda, collapse = "&")
     }
   }

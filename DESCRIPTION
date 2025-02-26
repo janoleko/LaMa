@@ -30,7 +30,8 @@ Imports:
     methods,
     CircStats, 
     circular,
-    sn
+    sn,
+    numDeriv
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

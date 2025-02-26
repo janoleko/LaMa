@@ -51,7 +51,7 @@ map_lambda = function(lambda, map){
     if(is.numeric(thislambda)){
       lambda_mapped[l] = mean(thislambda)
     } else if(is.character(thislambda)){
-      lambda_mapped[l] = paste(thislambda, sep = "&")
+      lambda_mapped[l] = paste(thislambda, collapse = "&")
     }
   }
   names(lambda_mapped) = levels(map)

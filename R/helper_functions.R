@@ -72,7 +72,7 @@ unmap_lambda = function(lambda_mapped, map, lambda0){
 #' @return generalised log-determinant of \code{x}
 #' 
 #' @importFrom RTMB eigen
-gdeterminant <- function(x, eps = 1e-10, log = TRUE) {
+gdeterminant <- function(x, eps = NULL, log = TRUE) {
   if(is.null(x)) {
     return(NULL)
   } else {
@@ -80,6 +80,10 @@ gdeterminant <- function(x, eps = 1e-10, log = TRUE) {
     # (i.e., log generalized determinant)
     eigenpairs <- eigen(x)
     eigenvalues <- eigenpairs$values
+    # if no tolerance provided: largest eigenvalue times machine precision
+    if(is.null(eps)) {
+      eps <- max(eigenvalues) * .Machine$double.eps
+    }
     logdet <- sum(log(eigenvalues[eigenvalues > eps]))
     if(!log) {
       return(exp(logdet))

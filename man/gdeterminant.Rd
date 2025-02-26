@@ -4,7 +4,7 @@
 \alias{gdeterminant}
 \title{Computes generalised determinant}
 \usage{
-gdeterminant(x, eps = 1e-10, log = TRUE)
+gdeterminant(x, eps = NULL, log = TRUE)
 }
 \arguments{
 \item{x}{square matrix}

@@ -1340,6 +1340,9 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
       control$REPORT = 10
     }
   }
+  # if custom control is provided but either of these is missing, set to default
+  if(is.null(control$reltol)) control$reltol <- 1e-10
+  if(is.null(control$maxit)) control$maxit <- 1000
   
   ### updating algorithm
   # loop over outer iterations until convergence or maxiter

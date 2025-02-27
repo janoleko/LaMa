@@ -1829,7 +1829,7 @@ sdreport_outer <- function(mod, invert = FALSE){
   self <- list()
   
   if(invert){
-    vars <- vars * 1 / (2 * lambda_mapped)^2
+    vars <- vars * lambda_mapped^(-4)
     sds <- sqrt(vars)
     self$report <- rbind(par = 1/lambda_mapped, sd = sds)
   } else{

@@ -16,6 +16,7 @@ qreml2(
   maxiter = 100,
   tol = 1e-04,
   control = list(reltol = 1e-10, maxit = 1000),
+  method = "BFGS",
   silent = 1,
   joint_unc = TRUE,
   saveall = FALSE

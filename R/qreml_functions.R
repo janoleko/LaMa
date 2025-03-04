@@ -1142,6 +1142,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
                    maxiter = 100, # maximum number of iterations
                    tol = 1e-4, # tolerance for convergence
                    control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
+                   method = "BFGS", # optimization method used by optim
                    silent = 1, # print level
                    joint_unc = TRUE, # should joint object be returned?
                    saveall = FALSE)# , # save all intermediate models?
@@ -1357,7 +1358,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
       cat("\nInner optimisation:", "\n")
     }
     opt <- stats::optim(newpar, obj$fn, newgrad, 
-                        method = "BFGS", hessian = TRUE, # return hessian in the end
+                        method = method, hessian = TRUE, # return hessian in the end
                         control = control)
     if(silent == 0){
       gr <- obj$gr(opt$par)
@@ -1548,7 +1549,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   # fitting the model conditional on lambda: current local lambda will be pulled by f
   # gradcounter <- 1
   opt <- stats::optim(newpar, obj$fn, newgrad, 
-                      method = "BFGS", hessian = TRUE, # return hessian in the end
+                      method = method, hessian = TRUE, # return hessian in the end
                       control = control)
   if(silent == 0){
     gr = obj$gr(opt$par)
@@ -1593,7 +1594,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     if(silent == 0) cat("\nInner optimisation:", "\n")
     inner_opt <- stats::optim(newpar, obj$fn, newgrad,
-                              method = "BFGS", hessian = TRUE, # return hessian in the end
+                              method = method, hessian = TRUE, # return hessian in the end
                               control = control)
     if(silent == 0){
       gr <- obj$gr(inner_opt$par)

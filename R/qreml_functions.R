@@ -1068,6 +1068,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
+#' @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.

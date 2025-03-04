@@ -244,7 +244,7 @@ call using the <code>psname</code> argument.</li>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
 <span><span class="co">#&gt; Initialising with lambda: 100 100</span></span>
-<span><span class="co">#&gt; Error in which(lambdas_k): argument to 'which' is not logical</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in which(lambda_mapped): argument to 'which' is not logical</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -427,8 +427,8 @@ the design matrix <code>Z</code>.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
 <span><span class="co">#&gt; Initialising with lambda: 10 10 10</span></span>
-<span><span class="co">#&gt; Error in which(lambdas_k): argument to 'which' is not logical</span></span>
-<span><span class="co">#&gt; Timing stopped at: 4.546 0.286 4.499</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in which(lambda_mapped): argument to 'which' is not logical</span></span>
+<span><span class="co">#&gt; Timing stopped at: 4.511 0.302 4.475</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -541,8 +541,8 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
 <span><span class="co">#&gt; Initialising with lambda: 1000 1000 1000 1000</span></span>
-<span><span class="co">#&gt; Error in which(lambdas_k): argument to 'which' is not logical</span></span>
-<span><span class="co">#&gt; Timing stopped at: 0.929 0.004 0.93</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in which(lambda_mapped): argument to 'which' is not logical</span></span>
+<span><span class="co">#&gt; Timing stopped at: 0.922 0.003 0.922</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

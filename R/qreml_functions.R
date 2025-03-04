@@ -566,7 +566,7 @@ qreml = function(pnll, # penalized negative log-likelihood function
     }
     
     # potentially set lambdas to "working infinity"
-    lambdas_k[which(lambdas_k) > 1e8] <- 1e8
+    lambda_mapped[which(lambda_mapped) > 1e8] <- 1e8
     
     # unmap lambda
     lambdas_k = unmap_lambda(lambda_mapped, lambda_map, lambda0)
@@ -1477,7 +1477,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
     }
     
     # potentially set lambdas to "working infinity"
-    lambdas_k[which(lambdas_k) > 1e8] <- 1e8
+    lambda_mapped[which(lambda_mapped) > 1e8] <- 1e8
     
     # unmap lambda
     lambdas_k <- unmap_lambda(lambda_mapped, lambda_map, lambda0)

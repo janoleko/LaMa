@@ -1,4 +1,27 @@
-# differentiable max function
+#' AD-compatible minimum and maximum functions
+#' 
+#' These functions compute the parallel minimum/ maximum of two vector-valued inputs and are compatible with automatic differentiation using \code{RTMB}.
+#'
+#' @param x first vector
+#' @param y second vector
+#'
+#' @returns \code{min2} returns the parallel minimum and \code{max2} the parallel maximum of \code{x} and \code{y}
+#'
+#' @examples
+#' x <- c(1, 4, 8, 2)
+#' y <- c(2, 5, 3, 7)
+#' min2(x, y)
+#' max2(x, y)
+#' @name minmax
+NULL
+
+#' @rdname minmax
+#' @export
+min2 <- function(x,y){
+  (x + y - abs(x - y)) / 2
+}
+#' @rdname minmax
+#' @export
 max2 = function(x,y){
   (x + y + abs(x - y)) / 2
 }

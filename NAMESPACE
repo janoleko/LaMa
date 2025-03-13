@@ -2,6 +2,7 @@
 
 S3method(AIC,qremlModel)
 S3method(BIC,qremlModel)
+S3method(predict,LaMa_matrices)
 export(buildSmoothDens)
 export(calc_trackInd)
 export(cosinor)

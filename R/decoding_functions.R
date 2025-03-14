@@ -98,14 +98,9 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL,
 #'
 #' @examples
 #' delta = c(0.5, 0.5)
-#' Gamma = array(dim = c(2,2,99))
-#' for(t in 1:99){
-#'   gammas = rbeta(2, shape1 = 0.4, shape2 = 1)
-#'   Gamma[,,t] = matrix(c(1-gammas[1], gammas[1], 
-#'                       gammas[2], 1-gammas[2]), nrow = 2, byrow = TRUE)
-#' }
-#' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
-#' states = viterbi_g(delta, Gamma, allprobs)
+#' Gamma = tpm_g(runif(10), matrix(c(-2,-2,1,-1), nrow = 2))
+#' allprobs = matrix(runif(20), nrow = 10, ncol = 2)
+#' states = viterbi_g(delta, Gamma[,,-1], allprobs)
 viterbi_g = function(delta, Gamma, allprobs, trackID = NULL,
                      mod = NULL){
   
@@ -230,7 +225,7 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL,
 #'                 -2, -1, 1), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_p(1:24, 24, beta)
 #' 
-#' tod = rep(1:24, 10)
+#' tod = rep(1:24, 5)
 #' n = length(tod)
 #' 
 #' allprobs = matrix(runif(2*n), nrow = n, ncol = 2)
@@ -307,7 +302,7 @@ viterbi_p = function(delta, Gamma, allprobs, tod, trackID = NULL,
 #' @examples
 #' Gamma = tpm(c(-1,-2))
 #' delta = stationary(Gamma)
-#' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
+#' allprobs = matrix(runif(10), nrow = 10, ncol = 2)
 #' 
 #' probs = stateprobs(delta, Gamma, allprobs)
 stateprobs = function(delta, Gamma, allprobs, trackID = NULL,
@@ -383,11 +378,11 @@ stateprobs = function(delta, Gamma, allprobs, trackID = NULL,
 #' @export
 #'
 #' @examples
-#' Gamma = tpm_g(runif(99), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))
+#' Gamma = tpm_g(runif(10), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))
 #' delta = c(0.5, 0.5)
-#' allprobs = matrix(runif(200), nrow = 100, ncol = 2)
+#' allprobs = matrix(runif(20), nrow = 10, ncol = 2)
 #' 
-#' probs = stateprobs_g(delta, Gamma, allprobs)
+#' probs = stateprobs_g(delta, Gamma[,,-1], allprobs)
 stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL,
                         mod = NULL) {
   
@@ -503,7 +498,10 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL,
   }
   
   # rowSums should already be one, but just to be safe
-  stateprobs / rowSums(stateprobs)
+  stateprobs <- stateprobs / rowSums(stateprobs)
+  
+  colnames(stateprobs) <- paste0("S", 1:N)
+  stateprobs
 }
 
 

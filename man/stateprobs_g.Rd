@@ -33,11 +33,11 @@ Computes
 for inhomogeneous HMMs
 }
 \examples{
-Gamma = tpm_g(runif(99), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))
+Gamma = tpm_g(runif(10), matrix(c(-1,-1,1,-2), nrow = 2, byrow = TRUE))
 delta = c(0.5, 0.5)
-allprobs = matrix(runif(200), nrow = 100, ncol = 2)
+allprobs = matrix(runif(20), nrow = 10, ncol = 2)
 
-probs = stateprobs_g(delta, Gamma, allprobs)
+probs = stateprobs_g(delta, Gamma[,,-1], allprobs)
 }
 \seealso{
 Other decoding functions: 

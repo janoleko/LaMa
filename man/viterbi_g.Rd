@@ -32,14 +32,9 @@ The Viterbi algorithm allows one to decode the most probable state sequence of a
 }
 \examples{
 delta = c(0.5, 0.5)
-Gamma = array(dim = c(2,2,99))
-for(t in 1:99){
-  gammas = rbeta(2, shape1 = 0.4, shape2 = 1)
-  Gamma[,,t] = matrix(c(1-gammas[1], gammas[1], 
-                      gammas[2], 1-gammas[2]), nrow = 2, byrow = TRUE)
-}
-allprobs = matrix(runif(200), nrow = 100, ncol = 2)
-states = viterbi_g(delta, Gamma, allprobs)
+Gamma = tpm_g(runif(10), matrix(c(-2,-2,1,-1), nrow = 2))
+allprobs = matrix(runif(20), nrow = 10, ncol = 2)
+states = viterbi_g(delta, Gamma[,,-1], allprobs)
 }
 \seealso{
 Other decoding functions: 

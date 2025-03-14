@@ -38,7 +38,7 @@ beta = matrix(c(-2, 1, -1,
                 -2, -1, 1), nrow = 2, byrow = TRUE)
 Gamma = tpm_p(1:24, 24, beta)
 
-tod = rep(1:24, 10)
+tod = rep(1:24, 5)
 n = length(tod)
 
 allprobs = matrix(runif(2*n), nrow = n, ncol = 2)

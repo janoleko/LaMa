@@ -35,7 +35,7 @@ for homogeneous HMMs
 \examples{
 Gamma = tpm(c(-1,-2))
 delta = stationary(Gamma)
-allprobs = matrix(runif(200), nrow = 100, ncol = 2)
+allprobs = matrix(runif(10), nrow = 10, ncol = 2)
 
 probs = stateprobs(delta, Gamma, allprobs)
 }

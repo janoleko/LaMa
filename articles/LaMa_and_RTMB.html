@@ -91,11 +91,11 @@ less prone to errors – which at the current state tend to happen when
 one is not experienced with <code>RTMB</code>.</p>
 <p>Here we demonstrate how to use <code>LaMa</code> and
 <code>RTMB</code> to fit hidden Markov models and their extensions. We
-always start by loading both packages.</p>
+start by loading the <code>LaMa</code> package, which automatically
+loads <code>RTMB</code> as well.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/LaMa/">LaMa</a></span><span class="op">)</span> <span class="co"># development version</span></span>
-<span><span class="co">#&gt; Loading required package: RTMB</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kaskr/RTMB" class="external-link">RTMB</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/LaMa/">LaMa</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
 <p>For the purpose of this vignette, we will analyse the
 <code>trex</code> data set contained in the package. It contains hourly
 step lengths of a Tyrannosaurus rex, living 66 million years ago, and we
@@ -417,10 +417,20 @@ is the time of day.</p>
 design matrix <code>Z</code> corresponding to above predictor and add
 the time of day to the <code>dat</code> list for indexing inside the
 likelihood function. The <code>LaMa</code> function
-<code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> does this very conveniently.</p>
+<code><a href="../reference/cosinor.html">cosinor()</a></code> does this very conveniently. We can either call
+it directly to build the design matrix, or use it in a
+<code>formula</code> passed to <code><a href="../reference/make_matrices.html">make_matrices()</a></code>. The latter
+is preferable when dealing with more complicated models. Note that the
+first option does not include an intercept column, while the second
+does. When used with <code><a href="../reference/tpm_g.html">tpm_g()</a></code> this does not matter as it
+automatically checks if an intercept column is included.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># building trigonometric basis desing matrix (in this case no intercept column)</span></span>
-<span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/trigBasisExp.html">trigBasisExp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># convenience function from LaMa</span></span>
+<code class="sourceCode R"><span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="va">tod</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>                       data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span></span>
+<span></span>
 <span><span class="co"># only compute the 24 unique values and index later for entire time series</span></span>
 <span><span class="va">dat</span><span class="op">$</span><span class="va">Z</span> <span class="op">=</span> <span class="va">Z</span> <span class="co"># adding design matrix to dat</span></span>
 <span><span class="va">dat</span><span class="op">$</span><span class="va">tod</span> <span class="op">=</span> <span class="va">trex</span><span class="op">$</span><span class="va">tod</span> <span class="co"># adding time of day to dat for indexing</span></span></code></pre></div>
@@ -443,7 +453,7 @@ likelihood function unnessesary.</p>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           logkappa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, </span>
-<span>                           <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># 2 times 4+1 matrix</span></span>
+<span>                           <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">*</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># 2 times 4+1 matrix</span></span>
 <span><span class="co"># replacing eta with regression parameter matrix, initializing slopes at zero</span></span></code></pre></div>
 <p>We can now define a more general likelihood function with the main
 difference being the use of <code><a href="../reference/tpm_g.html">tpm_g()</a></code> instead of
@@ -458,7 +468,7 @@ of <code><a href="../reference/forward.html">forward()</a></code> to calculate t
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z</span>, <span class="va">beta</span><span class="op">)</span> <span class="co"># covariate-dependent tpms (in this case only 24 unique)</span></span>
 <span>  <span class="co"># tpm_g() automatically checks if intercept column is included</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT</a></span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span> <span class="co"># adreporting</span></span>
-<span>  <span class="va">Delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span> <span class="co"># periodically stationary distribution</span></span>
+<span>  <span class="va">Delta</span> <span class="op">=</span> <span class="fu"><a href="../reference/stationary_p.html">stationary_p</a></span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span> <span class="co"># all periodically stationary distributions</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">)</span></span>
 <span>  <span class="va">delta</span> <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span><span class="va">tod</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>,<span class="op">]</span> <span class="co"># initial periodically stationary distribution</span></span>
 <span>  <span class="co"># exponentiating because all parameters strictly positive</span></span>

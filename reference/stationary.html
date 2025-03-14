@@ -70,12 +70,12 @@ This function solves the linear system of equations above.</p>
 
 
 <dl><dt id="arg-gamma">Gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p>transition probability matrix of dimension c(N,N)</p></dd>
+<dd><p>transition probability matrix of dimension <code>c(N,N)</code> or array of such matrices of dimension <code>c(N,N,nTracks)</code> if the stationary distribution should be computed for several matrices at once</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>stationary distribution of the Markov chain with the given transition probability matrix</p>
+    <p>either a single stationary distribution of the Markov chain (vector of length <code>N</code>) or a matrix of stationary distributions of dimension <code>c(nTracks,N)</code> with one stationary distribution in each row</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -87,8 +87,12 @@ This function solves the linear system of equations above.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="tpm.html">tpm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># single matrix</span></span></span>
+<span class="r-in"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="tpm.html">tpm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">delta</span> <span class="op">=</span> <span class="fu">stationary</span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># multiple matrices</span></span></span>
+<span class="r-in"><span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="va">Gamma</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">Delta</span> <span class="op">=</span> <span class="fu">stationary</span><span class="op">(</span><span class="va">Gamma</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

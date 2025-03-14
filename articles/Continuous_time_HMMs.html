@@ -253,7 +253,7 @@ exponentials.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.274   0.238   0.263</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.273   0.259   0.272</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -268,9 +268,9 @@ exponentials.</p>
 <span><span class="co">#&gt; [1] 2 5</span></span>
 <span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Q</span>,<span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        [,1]   [,2]</span></span>
-<span><span class="co">#&gt; [1,] -0.479  0.479</span></span>
-<span><span class="co">#&gt; [2,]  0.905 -0.905</span></span></code></pre></div>
+<span><span class="co">#&gt;        S1     S2</span></span>
+<span><span class="co">#&gt; S1 -0.479  0.479</span></span>
+<span><span class="co">#&gt; S2  0.905 -0.905</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -331,7 +331,7 @@ state to transition to, as explained in the beginning.</p>
 <span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   2.065   2.983   1.683</span></span>
+<span><span class="co">#&gt;   2.103   3.011   1.705</span></span>
 <span><span class="co"># without restricting stepmax, we run into numerical problems</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -347,10 +347,10 @@ state to transition to, as explained in the beginning.</p>
 <span><span class="co">#&gt; [1] 1.80 2.58 5.06</span></span>
 <span><span class="va">Q</span> <span class="op">=</span> <span class="fu"><a href="../reference/generator.html">generator</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">2</span><span class="op">*</span><span class="va">N</span><span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="va">N</span><span class="op">*</span><span class="op">(</span><span class="va">N</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">Q</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        [,1]   [,2]   [,3]</span></span>
-<span><span class="co">#&gt; [1,] -0.888  0.565  0.323</span></span>
-<span><span class="co">#&gt; [2,]  2.821 -3.469  0.647</span></span>
-<span><span class="co">#&gt; [3,]  0.000  0.770 -0.770</span></span></code></pre></div>
+<span><span class="co">#&gt;        S1     S2     S3</span></span>
+<span><span class="co">#&gt; S1 -0.888  0.565  0.323</span></span>
+<span><span class="co">#&gt; S2  2.821 -3.469  0.647</span></span>
+<span><span class="co">#&gt; S3  0.000  0.770 -0.770</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">

@@ -284,12 +284,12 @@ reporting:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">=</span> <span class="va">obj</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span> <span class="co"># runs the reporting from the negative log-likelihood once</span></span>
 <span><span class="op">(</span><span class="va">delta</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  state 1  state 2 </span></span>
+<span><span class="co">#&gt;       S1       S2 </span></span>
 <span><span class="co">#&gt; 0.481525 0.518475</span></span>
 <span><span class="op">(</span><span class="va">Gamma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">Gamma</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           [,1]      [,2]</span></span>
-<span><span class="co">#&gt; [1,] 0.8282951 0.1717049</span></span>
-<span><span class="co">#&gt; [2,] 0.1594681 0.8405319</span></span>
+<span><span class="co">#&gt;           S1        S2</span></span>
+<span><span class="co">#&gt; S1 0.8282951 0.1717049</span></span>
+<span><span class="co">#&gt; S2 0.1594681 0.8405319</span></span>
 <span><span class="op">(</span><span class="va">mu</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">mu</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.3037305 2.5048106</span></span>
 <span><span class="op">(</span><span class="va">sigma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">sigma</span><span class="op">)</span></span>

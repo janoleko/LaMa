@@ -1,5 +1,7 @@
 
-# LaMa - Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa_surf.png" align="right" height=150>
+<!-- # LaMa - Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa_surf.png" align="right" height=150> -->
+
+# LaMa - Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa_surf.png" align="right" style="height:150px; width:auto;">
 
 <!-- badges: start -->
 
@@ -156,7 +158,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.365   0.012   0.377
+#>   0.367   0.013   0.382
 ```
 
 Really fast for 10.000 data points!

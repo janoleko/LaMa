@@ -24,11 +24,10 @@ The recently introduced `R` package `RTMB` conveniently allows for automatic dif
 
 `LaMa` is now also fully compatible with AD provided by `RTMB`. Hence, estimation of latent Markov models is now faster and more convenient, while model specification is very smooth and less prone to errors -- which at the current state tend to happen when one is not experienced with `RTMB`.
 
-Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We always start by loading both packages.
+Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We start by loading the `LaMa` package, which automatically loads `RTMB` as well.
 
 ```{r setup}
-library(LaMa) # development version
-library(RTMB)
+library(LaMa)
 ```
 
 For the purpose of this vignette, we will analyse the `trex` data set contained in the package. It contains hourly step lengths of a Tyrannosaurus rex, living 66 million years ago, and we aim to understand its behavoural process using HMMs.
@@ -237,11 +236,15 @@ $$
 $$
 where $t$ is the time of day.
 
-To practically achieve this, we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list for indexing inside the likelihood function. The `LaMa` function `trigBasisExp()` does this very conveniently.
+To practically achieve this, we compute the trigonometric basis design matrix `Z` corresponding to above predictor and add the time of day to the `dat` list for indexing inside the likelihood function. The `LaMa` function `cosinor()` does this very conveniently. We can either call it directly to build the design matrix, or use it in a `formula` passed to `make_matrices()`. The latter is preferable when dealing with more complicated models. Note that the first option does not include an intercept column, while the second does. When used with `tpm_g()` this does not matter as it automatically checks if an intercept column is included.
 
 ```{r tod}
-# building trigonometric basis desing matrix (in this case no intercept column)
-Z = trigBasisExp(1:24, degree = 2) # convenience function from LaMa
+Z = cosinor(1:24, period = c(24, 12))
+
+modmat = make_matrices(~ cosinor(tod, period = c(24, 12)), 
+                       data = data.frame(tod = 1:24))
+Z = modmat$Z
+
 # only compute the 24 unique values and index later for entire time series
 dat$Z = Z # adding design matrix to dat
 dat$tod = trex$tod # adding time of day to dat for indexing
@@ -254,7 +257,7 @@ par = list(logmu = log(c(0.3, 1)),
            logsigma = log(c(0.2, 0.7)),
            logkappa = log(c(0.2, 0.7)),
            beta = matrix(c(rep(-2, 2), 
-                           rep(0, 2*ncol(Z))), nrow = 2)) # 2 times 4+1 matrix
+                           rep(0, 2*4)), nrow = 2)) # 2 times 4+1 matrix
 # replacing eta with regression parameter matrix, initializing slopes at zero
 ```
 
@@ -266,7 +269,7 @@ nll2 = function(par) {
   Gamma = tpm_g(Z, beta) # covariate-dependent tpms (in this case only 24 unique)
   # tpm_g() automatically checks if intercept column is included
   ADREPORT(Gamma) # adreporting
-  Delta = stationary_p(Gamma) # periodically stationary distribution
+  Delta = stationary_p(Gamma) # all periodically stationary distributions
   ADREPORT(Delta)
   delta = Delta[tod[1],] # initial periodically stationary distribution
   # exponentiating because all parameters strictly positive

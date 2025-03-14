@@ -45,6 +45,12 @@ tpm = function(param, byrow = FALSE) {
   if(byrow) Gamma = t(Gamma)
   
   Gamma = Gamma / rowSums(Gamma)
+  
+  # naming
+  statenames <- paste0("S", 1:N)
+  rownames(Gamma) <- statenames
+  colnames(Gamma) <- statenames
+  
   Gamma
 }
 
@@ -158,6 +164,11 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
       Gamma[i, , ] <- t(t(Gamma[i, , ]) / rowSums(t(Gamma[i, , ])))
     }
   }
+  
+  # naming
+  statenames <- paste0("S", 1:N)
+  rownames(Gamma) <- statenames
+  colnames(Gamma) <- statenames
   
   Gamma
 }
@@ -338,6 +349,13 @@ tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
       Qube[,,t] = as.matrix(Matrix::expm(Q * timediff[t])) # Matrix::expm for AD
     }
   }
+  
+  # naming
+  N <- nrow(Q)
+  statenames <- paste0("S", 1:N)
+  rownames(Qube) <- statenames
+  colnames(Qube) <- statenames
+  
   Qube
 }
 
@@ -380,6 +398,11 @@ generator = function(param, byrow = FALSE, report = TRUE) {
   if(report) {
     RTMB::REPORT(Q)
   }
+  
+  # naming
+  statenames <- paste0("S", 1:N)
+  rownames(Q) <- statenames
+  colnames(Q) <- statenames
   
   Q
 }
@@ -439,6 +462,12 @@ tpm_emb = function(param = NULL){
     omega[!diag(N)] = as.vector(t(matrix(c(rep(1,N), exp(param)), N, N-1)))
     omega = t(omega) / apply(omega, 2, sum)
   }
+  
+  # naming
+  N = nrow(omega)
+  statenames <- paste0("S", 1:N)
+  rownames(omega) <- statenames
+  colnames(omega) <- statenames
   
   omega
 }
@@ -516,6 +545,11 @@ tpm_emb_g = function(Z, beta, report = TRUE){
     O[!diag(N)] = as.vector(t(matrix(c(rep(1, N), expEta[t,]), N, N-1)))
     omega[,,t] = t(O) / apply(O, 2, sum)
   }
+  
+  # naming
+  statenames <- paste0("S", 1:N)
+  rownames(omega) <- statenames
+  colnames(omega) <- statenames
   
   omega
 }

@@ -7,10 +7,10 @@
 stationary(Gamma)
 }
 \arguments{
-\item{Gamma}{transition probability matrix of dimension c(N,N)}
+\item{Gamma}{transition probability matrix of dimension \code{c(N,N)} or array of such matrices of dimension \code{c(N,N,nTracks)} if the stationary distribution should be computed for several matrices at once}
 }
 \value{
-stationary distribution of the Markov chain with the given transition probability matrix
+either a single stationary distribution of the Markov chain (vector of length \code{N}) or a matrix of stationary distributions of dimension \code{c(nTracks,N)} with one stationary distribution in each row
 }
 \description{
 A homogeneous, finite state Markov chain that is irreducible and aperiodic converges to a unique stationary distribution, here called \eqn{\delta}.
@@ -20,8 +20,12 @@ where \eqn{\Gamma} is the transition probability matrix.
 This function solves the linear system of equations above.
 }
 \examples{
+# single matrix
 Gamma = tpm(c(rep(-2,3), rep(-3,3)))
 delta = stationary(Gamma)
+# multiple matrices
+Gamma = array(Gamma, dim = c(3,3,10))
+Delta = stationary(Gamma)
 }
 \seealso{
 \code{\link{tpm}} to create a transition probabilty matrix using the multinomial logistic link (softmax)

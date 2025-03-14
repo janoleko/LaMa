@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# LaMa - Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa.png" align="right" height=150>
+# LaMa - Latent Markov model toolbox 🛠️ <img src="man/figures/Logo_LaMa_surf.png" align="right" height=150>
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)

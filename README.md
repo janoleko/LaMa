@@ -155,7 +155,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.365   0.010   0.374
+#>   0.364   0.010   0.374
 ```
 
 Really fast for 10.000 data points!
@@ -166,10 +166,17 @@ results:
 
 ``` r
 # transform parameters to working
-Gamma = tpm(mod$estimate[1:2])
-delta = stationary(Gamma) # stationary HMM
-mu = exp(mod$estimate[3:4])
-sigma = exp(mod$estimate[5:6])
+(Gamma = tpm(mod$estimate[1:2]))
+#>           S1        S2
+#> S1 0.8269546 0.1730454
+#> S2 0.1608470 0.8391530
+(delta = stationary(Gamma)) # stationary HMM
+#>       S1       S2 
+#> 0.481733 0.518267
+(mu = exp(mod$estimate[3:4]))
+#> [1] 0.3034926 2.5057053
+(sigma = exp(mod$estimate[5:6]))
+#> [1] 0.2015258 1.4908153
 
 hist(trex$step, prob = TRUE, bor = "white", breaks = 40, main = "", xlab = "step length")
 curve(delta[1] * dgamma2(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)

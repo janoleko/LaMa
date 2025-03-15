@@ -127,10 +127,10 @@ After tranforming the working (unconstrained) parameters to natural parameters u
 
 ```{r visualization}
 # transform parameters to working
-Gamma = tpm(mod$estimate[1:2])
-delta = stationary(Gamma) # stationary HMM
-mu = exp(mod$estimate[3:4])
-sigma = exp(mod$estimate[5:6])
+(Gamma = tpm(mod$estimate[1:2]))
+(delta = stationary(Gamma)) # stationary HMM
+(mu = exp(mod$estimate[3:4]))
+(sigma = exp(mod$estimate[5:6]))
 
 hist(trex$step, prob = TRUE, bor = "white", breaks = 40, main = "", xlab = "step length")
 curve(delta[1] * dgamma2(x, mu[1], sigma[1]), add = TRUE, lwd = 2, col = "orange", n=500)

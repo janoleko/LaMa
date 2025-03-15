@@ -51,8 +51,7 @@ install.packages("LaMa")
 
 or the development version from Github:
 ```{r installation_github, eval = FALSE, warning=FALSE, message = FALSE}
-# install.packages("devtools")
-devtools::install_github("janoleko/LaMa")
+remotes::install_github("janoleko/LaMa")
 ```
 <!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
 

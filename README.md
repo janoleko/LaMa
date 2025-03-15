@@ -59,8 +59,7 @@ install.packages("LaMa")
 or the development version from Github:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("janoleko/LaMa")
+remotes::install_github("janoleko/LaMa")
 ```
 
 <!-- (To install from Github, you need a functional <a href="https://teuder.github.io/rcpp4everyone_en/020_install.html" target="_blank">C++ compiler</a>.) -->
@@ -156,7 +155,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.364   0.010   0.377
+#>   0.365   0.010   0.374
 ```
 
 Really fast for 10.000 data points!

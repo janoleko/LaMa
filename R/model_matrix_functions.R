@@ -172,17 +172,17 @@ make_matrices = function(formula,
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
   
   # first option: tensorproducts -> save marginal penalty matrices
-  S2 = lapply(gam_setup$smooth, function(x){
-    if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
-      return(x$S[[1]])
-    } else{ # multivariate smooth -> several penalty matrices
-      S_sublist = lapply(x$margin, function(y) y$S[[1]])
-      margin_names = sapply(x$margin, function(y) y$term)
-      names(S_sublist) = margin_names
-      return(S_sublist)
-    }
-  })
-  names(S2) = term_labels
+  # S2 = lapply(gam_setup$smooth, function(x){
+  #   if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
+  #     return(x$S[[1]])
+  #   } else{ # multivariate smooth -> several penalty matrices
+  #     S_sublist = lapply(x$margin, function(y) y$S[[1]])
+  #     margin_names = sapply(x$margin, function(y) y$term)
+  #     names(S_sublist) = margin_names
+  #     return(S_sublist)
+  #   }
+  # })
+  # names(S2) = term_labels
   
   # second option: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
   S = list()
@@ -218,12 +218,12 @@ make_matrices = function(formula,
   
   out = list(Z = Z, 
              S = S, 
-             S2 = S2,
+             # S2 = S2,
              pardim = pardim,
              formula = gam_setup$formula, 
              data = data, 
              knots = knots,
-             mod = gam_setup)
+             gam = gam_setup)
   
   class(out) <- "LaMa_matrices"
   return(out)

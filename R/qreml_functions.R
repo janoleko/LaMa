@@ -1733,6 +1733,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   leading_diag <- rowSums(J_inv * (J - bigS)) # computes diag(J_inv %*% (J - bigS)) more efficiently (only diagonal terms)
   Edfs <- Lambdas[[k+1]] # copy names from Lambdas if present
   for(i in seq_len(n_re)){
+    if(i %in% tp_ind) Edfs[[i]] = numeric(length(S[[i]])) # only one edf for each tensor product (not each margin)
     for(j in seq_len(nrow(re_inds[[i]]))){
         Edfs[[i]][j] = sum(leading_diag[re_inds[[i]][j,]]) # sum over the entries for each smooth
     }

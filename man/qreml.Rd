@@ -11,7 +11,7 @@ qreml(
   random,
   map = NULL,
   psname = "lambda",
-  alpha = 0.25,
+  alpha = 0.3,
   smoothing = 1,
   maxiter = 100,
   tol = 1e-04,
@@ -60,7 +60,8 @@ Increasing this beyond one will lead to a smoother final model. Can be an intege
 
 \item{control}{list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 
-We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
+We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
+# @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.}
 
 \item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
 
@@ -108,7 +109,7 @@ par = list(logmu = log(c(0.3, 1)), # step mean
 dat = list(step = data$step, # step length
            tod = data$tod, # time of day covariate
            N = 2, # number of states
-           lambda = rep(100,2)) # initial penalty strength
+           lambda = rep(10,2)) # initial penalty strength
 
 # building model matrices
 modmat = make_matrices(~ s(tod, bs = "cp"), 
@@ -133,8 +134,8 @@ pnll = function(par) {
 }
 
 # model fitting
-mod = qreml(pnll, par, dat, random = "betaspline")
+mod = qreml2(pnll, par, dat, random = "betaspline")
 }
 \seealso{
-\code{\link{penalty}} to compute the penalty inside the likelihood function
+\code{\link{penalty}} and \code{\link{penalty2}} to compute the penalty inside the likelihood function
 }

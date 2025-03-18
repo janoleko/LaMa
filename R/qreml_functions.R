@@ -288,7 +288,7 @@ penalty = function(re_coef, S, lambda) {
 #'
 #' # model fitting
 #' mod = qreml(pnll, par, dat, random = "betaspline")
-qreml = function(pnll, # penalized negative log-likelihood function
+qreml_old = function(pnll, # penalized negative log-likelihood function
                  par, # initial parameter list
                  dat, # initial dat object, currently needs to be called dat!
                  random, # names of parameters in par that are random effects/ penalized
@@ -1132,21 +1132,21 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #'
 #' # model fitting
 #' mod = qreml2(pnll, par, dat, random = "betaspline")
-qreml2 <- function(pnll, # penalized negative log-likelihood function
-                   par, # initial parameter list
-                   dat, # initial dat object, currently needs to be called dat!
-                   random, # names of parameters in par that are random effects/ penalized
-                   map = NULL, # map for fixed effects
-                   psname = "lambda", # name given to the psname parameter in dat
-                   alpha = 0.3, # exponential smoothing parameter
-                   smoothing = 1,
-                   maxiter = 100, # maximum number of iterations
-                   tol = 1e-4, # tolerance for convergence
-                   control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
+qreml <- function(pnll, # penalized negative log-likelihood function
+                  par, # initial parameter list
+                  dat, # initial dat object, currently needs to be called dat!
+                  random, # names of parameters in par that are random effects/ penalized
+                  map = NULL, # map for fixed effects
+                  psname = "lambda", # name given to the psname parameter in dat
+                  alpha = 0.3, # exponential smoothing parameter
+                  smoothing = 1,
+                  maxiter = 100, # maximum number of iterations
+                  tol = 1e-4, # tolerance for convergence
+                  control = list(reltol = 1e-10, maxit = 1000), # control list for inner optimization
                    # method = "BFGS", # optimization method used by optim
-                   silent = 1, # print level
-                   joint_unc = TRUE, # should joint object be returned?
-                   saveall = FALSE)# , # save all intermediate models?
+                  silent = 1, # print level
+                  joint_unc = TRUE, # should joint object be returned?
+                  saveall = FALSE)# , # save all intermediate models?
 # epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
 {
   method <- "BFGS"

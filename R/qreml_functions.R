@@ -797,7 +797,7 @@ AIC.qremlModel <- function(object, k = 2){
   message("Computing conditional AIC (not marginal)")
   # message("Models with different fixed effect structures are not comparable when estimated by REML.")
   
-  -2 * object$llk + k * object$edf
+  -2 * object$llk + k * object$n_eff_par
 }
 
 #' @rdname AIC.BIC.qremlModel
@@ -818,7 +818,7 @@ BIC.qremlModel <- function(object, ...) {
     }
   }
   
-  -2 * object$llk + log(nObs) * object$edf
+  -2 * object$llk + log(nObs) * object$n_eff_par
 }
 
 #' Computes generalised quadratic-form penalties
@@ -1683,6 +1683,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   mod[[paste0("relist_", argname_par)]] <- obj$env$parList
   mod[[paste0("map_", psname)]] <- function(lambda) map_lambda(lambda, lambda_map)
   mod$psname <- psname
+  mod$parname <- argname_par
   
   # assign estimated parameter as vector
   mod[[paste0(argname_par, "_vec")]] <- opt$par
@@ -1817,6 +1818,121 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   return(mod)
 }
 
+
+#' Summary method for \code{qremlModel} objects
+#'
+#' @param object \code{qremlModel} object
+#' @param ... additional arguments
+#'
+#' @returns prints a summary of the model object
+#' @export
+#'
+#' @examples
+#' # no examples
+summary.qremlModel <- function(object, ...) {
+
+  ### Printing state process parameters
+  if(!is.null(object$Gamma) | !is.null(object$delta)){
+    cat("State process parameters:\n")
+    if (!is.null(object$Gamma)) {
+      if(is.matrix(object$Gamma)){
+        cat("\nTransition probability matrix:\n")
+        print(object$Gamma)
+      } else if(length(dim(object$Gamma)) == 3){
+        cat("\nFirst transition probability matrix (t = 1):\n")
+        print(object$Gamma[,,1])
+      }
+    }
+    if (!is.null(object$delta)) {
+      if(is.vector(object$delta)){
+        cat("\nInitial state distribution:\n")
+        print(object$delta)
+      } else if(is.matrix(object$delta)){
+        cat("\nFirst initial state distribution:\n")
+        print(object$delta[1,])
+      }
+    }
+    
+    cat("\n---")
+  }
+  
+  
+  ### Printing effective degrees of freedom if present
+  if (!is.null(object$edf)) {
+    smoothnames <- names(object$edf)
+    if(is.null(smoothnames)){
+      smoothnames <- paste0("s.", 1:length(object$edf))
+    }
+    
+    cat("\nEffective degrees of freedom:\n")
+    
+    cat("\nFixed effects:", object$n_fixpar)
+    for(i in seq_along(object$edf)){
+      cat("\n", smoothnames[i], ": ", sep = "")
+      cat(object$edf[[i]])
+    }
+    cat("\nTotal: ", object$n_eff_par, "\n")
+    
+    cat("\n---")
+  }
+  
+  ### Printing log-likelihood
+  cat("\nLog-Likelihood:", object$llk, "\n")
+  
+  ### Printing Print AIC and BIC
+  suppressMessages(aic <- AIC.qremlModel(object))
+  suppressMessages(bic <- BIC.qremlModel(object))
+  cat("AIC:", aic, "  ")
+  cat("BIC:", bic, "\n")
+  cat("\n---")
+  
+  ### Printing smoothing parameter estimates
+  cat("\nSmoothing parameters:")
+  lambdas <- object[[object$psname]]
+  lambda_names <- names(lambdas)
+  if(is.null(lambda_names)){
+    lambda_names <- paste0("lambda.", 1:length(lambdas))
+  }
+  for(i in seq_along(lambdas)){
+    cat("\n", lambda_names[i], ": ", sep = "")
+    cat(lambdas[[i]])
+  }
+  cat("\n")
+  
+  # Print additional user-specified objects, excluding unwanted ones
+  excluded <- c("allprobs", "trackID", "type", "obj", "outer_gr", 
+                paste0("all_", object$psname), "parname", object$parname, paste0("relist_", object$parname), 
+                paste0("map_", object$psname), "psname", paste0(object$parname, "_vec"), 
+                "edf", "Hessian_conditional", "obj_joint",
+                "beta", "delta", "Gamma", "lambda", "llk", "n_fixpar", "n_eff_par")
+  
+  remaining_names <- setdiff(names(object), excluded)
+  
+  if(length(remaining_names) > 0){
+    cat("\n---")
+    cat("\nOther reported quantities:\n")
+  }
+  count = 1
+  for (name in remaining_names) {
+    if (!is.null(object[[name]]) & count <= 10) {
+      this <- object[[name]]
+      if(is.matrix(this)){
+        if(nrow(this) <= 10 & ncol(this) <= 10){
+          cat(name, ":\n", sep = "")
+          print(object[[name]])
+        } else{
+          cat(name, ": [large matrix, not displayed]\n")        }
+        
+      } else if(is.vector(this)){
+        cat(name, ":\n", sep = "")
+        print(object[[name]])
+      }
+    }
+    count = count + 1
+  }
+  
+  # invisible(object)
+}
 
 
 #' Report uncertainty of the estimated smoothing parameters or variances

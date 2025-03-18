@@ -6,7 +6,7 @@
 \alias{BIC.qremlModel}
 \title{Akaike's Information Criterion for models returned by \code{\link{qreml}}}
 \usage{
-\method{AIC}{qremlModel}(object, k = 2)
+AIC.qremlModel(object, k = 2)
 
 \method{BIC}{qremlModel}(object, ...)
 }

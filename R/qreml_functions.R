@@ -1149,7 +1149,7 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
                    saveall = FALSE)# , # save all intermediate models?
 # epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
 {
-  method = "BFGS"
+  method <- "BFGS"
   
   # setting the argument name for par because later updated par is returned
   argname_par <- as.character(substitute(par))
@@ -1677,8 +1677,6 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   dat[[psname]] <- lambda
   
   # format parameter to list
-  # skeleton = utils::as.relistable(par)
-  # parlist = utils::relist(opt$par, skeleton)
   parlist <- obj$env$parList(opt$par)
   mod[[argname_par]] <- parlist # and assing to return object
   
@@ -1714,9 +1712,32 @@ qreml2 <- function(pnll, # penalized negative log-likelihood function
   # }
   # this is probaly not correct
   
-  mod$edf <- mod$n_fixpar + sum(edoF)
-  
-  mod$all_edf <- edoF
+  ## compute effective degrees of freedom for each smooth (diag(J_p^-1 J))
+  # building the entire model penalty matrix to compute J_0 = J_p - S
+  # S_lambda = \sum_i lambda_i S_i padded out with zeros
+  bigS <- matrix(0, nrow(J), ncol(J))
+  for(i in seq_len(n_re)){
+    for(j in seq_len(nrow(re_inds[[i]]))){
+      idx <- re_inds[[i]][j,]
+      if(i %in% simple_ind){ # if simple smooth: just lambda_i * S_i
+        bigS[idx, idx] <- Lambdas[[k+1]][[i]][j] * S[[i]]
+      } else { # if tensor product, we have a sum at these indices
+        n_pen <- length(S[[i]])
+        for(pen in 1:n_pen){ 
+          bigS[idx, idx] <- bigS[idx, idx] + Lambdas[[k+1]][[i]][(j-1) * n_pen + pen] * S[[i]][[pen]]
+        }
+      }
+    }
+  }
+  leading_diag <- rowSums(J_inv * (J - bigS)) # computes diag(J_inv %*% (J - bigS)) more efficiently (only diagonal terms)
+  Edfs <- Lambdas[[k+1]] # copy names from Lambdas if present
+  for(i in seq_len(n_re)){
+    for(j in seq_len(nrow(re_inds[[i]]))){
+        Edfs[[i]][j] = sum(leading_diag[re_inds[[i]][j,]]) # sum over the entries for each smooth
+    }
+  }
+  mod$n_eff_par <- mod$n_fixpar + sum(unlist(Edfs)) # total effective number of parameters
+  mod$edf <- Edfs # seperated by smooth
   
   # assing conditinoal Hessian
   mod$Hessian_conditional <- J

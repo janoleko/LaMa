@@ -1822,7 +1822,10 @@ qreml <- function(pnll, # penalized negative log-likelihood function
 
 #' Summary method for \code{qremlModel} objects
 #'
-#' @param object \code{qremlModel} object
+#' @description
+#' Prints a summary of a model object created by \code{\link{qreml}}.
+#'
+#' @param object \code{qremlModel} object created by \code{\link{qreml}}
 #' @param ... additional arguments
 #'
 #' @returns prints a summary of the model object
@@ -1938,13 +1941,13 @@ summary.qremlModel <- function(object, ...) {
 
 #' Report uncertainty of the estimated smoothing parameters or variances
 #' 
-#' Computes standard deviations for the smoothing parameters of a model object returned by \code{qreml2} using the delta method.
+#' Computes standard deviations for the smoothing parameters of a model object returned by \code{qreml} using the delta method.
 #' 
 #' @details
 #' The computations are based on the approximate gradient of the restricted log likelihood. The outer Hessian is computed by finite differencing of this gradient. If the inverse smoothing parameters are requested, the standard deviations are transformed to the variances using the delta method.
 #' 
 #'
-#' @param mod model objects as returned by \code{\link{qreml2}}
+#' @param mod model objects as returned by \code{\link{qreml}}
 #' @param invert optional logical; if \code{TRUE}, the inverse smoothing paramaters (variances) are returned along with the transformed standard deviations obtained via the delta method.
 #'
 #' @return list containing \code{report} matrix summarising parameters and standard deviations as well as the outer \code{Hessian} matrix.

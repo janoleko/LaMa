@@ -7,7 +7,7 @@
 \method{summary}{qremlModel}(object, ...)
 }
 \arguments{
-\item{object}{\code{qremlModel} object}
+\item{object}{\code{qremlModel} object created by \code{\link{qreml}}}
 
 \item{...}{additional arguments}
 }
@@ -15,7 +15,7 @@
 prints a summary of the model object
 }
 \description{
-Summary method for \code{qremlModel} objects
+Prints a summary of a model object created by \code{\link{qreml}}.
 }
 \examples{
 # no examples

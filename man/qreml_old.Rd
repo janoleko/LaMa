@@ -133,7 +133,7 @@ pnll = function(par) {
 }
 
 # model fitting
-mod = qreml(pnll, par, dat, random = "betaspline")
+mod = qreml_old(pnll, par, dat, random = "betaspline")
 }
 \seealso{
 \code{\link{penalty}} to compute the penalty inside the likelihood function

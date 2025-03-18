@@ -287,7 +287,7 @@ penalty = function(re_coef, S, lambda) {
 #' }
 #'
 #' # model fitting
-#' mod = qreml(pnll, par, dat, random = "betaspline")
+#' mod = qreml_old(pnll, par, dat, random = "betaspline")
 qreml_old = function(pnll, # penalized negative log-likelihood function
                  par, # initial parameter list
                  dat, # initial dat object, currently needs to be called dat!
@@ -1131,7 +1131,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' }
 #'
 #' # model fitting
-#' mod = qreml2(pnll, par, dat, random = "betaspline")
+#' mod = qreml(pnll, par, dat, random = "betaspline")
 qreml <- function(pnll, # penalized negative log-likelihood function
                   par, # initial parameter list
                   dat, # initial dat object, currently needs to be called dat!

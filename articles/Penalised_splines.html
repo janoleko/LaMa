@@ -260,7 +260,7 @@ call using the <code>psname</code> argument.</li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.112</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  13.382   0.091  13.475</span></span></code></pre></div>
+<span><span class="co">#&gt;  13.395   0.093  13.489</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -442,7 +442,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; beta </span></span>
 <span><span class="co">#&gt;    1</span></span>
 <span><span class="co">#&gt; Error in (function (data, parameters, map = list(), type = c("ADFun", : Only numeric matrices, vectors and arrays can be interfaced</span></span>
-<span><span class="co">#&gt; Timing stopped at: 0.002 0 0.002</span></span></code></pre></div>
+<span><span class="co">#&gt; Timing stopped at: 0.002 0 0.001</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -577,7 +577,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.588 7.212 8.277 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  11.407   5.681  10.559</span></span></code></pre></div>
+<span><span class="co">#&gt;  11.652   5.647  10.743</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the

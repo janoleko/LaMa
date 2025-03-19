@@ -260,21 +260,21 @@ call using the <code>psname</code> argument.</li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.112</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  13.347   0.109  13.457</span></span></code></pre></div>
+<span><span class="co">#&gt;  13.382   0.091  13.475</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
-model, we can also use the <code>LaMa</code> function
-<code><a href="../reference/pred_matrix.html">pred_matrix()</a></code>, that takes the <code>modmat</code> object we
-created earlier, to build a new interpolating design matrix using the
-exact same basis expansion specified above. This allows us to plot the
-estimated transition probabilities as a smooth function of time of day.
+model, we can use <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> with the <code>modmat</code>
+object we created earlier to build a new interpolating design matrix
+using the exact same basis expansion specified above. This allows us to
+plot the estimated transition probabilities as a smooth function of time
+of day.
 <!-- Uncertainty quantification can be based on the Hessian of the penalised likelihood function, returned as `Hessian_conditional` in the `mod` object. To easily relist the sampled parameter vector to the original named-list structure, the function `relist_par()` is contained in the `mod` object. --></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Delta</span> <span class="op">=</span> <span class="va">mod1</span><span class="op">$</span><span class="va">Delta</span></span>
 <span></span>
 <span><span class="va">tod_seq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span>, length <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
-<span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/pred_matrix.html">pred_matrix</a></span><span class="op">(</span><span class="va">modmat</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="va">tod_seq</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">modmat</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="va">tod_seq</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_pred</span>, <span class="va">mod1</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># interpolating transition probs</span></span>
 <span></span>
@@ -577,16 +577,16 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.588 7.212 8.277 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  11.500   5.628  10.595</span></span></code></pre></div>
+<span><span class="co">#&gt;  11.407   5.681  10.559</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the
-decoded time series. For the former, we create a fine grid of oil price
-values and use the <code><a href="../reference/pred_matrix.html">pred_matrix()</a></code> function to build the
-associated interpolating design matrix.</p>
+decoded time series. For the former, we again create a fine grid of oil
+price values and use <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> to build the associated
+interpolating design matrix.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">xseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="co"># sequence for prediction</span></span>
-<span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/pred_matrix.html">pred_matrix</a></span><span class="op">(</span><span class="va">modmat</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Oil <span class="op">=</span> <span class="va">xseq</span><span class="op">)</span><span class="op">)</span> <span class="co"># prediction design matrix</span></span>
+<span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">modmat</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Oil <span class="op">=</span> <span class="va">xseq</span><span class="op">)</span><span class="op">)</span> <span class="co"># prediction design matrix</span></span>
 <span></span>
 <span><span class="va">energy</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span>mod <span class="op">=</span> <span class="va">mod3</span><span class="op">)</span> <span class="co"># decoding most probable state sequence</span></span>
 <span></span>

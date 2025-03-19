@@ -823,6 +823,21 @@ BIC.qremlModel <- function(object, ...) {
   -2 * object$llk + log(nObs) * object$n_eff_par
 }
 
+#' Extract log-likelihood from qremlModel object
+#' @param object A fitted model of class "qremlModel"
+#' @param ... Additional arguments (not used)
+#' @return An object of class "logLik"
+#' @export
+logLik.qremlModel <- function(object, ...) {
+  if (is.null(object$llk)) stop("Log-likelihood (llk) is missing in the model object")
+  
+  llk_value <- object$llk
+  attr(llk_value, "df") <- object$n_eff_par  # Degrees of freedom (effective parameters)
+  class(llk_value) <- "logLik"
+  return(llk_value)
+}
+
+
 #' Computes generalised quadratic-form penalties
 #'
 #' @description
@@ -1312,6 +1327,10 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   ## total number of lambdas for each random effect with one penalty matrix/list
   lambda_lengths <- n_penalties * re_lengths
+  if(length(lambda) != sum(lambda_lengths)){
+    msg <- paste0("Length of '", psname, "' does not match the number of penalty strength parameters needed")
+    stop(msg)
+  }
   
   # initialize list of penalty strength parameters
   Lambdas <- list()

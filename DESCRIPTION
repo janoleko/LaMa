@@ -27,6 +27,7 @@ Imports:
     MASS,
     mvtnorm,
     splines,
+    splines2,
     methods,
     CircStats, 
     circular,

@@ -301,6 +301,7 @@ pred_matrix = function(model_matrices,
 #' @importFrom splines spline.des
 #' @importFrom splines bs
 #' @importFrom mgcv cSplineDes
+#' @importFrom splines2 bSpline
 #'
 #' @examples
 #' modmat = make_matrices_dens(x = (-50):50, k = 20)
@@ -333,7 +334,7 @@ make_matrices_dens = function(x, # data vector
       knots <- knots[2:(length(knots)-1)] # only keep interior knots
       
       # numerical integration for normalizing the B-spline basis functions
-      B0 <- splines2::bSpline(
+      B0 <- bSpline(
         x = xseq, 
         knots = knots, 
         Boundary.knots = boundary_knots,
@@ -354,7 +355,7 @@ make_matrices_dens = function(x, # data vector
       # actual data design matrix
       B = matrix(NA, nrow = nObs, ncol = k)
       ind = which(!is.na(x))
-      B[ind,] <- splines2::bSpline(
+      B[ind,] <- bSpline(
         x = x[ind], 
         knots = knots, 
         Boundary.knots = boundary_knots,

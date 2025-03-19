@@ -179,7 +179,9 @@ penalty = function(re_coef, S, lambda) {
   
   RTMB::REPORT(Pen) # Report the penalty list for qreml update
   
-  0.5 * pen
+  pen = 0.5 * pen
+  RTMB::REPORT(pen)
+  pen
 }
 
 #' Quasi restricted maximum likelihood (qREML) algorithm for models with penalised splines or simple i.i.d. random effects
@@ -1022,7 +1024,9 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
   }
   
   RTMB::REPORT(Pen) # Report the penalty list for qreml update
-  0.5 * pen
+  pen = 0.5 * pen
+  RTMB::REPORT(pen)
+  pen
 }
 
 #' Quasi restricted maximum likelihood (qREML) algorithm for models with penalised splines or simple i.i.d. random effects
@@ -1147,7 +1151,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                   silent = 1, # print level
                   joint_unc = TRUE, # should joint object be returned?
                   saveall = FALSE)# , # save all intermediate models?
-# epsilon = c(1e-2, 1e-1)) # cycling detection parameters 
+                  # cycling_threshold = 100) # cycling detection threshold
 {
   method <- "BFGS"
   
@@ -1228,9 +1232,10 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   # deal with mapping of penalty strength parameters
   lambda_mapped = map_lambda(lambda, lambda_map)
   if(length(lambda_mapped) < 1){
-    message("No penalty paramters will be estimated as all are fixed.")
+    message("No penalty parameters will be estimated as all are fixed.")
     maxiter <- 1
   }
+  Lambda_mapped <- matrix(lambda_mapped, nrow = 1, ncol = length(lambda_mapped))
   
   obj <- MakeADFun(func = f, 
                    parameters = par, 
@@ -1479,6 +1484,18 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     # potentially set lambdas to "working infinity"
     lambda_mapped[which(lambda_mapped > 1e8)] <- 1e8
     
+    # save current lambda_mapped
+    Lambda_mapped <- rbind(Lambda_mapped, lambda_mapped)
+    
+    # cycling check
+    # if(k > 15){
+    #   cycling <- detect_cycling(Lambda_mapped, cycling_threshold)
+    #   if(cycling){
+    #     cat("Cycling detected - reducing step size\n")
+    #     alpha <- 1 - 0.9 * (1 - alpha)
+    #   }
+    # }
+    
     # unmap lambda
     lambdas_k <- unmap_lambda(lambda_mapped, lambda_map, lambda0)
     
@@ -1553,6 +1570,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   opt <- stats::optim(newpar, obj$fn, newgrad, 
                       method = method, hessian = TRUE, # return hessian in the end
                       control = control)
+  
   if(silent == 0){
     gr = obj$gr(opt$par)
     cat("final inner mgc:", max(abs(gr)), "\n")
@@ -1563,6 +1581,10 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   # reporting to extract penalties
   mod <- obj$report() 
+  
+  # save log likelihood at convergence
+  pllk <- -opt$value # penalised
+  llk <- pllk + mod$pen
   
   # evaluating current Hessian
   J <- opt$hessian
@@ -1673,8 +1695,8 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   mod[[paste0("all_", psname)]] <- Lambdas
   
   # calculating unpenalized log-likelihood at final parameter values
-  lambda <- rep(0, length(lambda))
-  dat[[psname]] <- lambda
+  # lambda <- rep(0, length(lambda))
+  # dat[[psname]] <- lambda
   
   # format parameter to list
   parlist <- obj$env$parList(opt$par)
@@ -1689,11 +1711,11 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   mod[[paste0(argname_par, "_vec")]] <- opt$par
   
   # assign log-likelihood at optimum to return object
-  mod$llk <- -pnll(parlist)
+  mod$llk <- llk
   
   # reassigning the correct lambda
-  lambda <- mod$lambda
-  dat[[psname]] <- lambda
+  # lambda <- mod$lambda
+  # dat[[psname]] <- lambda
   
   # number of fixed parameters
   mod$n_fixpar <- length(unlist(par[!(names(par) %in% random)]))
@@ -1733,7 +1755,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   leading_diag <- rowSums(J_inv * (J - bigS)) # computes diag(J_inv %*% (J - bigS)) more efficiently (only diagonal terms)
   Edfs <- Lambdas[[k+1]] # copy names from Lambdas if present
   for(i in seq_len(n_re)){
-    if(i %in% tp_ind) Edfs[[i]] = numeric(length(S[[i]])) # only one edf for each tensor product (not each margin)
+    if(i %in% tp_ind) Edfs[[i]] = numeric(nrow(re_inds[[i]])) # only one edf for each tensor product (not each margin)
     for(j in seq_len(nrow(re_inds[[i]]))){
         Edfs[[i]][j] = sum(leading_diag[re_inds[[i]][j,]]) # sum over the entries for each smooth
     }
@@ -1745,7 +1767,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   mod$Hessian_conditional <- J
   
   # removing unnecessary elements that are only reported for qreml
-  mod <- mod[!names(mod) %in% c("Pen", "S")] 
+  mod <- mod[!names(mod) %in% c("Pen", "pen", "S")] 
   
   if(length(tp_ind) == 0){ # only simple smooths, joint uncertainty possible
     if(joint_unc){
@@ -1923,13 +1945,13 @@ summary.qremlModel <- function(object, ...) {
       if(is.matrix(this)){
         if(nrow(this) <= 10 & ncol(this) <= 10){
           cat(name, ":\n", sep = "")
-          print(object[[name]])
+          print(round(object[[name]], 5))
         } else{
           cat(name, ": [large matrix, not displayed]\n")        }
         
       } else if(is.vector(this)){
         cat(name, ":\n", sep = "")
-        print(object[[name]])
+        print(round(object[[name]]), 5)
       }
     }
     count = count + 1
@@ -1995,3 +2017,18 @@ sdreport_outer <- function(mod, invert = FALSE){
   class(self) = "sdreport_outer"
   self
 }
+
+
+# detect_cycling <- function(param_matrix, threshold = 1, window_size = 10) {
+#   n_params <- ncol(param_matrix)
+#   cycling_flags <- rep(FALSE, n_params)
+#   
+#   for (j in 1:n_params) {
+#     rolling_var <- sapply(window_size:nrow(param_matrix), function(i) var(param_matrix[(i-window_size+5):i, j]))
+#     if (mean(rolling_var) > threshold) {
+#       cycling_flags[j] <- TRUE
+#     }
+#   }
+#   return(any(cycling_flags))
+# }
+

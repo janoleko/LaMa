@@ -323,17 +323,28 @@ make_matrices_dens = function(x, # data vector
     nrknots = k - (degree-1) 
     
     if(type == "real"){ # equidistant knots, range in reals
-      d = (rangex[2] - rangex[1]) / nrknots
-      bm = c(rangex[1] - degree*d, rangex[2] + degree*d)
-      knots = seq(bm[1], bm[2], length = nrknots + 2*degree)
+      # d = (rangex[2] - rangex[1]) / nrknots
+      # bm = c(rangex[1] - (degree-1)*d, rangex[2] + (degree-1)*d)
+      # knots = seq(bm[1], bm[2], length = nrknots + 2*degree)
+      
+      xseq = seq(rangex[1], rangex[2], length = npoints)
+      knots <- seq(rangex[1], rangex[2], length = k - (degree - 1)) # create knots sequence
+      boundary_knots <- knots[c(1, length(knots))] # set boundary knots
+      knots <- knots[2:(length(knots)-1)] # only keep interior knots
       
       # numerical integration for normalizing the B-spline basis functions
-      xseq = seq(bm[1], bm[2], length = npoints)
-      B0 = splines::spline.des(knots, xseq, degree+1, outer.ok = TRUE)$design # unnormalized
+      B0 <- splines2::bSpline(
+        x = xseq, 
+        knots = knots, 
+        Boundary.knots = boundary_knots,
+        degree = degree, 
+        intercept = TRUE
+        ) # unnormalised spline design matrix
+
       w = rep(NA, k)
       h = diff(c(knots[1], knots[length(knots)])) / npoints
       for (i in 1:k){
-        w[i] = (h* sum(B0[,i]))^(-1) 
+        w[i] = (h * sum(B0[,i]))^(-1) 
         # this computes the integrals of the B-spline basis functions (which are then standardized below)
       } 
       
@@ -343,10 +354,18 @@ make_matrices_dens = function(x, # data vector
       # actual data design matrix
       B = matrix(NA, nrow = nObs, ncol = k)
       ind = which(!is.na(x))
-      B[ind,] = t(t(splines::spline.des(knots, x[ind], degree+1, outer.ok = TRUE)$design) * w) 
-      
-      # basis positions
-      basis_pos = knots[(degree):(length(knots)-degree+1)]
+      B[ind,] <- splines2::bSpline(
+        x = x[ind], 
+        knots = knots, 
+        Boundary.knots = boundary_knots,
+        degree = degree, 
+        intercept = TRUE
+      ) # unnormalised spline design matrix
+      B[ind,] = t(t(B[ind,]) * w)
+ 
+      # basis positions for initial values later
+      basis_pos = colSums(xseq * t(t(B0) / rowSums(t(B0))))
+      # basis_pos = knots[(degree):(length(knots)-degree+1)]
       
       ## building the penalty matrix
       L = diff(diag(k), differences = diff_order) # second-order difference matrix
@@ -360,7 +379,8 @@ make_matrices_dens = function(x, # data vector
       
       B0 = splines::bs(x = xseq, 
                        knots = knots,
-                       degree = degree) # spline design matrix
+                       degree = degree,
+                       intercept = FALSE) # spline design matrix
       
       boundary_knots = attr(B0, "Boundary.knots")
       allknots = c(boundary_knots[1], knots, boundary_knots[2])

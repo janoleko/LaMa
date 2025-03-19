@@ -126,14 +126,14 @@ system.time(
   mod1 <- qreml(pnll, par, dat, random = "betaSpline")
 )
 ```
-The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can also use the `LaMa` function `pred_matrix()`, that takes the `modmat` object we created earlier, to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day. 
+The `mod` object is now a list that contains everything that is reported by the likelihood function, but also the `RTMB` object created in the process. After fitting the model, we can use `predict()` with the `modmat` object we created earlier to build a new interpolating design matrix using the exact same basis expansion specified above. This allows us to plot the estimated transition probabilities as a smooth function of time of day. 
 <!-- Uncertainty quantification can be based on the Hessian of the penalised likelihood function, returned as `Hessian_conditional` in the `mod` object. To easily relist the sampled parameter vector to the original named-list structure, the function `relist_par()` is contained in the `mod` object. -->
 
 ```{r results qreml, fig.width = 9, fig.height = 5}
 Delta = mod1$Delta
 
 tod_seq = seq(0, 24, length = 100)
-Z_pred = pred_matrix(modmat, data.frame(tod = tod_seq))
+Z_pred = predict(modmat, data.frame(tod = tod_seq))
 
 Gamma_plot = tpm_g(Z_pred, mod1$beta) # interpolating transition probs
 
@@ -355,11 +355,11 @@ system.time(
 ```
 
 Having fitted the model, we can visualise the results. We first decode the most probable state sequence and then plot the estimated state-dependent densities as a function of the oil price, as well as the decoded time series.
-For the former, we create a fine grid of oil price values and use the `pred_matrix()` function to build the associated interpolating design matrix.
+For the former, we again create a fine grid of oil price values and use `predict()` to build the associated interpolating design matrix.
 
 ```{r energy_results, fig.width = 9, fig.height = 5}
 xseq = seq(min(energy$Oil), max(energy$Oil), length = 200) # sequence for prediction
-Z_pred = pred_matrix(modmat, newdata = data.frame(Oil = xseq)) # prediction design matrix
+Z_pred = predict(modmat, newdata = data.frame(Oil = xseq)) # prediction design matrix
 
 energy$states = viterbi(mod = mod3) # decoding most probable state sequence
 

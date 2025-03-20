@@ -56,9 +56,9 @@ including nonlinear functions of random effects and parameters.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sdreportMC</span><span class="op">(</span></span>
 <span>  <span class="va">obj</span>,</span>
 <span>  <span class="va">what</span>,</span>
+<span>  nSamples <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  Hessian <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  CI <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  n <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -75,16 +75,16 @@ including nonlinear functions of random effects and parameters.</p>
 <dd><p>vector of strings with names of parameters and <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code>ed quantities to be reported</p></dd>
 
 
+<dt id="arg-nsamples">nSamples<a class="anchor" aria-label="anchor" href="#arg-nsamples"></a></dt>
+<dd><p>number of samples to draw from the multivariate normal distribution of the MLE</p></dd>
+
+
 <dt id="arg-hessian">Hessian<a class="anchor" aria-label="anchor" href="#arg-hessian"></a></dt>
 <dd><p>optional Hessian matrix. If not provided, it will be computed from the object</p></dd>
 
 
 <dt id="arg-ci">CI<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
 <dd><p>logical. If <code>TRUE</code>, only confidence intervals instead of samples will be returned</p></dd>
-
-
-<dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>number of samples to draw from the multivariate normal distribution of the MLE</p></dd>
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>

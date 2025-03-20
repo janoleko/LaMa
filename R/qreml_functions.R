@@ -1878,27 +1878,30 @@ summary.qremlModel <- function(object, ...) {
 
   ### Printing state process parameters
   if(!is.null(object$Gamma) | !is.null(object$delta)){
-    cat("State process parameters:\n")
-    if (!is.null(object$Gamma)) {
-      if(is.matrix(object$Gamma)){
-        cat("\nTransition probability matrix:\n")
-        print(object$Gamma)
-      } else if(length(dim(object$Gamma)) == 3){
-        cat("\nFirst transition probability matrix (t = 1):\n")
-        print(object$Gamma[,,1])
-      }
-    }
-    if (!is.null(object$delta)) {
-      if(is.vector(object$delta)){
-        cat("\nInitial state distribution:\n")
-        print(object$delta)
-      } else if(is.matrix(object$delta)){
-        cat("\nFirst initial state distribution:\n")
-        print(object$delta[1,])
-      }
-    }
     
-    cat("\n---")
+    if(ncol(object$Gamma) <= 15){ # don't print for very large state-spaces
+      cat("State process parameters:\n")
+      if (!is.null(object$Gamma)) {
+        if(is.matrix(object$Gamma)){
+          cat("\nTransition probability matrix:\n")
+          print(object$Gamma)
+        } else if(length(dim(object$Gamma)) == 3){
+          cat("\nFirst transition probability matrix (t = 1):\n")
+          print(object$Gamma[,,1])
+        }
+      }
+      if (!is.null(object$delta)) {
+        if(is.vector(object$delta)){
+          cat("\nInitial state distribution:\n")
+          print(object$delta)
+        } else if(is.matrix(object$delta)){
+          cat("\nFirst initial state distribution:\n")
+          print(object$delta[1,])
+        }
+      }
+      
+      cat("\n---")
+    }
   }
   
   

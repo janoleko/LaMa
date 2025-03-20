@@ -9,6 +9,7 @@ make_matrices_dens(
   k,
   type = "real",
   degree = 3,
+  knots = NULL,
   npoints = 10000,
   diff_order = 2,
   pow = 0.5
@@ -22,6 +23,8 @@ make_matrices_dens(
 \item{type}{type of the data, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for circular data like angles.}
 
 \item{degree}{degree of the B-spline basis functions, defaults to cubic B-splines}
+
+\item{knots}{optional vector of knots to be used for basis construction. If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using squre-root spacing for \code{"positive"}.}
 
 \item{npoints}{number of points used in the numerical integration for normalizing the B-spline basis functions}
 
@@ -39,7 +42,17 @@ This function builds the B-spline design matrix for a given data vector.
 Importantly, the B-spline basis functions are normalised such that the integral of each basis function is 1, hence this basis can be used for spline-based density estimation, when the basis functions are weighted by non-negative weights summing to one.
 }
 \examples{
-modmat = make_matrices_dens(x = (-50):50, k = 20)
-modmat = make_matrices_dens(x = 1:100, k = 20, type = "positive")
-modmat = make_matrices_dens(x = seq(-pi,pi), k = 20, type = "circular")
+set.seed(1)
+# real-valued
+x <- rnorm(100)
+modmat <- make_matrices_dens(x, k = 20)
+# positive-continuouos
+x <- rgamma2(100, mean = 5, sd = 2)
+modmat <- make_matrices_dens(x, k = 20, type = "positive")
+# circular
+x <- rvm(100, mu = 0, kappa = 2)
+modmat <- make_matrices_dens(x, k = 20, type = "circular")
+# bounded in an interval
+x <- rbeta(100, 1, 2)
+modmat <- make_matrices_dens(x, k = 20)
 }

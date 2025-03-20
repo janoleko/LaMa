@@ -205,13 +205,15 @@ for(j in 1:3) curve(mod$delta[j] * dnorm(x, mod$mu[j], mod$sigma[j]),
 
 We see a clear lack-of-fit due to the inflexibility of the Gaussian state-dependent densities. Thus, we now fit a model with state-dependent densities based on P-Splines. 
 
-In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `buildSmoothDens()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
+In a first step, this requires us to prepare the **design** and **penalty matrices** needed using `smooth_dens_construct()`. This function can take multiple data streams and a set of initial parameters (specifying initial means and standard deviations) for each data stream. It then builds the **P-Spline** design and penalty matrices for each data stream as well as a matrix of **initial spline coefficients** based on the provided parameters. The basis functions are standardised such that they integrate to one, which is needed for density estimation.
 
 ```{r smooth prep}
-modmat = buildSmoothDens(nessi["logODBA"], # only one data stream here
-                         k = 25, # number of basis functions
-                         par = list(logODBA = list(mean = c(-4, -3.3, -2.8),
-                                                   sd = c(0.3, 0.2, 0.5))))
+# providing initial means and sds to initialise spline coefficients
+par0 = list(logODBA = list(mean = c(-4, -3.3, -2.8), sd = c(0.3, 0.2, 0.5)))
+
+# construct the smooth density objects
+modmat = smooth_dens_construct(nessi["logODBA"], # only one data stream here
+                               par = par0)
 
 # par is nested named list: top layer: each data stream
 # for each data stream: initial means and standard deviations for each state
@@ -252,7 +254,7 @@ pnll = function(par){
 
 Now we specify the initial parameter and data list and fit the model. In this case, we actually don't need to add the observations to our `dat` list anymore, as all the information is contained in the design matrix `Z`.
 ```{r nessi_spline_fit}
-par = list(beta = beta, # spline coefficients prepared by buildSmoothDens()
+par = list(beta = beta, # spline coefficients prepared by smooth_dens_construct()
            eta = rep(-2, 6)) # initial transition matrix on logit scale
 
 dat = list(N = 3, # number of states

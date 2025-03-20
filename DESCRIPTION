@@ -26,7 +26,6 @@ Imports:
     utils,
     MASS,
     mvtnorm,
-    splines,
     splines2,
     methods,
     CircStats, 

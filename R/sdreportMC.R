@@ -8,9 +8,9 @@
 #'
 #' @param obj object returned by \code{MakeADFun()} after optimisation
 #' @param what vector of strings with names of parameters and \code{REPORT()}ed quantities to be reported
+#' @param nSamples number of samples to draw from the multivariate normal distribution of the MLE
 #' @param Hessian optional Hessian matrix. If not provided, it will be computed from the object
 #' @param CI logical. If \code{TRUE}, only confidence intervals instead of samples will be returned
-#' @param n number of samples to draw from the multivariate normal distribution of the MLE
 #' @param probs vector of probabilities for the confidence intervals (ignored if no CIs are computed)
 #'
 #' @return named list corresponding to the elements of \code{what}. Each element has the structure of the corresponding quantity with an additional dimension added for the samples.
@@ -18,6 +18,8 @@
 #' @export
 #' 
 #' @import RTMB
+#' @importFrom mgcv rmvn
+#' @importFrom MASS ginv
 #'
 #' @examples
 #' # fitting an HMM to the trex data and running sdreportMC
@@ -70,7 +72,14 @@
 #'                    n = 50)
 #' dim(sdrMC$delta)
 #' # now a matrix with 50 samples (rows)
-sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c(0.025, 0.975)){
+sdreportMC = function(obj, 
+                      what, 
+                      nSamples = 1000,
+                      Hessian = NULL, 
+                      CI = FALSE, 
+                      probs = c(0.025, 0.975)){
+  n <- nSamples
+  
   if(is.null(Hessian)){
     # check if Hessian can be computed
     # if not, obj is a marginal llk -> no Hessian implemented
@@ -99,10 +108,11 @@ sdreportMC = function(obj, what, Hessian = NULL, CI = FALSE, n = 1000, probs = c
   # turn estimated parameter list into vector
   parvec = unlist(parlist)
   # compute Fisher information
-  I = MASS::ginv(as.matrix(H))
+  I = ginv(as.matrix(H))
   
   # sample from multivariate normal distribution
-  simpars = mvtnorm::rmvnorm(n, parvec, I)
+  #simpars = mvtnorm::rmvnorm(n, parvec, I)
+  simpars <- rmvn(n, parvec, I)
   
   ## check which elements of what are parameters and which are reported
   whatpar = what[what %in% names(parlist)]

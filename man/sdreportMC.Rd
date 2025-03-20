@@ -7,9 +7,9 @@
 sdreportMC(
   obj,
   what,
+  nSamples = 1000,
   Hessian = NULL,
   CI = FALSE,
-  n = 1000,
   probs = c(0.025, 0.975)
 )
 }
@@ -18,11 +18,11 @@ sdreportMC(
 
 \item{what}{vector of strings with names of parameters and \code{REPORT()}ed quantities to be reported}
 
+\item{nSamples}{number of samples to draw from the multivariate normal distribution of the MLE}
+
 \item{Hessian}{optional Hessian matrix. If not provided, it will be computed from the object}
 
 \item{CI}{logical. If \code{TRUE}, only confidence intervals instead of samples will be returned}
-
-\item{n}{number of samples to draw from the multivariate normal distribution of the MLE}
 
 \item{probs}{vector of probabilities for the confidence intervals (ignored if no CIs are computed)}
 }

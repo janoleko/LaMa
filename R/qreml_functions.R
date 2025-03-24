@@ -1386,8 +1386,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     opt <- stats::optim(newpar, obj$fn, newgrad, 
                         method = method, hessian = TRUE, # return hessian in the end
                         control = control)
+    
+    gr <- obj$gr(opt$par)
     if(silent == 0){
-      gr <- obj$gr(opt$par)
       cat("final inner mgc:", max(abs(gr)), "\n")
     }
     
@@ -1557,7 +1558,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     # if(max(abs(
     #   (lambda - unlist(Lambdas[[k]]))[convInd] / unlist(Lambdas[[k]])[convInd]
     # )) < tol){
-    if(k >= 5 & mgc < tol | opt$counts[2] <= 5){
+    if(k >= 5 & (mgc < tol | opt$counts[2] <= 5)){
       if(silent < 2){
         cat("Converged\n")
       }

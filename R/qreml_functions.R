@@ -796,7 +796,7 @@ NULL
 #' @rdname AIC.BIC.qremlModel
 #' @export
 AIC.qremlModel <- function(object, k = 2){
-  message("Computing conditional AIC (not marginal)")
+  # message("Computing conditional AIC (not marginal)")
   # message("Models with different fixed effect structures are not comparable when estimated by REML.")
   
   -2 * object$llk + k * object$n_eff_par
@@ -806,7 +806,7 @@ AIC.qremlModel <- function(object, k = 2){
 #' @export
 #' @importFrom stats BIC
 BIC.qremlModel <- function(object, ...) {
-  message("Computing conditional BIC (not marginal)")
+  # message("Computing conditional BIC (not marginal)")
   # message("Models with different fixed effect structures are not comparable when estimated by REML.")
   
   args <- list(...)  # Capture additional arguments
@@ -1558,7 +1558,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     # if(max(abs(
     #   (lambda - unlist(Lambdas[[k]]))[convInd] / unlist(Lambdas[[k]])[convInd]
     # )) < tol){
-    if(k >= 5 & (mgc < tol | opt$counts[2] <= 5)){
+    if(k >= 5 & (mgc < tol | opt$counts[2] <= 3)){
       if(silent < 2){
         cat("Converged\n")
       }

@@ -104,13 +104,13 @@ pseudo_res = function(obs,
   if(discrete){
     cat("Discrete pseudo-residuals are calculated\n")
     
-    return(pseudo_res_discrete(obs, 
-                               dist, 
-                               par, 
-                               stateprobs,
-                               normal,
-                               randomise,
-                               seed))
+    residuals <- pseudo_res_discrete(obs, 
+                                     dist,
+                                     par, 
+                                     stateprobs,
+                                     normal,
+                                     randomise,
+                                     seed)
   } else{
     # Number of observations and number of states
     nObs <- length(obs)              # Length of observations
@@ -162,11 +162,16 @@ pseudo_res = function(obs,
     residuals <- rowSums(cdf_values * stateprobs)
     
     if(normal){
-      return(qnorm(residuals))
-    } else{
-      return(residuals)
+      residuals <- qnorm(residuals)
     }
   }
+  
+  # handle infinite value
+  residuals[is.infinite(residuals)] <- NA
+  
+  class(residuals) <- "LaMaResiduals"
+  
+  return(residuals)
 }
 
 

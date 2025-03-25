@@ -10,7 +10,7 @@ make_matrices_dens(
   type = "real",
   degree = 3,
   knots = NULL,
-  quantile = TRUE,
+  quantile = FALSE,
   diff_order = 2,
   pow = 0.5,
   npoints = 10000

@@ -325,7 +325,7 @@ make_matrices_dens = function(x, # data vector
                               type = "real", # type of the data
                               degree = 3, # degree of the B-Spline basis
                               knots = NULL, # default to automatic knots spacing, if provided, need to be k - degree + 1
-                              quantile = TRUE, # if TRUE, use quantile-based knots
+                              quantile = FALSE, # if TRUE, use quantile-based knots
                               diff_order = 2, # order of the differences for the penalty matrix
                               pow = 0.5, # power for polynomial knot spacing for positive values
                               npoints = 1e4 # number of points for numerical integration
@@ -348,7 +348,7 @@ make_matrices_dens = function(x, # data vector
       # if knots not supplied, default to equidistant knots
       if(is.null(knots)){
         if(quantile){ # quantile spacing
-          knots <- quantile(x, probs = seq(0, 1, length = nrknots))
+          knots <- quantile(x, probs = seq(0, 1, length = nrknots), na.rm = TRUE)
           knots[1] <- rangex[1]
           knots[nrknots] <- rangex[2]
         } else { # equidistant spacing
@@ -416,7 +416,7 @@ make_matrices_dens = function(x, # data vector
       # if knots not supplied, default to square-root-spaced knots
       if(is.null(knots)){
         if(quantile){ # quantile spacing
-          knots <- quantile(x, probs = seq(0, 1, length = nrknots))
+          knots <- quantile(x, probs = seq(0, 1, length = nrknots), na.rm = TRUE)
           knots[1] <- rangex[1]
           knots[nrknots] <- rangex[2]
         } else { # polynomial spacing
@@ -477,7 +477,7 @@ make_matrices_dens = function(x, # data vector
     # if knots not supplied, default to equidistant knots
     if(is.null(knots)){
       if(quantile){ # quantile spacing
-        knots <- quantile(x, probs = seq(0, 1, length = k+1))
+        knots <- quantile(x, probs = seq(0, 1, length = k+1), na.rm = TRUE)
         knots[1] <- -pi
         knots[length(knots)] <- pi
       } else { # equidistant spacing

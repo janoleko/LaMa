@@ -290,10 +290,14 @@ pred_matrix = function(model_matrices,
 #' @param k number of basis functions
 #' @param type type of the data, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for circular data like angles.
 #' @param degree degree of the B-spline basis functions, defaults to cubic B-splines
-#' @param knots optional vector of knots to be used for basis construction. If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using squre-root spacing for \code{"positive"}.
-#' @param npoints number of points used in the numerical integration for normalizing the B-spline basis functions
+#' @param knots optional vector of knots (including the boundary knots) to be used for basis construction. 
+#' If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
+#'
+#' For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.
+#' @param quantile logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)
 #' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #' @param pow power for polynomial knot spacing
+#' @param npoints number of points used in the numerical integration for normalizing the B-spline basis functions
 #' 
 #' Such non-equidistant knot spacing is only used for \code{type = "positive"}.
 #'
@@ -321,9 +325,10 @@ make_matrices_dens = function(x, # data vector
                               type = "real", # type of the data
                               degree = 3, # degree of the B-Spline basis
                               knots = NULL, # default to automatic knots spacing, if provided, need to be k - degree + 1
-                              npoints = 1e4, # number of points for numerical integration
+                              quantile = TRUE, # if TRUE, use quantile-based knots
                               diff_order = 2, # order of the differences for the penalty matrix
-                              pow = 0.5 # power for polynomial knot spacing for positive values
+                              pow = 0.5, # power for polynomial knot spacing for positive values
+                              npoints = 1e4 # number of points for numerical integration
 ){
   nObs <- length(x)
 
@@ -342,7 +347,13 @@ make_matrices_dens = function(x, # data vector
       
       # if knots not supplied, default to equidistant knots
       if(is.null(knots)){
-        knots <- seq(rangex[1], rangex[2], length = nrknots) # create knots sequence
+        if(quantile){ # quantile spacing
+          knots <- quantile(x, probs = seq(0, 1, length = nrknots))
+          knots[1] <- rangex[1]
+          knots[nrknots] <- rangex[2]
+        } else { # equidistant spacing
+          knots <- seq(rangex[1], rangex[2], length = nrknots)
+        }
       } else{
         if(length(knots) != nrknots){
           stop("Number of knots provided is wrong. It should be 'k - degree + 1'.")
@@ -388,7 +399,7 @@ make_matrices_dens = function(x, # data vector
       # basis_pos = knots[(degree):(length(knots)-degree+1)]
       
       # second-order difference matrix
-      L = diff(diag(k), differences = diff_order)
+      L <- diff(diag(k), differences = diff_order)
 
     } else if(type == "positive") { # non-equidistant knots, no mass on < 0
       
@@ -404,7 +415,13 @@ make_matrices_dens = function(x, # data vector
       
       # if knots not supplied, default to square-root-spaced knots
       if(is.null(knots)){
-        knots <- seq(rangex[1]^pow, rangex[2]^pow, length = nrknots)^(1/pow) # create knots sequence
+        if(quantile){ # quantile spacing
+          knots <- quantile(x, probs = seq(0, 1, length = nrknots))
+          knots[1] <- rangex[1]
+          knots[nrknots] <- rangex[2]
+        } else { # polynomial spacing
+          knots <- seq(rangex[1]^pow, rangex[2]^pow, length = nrknots)^(1/pow)
+        }
       } else{
         if(length(knots) != nrknots){
           stop("Number of knots provided is wrong. It should be 'k - degree + 1'.")
@@ -449,7 +466,7 @@ make_matrices_dens = function(x, # data vector
       B[ind,] <- t(t(B[ind,]) * w)
       
       # second-order difference matrix
-      L = diff(diag(k), differences = diff_order) 
+      L <- diff(diag(k), differences = diff_order) 
       
     } else {
       stop("type must be 'real', 'positive' or 'circular'")
@@ -459,7 +476,13 @@ make_matrices_dens = function(x, # data vector
     
     # if knots not supplied, default to equidistant knots
     if(is.null(knots)){
-      knots <- seq(-pi, pi, length = k+1)
+      if(quantile){ # quantile spacing
+        knots <- quantile(x, probs = seq(0, 1, length = k+1))
+        knots[1] <- -pi
+        knots[length(knots)] <- pi
+      } else { # equidistant spacing
+        knots <- seq(-pi, pi, length = k + 1)
+      }
     } else{
       if(length(knots) != nrknots){
         stop("Number of knots provided is wrong. For 'type = circular' it should be 'k + 1' with '-pi' and 'pi' as first and last entries.")
@@ -497,7 +520,7 @@ make_matrices_dens = function(x, # data vector
     B[ind,] <- t(t(B[ind,]) * w)
     
     # difference matrix for circular P-Spline penalty
-    L = diff(rbind(diag(k), diag(k)[1:diff_order,]), differences = diff_order)
+    L <- diff(rbind(diag(k), diag(k)[1:diff_order,]), differences = diff_order)
   }
   
   # constructing penalty matrix
@@ -564,10 +587,14 @@ make_splinecoef = function(model_matrices,
 #' For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 #'
 #' @param data named data frame of different data streams
-#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data. Needs to be a vector corresponding to the number of data streams in \code{data}.
 #' @param par nested named list of initial means and sds/concentrations for each data stream
+#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data. Needs to be a vector corresponding to the number of data streams in \code{data}.
 #' @param k number of basis functions for each data stream
-#' @param knots optional list of knots to be used for basis construction. If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using squre-root spacing for \code{"positive"}. If provided, needs to be a named list corresponding to the names of the data streams in \code{data}.
+#' @param knots optional list of knots vectors (including the boundary knots) to be used for basis construction. 
+#' If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
+#'
+#' For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.
+#' @param quantile logical of length 1 or vector of length equal to the number of data streams. If \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)#' @param quantile optional locical vector of length equal to 1 or the number of data streams, indicating whether to use quantile-based knot spacing. Defaults to \code{FALSE}.
 #' @param degree degree of the B-spline basis functions for each data stream, defaults to cubic B-splines
 #' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #'
@@ -590,8 +617,8 @@ make_splinecoef = function(model_matrices,
 #'            x3 = list(mean = 0, concentration = 2))
 #' 
 #' SmoothDens = smooth_dens_construct(data, 
-#'                                    type = c("real", "positive", "circular"),
-#'                                    par)
+#'                                    par,
+#'                                    type = c("real", "positive", "circular"))
 #'                              
 #' # extracting objects for x1
 #' Z1 = SmoothDens$Z$x1
@@ -613,10 +640,11 @@ make_splinecoef = function(model_matrices,
 #' S = SmoothDens$S$x
 #' coefs = SmoothDens$coef$x
 smooth_dens_construct <- function(data,
-                                  type = "real",
                                   par,
+                                  type = "real",
                                   k = 25,
                                   knots = NULL,
+                                  quantile = FALSE,
                                   degree = 3,
                                   diff_order = 2
 ){
@@ -632,22 +660,27 @@ smooth_dens_construct <- function(data,
   if(length(k) == 1){
     k = rep(k, nStreams)
   } else if(length(k) != nStreams){
-    stop("k must be a scalar or a vector of length equal to the number of datastreams")
+    stop("'k' must be a scalar or a vector of length equal to the number of datastreams")
   }
   if(length(type) == 1){
     type = rep(type, nStreams)
   } else if(length(type) != nStreams){
-    stop("type must be of length 1 or equal to the number of datastreams")
+    stop("'type' must be of length 1 or equal to the number of datastreams")
   }
   if(length(degree) == 1){
     degree = rep(degree, nStreams)
   } else if(length(degree) != nStreams){
-    stop("degree must be of length 1 or equal to the number of datastreams")
+    stop("'degree' must be of length 1 or equal to the number of datastreams")
+  }
+  if(length(quantile) == 1){
+    quantile = rep(quantile, nStreams)
+  } else if(length(quantile) != nStreams){
+    stop("'quantile' must be of length 1 or equal to the number of datastreams")
   }
   if(length(diff_order) == 1){
     diff_order = rep(diff_order, nStreams)
   } else if(length(diff_order) != nStreams){
-    stop("diff_order must be of length 1 or equal to the number of datastreams")
+    stop("'diff_order' must be of length 1 or equal to the number of datastreams")
   }
   
   listseed = vector("list", length = nStreams)
@@ -663,6 +696,7 @@ smooth_dens_construct <- function(data,
                                 type = type[i], 
                                 k = k[i], 
                                 knots = knots[[thisname]],
+                                quantile = quantile[i],
                                 degree = degree[i], 
                                 diff_order = diff_order[i])
     Z[[thisname]] = modmat$Z

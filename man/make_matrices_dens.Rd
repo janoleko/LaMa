@@ -10,9 +10,10 @@ make_matrices_dens(
   type = "real",
   degree = 3,
   knots = NULL,
-  npoints = 10000,
+  quantile = TRUE,
   diff_order = 2,
-  pow = 0.5
+  pow = 0.5,
+  npoints = 10000
 )
 }
 \arguments{
@@ -24,13 +25,18 @@ make_matrices_dens(
 
 \item{degree}{degree of the B-spline basis functions, defaults to cubic B-splines}
 
-\item{knots}{optional vector of knots to be used for basis construction. If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using squre-root spacing for \code{"positive"}.}
+\item{knots}{optional vector of knots (including the boundary knots) to be used for basis construction. 
+If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
 
-\item{npoints}{number of points used in the numerical integration for normalizing the B-spline basis functions}
+For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.}
+
+\item{quantile}{logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)}
 
 \item{diff_order}{order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.}
 
-\item{pow}{power for polynomial knot spacing
+\item{pow}{power for polynomial knot spacing}
+
+\item{npoints}{number of points used in the numerical integration for normalizing the B-spline basis functions
 
 Such non-equidistant knot spacing is only used for \code{type = "positive"}.}
 }

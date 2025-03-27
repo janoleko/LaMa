@@ -1220,9 +1220,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
       stop(msg)
     }
     # make factor if not
-    if(!all(sapply(map, is.factor))){
-      message("Converting map to factor")
-    }
+    # if(!all(sapply(map, is.factor))){
+    #   message("Converting map to factor")
+    # }
     map <- lapply(map, factor)
     # if there is mapping but no psname map, add psname map
     if(is.null(map[[psname]])){
@@ -1851,11 +1851,12 @@ qreml <- function(pnll, # penalized negative log-likelihood function
       # assigning object to return object
       mod$obj_joint <- obj_joint
     }
-  } else{
-    if(joint_unc){
-      message("Joint uncercainty is currently not possible for models involving tensor products.")
-    }
-  }
+  } 
+  # else{
+  #   if(joint_unc){
+  #     message("Joint uncercainty is currently not possible for models involving tensor products.")
+  #   }
+  # }
   
   class(mod) = "qremlModel"
   return(mod)

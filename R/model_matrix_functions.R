@@ -343,7 +343,7 @@ make_matrices_dens = function(x, # data vector
     
     if(type == "real"){ # real data, defaults to equidistant knots
       # grid for numerical integration (normalisation)
-      xseq <- seq(rangex[1] + 1e-3, rangex[2] - 1e-3, length = npoints)
+      # xseq <- seq(rangex[1] + 1e-3, rangex[2] - 1e-3, length = npoints)
       
       # if knots not supplied, default to equidistant knots
       if(is.null(knots)){
@@ -362,6 +362,9 @@ make_matrices_dens = function(x, # data vector
       
       boundary_knots <- knots[c(1, length(knots))] # set boundary knots
       knots <- knots[2:(length(knots)-1)] # only keep interior knots
+      
+      xseq <- seq(boundary_knots[1] + 1e-3, boundary_knots[2] - 1e-3, 
+                  length = npoints)
       
       # numerical integration for normalizing the B-spline basis functions
       B0 <- bSpline(
@@ -411,7 +414,7 @@ make_matrices_dens = function(x, # data vector
       rangex[1] <- 0 # always from 0 to max(x)
       
       # grid for numerical integration (normalisation)
-      xseq <- seq(rangex[1] + 1e-3, rangex[2] - 1e-3, length = npoints)
+      # xseq <- seq(rangex[1] + 1e-3, rangex[2] - 1e-3, length = npoints)
       
       # if knots not supplied, default to square-root-spaced knots
       if(is.null(knots)){
@@ -430,6 +433,9 @@ make_matrices_dens = function(x, # data vector
       
       boundary_knots <- knots[c(1, length(knots))] # set boundary knots
       knots <- knots[2:(length(knots)-1)] # only keep interior knots
+      
+      xseq <- seq(boundary_knots[1] + 1e-3, boundary_knots[2] - 1e-3, 
+                  length = npoints)
       
       # numerical integration for normalizing the B-spline basis functions
       B0 <- bSpline(
@@ -655,6 +661,16 @@ smooth_dens_construct <- function(data,
   nStreams <- ncol(data)
   nObs <- nrow(data)
   varnames <- colnames(data)
+  
+  if(length(par) == length(varnames)){
+    if(is.null(names(par))){
+      stop("'par' must be a named nested list with names corresponding to the datastreams")
+    } else if(names(par) != varnames){
+      stop("'par' must be a named nested list with names corresponding to the datastreams")
+    }
+  } else{
+    stop("'par' must be a named nested list with names corresponding to the datastreams")
+  }
   
   # processing input arguments
   if(length(k) == 1){

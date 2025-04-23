@@ -665,7 +665,7 @@ smooth_dens_construct <- function(data,
   if(length(par) == length(varnames)){
     if(is.null(names(par))){
       stop("'par' must be a named nested list with names corresponding to the datastreams")
-    } else if(names(par) != varnames){
+    } else if(any(names(par) != varnames)){
       stop("'par' must be a named nested list with names corresponding to the datastreams")
     }
   } else{

@@ -708,7 +708,7 @@ smooth_dens_construct <- function(data,
     
     cat(thisname, "\n")
     
-    modmat = make_matrices_dens(x = data[[thisname]], 
+    modmat <- make_matrices_dens(x = data[[thisname]], 
                                 type = type[i], 
                                 k = k[i], 
                                 knots = knots[[thisname]],

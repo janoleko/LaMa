@@ -1930,8 +1930,14 @@ summary.qremlModel <- function(object, ...) {
   cat("\nLog-Likelihood:", object$llk, "\n")
   
   ### Printing Print AIC and BIC
+  # AIC
   suppressMessages(aic <- AIC.qremlModel(object))
-  suppressMessages(bic <- BIC.qremlModel(object))
+  # BIC
+  bic <- tryCatch(
+    suppressMessages(BIC.qremlModel(object)),
+    error = function(e) "could not be determined"
+  )
+  
   cat("AIC:", aic, "  ")
   cat("BIC:", bic, "\n")
   cat("\n---")
@@ -1971,11 +1977,17 @@ summary.qremlModel <- function(object, ...) {
           cat(name, ":\n", sep = "")
           print(round(object[[name]], 5))
         } else{
-          cat(name, ": [large matrix, not displayed]\n")        }
+          cat(name, ": [large matrix, not displayed]\n")
+        }
         
       } else if(is.vector(this)){
-        cat(name, ":\n", sep = "")
-        print(round(object[[name]]), 5)
+        if(length(this) <= 20){
+          cat(name, ":\n", sep = "")
+          print(round(object[[name]]), 5)
+        } else{
+          cat(name, ": [large vector, not displayed]\n")
+        }
+        
       }
     }
     count = count + 1

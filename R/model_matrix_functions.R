@@ -589,7 +589,7 @@ make_splinecoef = function(model_matrices,
 #' Under the hood, \code{\link{make_matrices_dens}} is used for the actual construction of the design and penalty matrices.
 #'
 #' You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is then converted into suitable spline coefficients.
-#' \code{buildSmoothDens} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
+#' \code{smooth_dens_construct} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
 #' For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 #'
 #' @param data named data frame of different data streams

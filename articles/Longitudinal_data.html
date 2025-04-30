@@ -205,14 +205,14 @@ individuals in <code>R</code>.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll_pool</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, trackID <span class="op">=</span> <span class="va">trackID</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.334   0.014   0.348</span></span>
+<span><span class="co">#&gt;   0.336   0.020   0.356</span></span>
 <span></span>
 <span><span class="co"># slow version</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll_pool_slow</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, K <span class="op">=</span> <span class="va">K</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   2.471   0.029   2.500</span></span></code></pre></div>
+<span><span class="co">#&gt;   2.552   0.035   2.588</span></span></code></pre></div>
 <p>In this example, looping over individuals in <code>R</code> already
 leads to five times longer the estimation time, but this can be much
 more severe for more complicated models.</p>
@@ -303,7 +303,7 @@ for each track respectively.</p>
 <span>  <span class="va">mod_partial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll_partial</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, z <span class="op">=</span> <span class="va">z</span>, trackID <span class="op">=</span> <span class="va">trackID</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.401   0.007   0.408</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.393   0.012   0.405</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -317,7 +317,7 @@ for each track respectively.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>

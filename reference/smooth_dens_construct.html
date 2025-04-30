@@ -108,7 +108,7 @@ If not provided, the knots are placed equidistantly for <code>"real"</code> and 
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Under the hood, <code><a href="make_matrices_dens.html">make_matrices_dens</a></code> is used for the actual construction of the design and penalty matrices.</p>
 <p>You can provide one or multiple data streams of different types (real, positive, circular) and specify initial means and standard deviations/ concentrations for each data stream. This information is then converted into suitable spline coefficients.
-<code>buildSmoothDens</code> then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
+<code>smooth_dens_construct</code> then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
 For types <code>"real"</code> and <code>"circular"</code> the knots are placed equidistant in the range of the data, for type <code>"positive"</code> the knots are placed using polynomial spacing.</p>
     </div>
 
@@ -174,7 +174,7 @@ For types <code>"real"</code> and <code>"circular"</code> the knots are placed e
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

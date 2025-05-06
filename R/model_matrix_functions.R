@@ -691,11 +691,11 @@ smooth_dens_construct <- function(data,
   } else if(length(degree) != nStreams){
     stop("'degree' must be of length 1 or equal to the number of datastreams")
   }
-  if(length(quantile) == 1){
-    quantile = rep(quantile, nStreams)
-  } else if(length(quantile) != nStreams){
-    stop("'quantile' must be of length 1 or equal to the number of datastreams")
-  }
+  # if(length(quantile) == 1){
+  #   quantile = rep(quantile, nStreams)
+  # } else if(length(quantile) != nStreams){
+  #   stop("'quantile' must be of length 1 or equal to the number of datastreams")
+  # }
   if(length(diff_order) == 1){
     diff_order = rep(diff_order, nStreams)
   } else if(length(diff_order) != nStreams){
@@ -715,7 +715,7 @@ smooth_dens_construct <- function(data,
                                 type = type[i], 
                                 k = k[i], 
                                 knots = knots[[thisname]],
-                                quantile = quantile[i],
+                                # quantile = quantile[i],
                                 degree = degree[i], 
                                 diff_order = diff_order[i])
     Z[[thisname]] = modmat$Z

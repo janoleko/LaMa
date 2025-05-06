@@ -10,26 +10,23 @@ smooth_dens_construct(
   type = "real",
   k = 25,
   knots = NULL,
-  quantile = FALSE,
   degree = 3,
   diff_order = 2
 )
 }
 \arguments{
-\item{data}{named data frame of different data streams}
+\item{data}{named data frame of 1 or multiple data streams}
 
 \item{par}{nested named list of initial means and sds/concentrations for each data stream}
 
-\item{type}{type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data. Needs to be a vector corresponding to the number of data streams in \code{data}.}
+\item{type}{vector of length 1 or number of data streams containing the type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data.}
 
-\item{k}{number of basis functions for each data stream}
+\item{k}{vector of length 1 or number of data streams containing the number of basis functions for each data stream}
 
 \item{knots}{optional list of knots vectors (including the boundary knots) to be used for basis construction. 
 If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
 
 For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.}
-
-\item{quantile}{logical of length 1 or vector of length equal to the number of data streams. If \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)#' @param quantile optional locical vector of length equal to 1 or the number of data streams, indicating whether to use quantile-based knot spacing. Defaults to \code{FALSE}.}
 
 \item{degree}{degree of the B-spline basis functions for each data stream, defaults to cubic B-splines}
 

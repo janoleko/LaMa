@@ -294,7 +294,7 @@ pred_matrix = function(model_matrices,
 #' If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
 #'
 #' For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.
-#' @param quantile logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)
+#' # @param quantile logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)
 #' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #' @param pow power for polynomial knot spacing
 #' @param npoints number of points used in the numerical integration for normalizing the B-spline basis functions
@@ -325,12 +325,14 @@ make_matrices_dens = function(x, # data vector
                               type = "real", # type of the data
                               degree = 3, # degree of the B-Spline basis
                               knots = NULL, # default to automatic knots spacing, if provided, need to be k - degree + 1
-                              quantile = FALSE, # if TRUE, use quantile-based knots
+                              # quantile = FALSE, # if TRUE, use quantile-based knots
                               diff_order = 2, # order of the differences for the penalty matrix
                               pow = 0.5, # power for polynomial knot spacing for positive values
                               npoints = 1e4 # number of points for numerical integration
 ){
   nObs <- length(x)
+  
+  quantile <- FALSE # no quantile spacing if knots are not custom
 
   if(type != "circular"){
     
@@ -592,15 +594,14 @@ make_splinecoef = function(model_matrices,
 #' \code{smooth_dens_construct} then constructs the design and penalty matrices for standardised B-splines basis functions (integrating to one) for each data stream.
 #' For types \code{"real"} and \code{"circular"} the knots are placed equidistant in the range of the data, for type \code{"positive"} the knots are placed using polynomial spacing.
 #'
-#' @param data named data frame of different data streams
+#' @param data named data frame of 1 or multiple data streams
 #' @param par nested named list of initial means and sds/concentrations for each data stream
-#' @param type type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data. Needs to be a vector corresponding to the number of data streams in \code{data}.
-#' @param k number of basis functions for each data stream
+#' @param type vector of length 1 or number of data streams containing the type of each data stream, either \code{"real"} for data on the reals, \code{"positive"} for data on the positive reals or \code{"circular"} for angular data.
+#' @param k vector of length 1 or number of data streams containing the number of basis functions for each data stream
 #' @param knots optional list of knots vectors (including the boundary knots) to be used for basis construction. 
 #' If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
 #'
 #' For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.
-#' @param quantile logical of length 1 or vector of length equal to the number of data streams. If \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)#' @param quantile optional locical vector of length equal to 1 or the number of data streams, indicating whether to use quantile-based knot spacing. Defaults to \code{FALSE}.
 #' @param degree degree of the B-spline basis functions for each data stream, defaults to cubic B-splines
 #' @param diff_order order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.
 #'
@@ -650,10 +651,12 @@ smooth_dens_construct <- function(data,
                                   type = "real",
                                   k = 25,
                                   knots = NULL,
-                                  quantile = FALSE,
+                                  # quantile = FALSE,
                                   degree = 3,
                                   diff_order = 2
 ){
+  quantile <- FALSE # no quantile spacing if knots are not custom
+  
   if(!is.data.frame(data)){
     stop("datastreams must be a data frame")
   }

@@ -10,7 +10,6 @@ make_matrices_dens(
   type = "real",
   degree = 3,
   knots = NULL,
-  quantile = FALSE,
   diff_order = 2,
   pow = 0.5,
   npoints = 10000
@@ -28,9 +27,8 @@ make_matrices_dens(
 \item{knots}{optional vector of knots (including the boundary knots) to be used for basis construction. 
 If not provided, the knots are placed equidistantly for \code{"real"} and \code{"circular"} and using polynomial spacing for \code{"positive"}.
 
-For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.}
-
-\item{quantile}{logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)}
+For \code{"real"} and \code{"positive"} \code{k - degree + 1} knots are needed, for \code{"circular"} \code{k + 1} knots are needed.
+# @param quantile logical, if \code{TRUE} use quantile-based knot spacing (instead of equidistant or polynomial)}
 
 \item{diff_order}{order of differencing used for the P-Spline penalty matrix for each data stream. Defaults to second-order differences.}
 

@@ -56,7 +56,6 @@
 <span>  type <span class="op">=</span> <span class="st">"real"</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  knots <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  quantile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  degree <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  diff_order <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -67,7 +66,7 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>named data frame of different data streams</p></dd>
+<dd><p>named data frame of 1 or multiple data streams</p></dd>
 
 
 <dt id="arg-par">par<a class="anchor" aria-label="anchor" href="#arg-par"></a></dt>
@@ -75,21 +74,17 @@
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>type of each data stream, either <code>"real"</code> for data on the reals, <code>"positive"</code> for data on the positive reals or <code>"circular"</code> for angular data. Needs to be a vector corresponding to the number of data streams in <code>data</code>.</p></dd>
+<dd><p>vector of length 1 or number of data streams containing the type of each data stream, either <code>"real"</code> for data on the reals, <code>"positive"</code> for data on the positive reals or <code>"circular"</code> for angular data.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>number of basis functions for each data stream</p></dd>
+<dd><p>vector of length 1 or number of data streams containing the number of basis functions for each data stream</p></dd>
 
 
 <dt id="arg-knots">knots<a class="anchor" aria-label="anchor" href="#arg-knots"></a></dt>
 <dd><p>optional list of knots vectors (including the boundary knots) to be used for basis construction.
 If not provided, the knots are placed equidistantly for <code>"real"</code> and <code>"circular"</code> and using polynomial spacing for <code>"positive"</code>.</p>
 <p>For <code>"real"</code> and <code>"positive"</code> <code>k - degree + 1</code> knots are needed, for <code>"circular"</code> <code>k + 1</code> knots are needed.</p></dd>
-
-
-<dt id="arg-quantile">quantile<a class="anchor" aria-label="anchor" href="#arg-quantile"></a></dt>
-<dd><p>logical of length 1 or vector of length equal to the number of data streams. If <code>TRUE</code> use quantile-based knot spacing (instead of equidistant or polynomial)#' @param quantile optional locical vector of length equal to 1 or the number of data streams, indicating whether to use quantile-based knot spacing. Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-degree">degree<a class="anchor" aria-label="anchor" href="#arg-degree"></a></dt>
@@ -132,19 +127,15 @@ For types <code>"real"</code> and <code>"circular"</code> the knots are placed e
 <span class="r-in"><span>                                   <span class="va">par</span>,</span></span>
 <span class="r-in"><span>                                   type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"real"</span>, <span class="st">"positive"</span>, <span class="st">"circular"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> x1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Leaving out last column of the penalty matrix, fix the last spline coefficient at zero for identifiability!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Parameter matrix excludes the last column. Fix this column at zero!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Leaving out last column of the penalty matrix, fix the last spline coefficient at zero for identifiability!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Parameter matrix excludes the last column. Fix this column at zero!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> x3 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Leaving out last column of the penalty matrix, fix the last spline coefficient at zero for identifiability!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Parameter matrix excludes the last column. Fix this column at zero!</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in make_matrices_dens(x = data[[thisname]], type = type[i], k = k[i],     knots = knots[[thisname]], quantile = quantile[i], degree = degree[i],     diff_order = diff_order[i]):</span> unused argument (quantile = quantile[i])</span>
 <span class="r-in"><span>                             </span></span>
 <span class="r-in"><span><span class="co"># extracting objects for x1</span></span></span>
 <span class="r-in"><span><span class="va">Z1</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">Z</span><span class="op">$</span><span class="va">x1</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 <span class="r-in"><span><span class="va">S1</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">S</span><span class="op">$</span><span class="va">x1</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 <span class="r-in"><span><span class="va">coefs1</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">coef</span><span class="op">$</span><span class="va">x1</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## one data stream, but mixture of two distributions</span></span></span>
 <span class="r-in"><span><span class="co"># normal data with mean 0 and sd 1</span></span></span>
@@ -156,13 +147,15 @@ For types <code>"real"</code> and <code>"circular"</code> the knots are placed e
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">SmoothDens</span> <span class="op">=</span> <span class="fu">smooth_dens_construct</span><span class="op">(</span><span class="va">data</span>, par <span class="op">=</span> <span class="va">par</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> x </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Leaving out last column of the penalty matrix, fix the last spline coefficient at zero for identifiability!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Parameter matrix excludes the last column. Fix this column at zero!</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in make_matrices_dens(x = data[[thisname]], type = type[i], k = k[i],     knots = knots[[thisname]], quantile = quantile[i], degree = degree[i],     diff_order = diff_order[i]):</span> unused argument (quantile = quantile[i])</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># extracting objects </span></span></span>
 <span class="r-in"><span><span class="va">Z</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">Z</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 <span class="r-in"><span><span class="va">S</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">S</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 <span class="r-in"><span><span class="va">coefs</span> <span class="op">=</span> <span class="va">SmoothDens</span><span class="op">$</span><span class="va">coef</span><span class="op">$</span><span class="va">x</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'SmoothDens' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

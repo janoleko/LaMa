@@ -1972,18 +1972,21 @@ summary.qremlModel <- function(object, ...) {
   for (name in remaining_names) {
     if (!is.null(object[[name]]) & count <= 10) {
       this <- object[[name]]
+      
+      # check if object is a matrix, if so, not print if too large
       if(is.matrix(this)){
         if(nrow(this) <= 10 & ncol(this) <= 10){
           cat(name, ":\n", sep = "")
-          print(round(object[[name]], 5))
+          print(round(this, 4))
         } else{
           cat(name, ": [large matrix, not displayed]\n")
         }
         
+      # check if object is a vector, if so, not print if too long
       } else if(is.vector(this)){
         if(length(this) <= 20){
           cat(name, ":\n", sep = "")
-          print(round(object[[name]]), 5)
+          print(round(this, 4))
         } else{
           cat(name, ": [large vector, not displayed]\n")
         }

@@ -124,13 +124,15 @@ forward = function(delta, Gamma, allprobs,
       delta = matrix(delta, nrow = 1, ncol = length(delta), byrow = TRUE) # reshape to matrix
       
       # forward algorithm
-      foo = delta %*% RTMB::diag(allprobs[1,])
+      # foo = delta %*% RTMB::diag(allprobs[1,])
+      foo = delta * allprobs[1, , drop = FALSE]
       sumfoo = sum(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:nrow(allprobs)) {
-        foo = phi %*% Gamma %*% RTMB::diag(allprobs[t,])
+        # foo = phi %*% Gamma %*% RTMB::diag(allprobs[t,])
+        foo = (phi %*% Gamma) * allprobs[t, , drop = FALSE]
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -184,9 +186,11 @@ forward = function(delta, Gamma, allprobs,
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        deltai = RTMB::matrix(Delta[i,], nrow = 1, ncol = N)
+        # deltai = RTMB::matrix(Delta[i,], nrow = 1, ncol = N)
+        deltai = Delta[i, , drop = FALSE]
         
-        foo = deltai %*% RTMB::diag(allprobs[ind[1],])
+        # foo = deltai %*% RTMB::diag(allprobs[ind[1],])
+        foo = deltai * allprobs[ind[1], , drop = FALSE]
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -194,7 +198,8 @@ forward = function(delta, Gamma, allprobs,
         Gamma_i = Gamma[,,i]
         
         for(t in 2:length(ind)) {
-          foo = phi %*% Gamma_i %*% RTMB::diag(allprobs[ind[t],])
+          # foo = phi %*% Gamma_i %*% RTMB::diag(allprobs[ind[t],])
+          foo = (phi %*% Gamma_i) * allprobs[ind[t], , drop = FALSE]
           sumfoo = sum(foo)
           phi = foo / sumfoo
           l = l + log(sumfoo)
@@ -203,7 +208,7 @@ forward = function(delta, Gamma, allprobs,
     }
   }
   
-  return(l)
+  as.numeric(l)
 }
 
 
@@ -350,13 +355,15 @@ forward_g = function(delta, Gamma, allprobs,
       if(dim(Gamma)[3] == n) Gamma = Gamma[,,-1] # deleting first slice
       
       # forward algorithm
-      foo = delta * allprobs[1,]
+      # foo = delta * allprobs[1,]
+      foo = delta * allprobs[1, , drop = FALSE]
       sumfoo = sum(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:n) {
-        foo = (phi %*% Gamma[,,t-1]) * allprobs[t,]
+        # foo = (phi %*% Gamma[,,t-1]) * allprobs[t, ]
+        foo = (phi %*% Gamma[,,t-1]) * allprobs[t, , drop = FALSE]
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
@@ -404,15 +411,18 @@ forward_g = function(delta, Gamma, allprobs,
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        deltai = matrix(Delta[i,], nrow = 1, ncol = N)
+        # deltai = matrix(Delta[i,], nrow = 1, ncol = N)
+        deltai = Delta[i, , drop = FALSE]
         
-        foo = deltai * allprobs[ind[1],]
+        # foo = deltai * allprobs[ind[1],]
+        foo = deltai * allprobs[ind[1], , drop = FALSE]
         sumfoo = sum(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
         
         for(t in 2:length(ind)) {
-          foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
+          # foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
+          foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t], , drop = FALSE]
           sumfoo = sum(foo)
           phi = foo / sumfoo
           l = l + log(sumfoo)
@@ -421,7 +431,7 @@ forward_g = function(delta, Gamma, allprobs,
     }
   }
   
-  return(l)
+  return(as.numeric(l))
 }
 
 

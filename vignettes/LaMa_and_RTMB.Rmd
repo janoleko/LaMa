@@ -290,7 +290,7 @@ Having done this, the model fit is then essentially the same:
 
 ```{r modelfit2}
 obj2 = MakeADFun(nll2, par, silent = TRUE) # creating the objective function
-opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimization
+opt2 = nlminb(obj2$par, obj2$fn, obj2$gr) # optimisation
 ```
 
 and we can look at the reported results. In this case, for simplicity I get standard errors for `Gamma` with the delta method while, in general, this is not advisable.

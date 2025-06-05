@@ -783,64 +783,6 @@ qreml_old = function(pnll, # penalized negative log-likelihood function
 }
 
 
-#' Akaike's Information Criterion for models returned by \code{\link{qreml}}
-#'
-#' @param object a fitted model object returned by \code{\link{qreml}}
-#' @param k numeric, the penalty per parameter to be used; the default \code{k = 2} is the classical AIC.
-#' @param ... can include \code{nObs} number of observations, only used for BIC. If not provided, the function tries to extract it from the model object.
-#'
-#' @return numeric value with the corresponding AIC (or BIC, or ..., depending on k)
-#'
-#' @examples
-#' ## no examples
-#' @name AIC.BIC.qremlModel
-NULL
-
-#' @rdname AIC.BIC.qremlModel
-#' @export
-AIC.qremlModel <- function(object, k = 2){
-  # message("Computing conditional AIC (not marginal)")
-  # message("Models with different fixed effect structures are not comparable when estimated by REML.")
-  
-  -2 * object$llk + k * object$n_eff_par
-}
-
-#' @rdname AIC.BIC.qremlModel
-#' @export
-#' @importFrom stats BIC
-BIC.qremlModel <- function(object, ...) {
-  # message("Computing conditional BIC (not marginal)")
-  # message("Models with different fixed effect structures are not comparable when estimated by REML.")
-  
-  args <- list(...)  # Capture additional arguments
-  nObs <- args$nObs  # Extract nObs if provided
-  
-  if (is.null(nObs)) {
-    if (is.null(object$allprobs)) {
-      stop("Could not determine the number of observations\n")
-    } else {
-      nObs <- nrow(object$allprobs)
-    }
-  }
-  
-  -2 * object$llk + log(nObs) * object$n_eff_par
-}
-
-#' Extract log-likelihood from qremlModel object
-#' @param object A fitted model of class "qremlModel"
-#' @param ... Additional arguments (not used)
-#' @return An object of class "logLik"
-#' @export
-logLik.qremlModel <- function(object, ...) {
-  if (is.null(object$llk)) stop("Log-likelihood (llk) is missing in the model object")
-  
-  llk_value <- object$llk
-  attr(llk_value, "df") <- object$n_eff_par  # Degrees of freedom (effective parameters)
-  class(llk_value) <- "logLik"
-  return(llk_value)
-}
-
-
 #' Computes generalised quadratic-form penalties
 #'
 #' @description
@@ -1785,8 +1727,12 @@ qreml <- function(pnll, # penalized negative log-likelihood function
         Edfs[[i]][j] = sum(leading_diag[re_inds[[i]][j,]]) # sum over the entries for each smooth
     }
   }
-  mod$n_eff_par <- mod$n_fixpar + sum(unlist(Edfs)) # total effective number of parameters
+  mod$df <- mod$n_fixpar + sum(unlist(Edfs)) # total effective number of parameters
   mod$edf <- Edfs # seperated by smooth
+  
+  if(!is.null(mod$allprobs)){
+    mod$nobs <- nrow(mod$allprobs) # number of observations
+  }
   
   # assing conditinoal Hessian
   mod$Hessian_conditional <- J
@@ -1868,6 +1814,24 @@ qreml <- function(pnll, # penalized negative log-likelihood function
 }
 
 
+#' Extract log-likelihood from qremlModel object
+#' @param object A fitted model of class "qremlModel"
+#' @param ... Additional arguments (not used)
+#' @return An object of class "logLik"
+#' @export
+logLik.qremlModel <- function(object, ...) {
+  ll <- object$llk  # your stored log-likelihood
+  df <- object$df # number of free parameters
+  nobs <- object$nobs  # number of observations
+  
+  val <- as.numeric(ll)
+  attr(val, "df") <- df
+  attr(val, "nobs") <- nobs
+  class(val) <- "logLik"
+  val
+}
+
+
 #' Summary method for \code{qremlModel} objects
 #'
 #' @description
@@ -1926,7 +1890,7 @@ summary.qremlModel <- function(object, ...) {
       cat("\n", smoothnames[i], ": ", sep = "")
       cat(object$edf[[i]])
     }
-    cat("\nTotal: ", object$n_eff_par, "\n")
+    cat("\nTotal: ", object$df, "\n")
     
     cat("\n---")
   }
@@ -1936,10 +1900,10 @@ summary.qremlModel <- function(object, ...) {
   
   ### Printing Print AIC and BIC
   # AIC
-  suppressMessages(aic <- AIC.qremlModel(object))
+  suppressMessages(aic <- AIC(object))
   # BIC
   bic <- tryCatch(
-    suppressMessages(BIC.qremlModel(object)),
+    suppressMessages(BIC(object)),
     error = function(e) "could not be determined"
   )
   
@@ -1965,7 +1929,7 @@ summary.qremlModel <- function(object, ...) {
                 paste0("all_", object$psname), "parname", object$parname, paste0("relist_", object$parname), 
                 paste0("map_", object$psname), "psname", paste0(object$parname, "_vec"), 
                 "edf", "Hessian_conditional", "obj_joint",
-                "beta", "delta", "Gamma", "lambda", "llk", "n_fixpar", "n_eff_par")
+                "beta", "delta", "Gamma", "lambda", "llk", "n_fixpar", "df", "nobs")
   
   remaining_names <- setdiff(names(object), excluded)
   

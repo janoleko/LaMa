@@ -81,8 +81,12 @@ If more than one <code>state</code> is specified, a named list over states is re
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For Markov chains whose transition probabilities vary only periodically, which is achieved for example by
-expressing the transition probability matrix as a periodic function of the time of day using <code><a href="tpm_p.html">tpm_p</a></code> or <code><a href="cosinor.html">cosinor</a></code>, the probability distiribution of time spent in a state can be computed analytically.
+expressing the transition probability matrix as a periodic function of the time of day using <code><a href="tpm_p.html">tpm_p</a></code> or <code><a href="cosinor.html">cosinor</a></code>, the probability distribution of time spent in a state can be computed analytically.
 This function computes said distribution, either for a specific time point (conditioning on transitioning into the state at that time point) or for the overall distribution (conditioning on transitioning into the state at any time point).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Koslik, J. O., Feldmann, C. C., Mews, S., Michels, R., &amp; Langrock, R. (2023). Inference on the state process of periodically inhomogeneous hidden Markov models for animal behavior. arXiv preprint arXiv:2312.14583.</p>
     </div>
 
     <div class="section level2">

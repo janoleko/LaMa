@@ -57,7 +57,8 @@
 <span>  <span class="va">tod</span>,</span>
 <span>  trackID <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ad <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  report <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  logspace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,6 +99,10 @@ Instead of a single vector <code>delta</code> corresponding to the initial distr
 Defaults to <code>TRUE</code>, but only works if <code>ad = TRUE</code>, as it uses the <code>RTMB</code> package.</p>
 <p><strong>Caution:</strong> When there are multiple tracks, for compatibility with downstream functions like <code><a href="viterbi_p.html">viterbi_p</a></code>, <code><a href="stateprobs_p.html">stateprobs_p</a></code> or <code><a href="pseudo_res.html">pseudo_res</a></code>,
 <code>forward_p</code> should only be called <strong>once</strong> with a <code>trackID</code> argument.</p></dd>
+
+
+<dt id="arg-logspace">logspace<a class="anchor" aria-label="anchor" href="#arg-logspace"></a></dt>
+<dd><p>logical, indicating whether the probabilities/ densities in the <code>allprobs</code> matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.</p></dd>
 
 </dl></div>
     <div class="section level2">

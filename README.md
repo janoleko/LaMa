@@ -7,6 +7,8 @@
 status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)
 [![metacran
 downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-project.org/package=LaMa)
+[![total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -98,9 +100,13 @@ Other latent Markov model classes:
   processes](https://janoleko.github.io/LaMa/articles/MMMPPs.html)
 
 <!-- ## Citation -->
+
 <!-- When using LaMa, please cite the package as follows: -->
+
 <!-- ```{r citation} -->
+
 <!-- citation(package = "LaMa") -->
+
 <!-- ``` -->
 
 ## Introductory example: Homogeneous HMM
@@ -155,7 +161,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.364   0.010   0.374
+#>   0.380   0.012   0.395
 ```
 
 Really fast for 10.000 data points!

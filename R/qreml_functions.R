@@ -1841,6 +1841,10 @@ logLik.qremlModel <- function(object, ...) {
 #' @param ... additional arguments
 #'
 #' @returns prints a summary of the model object
+#' 
+#' @importFrom stats AIC
+#' @importFrom stats BIC
+#' 
 #' @export
 #'
 #' @examples

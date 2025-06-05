@@ -453,3 +453,130 @@ dgmrf2 = function(x,
     return(exp(logdens))
   }
 }
+
+
+
+#' State dwell-time distributions of periodically inhomogeneous Markov chains
+#' 
+#' @description
+#' Computes the dwell-time distribution of a periodically inhomogeneous Markov chain for a given transition probability matrix.
+#' 
+#' @details
+#' For Markov chains whose transition probabilities vary only periodically, which is achieved for example by
+#' expressing the transition probability matrix as a periodic function of the time of day using \code{\link{tpm_p}} or \code{\link{cosinor}}, the probability distiribution of time spent in a state can be computed analytically.
+#' This function computes said distribution, either for a specific time point (conditioning on transitioning into the state at that time point) or for the overall distribution (conditioning on transitioning into the state at any time point).
+#' 
+#'
+#' @param x vector of (non-negative) dwell times to compute the dwell-time distribution for
+#' @param Gamma array of \code{L} unique transition probability matrices of a periodically inhomogeneous Markov chain, with dimensions \code{c(N,N,L)}, where \code{N} is the number of states and \code{L} is the cycle length
+#' @param time integer vector of time points in \code{1:L} at which to compute the dwell-time distribution. If \code{NULL}, the overall dwell-time distribution is computed.
+#' @param state integer vector of state indices for which to compute the dwell-time distribution. If \code{NULL}, dwell-time distributions for all states are returned in a named list.
+#'
+#' @return either time-varying dwell-time distribution(s) if \code{time} is specified, or overall dwell-time distribution if \code{time} is \code{NULL}. 
+#' If more than one \code{state} is specified, a named list over states is returned.
+#'
+#' @examples 
+#' # setting parameters for trigonometric link
+#' beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+#' Gamma = tpm_p(beta = beta, degree = 1)
+#' 
+#' # at specific times and for specific state
+#' ddwell(1:20, Gamma, time = 1:4, state = 1)
+#' # results in 4x20 matrix
+#' 
+#' # or overall distribution for all states
+#' ddwell(1:20, Gamma)
+#' # results in list of length 2, each element is a vector of length 20
+#' 
+#' @export
+ddwell <- function(
+    x, 
+    Gamma,
+    time = NULL,
+    state = NULL
+    ) {
+  
+  # check if x is a vector
+  if (!is.vector(x) | any(x < 0)) {
+    stop("'x' must be a vector of non-negative integers.")
+  }
+  
+  # check if Gamma is a 3D array
+  if (!is.array(Gamma) || length(dim(Gamma)) != 3 || dim(Gamma)[1] != dim(Gamma)[2]) {
+    stop("'Gamma' must be a 3D array with dimensions 'c(N, N, L)', where 'N' is the number of states and 'L' is the cycle length.")
+  }
+  
+  # assign dimensions
+  L <- dim(Gamma)[3] # cycle length
+  nStates <- dim(Gamma)[1] # number of states
+  
+  # check if state is NULL or a valid integer
+  if (is.null(state)) {
+    state <- seq_len(nStates) # compute for all states
+  } else if (!is.numeric(state) || any(state < 1) || any(state > nStates)) {
+    stop("'state' must be an integer vector in the range [1, N], where 'N' is the number of states.")
+  }
+  
+  # create output list
+  out <- list()
+  
+  # locally define time-varying dwell-time distribution
+  ddwell_t <- function(x, t, state){
+    ind <- (t + (1:max(x)) - 1) %% L
+    ind[which(ind == 0)] <- L
+    gamma_ii <- Gamma[state, state, ind]
+    pmf <- c(1, cumprod(gamma_ii)[-length(ind)]) * (1 - gamma_ii)
+    return(pmf[x])
+  }
+  
+  # check if t is NULL or a valid vector
+  if(!is.null(time)){
+    if (!is.vector(time) || any(time < 1) || any(time > L)) {
+      stop("'time' must be a vector of integers in the range [1, L].")
+    }
+    
+    for(s in state) {
+      thisout <- t(sapply(time, function(t) ddwell_t(x, t, s)))
+      rownames(thisout) <- paste0("t", time)
+      colnames(thisout) <- x
+      
+      if(nrow(thisout) == 1){
+        thisout <- as.numeric(thisout) # if only one time point, return vector
+        names(thisout) <- x
+      }
+      
+      out[[paste("state", s)]] <- thisout
+    }
+  } else { # compute overall dwell-time distribution
+    # compute all periodically stationary distributions
+    Delta <- stationary_p(Gamma)
+    
+    for(s in state) {
+      weights <- numeric(L) # calculate weights
+      weights[1] <- sum(Delta[L, -s] * Gamma[-s, s, L])
+      for (k in 2:L) { 
+        weights[k] <- sum(Delta[k-1, -s] * Gamma[-s, s, k-1])
+      }
+      weights <- weights / sum(weights)
+      
+      pmfs_weighted <- matrix(NA, L, length(x))
+      for(k in 1:L) { 
+        pmfs_weighted[k,] <- weights[k] * ddwell_t(x, k, s) 
+      }
+      
+      pmf <- as.numeric(colSums(pmfs_weighted))
+      names(pmf) <- x
+      
+      out[[paste("state", s)]] <- pmf
+    }
+  }
+  
+  # check if only one state -> if so: drop top level
+  if(length(out) == 1) {
+    out <- out[[1]]
+  } else {
+    names(out) <- paste("state", state)
+  }
+  
+  return(out)
+}

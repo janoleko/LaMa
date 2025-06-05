@@ -63,6 +63,8 @@ stationary = function(Gamma){
 #' The stationary distribution for time \eqn{t} satifies \eqn{\delta^{(t)} \Gamma_t = \delta^{(t)}}.
 #' 
 #' This function calculates said periodically stationary distribution.
+#' 
+#' @references Koslik, J. O., Feldmann, C. C., Mews, S., Michels, R., & Langrock, R. (2023). Inference on the state process of periodically inhomogeneous hidden Markov models for animal behavior. arXiv preprint arXiv:2312.14583.
 #'
 #' @family stationary distribution functions
 #' 

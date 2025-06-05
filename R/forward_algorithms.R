@@ -191,10 +191,8 @@ forward <- function(delta,
         for(i in 1:k) {
           ind = which(trackID == uID[i]) # indices of track i
           
-          # deltai = RTMB::matrix(Delta[i,], nrow = 1, ncol = N)
           deltai = Delta[i, , drop = FALSE]
           
-          # foo = deltai %*% RTMB::diag(allprobs[ind[1],])
           foo = deltai * allprobs[ind[1], , drop = FALSE]
           sumfoo = sum(foo)
           phi = foo / sumfoo
@@ -203,7 +201,6 @@ forward <- function(delta,
           Gamma_i = Gamma[,,i]
           
           for(t in 2:length(ind)) {
-            # foo = phi %*% Gamma_i %*% RTMB::diag(allprobs[ind[t],])
             foo = (phi %*% Gamma_i) * allprobs[ind[t], , drop = FALSE]
             sumfoo = sum(foo)
             phi = foo / sumfoo
@@ -273,6 +270,7 @@ forward <- function(delta,
 #' 
 #' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi_g}}, \code{\link{stateprobs_g}} or \code{\link{pseudo_res}}, 
 #' \code{forward_g} should only be called \strong{once} with a \code{trackID} argument.
+#' @param logspace logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
 #' 
 #' @return log-likelihood for given data and parameters
 #' @export
@@ -315,7 +313,13 @@ forward_g = function(delta,
                      allprobs, 
                      trackID = NULL, 
                      ad = NULL, 
-                     report = TRUE) {
+                     report = TRUE,
+                     logspace = FALSE) {
+  
+  if(logspace){
+    logallprobs <- allprobs
+    allprobs <- exp(logallprobs)
+  }
   
   # report quantities for easy use later
   if(report) {
@@ -388,24 +392,38 @@ forward_g = function(delta,
       Gamma = array(Gamma, dim = dim(Gamma))
       if(dim(Gamma)[3] == n) Gamma = Gamma[,,-1] # deleting first slice
       
-      # forward algorithm
-      # foo = delta * allprobs[1,]
-      foo = delta * allprobs[1, , drop = FALSE]
-      sumfoo = sum(foo)
-      phi = foo / sumfoo
-      l = log(sumfoo)
-      
-      for(t in 2:n) {
-        # foo = (phi %*% Gamma[,,t-1]) * allprobs[t, ]
-        foo = (phi %*% Gamma[,,t-1]) * allprobs[t, , drop = FALSE]
+      if(!logspace){
+        # forward algorithm
+        foo = delta * allprobs[1, , drop = FALSE]
         sumfoo = sum(foo)
         phi = foo / sumfoo
-        l = l + log(sumfoo)
+        l = log(sumfoo)
+        
+        for(t in 2:n) {
+          foo = (phi %*% Gamma[,,t-1]) * allprobs[t, , drop = FALSE]
+          sumfoo = sum(foo)
+          phi = foo / sumfoo
+          l = l + log(sumfoo)
+        }
+      } else{
+        # forward algorithm in log space
+        logfoo <- log(delta) + logallprobs[1, , drop = FALSE]
+        logsumfoo <- logspace_add(logfoo)
+        logfoo <- logfoo - logsumfoo
+        l <- logsumfoo
+        
+        for(t in 2:nrow(allprobs)) {
+          logfoo <- log(exp(logfoo) %*% Gamma[,,t-1])
+          logfoo <- logfoo + logallprobs[t, , drop = FALSE]
+          logsumfoo <- logspace_add(logfoo)
+          logfoo <- logfoo - logsumfoo
+          l <- l + logsumfoo
+        }
       }
       
     } else if(!is.null(trackID)) {
       
-      RTMB::REPORT(trackID)
+      REPORT(trackID)
       
       uID = unique(trackID) # unique track IDs
       k = length(uID) # number of tracks
@@ -440,26 +458,52 @@ forward_g = function(delta,
       if(dim(Gamma)[3] != n) stop("Gamma needs to be an array of dimension c(N,N,n), matching the number of rows of allprobs.")
       Gamma = array(Gamma, dim = dim(Gamma))
       
-      ## forward algorithm
-      l = 0 # initialize log-likelihood
-      for(i in 1:k) {
-        ind = which(trackID == uID[i]) # indices of track i
+      
+      l <- 0 # initialise log-likelihood
+      
+      if(!logspace){
         
-        # deltai = matrix(Delta[i,], nrow = 1, ncol = N)
-        deltai = Delta[i, , drop = FALSE]
-        
-        # foo = deltai * allprobs[ind[1],]
-        foo = deltai * allprobs[ind[1], , drop = FALSE]
-        sumfoo = sum(foo)
-        phi = foo / sumfoo
-        l = l + log(sumfoo)
-        
-        for(t in 2:length(ind)) {
-          # foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
-          foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t], , drop = FALSE]
+        ## forward algorithm
+        for(i in 1:k) {
+          ind = which(trackID == uID[i]) # indices of track i
+          
+          deltai = Delta[i, , drop = FALSE]
+          
+          foo = deltai * allprobs[ind[1], , drop = FALSE]
           sumfoo = sum(foo)
           phi = foo / sumfoo
           l = l + log(sumfoo)
+          
+          for(t in 2:length(ind)) {
+            # foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t],]
+            foo = (phi %*% Gamma[,,ind[t]]) * allprobs[ind[t], , drop = FALSE]
+            sumfoo = sum(foo)
+            phi = foo / sumfoo
+            l = l + log(sumfoo)
+          }
+        }
+      } else{
+        
+        logDelta <- log(Delta)
+        
+        ## forward algorithm in logspace
+        for(i in 1:k) {
+          ind <- which(trackID == uID[i]) # indices of track i
+          
+          logdeltai <- logDelta[i, , drop = FALSE]
+          
+          logfoo <- logdeltai + logallprobs[ind[1], , drop = FALSE]
+          logsumfoo <- logspace_add(logfoo)
+          logfoo <- logfoo - logsumfoo
+          l <- logsumfoo
+          
+          for(t in 2:length(ind)) {
+            logfoo <- log(exp(logfoo) %*% Gamma[,,t-1])
+            logfoo <- logfoo + logallprobs[ind[t], , drop = FALSE]
+            logsumfoo <- logspace_add(logfoo)
+            logfoo <- logfoo - logsumfoo
+            l <- l + logsumfoo
+          }
         }
       }
     }
@@ -498,6 +542,7 @@ forward_g = function(delta,
 #' 
 #' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi_p}}, \code{\link{stateprobs_p}} or \code{\link{pseudo_res}}, 
 #' \code{forward_p} should only be called \strong{once} with a \code{trackID} argument.
+#' @param logspace logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
 #'
 #' @return log-likelihood for given data and parameters
 #' @export
@@ -526,7 +571,15 @@ forward_g = function(delta,
 #'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
 #'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
 #' mod = nlm(nll, par, step = trex$step[1:500], tod = trex$tod[1:500])
-forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, report = TRUE){
+forward_p <- function(delta, 
+                      Gamma, 
+                      allprobs, 
+                      tod, 
+                      trackID = NULL, 
+                      ad = NULL, 
+                      report = TRUE,
+                      logspace = FALSE){
+  
   utod = unique(tod) # unique time of days
   L = length(utod) # cycle length
   
@@ -537,13 +590,18 @@ forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, rep
   Gammanew = Gamma[,,tod]
   
   if(report){
-    RTMB::REPORT(tod)
-    type = "periodic"
+    REPORT(tod)
+    type <- "periodic"
     REPORT(type)
   }
   
-  forward_g(delta, Gammanew, allprobs, 
-            trackID = trackID, ad = ad, report = report)
+  forward_g(delta = delta, 
+            Gamma = Gammanew, 
+            allprobs = allprobs, 
+            trackID = trackID, 
+            ad = ad, 
+            report = report,
+            logspace = logspace)
 }
 
 
@@ -563,6 +621,11 @@ forward_p = function(delta, Gamma, allprobs, tod, trackID = NULL, ad = NULL, rep
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
 #' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
+#'
+#' @references 
+#' Langrock, R., & Zucchini, W. (2011). Hidden Markov models with arbitrary state dwell-time distributions. Computational Statistics & Data Analysis, 55(1), 715-724.
+#'
+#' Koslik, J. O. (2025). Hidden semi-Markov models with inhomogeneous state dwell-time distributions. Computational Statistics & Data Analysis, 209, 108171.
 #'
 #' @param dm list of length N containing vectors of dwell-time probability mass functions (PMFs) for each state. The vector lengths correspond to the approximating state aggregate sizes, hence there should be little probablity mass not covered by these.
 #' @param omega matrix of dimension c(N,N) of conditional transition probabilites, also called embedded transition probability matrix. 
@@ -787,6 +850,8 @@ forward_hsmm <- function(dm, omega, allprobs,
 #' For direct numerical maximum likelhood estimation, HSMMs can be represented as HMMs on an enlarged state space (of size \eqn{M}) and with structured transition probabilities.
 #' 
 #' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
+#'
+#' @references Koslik, J. O. (2025). Hidden semi-Markov models with inhomogeneous state dwell-time distributions. Computational Statistics & Data Analysis, 209, 108171.
 #'
 #' @param dm list of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
 #' 
@@ -1121,6 +1186,8 @@ forward_ihsmm <- function(dm, omega, allprobs,
 #' In the special case of periodic variation (as compared to arbitrary covariate influence), this version is to be preferred over \code{\link{forward_ihsmm}} because it computes the \strong{correct periodically stationary distribution} and no observations are lost for the approximation.
 #' 
 #' This function is designed to be used with automatic differentiation based on the \code{R} package \code{RTMB}. It will be very slow without it!
+#'
+#' @references Koslik, J. O. (2025). Hidden semi-Markov models with inhomogeneous state dwell-time distributions. Computational Statistics & Data Analysis, 209, 108171.
 #'
 #' @param dm list of length N containing matrices (or vectors) of dwell-time probability mass functions (PMFs) for each state.
 #'

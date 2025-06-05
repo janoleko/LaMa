@@ -52,6 +52,11 @@ This function is designed to be used with automatic differentiation based on the
 \examples{
 # currently no examples
 }
+\references{
+Langrock, R., & Zucchini, W. (2011). Hidden Markov models with arbitrary state dwell-time distributions. Computational Statistics & Data Analysis, 55(1), 715-724.
+
+Koslik, J. O. (2025). Hidden semi-Markov models with inhomogeneous state dwell-time distributions. Computational Statistics & Data Analysis, 209, 108171.
+}
 \seealso{
 Other forward algorithms: 
 \code{\link{forward}()},

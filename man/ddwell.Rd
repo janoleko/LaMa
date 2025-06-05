@@ -24,7 +24,7 @@ Computes the dwell-time distribution of a periodically inhomogeneous Markov chai
 }
 \details{
 For Markov chains whose transition probabilities vary only periodically, which is achieved for example by
-expressing the transition probability matrix as a periodic function of the time of day using \code{\link{tpm_p}} or \code{\link{cosinor}}, the probability distiribution of time spent in a state can be computed analytically.
+expressing the transition probability matrix as a periodic function of the time of day using \code{\link{tpm_p}} or \code{\link{cosinor}}, the probability distribution of time spent in a state can be computed analytically.
 This function computes said distribution, either for a specific time point (conditioning on transitioning into the state at that time point) or for the overall distribution (conditioning on transitioning into the state at any time point).
 }
 \examples{
@@ -40,4 +40,7 @@ ddwell(1:20, Gamma, time = 1:4, state = 1)
 ddwell(1:20, Gamma)
 # results in list of length 2, each element is a vector of length 20
 
+}
+\references{
+Koslik, J. O., Feldmann, C. C., Mews, S., Michels, R., & Langrock, R. (2023). Inference on the state process of periodically inhomogeneous hidden Markov models for animal behavior. arXiv preprint arXiv:2312.14583.
 }

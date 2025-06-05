@@ -135,6 +135,9 @@ pnll = function(par) {
 # model fitting
 mod = qreml_old(pnll, par, dat, random = "betaspline")
 }
+\references{
+Koslik, J. O. (2024). Efficient smoothness selection for nonparametric Markov-switching models via quasi restricted maximum likelihood. arXiv preprint arXiv:2411.11498.
+}
 \seealso{
 \code{\link{penalty}} to compute the penalty inside the likelihood function
 }

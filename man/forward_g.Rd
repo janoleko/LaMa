@@ -4,7 +4,15 @@
 \alias{forward_g}
 \title{General \href{https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock}{forward algorithm} with time-varying transition probability matrix}
 \usage{
-forward_g(delta, Gamma, allprobs, trackID = NULL, ad = NULL, report = TRUE)
+forward_g(
+  delta,
+  Gamma,
+  allprobs,
+  trackID = NULL,
+  ad = NULL,
+  report = TRUE,
+  logspace = FALSE
+)
 }
 \arguments{
 \item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
@@ -36,6 +44,8 @@ Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \cod
 
 \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi_g}}, \code{\link{stateprobs_g}} or \code{\link{pseudo_res}}, 
 \code{forward_g} should only be called \strong{once} with a \code{trackID} argument.}
+
+\item{logspace}{logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.}
 }
 \value{
 log-likelihood for given data and parameters

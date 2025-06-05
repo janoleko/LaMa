@@ -231,9 +231,8 @@ make_matrices = function(formula,
 
 #' Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 #'
-#' @param model_matrices model_matrices object as returned from \code{\link{make_matrices}}
-#' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
-#' # @param exclude optional vector of terms to set to zero in the predicted design matrix. Useful for predicting main effects only when e.g. \code{sd(..., bs = "re")} terms are present. See \code{mgcv::predict.gam} for more details.
+#' @param object model matrices object as returned from \code{\link{make_matrices}}
+#' @param ... needs to be a \code{newdata} data frame containing the variables in the formula and new data for which to evaluate the basis
 #' 
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
@@ -242,9 +241,15 @@ make_matrices = function(formula,
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = predict(modmat, data.frame(x = 1:10 - 0.5))
-predict.LaMa_matrices <- function(model_matrices, newdata){
-  Z = pred_matrix(model_matrices, newdata)
-  return(Z)
+predict.LaMa_matrices <- function(object, ...){
+  dots <- list(...)
+  if(!is.null(dots$newdata)){
+    newdata <- dots$newdata
+  } else{
+    newdata <- dots[[1]]
+  }
+  
+  pred_matrix(object, newdata)
 }
 
 

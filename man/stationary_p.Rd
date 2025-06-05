@@ -2,7 +2,7 @@
 % Please edit documentation in R/stationary_functions.R
 \name{stationary_p}
 \alias{stationary_p}
-\title{Compute the periodically stationary distribution of a periodically inhomogeneous Markov chain}
+\title{Periodically stationary distribution of a periodically inhomogeneous Markov chain}
 \usage{
 stationary_p(Gamma, t = NULL, ad = NULL)
 }
@@ -19,6 +19,9 @@ If \code{t} is not provided, the function calculates all stationary distribution
 either the periodically stationary distribution at time t or all periodically stationary distributions.
 }
 \description{
+Computes the periodically stationary distribution of a periodically inhomogeneous Markov chain.
+}
+\details{
 If the transition probability matrix of an inhomogeneous Markov chain varies only periodically (with period length \eqn{L}), it converges to a so-called periodically stationary distribution. 
 This happens, because the thinned Markov chain, which has a full cycle as each time step, has homogeneous transition probability matrix
 \deqn{\Gamma_t = \Gamma^{(t)} \Gamma^{(t+1)} \dots \Gamma^{(t+L-1)}} for all \eqn{t = 1, \dots, L.}

@@ -19,7 +19,8 @@ pseudo_res(
 \arguments{
 \item{obs}{vector of continuous-valued observations (of length n)}
 
-\item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)}
+\item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson) or CDF function to evaluate directly.
+If a discrete CDF is passed, the \code{discrete} argument needs to be set to \code{TRUE} because this cannot determined automatically.}
 
 \item{par}{named parameter list for the parametric CDF
 
@@ -70,7 +71,43 @@ pres = pseudo_res(obs, "norm", par, stateprobs)
 
 ## discrete-valued observations
 obs = rpois(100, lambda = 1)
-stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 par = list(lambda = c(1,2))
 pres = pseudo_res(obs, "pois", par, stateprobs)
+
+## custom CDF function
+obs = rnbinom(100, size = 1, prob = 0.5)
+par = list(size = c(0.5, 2), prob = c(0.4, 0.6))
+pres = pseudo_res(obs, pnbinom, par, stateprobs, 
+                  discrete = TRUE)
+# if discrete CDF function is passed, 'discrete' needs to be set to TRUE
+
+## full example with model object
+step = trex$step[1:200]
+
+nll = function(par){
+  getAll(par)
+  Gamma = tpm(logitGamma)
+  delta = stationary(Gamma)
+  mu = exp(logMu); REPORT(mu)
+  sigma = exp(logSigma); REPORT(sigma)
+  allprobs = matrix(1, length(step), 2)
+  ind = which(!is.na(step))
+  for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+  -forward(delta, Gamma, allprobs)
+}
+
+par = list(logitGamma = c(-2,-2), 
+           logMu = log(c(0.3, 2.5)), 
+           logSigma = log(c(0.3, 0.5)))
+           
+obj = MakeADFun(nll, par)
+opt = nlminb(obj$par, obj$fn, obj$gr)
+
+mod = obj$report()
+
+pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
+                  mod = mod)
+
+qqnorm(pres)
+abline(a = 0, b = 1)
 }

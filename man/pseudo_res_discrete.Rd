@@ -17,7 +17,7 @@ pseudo_res_discrete(
 \arguments{
 \item{obs}{vector of discrete-valued observations (of length n)}
 
-\item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)}
+\item{dist}{character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson) or CDF function to evaluate directly.}
 
 \item{par}{named parameter list for the parametric CDF
 

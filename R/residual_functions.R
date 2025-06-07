@@ -12,7 +12,8 @@
 #' When used for discrete pseudo-residuals, this function is just a wrapper for \code{\link{pseudo_res_discrete}}.
 #'
 #' @param obs vector of continuous-valued observations (of length n)
-#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
+#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson) or CDF function to evaluate directly.
+#' If a discrete CDF is passed, the \code{discrete} argument needs to be set to \code{TRUE} because this cannot determined automatically.
 #' @param par named parameter list for the parametric CDF
 #' 
 #' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
@@ -45,9 +46,45 @@
 #'
 #' ## discrete-valued observations
 #' obs = rpois(100, lambda = 1)
-#' stateprobs = matrix(0.5, nrow = 100, ncol = 2)
 #' par = list(lambda = c(1,2))
 #' pres = pseudo_res(obs, "pois", par, stateprobs)
+#' 
+#' ## custom CDF function
+#' obs = rnbinom(100, size = 1, prob = 0.5)
+#' par = list(size = c(0.5, 2), prob = c(0.4, 0.6))
+#' pres = pseudo_res(obs, pnbinom, par, stateprobs, 
+#'                   discrete = TRUE)
+#' # if discrete CDF function is passed, 'discrete' needs to be set to TRUE
+#' 
+#' ## full example with model object
+#' step = trex$step[1:200]
+#' 
+#' nll = function(par){
+#'   getAll(par)
+#'   Gamma = tpm(logitGamma)
+#'   delta = stationary(Gamma)
+#'   mu = exp(logMu); REPORT(mu)
+#'   sigma = exp(logSigma); REPORT(sigma)
+#'   allprobs = matrix(1, length(step), 2)
+#'   ind = which(!is.na(step))
+#'   for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+#'   -forward(delta, Gamma, allprobs)
+#' }
+#' 
+#' par = list(logitGamma = c(-2,-2), 
+#'            logMu = log(c(0.3, 2.5)), 
+#'            logSigma = log(c(0.3, 0.5)))
+#'            
+#' obj = MakeADFun(nll, par)
+#' opt = nlminb(obj$par, obj$fn, obj$gr)
+#' 
+#' mod = obj$report()
+#' 
+#' pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
+#'                   mod = mod)
+#'
+#' qqnorm(pres)
+#' abline(a = 0, b = 1)
 pseudo_res = function(obs, 
                       dist, 
                       par,
@@ -62,25 +99,25 @@ pseudo_res = function(obs,
   # check if a model with delta, Gamma and allprobs is provided
   if(!is.null(mod)){
     if(is.null(mod$type)){
-      stop("Model object contains no type.")
+      stop("'mod' contains no type.")
     }
     if(!(mod$type) %in% c("homogeneous", "inhomogeneous", "periodic")){
-      stop("Model object contains invalid type.")
+      stop("'mod' contains invalid type.")
     }
     
     if(is.null(mod$delta)){
-      stop("Model object contains no initial distribution.")
+      stop("'mod' contains no initial distribution.")
     }
     if(is.null(mod$Gamma)){
-      stop("Model object contains no transition matrix.")
+      stop("'mod' contains no transition matrix.")
     }
     if(is.null(mod$allprobs)){
-      stop("Model object contains no state-dependent probabilities.")
+      stop("'mod' contains no state-dependent probabilities.")
     }
     
     if(mod$type == "periodic"){
       if(is.null(mod$tod)){
-        stop("Model object contains no cyclic indexing variable.")
+        stop("'mod' contains no cyclic indexing variable.")
       }
     }
     
@@ -98,11 +135,16 @@ pseudo_res = function(obs,
   
   # if discrete is not specified, try to determine
   if(is.null(discrete)){
-    discrete = dist %in% c("pois", "binom", "geom", "nbinom")
+    if(is.character(dist)){
+      discrete = dist %in% c("pois", "binom", "geom", "nbinom")
+    } else if(is.function(dist)){
+      discrete = FALSE
+      message("Assuming 'dist' evaluates a continuous CDF. If discrete, please set 'discrete = TRUE'.")
+    }
   }
   
   if(discrete){
-    cat("Discrete pseudo-residuals are calculated\n")
+    cat("Calculating discrete pseudo-residuals\n")
     
     residuals <- pseudo_res_discrete(obs, 
                                      dist,
@@ -119,12 +161,19 @@ pseudo_res = function(obs,
     
     # Check that the number of rows in `stateprobs` matches the length of `obs`
     if (nrow(stateprobs) != nObs) {
-      stop("The number of rows in `stateprobs` must match the length of `obs`.")
+      stop("The number of rows in 'stateprobs' must match the length of 'obs'.")
     }
     
     # Construct the CDF function name dynamically, e.g., "pnorm" for "norm"
-    cdf_name <- paste0("p", dist)
-    cdf_func <- get(cdf_name, mode = "function")
+    if(is.character(dist)){
+      cdf_name <- paste0("p", dist)
+      cdf_func <- get(cdf_name, mode = "function")
+    } else if(is.function(dist)){
+      cdf_func <- dist
+    } else{
+      stop("'dist' must be a character string or a function.")
+    }
+    
     
     # Initialize a matrix to store CDF values for each observation and state
     cdf_values <- matrix(0, nrow = nObs, ncol = N)
@@ -192,7 +241,7 @@ pseudo_res = function(obs,
 #' If \code{randomise} is set to \code{FALSE}, the lower, upper and mean pseudo-residuasl are returned.
 #'
 #' @param obs vector of discrete-valued observations (of length n)
-#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson)
+#' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson) or CDF function to evaluate directly.
 #' @param par named parameter list for the parametric CDF
 #' 
 #' Names need to correspond to the parameter names in the specified distribution (e.g. \code{list(mean = c(1,2), sd = c(1,1))} for a normal distribution and 2 states).
@@ -227,17 +276,23 @@ pseudo_res_discrete <- function(obs,
   
   # Check that the number of rows in `stateprobs` matches the length of `obs`
   if (nrow(stateprobs) != nObs) {
-    stop("The number of rows in `stateprobs` must match the length of `obs`.")
+    stop("The number of rows in 'stateprobs' must match the length of 'obs'.")
   }
   
   # Check that each parameter in `par` has the correct length
   if (!all(sapply(par, length) == N)) {
-    stop("Each entry in `par` must have a length equal to the number of columns in `stateprobs`.")
+    stop("Each entry in 'par' must have a length equal to the number of columns in 'stateprobs'.")
   }
   
-  # Construct the CDF function name dynamically, e.g., "pnorm" for "norm"
-  cdf_name <- paste0("p", dist)
-  cdf_func <- get(cdf_name, mode = "function")
+  if(is.character(dist)){
+    # Construct the CDF function name dynamically, e.g., "ppois" for "pois"
+    cdf_name <- paste0("p", dist)
+    cdf_func <- get(cdf_name, mode = "function")
+  } else if(is.function(dist)){
+    cdf_func <- dist # if function, use this as CDF
+  } else{
+    stop("'dist' must be a character string or a function.")
+  }
   
   # Initialize a matrix to store CDF values for each observation and state
   cdf_values_lower <- cdf_values_upper <- matrix(0, nrow = nObs, ncol = N)
@@ -322,3 +377,95 @@ pseudo_res_discrete <- function(obs,
     }
   }
 }
+
+
+#' Plot pseudo-residuals
+#' 
+#' @description
+#' Plot pseudo-residuals computed by \code{\link{pseudo_res}}.
+#' 
+#' @param x pseudo-residuals as returned by \code{\link{pseudo_res}}
+#' @param hist logical, if \code{TRUE}, adds a histogram of the pseudo-residuals
+#' @param col character, color for the QQ-line (and density curve if \code{histogram = TRUE})
+#' @param lwd numeric, line width for the QQ-line (and density curve if \code{histogram = TRUE})
+#' @param main optional character vector of main titles for the plots of length 2 (or 3 if \code{histogram = TRUE})
+#' @param ... currently ignored. For method consistency
+#' 
+#' @returns NULL, plots the pseudo-residuals in a 2- or 3-panel layout
+#' @export
+#'
+#' @importFrom graphics par curve hist
+#' @importFrom stats acf na.pass qqnorm qqline
+#' @importFrom RTMB dnorm
+#'
+#' @examples
+#' ## pseudo-residuals for the trex data
+#' step = trex$step[1:200]
+#' 
+#' nll = function(par){
+#'   getAll(par)
+#'   Gamma = tpm(logitGamma)
+#'   delta = stationary(Gamma)
+#'   mu = exp(logMu); REPORT(mu)
+#'   sigma = exp(logSigma); REPORT(sigma)
+#'   allprobs = matrix(1, length(step), 2)
+#'   ind = which(!is.na(step))
+#'   for(j in 1:2) allprobs[ind,j] = dgamma2(step[ind], mu[j], sigma[j])
+#'   -forward(delta, Gamma, allprobs)
+#' }
+#' 
+#' par = list(logitGamma = c(-2,-2), 
+#'            logMu = log(c(0.3, 2.5)), 
+#'            logSigma = log(c(0.3, 0.5)))
+#'            
+#' obj = MakeADFun(nll, par)
+#' opt = nlminb(obj$par, obj$fn, obj$gr)
+#' 
+#' mod = obj$report()
+#' 
+#' pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
+#'                   mod = mod)
+#'                   
+#' plot(pres)
+plot.LaMaResiduals <- function(
+    x, 
+    hist = FALSE,
+    col = "darkblue", 
+    lwd = 1.5,
+    main = NULL,
+    ...
+    ) {
+  
+  # Extract mean if residuals is a list
+  res <- if (is.list(x)) x$mean else x
+  res_clean <- na.omit(res)
+  
+  columns <- if (hist) 3 else 2
+  
+  if (is.null(main)) main <- rep("", columns)
+  if (length(main) < columns) {
+    main <- c(main, rep("", columns - length(main)))
+  }
+  
+  old_par <- par(mfrow = c(1, columns))
+  on.exit(par(old_par))
+  
+  # QQ Plot
+  qqnorm(res_clean, main = main[1], 
+         xlab = "theoretical quantiles", ylab = "sample quantiles",
+         bty = "n", pch = 16, col = "#00000070")
+  qqline(res_clean, col = col, lwd = lwd)
+  
+  # Histogram with normal curve
+  if (hist) {
+    hist(res_clean, main = main[2], border = "white", 
+         prob = TRUE, xlab = "pseudo-residuals", ylab = "density")
+    curve(dnorm(x), add = TRUE, col = col, lwd = lwd)
+  }
+  
+  # ACF
+  acf(res, na.action = na.pass, main = main[columns],
+      xlab = "lag", bty = "n")
+}
+
+

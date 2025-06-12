@@ -86,8 +86,8 @@ rvm = function(n, mu = 0, kappa = 1, wrap = TRUE) {
 #' Density and random generation for the wrapped Cauchy distribution.
 #' 
 #' @details
-#' The implementation of \code{dwrpcauchy} allows for automatic differentiation with \code{RTMB}. 
-#' \code{rwrpcauchy} is imported from \code{CircStats}.
+#' This implementation of \code{dwrpcauchy} allows for automatic differentiation with \code{RTMB}. 
+#' \code{rwrpcauchy} is simply a wrapper for \code{rwrappedcauchy}imported from \code{circular}.
 #'
 #' @param x vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
@@ -121,9 +121,11 @@ dwrpcauchy <- function(x, mu = 0, rho, log = FALSE) {
 
 #' @rdname wrpcauchy
 #' @export
-#' @importFrom CircStats rwrpcauchy
+#' @importFrom circular rwrappedcauchy
 rwrpcauchy = function(n, mu = 0, rho, wrap = TRUE) {
-  angles = CircStats::rwrpcauchy(n, mu, rho)
+  suppressWarnings(
+    angles2 <- as.numeric(rwrappedcauchy(n, mu, rho))
+  )
   
   # if generated angels should be wrapped, i.e. mapped to interval [-pi, pi], do so
   if(wrap){

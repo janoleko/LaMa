@@ -30,8 +30,8 @@ rwrpcauchy(n, mu = 0, rho, wrap = TRUE)
 Density and random generation for the wrapped Cauchy distribution.
 }
 \details{
-The implementation of \code{dwrpcauchy} allows for automatic differentiation with \code{RTMB}. 
-\code{rwrpcauchy} is imported from \code{CircStats}.
+This implementation of \code{dwrpcauchy} allows for automatic differentiation with \code{RTMB}. 
+\code{rwrpcauchy} is simply a wrapper for \code{rwrappedcauchy}imported from \code{circular}.
 }
 \examples{
 set.seed(1)

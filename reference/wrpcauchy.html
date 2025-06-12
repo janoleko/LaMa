@@ -89,15 +89,17 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The implementation of <code>dwrpcauchy</code> allows for automatic differentiation with <code>RTMB</code>.
-<code>rwrpcauchy</code> is imported from <code>CircStats</code>.</p>
+    <p>This implementation of <code>dwrpcauchy</code> allows for automatic differentiation with <code>RTMB</code>.
+<code>rwrpcauchy</code> is simply a wrapper for <code>rwrappedcauchy</code>imported from <code>circular</code>.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">=</span> <span class="fu">rwrpcauchy</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in rwrpcauchy(10, 0, 1):</span> object 'angles' not found</span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">=</span> <span class="fu">dwrpcauchy</span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'x' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

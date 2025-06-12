@@ -26,8 +26,7 @@ Imports:
     utils,
     MASS,
     splines2,
-    methods,
-    CircStats, 
+    methods, 
     circular,
     sn,
     numDeriv

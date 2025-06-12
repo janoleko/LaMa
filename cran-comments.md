@@ -1,1 +1,1 @@
-Removing dependency on CircStats package
+Removing dependencies on CircStats package

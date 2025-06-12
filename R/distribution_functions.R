@@ -124,7 +124,7 @@ dwrpcauchy <- function(x, mu = 0, rho, log = FALSE) {
 #' @importFrom circular rwrappedcauchy
 rwrpcauchy = function(n, mu = 0, rho, wrap = TRUE) {
   suppressWarnings(
-    angles2 <- as.numeric(rwrappedcauchy(n, mu, rho))
+    angles <- as.numeric(rwrappedcauchy(n, mu, rho))
   )
   
   # if generated angels should be wrapped, i.e. mapped to interval [-pi, pi], do so

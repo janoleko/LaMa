@@ -3,8 +3,8 @@
 #' Density, distribution function and random generation for the von Mises distribution.
 #' 
 #' @details
-#' The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
-#' \code{rvm} and \code{pvm} are imported from \code{CircStats} and \code{circular} respectively.
+#' This implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
+#' \code{rvm} and \code{pvm} are simply wrappers of the corresponding functions from \code{circular}.
 #'
 #' @param x,q vector of angles measured in radians at which to evaluate the density function.
 #' @param mu mean direction of the distribution measured in radians.
@@ -66,9 +66,12 @@ pvm = function(q, mu = 0, kappa = 1, from = NULL, tol = 1e-20) {
 
 #' @rdname vm
 #' @export
-#' @importFrom CircStats rvm
+#' @importFrom circular rvonmises
 rvm = function(n, mu = 0, kappa = 1, wrap = TRUE) {
-  angles = CircStats::rvm(n, mu, kappa)
+  # angles = CircStats::rvm(n, mu, kappa)
+  suppressWarnings(
+    angles <- as.numeric(rvonmises(n, mu, kappa))
+  )
   
   # if generated angels should be wrapped, i.e. mapped to interval [-pi, pi], do so
   if(wrap){

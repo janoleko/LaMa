@@ -37,8 +37,8 @@ rvm(n, mu = 0, kappa = 1, wrap = TRUE)
 Density, distribution function and random generation for the von Mises distribution.
 }
 \details{
-The implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
-\code{rvm} and \code{pvm} are imported from \code{CircStats} and \code{circular} respectively.
+This implementation of \code{dvm} allows for automatic differentiation with \code{RTMB}. 
+\code{rvm} and \code{pvm} are simply wrappers of the corresponding functions from \code{circular}.
 }
 \examples{
 set.seed(1)

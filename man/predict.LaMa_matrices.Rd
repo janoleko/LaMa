@@ -4,10 +4,12 @@
 \alias{predict.LaMa_matrices}
 \title{Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}}
 \usage{
-\method{predict}{LaMa_matrices}(object, ...)
+\method{predict}{LaMa_matrices}(object, newdata, ...)
 }
 \arguments{
 \item{object}{model matrices object as returned from \code{\link{make_matrices}}}
+
+\item{newdata}{data frame containing the variables in the formula and new data for which to evaluate the basis}
 
 \item{...}{needs to be a \code{newdata} data frame containing the variables in the formula and new data for which to evaluate the basis}
 }

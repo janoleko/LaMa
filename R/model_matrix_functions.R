@@ -232,8 +232,9 @@ make_matrices = function(formula,
 #' Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 #'
 #' @param object model matrices object as returned from \code{\link{make_matrices}}
+#' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
 #' @param ... needs to be a \code{newdata} data frame containing the variables in the formula and new data for which to evaluate the basis
-#' 
+#'
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
 #' 
@@ -241,13 +242,13 @@ make_matrices = function(formula,
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = predict(modmat, data.frame(x = 1:10 - 0.5))
-predict.LaMa_matrices <- function(object, ...){
-  dots <- list(...)
-  if(!is.null(dots$newdata)){
-    newdata <- dots$newdata
-  } else{
-    newdata <- dots[[1]]
-  }
+predict.LaMa_matrices <- function(object, newdata, ...){
+  # dots <- list(...)
+  # if(!is.null(dots$newdata)){
+  #   newdata <- dots$newdata
+  # } else{
+  #   newdata <- dots[[1]]
+  # }
   
   pred_matrix(object, newdata)
 }

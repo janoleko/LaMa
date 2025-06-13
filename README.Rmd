@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/package=LaMa)
 [![metacran downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-project.org/package=LaMa)
-[![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)
+[![total downloads](https://cranlogs.r-pkg.org/badges/grand-total/LaMa)](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 

@@ -8,7 +8,7 @@ status](https://www.r-pkg.org/badges/version/LaMa)](https://CRAN.R-project.org/p
 [![metacran
 downloads](https://cranlogs.r-pkg.org/badges/last-month/LaMa)](https://cran.r-project.org/package=LaMa)
 [![total
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/LaMa)](http://cranlogs.r-pkg.org/badges/grand-total/LaMa)
+downloads](https://cranlogs.r-pkg.org:443/badges/grand-total/LaMa)](https://cranlogs.r-pkg.org:443/badges/grand-total/LaMa)
 [![R-CMD-check](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/janoleko/LaMa/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -161,7 +161,7 @@ system.time(
   mod <- nlm(nll, par, step = trex$step)
 )
 #>    user  system elapsed 
-#>   0.367   0.011   0.379
+#>   0.368   0.010   0.380
 ```
 
 Really fast for 10.000 data points!

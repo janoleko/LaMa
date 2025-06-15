@@ -38,6 +38,7 @@ Other transition probability matrix functions:
 \code{\link{tpm_emb}()},
 \code{\link{tpm_emb_g}()},
 \code{\link{tpm_g}()},
+\code{\link{tpm_g2}()},
 \code{\link{tpm_p}()}
 }
 \concept{transition probability matrix functions}

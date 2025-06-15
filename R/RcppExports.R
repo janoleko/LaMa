@@ -49,6 +49,10 @@ tpm_g_cpp <- function(Z, beta, N, byrow) {
     .Call(`_LaMa_tpm_g_cpp`, Z, beta, N, byrow)
 }
 
+tpm_g2_cpp <- function(Eta, N, byrow, ref) {
+    .Call(`_LaMa_tpm_g2_cpp`, Eta, N, byrow, ref)
+}
+
 semigroup_cpp <- function(Q, times) {
     .Call(`_LaMa_semigroup_cpp`, Q, times)
 }

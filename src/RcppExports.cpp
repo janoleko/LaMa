@@ -172,6 +172,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// tpm_g2_cpp
+arma::cube tpm_g2_cpp(const arma::mat& Eta, const arma::uword N, const bool byrow, const arma::uvec& ref);
+RcppExport SEXP _LaMa_tpm_g2_cpp(SEXP EtaSEXP, SEXP NSEXP, SEXP byrowSEXP, SEXP refSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type Eta(EtaSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type N(NSEXP);
+    Rcpp::traits::input_parameter< const bool >::type byrow(byrowSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type ref(refSEXP);
+    rcpp_result_gen = Rcpp::wrap(tpm_g2_cpp(Eta, N, byrow, ref));
+    return rcpp_result_gen;
+END_RCPP
+}
 // semigroup_cpp
 arma::cube semigroup_cpp(const arma::mat& Q, const std::vector<double>& times);
 RcppExport SEXP _LaMa_semigroup_cpp(SEXP QSEXP, SEXP timesSEXP) {
@@ -210,6 +224,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LaMa_viterbi_g_cpp", (DL_FUNC) &_LaMa_viterbi_g_cpp, 3},
     {"_LaMa_rep_times", (DL_FUNC) &_LaMa_rep_times, 2},
     {"_LaMa_tpm_g_cpp", (DL_FUNC) &_LaMa_tpm_g_cpp, 4},
+    {"_LaMa_tpm_g2_cpp", (DL_FUNC) &_LaMa_tpm_g2_cpp, 4},
     {"_LaMa_semigroup_cpp", (DL_FUNC) &_LaMa_semigroup_cpp, 2},
     {"_LaMa_tpm_thinned_t_cpp", (DL_FUNC) &_LaMa_tpm_thinned_t_cpp, 2},
     {NULL, NULL, 0}

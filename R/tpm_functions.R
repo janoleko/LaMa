@@ -173,6 +173,187 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
   Gamma
 }
 
+#' Build all transition probability matrices of an inhomogeneous HMM
+#' 
+#' In an HMM, we often model the influence of covariates on the state process by linking them to the transition probabiltiy matrix. 
+#' Most commonly, this is done by specifying linear predictors
+#' \deqn{ \eta_{ij}^{(t)} = \beta^{(ij)}_0 + \beta^{(ij)}_1 z_{t1} + \dots + \beta^{(ij)}_p z_{tp} }
+#' for each off-diagonal element (\eqn{i \neq j}) of the transition probability matrix and then applying the inverse multinomial logistic link (also known as softmax) to each row.
+#' This function efficiently calculates all transition probabilty matrices for a given design matrix \code{Z} and parameter matrix \code{beta}.
+#' 
+#' @family transition probability matrix functions
+#'
+#' @param Z covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
+#' 
+#' If \code{Z} has only p columns, an intercept column of ones will be added automatically.
+#' 
+#' Can also be a list of N*(N-1) design matrices with different number of columns but the same number of rows. In that case, no intercept column will be added.
+#' @param beta matrix of coefficients for the off-diagonal elements of the transition probability matrix
+#' 
+#' Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.
+#' 
+#' If \code{Z} is a list, \code{beta} can also be a list of length N*(N-1) with each entry being a vector or a (long) matrix of coefficients, each matching the dimension of the corresponding entry in \code{Z}.
+#' @param byrow logical indicating if each transition probability matrix should be filled by row
+#'  
+#' Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
+#' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
+#' @param report logical, indicating whether the coefficient matrix \code{beta} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#' @param ref optional vector of length N with the reference state indices for each column of the transition probability matrix. Each row in the transition matrix corresponds to a multinomial regression, hence one state needs to be the reference category. Defaults to off-diagonal elements (\code{ref = 1:N}).
+#'
+#' @return array of transition probability matrices of dimension c(N,N,n)
+#' @export
+#' @import RTMB
+#' @importFrom stats na.omit
+#'
+#' @examples
+#' Z = matrix(runif(200), ncol = 2)
+#' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
+#' Gamma = tpm_g(Z, beta)
+tpm_g2 <- function(Z, 
+                   beta, 
+                   byrow = FALSE, 
+                   ad = NULL, 
+                   report = TRUE,
+                   ref = NULL){
+  
+  # two things can happen:
+  # either Z and beta are lists when different regressions for each off diagonal element
+  if(is.list(Z) & is.list(beta)){
+    
+    # check inputs
+    if(length(Z) != length(beta)){
+      stop("'Z 'and 'beta' need to have the same length if they are lists.")
+    }
+    if(!all(sapply(Z, is.matrix))){
+      stop("'Z' and 'beta' need to be lists of matrices.")
+    }
+    # if(!any(sapply(beta, is.vector) | sapply(beta, is.matrix))){
+    #   stop("Some entries in 'beta' are neither vectors nor matrices.")
+    # }
+    beta <- lapply(beta, as.matrix)
+    if(any(sapply(Z, ncol) != sapply(beta, nrow))){
+      stop("Some entries in 'Z' and 'beta' have a different number of columns.")
+    }
+    if(any(sapply(Z, nrow) != nrow(Z[[1]]))){
+      stop("All matrices in 'Z' need to have the same number of rows.")
+    }
+    if(any(sapply(beta, ncol) != 1)){
+      stop("Matrices in 'beta' can only have one column.")
+    }
+    
+    K <- length(beta)
+    nObs <- nrow(Z[[1]])
+    Eta <- matrix(NaN, nrow = nObs, ncol = K)
+    
+    for(i in seq_along(Z)){
+      Eta[, i] <- Z[[i]] %*% beta[[i]] # linear predictor matrix
+    }
+    
+  } else if(is.matrix(beta)){
+    
+    if(is.list(Z)){
+      stop("'Z' needs to be a vector or matrix if 'beta' is a matrix.")
+    } else if(is.vector(Z)){
+      Z <- as.matrix(Z)
+    }
+    
+    K <- nrow(beta)
+    p <- ncol(beta) - 1
+    
+    if(ncol(Z) == p){
+      Z = cbind(1, Z) # adding intercept column
+    } else if(ncol(Z) != p + 1){
+      stop("The dimensions of 'Z' and 'beta' do not match.")
+    }
+    
+    Eta <- Z %*% t(beta) # linear predictor matrix
+    
+    colnames(beta) <- colnames(Z) # nicer naming
+  }
+  
+  # computing the number of associated states
+  N <- as.integer(0.5 + sqrt(0.25 + K), 0)
+  
+  if(is.null(ref)){
+    ref <- 1:N
+  } else{
+    if(length(ref) != N){
+      stop("The reference state vector 'ref' needs to have length equal to the number of states.")
+    }
+  }
+  
+  # report quantities for easy use later
+  if(report) {
+    # Setting rownames: depends on byrow
+    names <- outer(paste0("S", 1:N, ">"), paste0("S", 1:N), FUN = paste0) # matrix
+    names[cbind(1:N, ref)] <- NA
+    names <- na.omit(if (byrow) c(t(names)) else c(names))
+    
+    # naming beta based on names and colnames of Z
+    if(is.list(beta)){
+      names(beta) <- names
+      for(i in 1:K) rownames(beta[[i]]) <- colnames(Z[[i]])
+    } else {
+      rownames(beta) <- names
+      colnames(beta) <- colnames(Z)
+    }
+    
+    REPORT(beta)
+  }
+  
+  # if ad is not explicitly provided, check if delta is an advector
+  if(is.null(ad)){
+    
+    if(is.list(beta)){
+      ad <- any(sapply(beta, inherits, what = "advector"))
+    } else{
+      ad <- inherits(beta, "advector")
+    }
+  }
+  
+  if(!ad) {
+    
+    Gamma = tpm_g2_cpp(Eta, N, byrow, ref) # C++ version
+    
+  } else if(ad) {
+    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    "c" <- ADoverload("c")
+    # "diag<-" <- ADoverload("diag<-")
+    
+    expEta = exp(Eta)
+    Gamma = array(1, dim = c(N, N, nrow(expEta)))
+    
+    ## Loop over entries (stuff over time happens vectorised which speeds up the tape)
+    col_ind <- 1
+    for(i in seq_len(N)){ # loop over rows
+      for(j in seq_len(N)){ # loop over columns
+        if(i != ref[j]){ # only if non-diagonal
+          if(byrow){
+            Gamma[i, j, ] <- expEta[, col_ind]
+          } else{
+            Gamma[j, i, ] <- expEta[, col_ind]
+          }
+          # increase col_ind by one
+          col_ind = col_ind + 1
+        }
+      }
+    }
+    
+    # Normalise rows to sum to 1
+    for(i in seq_len(N)){
+      # transposing is necessary because Gamma[i,,] / colSums(Gamma[i,,]) does not work as expected
+      Gamma[i, , ] <- t(t(Gamma[i, , ]) / rowSums(t(Gamma[i, , ])))
+    }
+  }
+  
+  # naming
+  statenames <- paste0("S", 1:N)
+  rownames(Gamma) <- statenames
+  colnames(Gamma) <- statenames
+  
+  Gamma
+}
+
 
 #' Compute the transition probability matrix of a thinned periodically inhomogeneous Markov chain.
 #'

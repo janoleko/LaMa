@@ -46,6 +46,54 @@ arma::cube tpm_g_cpp(const arma::mat& Z, const arma::mat& beta,
 }
 
 // [[Rcpp::export]]
+arma::cube tpm_g2_cpp(const arma::mat& Eta,
+                      const arma::uword N, 
+                      const bool byrow,
+                      const arma::uvec& ref)
+{
+  // get number of data points
+  arma::uword n = Eta.n_rows;
+  
+  arma::mat expEta = arma::exp(Eta);
+  
+  // initialize matrix and cube
+  arma::cube Gamma(N,N,n);
+  arma::mat G(N, N, arma::fill::zeros);  // Create G matrix
+  
+  if(byrow == true) {
+    // if byrow is true Gamma should be created rowwise: extra transpose step
+    for (arma::uword i = 0; i < n; ++i) {
+      // Create a matrix with 1s in the ref column and 0s elsewhere
+      G.zeros();  // Reset in-place without reallocating
+      for (arma::uword j = 0; j < N; ++j) {
+        G(j, ref[j] - 1) = 1.0;
+      }
+      // Modify non-diagonal elements of G using values from expEta
+      G(arma::find(G == 0)) = expEta.row(i).t();
+      // transpose for byrow
+      G = G.t();
+      // Normalize each row of the matrix G by dividing it by the sum of its elements
+      G = arma::normalise(G, 1, 1);
+      Gamma.slice(i) = G;
+    }
+  } else {
+    for(arma::uword i = 0; i < n; i++) {
+      // Create a matrix with 1s in the ref column and 0s elsewhere
+      G.zeros();  // Reset in-place without reallocating
+      for (arma::uword j = 0; j < N; ++j) {
+        G(j, ref[j] - 1) = 1.0;
+      }
+      // Modify non-diagonal elements of G using values from expEta
+      G(arma::find(G == 0)) = expEta.row(i).t();
+      // Normalize each row of the matrix G by dividing it by the sum of its elements
+      G = arma::normalise(G, 1, 1);
+      Gamma.slice(i) = G;
+    }
+  }
+  return Gamma;
+}
+
+// [[Rcpp::export]]
 arma::cube semigroup_cpp(const arma::mat& Q, const std::vector<double>& times) {
   int N = Q.n_cols;
   int n = times.size();

@@ -1,1 +1,0 @@
-Removing dependencies on CircStats package

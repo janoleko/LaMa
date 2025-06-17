@@ -233,7 +233,10 @@ sdreportMC = function(obj,
         CIpar[[i]] = qthisSamplepars
       }
       names(CIpar) = names(Samplepars)
-    } else{CIpar = NULL}
+    } else{
+      CIpar = NULL
+    }
+    
     if(!is.null(Samplereports)){
       CIreport = list()
       for(i in 1:length(Samplereports)){
@@ -242,7 +245,7 @@ sdreportMC = function(obj,
           qthisSamplereports = stats::quantile(thisSamplereports, probs)
         } else if(is.matrix(thisSamplereports)){
           qthisSamplereports = apply(thisSamplereports, 2, stats::quantile, probs)
-        } else if(is.array(thisSamplepars) & !is.matrix(thisSamplepars)){
+        } else if(is.array(thisSamplereports) & !is.matrix(thisSamplereports)){
           qthisSamplereports = apply(thisSamplereports, 1:(length(dim(thisSamplereports))-1), stats::quantile, probs)
         }
         CIreport[[i]] = qthisSamplereports

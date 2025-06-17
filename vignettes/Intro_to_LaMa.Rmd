@@ -187,4 +187,6 @@ par(oldpar)
 
 In this case, our model looks really good -- as it should as we simulated from the exact same model.
 
+> Continue reading with [Inhomogeneous HMMs](articles/Inhomogeneous_HMMs.html)
+
 ## References

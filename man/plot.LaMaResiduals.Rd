@@ -54,4 +54,5 @@ pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
                   mod = mod)
                   
 plot(pres)
+plot(pres, hist = TRUE)
 }

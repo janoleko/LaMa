@@ -81,6 +81,12 @@ pres = pseudo_res(obs, pnbinom, par, stateprobs,
                   discrete = TRUE)
 # if discrete CDF function is passed, 'discrete' needs to be set to TRUE
 
+## no CDF available, only density (artificial example)
+obs = rnorm(100)
+par = list(mean = c(1,2), sd = c(1,1))
+cdf = function(x, mean, sd) integrate(dnorm, -Inf, x, mean = mean, sd = sd)$value
+pres = pseudo_res(obs, cdf, par, stateprobs)
+
 ## full example with model object
 step = trex$step[1:200]
 
@@ -108,6 +114,8 @@ mod = obj$report()
 pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
                   mod = mod)
 
-qqnorm(pres)
-abline(a = 0, b = 1)
+plot(pres)
+}
+\seealso{
+\code{\link{plot.LaMaResiduals}} for plotting pseudo-residuals.
 }

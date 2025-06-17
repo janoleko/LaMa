@@ -11,6 +11,8 @@
 #' @details
 #' When used for discrete pseudo-residuals, this function is just a wrapper for \code{\link{pseudo_res_discrete}}.
 #'
+#' @seealso \code{\link{plot.LaMaResiduals}} for plotting pseudo-residuals.
+#' 
 #' @param obs vector of continuous-valued observations (of length n)
 #' @param dist character string specifying which parametric CDF to use (e.g., \code{"norm"} for normal or \code{"pois"} for Poisson) or CDF function to evaluate directly.
 #' If a discrete CDF is passed, the \code{discrete} argument needs to be set to \code{TRUE} because this cannot determined automatically.
@@ -56,6 +58,12 @@
 #'                   discrete = TRUE)
 #' # if discrete CDF function is passed, 'discrete' needs to be set to TRUE
 #' 
+#' ## no CDF available, only density (artificial example)
+#' obs = rnorm(100)
+#' par = list(mean = c(1,2), sd = c(1,1))
+#' cdf = function(x, mean, sd) integrate(dnorm, -Inf, x, mean = mean, sd = sd)$value
+#' pres = pseudo_res(obs, cdf, par, stateprobs)
+#' 
 #' ## full example with model object
 #' step = trex$step[1:200]
 #' 
@@ -83,8 +91,7 @@
 #' pres = pseudo_res(step, "gamma2", list(mean = mod$mu, sd = mod$sigma),
 #'                   mod = mod)
 #'
-#' qqnorm(pres)
-#' abline(a = 0, b = 1)
+#' plot(pres)
 pseudo_res = function(obs, 
                       dist, 
                       par,
@@ -169,7 +176,7 @@ pseudo_res = function(obs,
       cdf_name <- paste0("p", dist)
       cdf_func <- get(cdf_name, mode = "function")
     } else if(is.function(dist)){
-      cdf_func <- dist
+      cdf_func <- Vectorize(dist)
     } else{
       stop("'dist' must be a character string or a function.")
     }

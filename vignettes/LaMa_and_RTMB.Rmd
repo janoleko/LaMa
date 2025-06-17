@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-> Before diving into this vignette, we recommend reading the vignettes **Introduction to LaMa**, **Inhomogeneous HMMs** and **Periodic HMMs**.
+> Before diving into this vignette, we recommend reading the vignettes [**Introduction to LaMa**](https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html), [**Inhomogeneous HMMs**](https://janoleko.github.io/LaMa/articles/Inhomogeneous_HMMs.html) and [**Periodic HMMs**](https://janoleko.github.io/LaMa/articles/Periodic_HMMs.html).
 
 The recently introduced `R` package `RTMB` conveniently allows for automatic differentiation for non-standard statistical models written in plain `R` code. This enables the estimation of very complicated models, potentially with complex random effect structures. The process feels like magic because you have access to analytic gradients -- *drastically* increasing accuracy and speed -- without doing any calculations!
 
@@ -543,3 +543,5 @@ Some more minor things:
 `RTMB` also provides AD versions of many building-block functions (like the Gamma or Bessel function) which might help with this.
 
 For more information on `RTMB`, check out its [documentation](https://CRAN.R-project.org/package=RTMB) or the [TMB users Google group](https://groups.google.com/g/tmb-users).
+
+> Continue reading with [**Penalised splines**](https://janoleko.github.io/LaMa/articles/Penalised_splines.html).

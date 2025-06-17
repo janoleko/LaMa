@@ -177,12 +177,8 @@ pres = pseudo_res(x, # observations
                   list(mean = mu, sd = sigma), # parameters for that distribution
                   probs) # local state probabilities
 
-oldpar = par(mfrow = c(1,2))
-hist(pres, prob = TRUE, bor = "white")
-curve(dnorm(x), lty = 2, add = TRUE)
-qqnorm(pres, pch = 16, col = "#00000020", bty = "n")
-qqline(pres, col = "orange")
-par(oldpar)
+# use the plotting method for LaMaResiduals
+plot(pres, hist = TRUE)
 ```
 
 In this case, our model looks really good -- as it should as we simulated from the exact same model.

@@ -76,7 +76,8 @@ Koslik</h4>
     
 <blockquote>
 <p>Before diving into this vignette, we recommend reading the vignette
-<strong>Introduction to LaMa</strong>.</p>
+<a href="https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html"><strong>Introduction
+to LaMa</strong></a>.</p>
 </blockquote>
 <p>This vignette explains how to fit inhomogeneous HMMs, i.e. models
 that depend on external covariates with <code>LaMa</code>. Such
@@ -252,7 +253,7 @@ on the transition probabilities.</p>
 <span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.910   0.021   1.109</span></span></code></pre></div>
+<span><span class="co">#&gt;   3.958   0.025   1.125</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -466,7 +467,7 @@ state.</p>
 <span>  <span class="va">mod_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMSR</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.252   0.002   0.255</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.256   0.003   0.259</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results-1">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results-1"></a>
@@ -488,6 +489,12 @@ scatter plot.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">x</span> <span class="op">+</span> <span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span>, </span>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">4</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Inhomogeneous_HMMs_files/figure-html/visualization3-1.png" width="85%" style="display: block; margin: auto;"></p>
+<blockquote>
+<p>Continue reading with <a href="https://janoleko.github.io/LaMa/articles/Periodic_HMMs.html"><strong>Periodic
+HMMs</strong></a>, <a href="https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html"><strong>LaMa
+and RTMB</strong></a>, or <a href="https://janoleko.github.io/LaMa/articles/Penalised_splines.html"><strong>Penalised
+splines</strong></a>.</p>
+</blockquote>
 <!-- ### Non-parametric modeling of the state-dependent regressions -->
 <!-- This is now a trivial task, just combininig the previous two examples. -->
 <!-- ### Again building the B-spline design matrix -->

@@ -14,9 +14,9 @@ sdreportMC(
 )
 }
 \arguments{
-\item{obj}{object returned by \code{MakeADFun()} after optimisation}
+\item{obj}{object returned by \code{MakeADFun()} after optimisation or model of class \code{qremlModel} as returned by \code{\link{qreml}}.}
 
-\item{what}{vector of strings with names of parameters and \code{REPORT()}ed quantities to be reported}
+\item{what}{vector of strings with names of parameters and/or \code{REPORT()}ed quantities to be reported}
 
 \item{nSamples}{number of samples to draw from the multivariate normal distribution of the MLE}
 
@@ -28,14 +28,19 @@ sdreportMC(
 }
 \value{
 named list corresponding to the elements of \code{what}. Each element has the structure of the corresponding quantity with an additional dimension added for the samples.
-For example, if a quantity is a vector, the list contains a matrix. If a quantity is a matrix, the list contains an array.
+For example, if a quantity is a vector, the list contains a matrix. If a quantity is a matrix, the list contains an array. If quantity is an array, the list contains an array with one extra dimension.
 }
 \description{
 After optimisation of an AD model, \code{sdreportMC} can be used to calculate samples of confidence intervals of all model parameters and \code{REPORT()}ed quantities
 including nonlinear functions of random effects and parameters.
 }
 \details{
-\strong{Caution:} Currently does not work for models with fixed parameters (i.e. that use the \code{map} argument of \code{MakeADFun}.)
+This function simply samples from the approximate multivariate normal distribution of the maximum likelihood estimate (MLE) of the parameters
+\deqn{ \hat{\theta} \sim N(\theta, H^{-1}), }
+where \eqn{H} is the Hessian matrix of the negative log-likelihood function at the MLE. 
+It then returns either the sampled parameters or \code{REPORT()}ed transformations of them. If \code{CI = TRUE}, it does not return the samples but directly computes confidence intervals.
+
+If you are interested in several quantities, calling \code{sdreportMC} once with a vector \code{what} will generally be faster than calling it several times with single elements of \code{what}.
 }
 \examples{
 # fitting an HMM to the trex data and running sdreportMC
@@ -85,7 +90,7 @@ opt = nlminb(obj$par, obj$fn, obj$gr) # optimization
 # `mu` has report statement, `delta` is automatically reported by `forward()`
 sdrMC = sdreportMC(obj, 
                    what = c("mu", "delta"), 
-                   n = 50)
+                   nSamples = 50)
 dim(sdrMC$delta)
 # now a matrix with 50 samples (rows)
 }

@@ -68,11 +68,11 @@ including nonlinear functions of random effects and parameters.</p>
 
 
 <dl><dt id="arg-obj">obj<a class="anchor" aria-label="anchor" href="#arg-obj"></a></dt>
-<dd><p>object returned by <code>MakeADFun()</code> after optimisation</p></dd>
+<dd><p>object returned by <code>MakeADFun()</code> after optimisation or model of class <code>qremlModel</code> as returned by <code><a href="qreml.html">qreml</a></code>.</p></dd>
 
 
 <dt id="arg-what">what<a class="anchor" aria-label="anchor" href="#arg-what"></a></dt>
-<dd><p>vector of strings with names of parameters and <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code>ed quantities to be reported</p></dd>
+<dd><p>vector of strings with names of parameters and/or <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code>ed quantities to be reported</p></dd>
 
 
 <dt id="arg-nsamples">nSamples<a class="anchor" aria-label="anchor" href="#arg-nsamples"></a></dt>
@@ -94,11 +94,15 @@ including nonlinear functions of random effects and parameters.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>named list corresponding to the elements of <code>what</code>. Each element has the structure of the corresponding quantity with an additional dimension added for the samples.
-For example, if a quantity is a vector, the list contains a matrix. If a quantity is a matrix, the list contains an array.</p>
+For example, if a quantity is a vector, the list contains a matrix. If a quantity is a matrix, the list contains an array. If quantity is an array, the list contains an array with one extra dimension.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><strong>Caution:</strong> Currently does not work for models with fixed parameters (i.e. that use the <code>map</code> argument of <code>MakeADFun</code>.)</p>
+    <p>This function simply samples from the approximate multivariate normal distribution of the maximum likelihood estimate (MLE) of the parameters
+$$ \hat{\theta} \sim N(\theta, H^{-1}), $$
+where \(H\) is the Hessian matrix of the negative log-likelihood function at the MLE.
+It then returns either the sampled parameters or <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code>ed transformations of them. If <code>CI = TRUE</code>, it does not return the samples but directly computes confidence intervals.</p>
+<p>If you are interested in several quantities, calling <code>sdreportMC</code> once with a vector <code>what</code> will generally be faster than calling it several times with single elements of <code>what</code>.</p>
     </div>
 
     <div class="section level2">
@@ -150,7 +154,7 @@ For example, if a quantity is a vector, the list contains a matrix. If a quantit
 <span class="r-in"><span><span class="co"># `mu` has report statement, `delta` is automatically reported by `forward()`</span></span></span>
 <span class="r-in"><span><span class="va">sdrMC</span> <span class="op">=</span> <span class="fu">sdreportMC</span><span class="op">(</span><span class="va">obj</span>, </span></span>
 <span class="r-in"><span>                   what <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mu"</span>, <span class="st">"delta"</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>                   n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                   nSamples <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Sampling reported quantities...</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sdrMC</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50  2</span>

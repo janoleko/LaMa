@@ -50,7 +50,14 @@ process_cosinor <- function(formula){
   
   # Final expanded formula
   final_terms <- c(mainpart, expanded_terms)
-  expanded_formula <- stats::as.formula(paste("~", paste(final_terms, collapse = " + ")))
+  
+  expanded_formula <- if (length(final_terms) == 0) {
+    ~1
+  } else {
+    stats::as.formula(paste("~", paste(final_terms, collapse = " + ")))
+  }
+  
+  # expanded_formula <- stats::as.formula(paste("~", paste(final_terms, collapse = " + ")))
   
   expanded_formula
 }
@@ -130,8 +137,7 @@ cosinor = function(x = 1:24, period = 24, eval = TRUE){
 #' Note that for tensorproduct smooths, the corresponding list entry is itself a list, containing the d marginal penalty matrices if d is the dimension of the tensor product.
 #' @export
 #' 
-#' @importFrom mgcv gam
-#' @importFrom mgcv s
+#' @importFrom mgcv gam s
 #' @importFrom stats update
 #'
 #' @examples
@@ -156,18 +162,16 @@ make_matrices = function(formula,
   formula = process_cosinor(formula)
   
   ## setting up the model using mgcv
-  gam_setup = mgcv::gam(formula = stats::update(formula, dummy ~ .),
-                        data = cbind(dummy = 1, data), 
-                        knots = knots,
-                        fit = FALSE)
-  
+  gam_setup = gam(formula = update(formula, dummy ~ .),
+                  data = cbind(dummy = 1, data), 
+                  knots = knots,
+                  fit = FALSE)
   
   ## assiging design matrix
   term_names = gam_setup$term.names
   Z = gam_setup$X
   colnames(Z) = term_names
 
-  
   ## dealing with the penalty matrices
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
   
@@ -215,7 +219,6 @@ make_matrices = function(formula,
   
   pardim = c(pardim, pardim_smooth)
   
-  
   out = list(Z = Z, 
              S = S, 
              # S2 = S2,
@@ -228,6 +231,345 @@ make_matrices = function(formula,
   class(out) <- "LaMa_matrices"
   return(out)
 }
+
+make_matrices_flat <- function(formula, data, knots = NULL) {
+  
+  get_name <- function(fml, idx) {
+    if (length(fml) == 3 && !deparse(fml[[2]]) %in% c("", ".")) {
+      deparse(fml[[2]])
+    } else {
+      paste0("par", idx)
+    }
+  }
+  
+  process_single <- function(fml, name, knots_sub) {
+    fml <- process_cosinor(fml)
+    
+    # prepare gam model setup
+    gam_setup <- gam(update(fml, dummy ~ .), data = cbind(dummy = 1, data), 
+                   knots = knots_sub, fit = FALSE)
+    
+    # also prepare prediction gam
+    gam_setup0 <- gam(update(fml, dummy ~ .), data = cbind(dummy = 1, data), 
+                   knots = knots_sub, control = list(maxit = 1))
+    
+    Z <- gam_setup$X
+    colnames(Z) <- gam_setup$term.names
+    
+    S <- list()
+    coef <- list()
+    pardim <- list(fixed_eff = gam_setup$nsdf)
+    counter <- 1
+    
+    for (i in seq_along(gam_setup$smooth)) {
+      sm <- gam_setup$smooth[[i]]
+      label <- paste0(name, ".", sm$label)
+      
+      if (is.null(sm$margin)) {
+        # Single-penalty smooth
+        S[[label]] <- gam_setup$S[[counter]]
+        pardim[[label]] <- nrow(S[[label]])
+        coef[[label]] <- rep(0, nrow(S[[label]]))
+        counter <- counter + 1
+      } else {
+        # Tensor product smooth
+        n_pen <- length(sm$margin)
+        margin_names <- sapply(sm$margin, `[[`, "term")
+        penalty_list <- gam_setup$S[counter:(counter + n_pen - 1)]
+        names(penalty_list) <- margin_names
+        S[[label]] <- penalty_list
+        pardim[[label]] <- nrow(penalty_list[[1]])
+        coef[[label]] <- rep(0, nrow(penalty_list[[1]]))
+        counter <- counter + n_pen
+      }
+    }
+    
+    coef_fixed <- rep(0, gam_setup$nsdf)
+    names(coef_fixed) <- colnames(Z)[seq_len(gam_setup$nsdf)]
+    coef <- c(setNames(list(coef_fixed), paste0(name, ".fixed_eff")), coef)
+    
+    list(
+      Z = Z, S = S, pardim = pardim,
+      gam = gam_setup, gam0 = gam_setup0,
+      knots = knots_sub, coef = coef
+    )
+  }
+  
+  if (!inherits(formula, "list")) {
+    res <- process_single(formula, "main", knots)
+    out <- list(
+      Z = res$Z, S = res$S, 
+      pardim = res$pardim,
+      coef = res$coef,
+      data = data, 
+      gam = res$gam, gam0 = res$gam0,
+      knots = knots
+    )
+    class(out) <- "LaMa_matrices"
+    return(out)
+  }
+  
+  # get names
+  form_names <- names(formula) # also allow for named lists with right-side-only formulas
+  if(is.null(form_names)){
+    form_names <- sapply(seq_along(formula), function(i) get_name(formula[[i]], i))
+  }
+  
+  # check knots
+  if(!is.null(knots)){
+    if(!all(names(knots) %in% form_names)){
+      stop("Names of 'knots' must match the names of the formulas in 'formula'.")
+    }
+  }
+  
+  # Case: list of formulas
+  Z_list <- list()
+  S_flat <- list()
+  pardim_list <- list()
+  formula_list <- list()
+  knots_list <- list()
+  gam_list <- list()
+  gam0_list <- list()
+  coef_list <- list()
+  
+  # formula_names <- names(formula)
+  
+  for (i in seq_along(formula)) {
+    fml <- formula[[i]]
+    name <- form_names[i]
+    res <- process_single(fml, name, knots[[name]])
+    
+    Z_list[[name]] <- res$Z
+    S_flat <- c(S_flat, res$S)
+    pardim_list[[name]] <- res$pardim
+    knots_list[[name]] <- res$knots
+    gam_list[[name]] <- res$gam
+    gam0_list[[name]] <- res$gam0
+    coef_list <- c(coef_list, res$coef)
+  }
+  
+  out <- list(
+    Z = Z_list, S = S_flat, 
+    pardim = pardim_list,
+    coef = coef_list,
+    data = data,
+    gam = gam_list, gam0 = gam0_list,
+    knots = knots_list
+  )
+  class(out) <- "LaMa_matrices"
+  return(out)
+}
+
+# just call make_matrices_flat() for each entry on the top level and glue them together
+make_matrices2 <- function(formula, data, knots = NULL){
+  if(!is.list(formula)){
+    # not a list -> check if formula is a single formula
+    if(inherits(formula, "formula")){
+      # check knots
+      return(make_matrices_flat(formula, data, knots))
+    } else{
+      stop("'formula' must be a (nested) list of formulas or a single formula.")
+    }
+  } else if(all(sapply(formula, inherits, what = "formula"))){     # check if flat list
+    # check knots
+    if(!is.null(knots)){
+      if(!is.list(knots)){
+        stop("'knots' must be a list of knots for each formula in 'formula'.")
+      } else if(!all(sapply(knots, is.list))){
+        stop("'knots' must be a named list of knot lists, containing knots for the corresponding formula (top level) and variable (bottom level) in 'formula'.")
+      }
+    }
+    return(make_matrices_flat(formula, data, knots))
+  } else{
+    # check if two level list
+    nested_check <- all(sapply(formula, function(f){
+      all(sapply(f, inherits, what = "formula"))
+    }))
+    
+    if(nested_check){
+      Z_list <- list()
+      S_list <- list()
+      pardim_list <- list()
+      coef_list <- list()
+      gam_list <- list()
+      gam0_list <- list()
+      knots_list <- list()
+      
+      names <- names(formula)
+      if(is.null(names)){
+        names <- paste0("stream", seq_along(formula))
+      }
+      
+      for(i in seq_along(formula)){
+        thisname <- names[i]
+        res <- make_matrices_flat(formula[[i]], data, knots[[i]])
+        
+        # handle nameing of S and coef
+        if(length(res$S) > 0){
+          names(res$S) <- paste0(thisname, ".", names(res$S))
+        }
+        names(res$coef) <- paste0(thisname, ".", names(res$coef))
+        
+        Z_list[[thisname]] <- res$Z
+        S_list <- c(S_list, res$S)
+        pardim_list[[thisname]] <- res$pardim
+        coef_list <- c(coef_list, res$coef)
+        gam_list[[thisname]] <- res$gam
+        gam0_list[[thisname]] <- res$gam0
+        knots_list[[thisname]] <- res$knots
+      }
+      
+      out <- list(
+        Z = Z_list, 
+        S = S_list, 
+        pardim = pardim_list,
+        coef = coef_list,
+        data = data,
+        gam = gam_list, 
+        gam0 = gam0_list,
+        knots = knots_list
+      )
+      class(out) <- "LaMa_matrices"
+      return(out)
+    } else{
+      stop("'formula' must be a (nested) list of formulas or a single formula.")
+    }
+  }
+}
+
+# process_obs_formulas <- function(formulas, 
+#                                  dists,
+#                                  nStates){
+# 
+#   # get dists
+#   dist_fns <- lapply(dists, function(d){
+#     if(is.character("d")){
+#       get(paste0("d", d))
+#     } else if(is.function(d)){
+#       d
+#     }
+#   })
+#   # for each dist, find parameter names of dist
+#   parnames <- lapply(dist_fns, function(d) formals(d)[-1])
+#   
+#   
+#   # create nested named formula list with streami.par.i ~ 1 for all by default
+#   # match with provided formulas
+# }
+
+process_hid_formulas <- function(formulas, 
+                                 nStates,
+                                 ref = NULL){
+  
+  # extract formula names from response variable
+  get_name <- function(fml) {
+    if (length(fml) == 3 && !deparse(fml[[2]]) %in% c("", ".")) {
+      return(deparse(fml[[2]]))
+    } else {
+      return(NULL)
+    }
+  }
+  
+  # initialise transition names without reference categories
+  make_tr_names <- function(nStates, ref){
+    names <- c()
+    for(i in 1:nStates){
+      for(j in 1:nStates){
+        if(j != ref[i]){
+          names <- c(names, paste0("tr.", i, j))
+        }
+      }
+    }
+    names
+  }
+  
+  # NULL input → uniform ~1 formulas
+  if(is.null(formulas)){
+    formulas <- ~ 1
+  }
+  
+  # Matrix input: extract ref directly from "."
+  if(inherits(formulas, "matrix")){
+    if (!all(dim(formulas) == c(nStates, nStates))) {
+      stop("Formula matrix must be of size nStates x nStates.")
+    }
+    
+    ref <- integer(nStates)
+    for (i in 1:nStates) {
+      row <- formulas[i, ]
+      dot_count <- sum(trimws(row) == "." | trimws(row) == "~ .")
+      if (dot_count != 1) {
+        stop(sprintf("Row %d of formula matrix must contain exactly one '.' (reference transition), found %d.", i, dot_count))
+      }
+      ref[i] <- which(trimws(row) %in% c(".", "~ ."))
+    }
+  }
+  
+  # Default reference if not yet defined
+  if(is.null(ref)){
+    ref <- 1:nStates
+  } else{
+    if (length(ref) != nStates) stop("'ref' must be of length nStates.")
+    if (!all(ref %in% 1:nStates)) stop("'ref' must contain valid state indices.")
+  }
+  
+  # Generate transition names and empty formula list
+  names_out <- make_tr_names(nStates, ref)
+  formula_list <- setNames(vector("list", length(names_out)), names_out)
+  
+  # Fill from matrix (now that ref is known)
+  if(inherits(formulas, "matrix")){
+    for (i in 1:nStates) {
+      for (j in 1:nStates) {
+        entry <- formulas[i, j]
+        if (trimws(entry) %in% c(".", "~ .")) next
+        if (j == ref[i]) next
+        
+        name <- paste0("tr.", i, j)
+        if (is.character(entry)) entry <- as.formula(entry)
+        formula_list[[name]] <- entry
+      }
+    }
+    return(formula_list)
+  }
+  
+  # Uniform formula for all transitions
+  if(inherits(formulas, "formula")){
+    for(i in seq_along(formula_list)){
+      formula_list[[i]] <- formulas
+    }
+    return(formula_list)
+  }
+  
+  # Named or unnamed list
+  if(inherits(formulas, "list")){
+    form_names <- names(formulas)
+    if(is.null(form_names)){
+      form_names <- sapply(formulas, get_name)
+    }
+    if(is.list(form_names)){
+      stop("If formula list is provided, it must be a named list with names 'tr.ij'.")
+    }
+    if(!all(form_names %in% names_out)){
+      msg <- "A formula for a reference category was provided. Formulas should not be provided for:"
+      trs <- paste0("tr.", 1:nStates, ref, collapse = ", ")
+      msg <- paste(msg, trs)
+      stop(msg)
+    }
+    
+    for (n in names_out) formula_list[[n]] <- ~1
+    for (i in seq_along(formulas)) {
+      formula_list[[form_names[i]]] <- formulas[[i]]
+    }
+    return(formula_list)
+  }
+  
+  stop("Unsupported input type for 'formulas'. Must be a formula, list, or matrix.")
+}
+
+
+
+
 
 #' Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 #'

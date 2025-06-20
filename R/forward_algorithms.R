@@ -662,6 +662,8 @@ forward_hsmm <- function(dm, omega, allprobs,
   N = ncol(allprobs) # number of HSMM states
   M = sum(agsizes) # total number of states of the approximating HMM
   
+  stateInds <- rep(1:N, times = agsizes)
+  
   stationary = is.null(delta) # if delta is not provided, stationary distribution needs to be computed
   
   if(is.null(trackID)) {
@@ -686,17 +688,26 @@ forward_hsmm <- function(dm, omega, allprobs,
       RTMB::REPORT(allprobs)
     }
     
+    ## making AD work fine
+    delta_sparse <- AD(delta_sparse)
+    Gamma_sparse <- AD(Gamma_sparse)
+    allprobs <- AD(allprobs)
+    
     # forward algorithm
     # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-    foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
-    sumfoo = sum(foo)
+    foo = delta_sparse * allprobs[1, stateInds, drop = FALSE]
+    # foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
+    # sumfoo = sum(foo)
+    sumfoo = rowSums(foo)
     phi = foo / sumfoo
     l = log(sumfoo)
     
     for(t in 2:nrow(allprobs)) {
       # foo = phi %*% Gamma_sparse %*% Matrix::Diagonal(x = rep(allprobs[t,], times = agsizes))
-      foo = phi %*% Gamma_sparse %*% diag(rep(allprobs[t,], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = phi %*% Gamma_sparse %*% diag(rep(allprobs[t,], times = agsizes))
+      foo = (phi %*% Gamma_sparse) * allprobs[t, stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l = l + log(sumfoo)
     }
@@ -811,22 +822,30 @@ forward_hsmm <- function(dm, omega, allprobs,
       RTMB::REPORT(allprobs)
     }
     
+    ## making AD work fine
+    allprobs <- AD(allprobs)
+    
+    
     ## forward algorithm
     l = 0 # initialize log-likelihood
     for(i in 1:k) {
       ind = which(trackID == uID[i]) # indices of track i
       
-      delta_i = Delta_sparse[i, , drop = FALSE]
-      Gamma_i = Gamma_sparse[[i]]
+      delta_i = AD(Delta_sparse[i, , drop = FALSE])
+      Gamma_i = AD(Gamma_sparse[[i]])
       
-      foo = delta_i %*% Matrix::Diagonal(x = rep(allprobs[ind[1],], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = delta_i %*% Matrix::Diagonal(x = rep(allprobs[ind[1],], times = agsizes))
+      foo = delta_i * allprobs[ind[1], stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l_i = log(sumfoo)
       
       for(t in 2:length(ind)) {
-        foo = phi %*% Gamma_i %*% Matrix::Diagonal(x = rep(allprobs[ind[t],], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = phi %*% Gamma_i %*% Matrix::Diagonal(x = rep(allprobs[ind[t],], times = agsizes))
+        foo = (phi %*% Gamma_i) * allprobs[ind[t], stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l_i = l_i + log(sumfoo)
       }
@@ -835,7 +854,7 @@ forward_hsmm <- function(dm, omega, allprobs,
     }
   }
   
-  l
+  as.numeric(l)
 }
 
 
@@ -903,6 +922,8 @@ forward_ihsmm <- function(dm, omega, allprobs,
     agsizes = sapply(dm, length)
   }
   
+  stateInds <- rep(1:N, times = agsizes)
+  
   M = sum(agsizes) # total number of states of the approximating HMM
   n = nrow(allprobs) # number of observations
   maxag = max(agsizes) # maximum number of states in the approximating HMM
@@ -944,17 +965,26 @@ forward_ihsmm <- function(dm, omega, allprobs,
         RTMB::REPORT(allprobs)
       }
       
+      ## making AD work fine
+      delta_sparse <- AD(delta_sparse)
+      # Gamma_sparse <- AD(Gamma_sparse)
+      allprobs <- AD(allprobs)
+      
       # forward algorithm
       # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-      foo = delta_sparse %*% diag(rep(allprobs[startInd,], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = delta_sparse %*% diag(rep(allprobs[startInd,], times = agsizes))
+      foo = delta_sparse * allprobs[startInd, stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in (startInd + 1):nrow(allprobs)) {
         # foo = phi %*% Gamma_sparse %*% Matrix::Diagonal(x = rep(allprobs[t,], times = agsizes))
-        foo = phi %*% Gamma_sparse[[t - maxag]] %*% diag(rep(allprobs[t,], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = phi %*% Gamma_sparse[[t - maxag]] %*% diag(rep(allprobs[t,], times = agsizes))
+        foo = (phi %*% Gamma_sparse[[t - maxag]]) * allprobs[t, stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
       }
@@ -992,14 +1022,18 @@ forward_ihsmm <- function(dm, omega, allprobs,
       }
       
       ## forward algorithm
-      foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
+      foo = delta_sparse * allprobs[1, stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:nrow(allprobs)) {
-        foo = phi %*% Gamma_sparse[[t-1]] %*% diag(rep(allprobs[t,], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = phi %*% Gamma_sparse[[t-1]] %*% diag(rep(allprobs[t,], times = agsizes))
+        foo = (phi %*% Gamma_sparse[[t-1]]) * allprobs[t, stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
       }
@@ -1059,23 +1093,30 @@ forward_ihsmm <- function(dm, omega, allprobs,
                                              dims = c(k, M))    # Final sparse matrix dimensions
       }
       
+      ## making AD work fine
+      allprobs <- AD(allprobs)
+      
       ## forward algorithm
       l = 0 # initialize log-likelihood
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        delta_i = Delta_sparse[i, , drop = FALSE]
-        Gamma_i = Gamma_sparse[[i]]
+        delta_i = AD(Delta_sparse[i, , drop = FALSE])
+        Gamma_i = AD(Gamma_sparse[[i]])
         
         # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-        foo = delta_i %*% diag(rep(allprobs[ind[startInd],], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = delta_i %*% diag(rep(allprobs[ind[startInd],], times = agsizes))
+        foo = delta_i * allprobs[ind[startInd], stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l_i = log(sumfoo)
         
         for(t in (startInd + 1):length(ind)) {
           foo = phi %*% Gamma_i[[t-maxag]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
-          sumfoo = sum(foo)
+          foo = (phi %*% Gamma_i[[t-maxag]]) * allprobs[ind[t], stateInds, drop = FALSE]
+          # sumfoo = sum(foo)
+          sumfoo = rowSums(foo)
           phi = foo / sumfoo
           l_i = l_i + log(sumfoo)
         }
@@ -1143,22 +1184,29 @@ forward_ihsmm <- function(dm, omega, allprobs,
         }
       }
       
+      ## making AD work fine
+      allprobs <- AD(allprobs)
+      
       ## forward algorithm
       l = 0 # initialize log-likelihood
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        delta_i = Delta_sparse[i, , drop = FALSE]
+        delta_i = AD(Delta_sparse[i, , drop = FALSE])
         Gamma_i = Gamma_sparse[ind]
         
-        foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
+        foo = delta_i * allprobs[ind[1], stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l_i = log(sumfoo)
         
         for(t in 2:length(ind)) {
-          foo = phi %*% Gamma_i[[t-1]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
-          sumfoo = sum(foo)
+          # foo = phi %*% Gamma_i[[t-1]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
+          foo = (phi %*% Gamma_i[[t-1]]) * allprobs[ind[t], stateInds, drop = FALSE]
+          # sumfoo = sum(foo)
+          sumfoo = rowSums(foo)
           phi = foo / sumfoo
           l_i = l_i + log(sumfoo)
         }
@@ -1168,7 +1216,7 @@ forward_ihsmm <- function(dm, omega, allprobs,
     }
   }
   
-  l
+  as.numeric(l)
 }
 
 
@@ -1232,6 +1280,8 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
     agsizes = sapply(dm, length)
   }
   
+  stateInds <- rep(1:N, times = agsizes)
+  
   M = sum(agsizes) # total number of states of the approximating HMM
   n = nrow(allprobs) # number of observations
   L = length(unique(tod)) # cycle length -> number of unique tpms
@@ -1265,17 +1315,26 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
         RTMB::REPORT(allprobs)
       }
       
+      ## making AD work fine
+      delta_sparse <- AD(delta_sparse)
+      # Gamma_sparse <- AD(Gamma_sparse)
+      allprobs <- AD(allprobs)
+      
       # forward algorithm
       # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-      foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
+      foo = delta_sparse * allprobs[1, stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:nrow(allprobs)) {
         # foo = phi %*% Gamma_sparse %*% Matrix::Diagonal(x = rep(allprobs[t,], times = agsizes))
-        foo = phi %*% Gamma_sparse[[tod[t-1]]] %*% diag(rep(allprobs[t,], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = phi %*% Gamma_sparse[[tod[t-1]]] %*% diag(rep(allprobs[t,], times = agsizes))
+        foo = (phi %*% AD(Gamma_sparse[[tod[t-1]]])) * allprobs[t, stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
       }
@@ -1312,15 +1371,24 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
         }
       }
       
+      ## making AD work fine
+      delta_sparse <- AD(delta_sparse)
+      # Gamma_sparse <- AD(Gamma_sparse)
+      allprobs <- AD(allprobs)
+      
       ## forward algorithm
-      foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
-      sumfoo = sum(foo)
+      # foo = delta_sparse %*% diag(rep(allprobs[1,], times = agsizes))
+      foo = delta_sparse * allprobs[1, stateInds, drop = FALSE]
+      # sumfoo = sum(foo)
+      sumfoo = rowSums(foo)
       phi = foo / sumfoo
       l = log(sumfoo)
       
       for(t in 2:nrow(allprobs)) {
-        foo = phi %*% Gamma_sparse[[tod[t-1]]] %*% diag(rep(allprobs[t,], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = phi %*% Gamma_sparse[[tod[t-1]]] %*% diag(rep(allprobs[t,], times = agsizes))
+        foo = (phi %*% AD(Gamma_sparse[[tod[t-1]]])) * allprobs[t, stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l = l + log(sumfoo)
       }
@@ -1374,23 +1442,32 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
                                              dims = c(k, M))    # Final sparse matrix dimensions
       }
       
+      ## making AD work fine
+      allprobs <- AD(allprobs)
+      Delta_sparse <- AD(Delta_sparse)
+      # Gamma_sparse <- AD(Gamma_sparse)
+      
       ## forward algorithm
       l = 0 # initialize log-likelihood
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        delta_i = Delta_sparse[i, , drop = FALSE]
+        delta_i = AD(Delta_sparse[i, , drop = FALSE])
         thistod = tod[ind]
         
         # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-        foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
+        foo = delta_i * allprobs[ind[1], stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l_i = log(sumfoo)
         
         for(t in 2:length(ind)) {
-          foo = phi %*% Gamma_sparse[[thistod[t-1]]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
-          sumfoo = sum(foo)
+          # foo = phi %*% Gamma_sparse[[thistod[t-1]]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
+          foo = (phi %*% AD(Gamma_sparse[[thistod[t-1]]])) * allprobs[ind[t], stateInds, drop = FALSE]
+          # sumfoo = sum(foo)
+          sumfoo = rowSums(foo)
           phi = foo / sumfoo
           l_i = l_i + log(sumfoo)
         }
@@ -1459,23 +1536,32 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
         }
       }
       
+      ## making AD work fine
+      allprobs <- AD(allprobs)
+      Delta_sparse <- AD(Delta_sparse)
+      # Gamma_sparse <- AD(Gamma_sparse)
+      
       ## forward algorithm
       l = 0 # initialize log-likelihood
       for(i in 1:k) {
         ind = which(trackID == uID[i]) # indices of track i
         
-        delta_i = Delta_sparse[i, , drop = FALSE]
+        delta_i = AD(Delta_sparse[i, , drop = FALSE])
         thistod = tod[ind]
         
         # foo = delta_sparse %*% Matrix::Diagonal(x = rep(allprobs[1,], times = agsizes))
-        foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
-        sumfoo = sum(foo)
+        # foo = delta_i %*% diag(rep(allprobs[ind[1],], times = agsizes))
+        foo = delta_i * allprobs[ind[1], stateInds, drop = FALSE]
+        # sumfoo = sum(foo)
+        sumfoo = rowSums(foo)
         phi = foo / sumfoo
         l_i = log(sumfoo)
         
         for(t in 2:length(ind)) {
-          foo = phi %*% Gamma_sparse[[thistod[t-1]]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
-          sumfoo = sum(foo)
+          # foo = phi %*% Gamma_sparse[[thistod[t-1]]] %*% diag(rep(allprobs[ind[t],], times = agsizes))
+          foo = (phi %*% AD(Gamma_sparse[[thistod[t-1]]])) * allprobs[ind[t], stateInds, drop = FALSE]
+          # sumfoo = sum(foo)
+          sumfoo = rowSums(foo)
           phi = foo / sumfoo
           l_i = l_i + log(sumfoo)
         }
@@ -1485,5 +1571,5 @@ forward_phsmm <- function(dm, omega, allprobs, tod,
     }
   }
   
-  l
+  as.numeric(l)
 }

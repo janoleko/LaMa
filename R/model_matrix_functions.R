@@ -268,7 +268,7 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
       if (is.null(sm$margin)) {
         # Single-penalty smooth
         S[[label]] <- gam_setup$S[[counter]]
-        pardim[[label]] <- nrow(S[[label]])
+        pardim[[sm$label]] <- nrow(S[[label]])
         coef[[label]] <- rep(0, nrow(S[[label]]))
         counter <- counter + 1
       } else {
@@ -278,7 +278,7 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
         penalty_list <- gam_setup$S[counter:(counter + n_pen - 1)]
         names(penalty_list) <- margin_names
         S[[label]] <- penalty_list
-        pardim[[label]] <- nrow(penalty_list[[1]])
+        pardim[[sm$label]] <- nrow(penalty_list[[1]])
         coef[[label]] <- rep(0, nrow(penalty_list[[1]]))
         counter <- counter + n_pen
       }
@@ -286,7 +286,7 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
     
     coef_fixed <- rep(0, gam_setup$nsdf)
     names(coef_fixed) <- colnames(Z)[seq_len(gam_setup$nsdf)]
-    coef <- c(setNames(list(coef_fixed), paste0(name, ".fixed_eff")), coef)
+    # coef <- c(setNames(list(coef_fixed), paste0(name, ".fixed_eff")), coef)
     
     list(
       Z = Z, S = S, pardim = pardim,

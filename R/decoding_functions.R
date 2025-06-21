@@ -53,6 +53,9 @@ viterbi = function(delta, Gamma, allprobs, trackID = NULL,
   
   # inflating Gamma to use viterbi_g
   if(is.null(trackID)){
+    if(length(dim(Gamma)) > 2){
+      stop("If no 'trackID' is provided, 'Gamma' needs to be a matrix of dimension c(N,N). \nDo you need to use 'viterbi_g()'?")
+    }
     Gammanew = array(Gamma, dim = c(N, N, n-1))
   } else{
     uID = unique(trackID)

@@ -1316,6 +1316,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   # initialising convergence check index (initially for all lambdas)
   convInd <- seq_along(lambda_mapped)
+  convInd_unmapped <- seq_along(lambda) # for unmapped lambdas
   
   # controlling optim printing
   if(silent == 0){

@@ -4,7 +4,7 @@
 \alias{predict.LaMa_matrices}
 \title{Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}}
 \usage{
-\method{predict}{LaMa_matrices}(object, newdata, ...)
+\method{predict}{LaMa_matrices}(object, newdata, what = NULL, ...)
 }
 \arguments{
 \item{object}{model matrices object as returned from \code{\link{make_matrices}}}

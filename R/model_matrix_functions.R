@@ -584,7 +584,7 @@ process_hid_formulas <- function(formulas,
 #' @examples
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
 #' Z_predict = predict(modmat, data.frame(x = 1:10 - 0.5))
-predict.LaMa_matrices <- function(object, newdata, ...){
+predict.LaMa_matrices <- function(object, newdata, what = NULL, ...){
   # dots <- list(...)
   # if(!is.null(dots$newdata)){
   #   newdata <- dots$newdata
@@ -592,7 +592,7 @@ predict.LaMa_matrices <- function(object, newdata, ...){
   #   newdata <- dots[[1]]
   # }
   
-  pred_matrix(object, newdata)
+  pred_matrix(object, newdata = newdata, what = what)
 }
 
 
@@ -613,10 +613,27 @@ predict.LaMa_matrices <- function(object, newdata, ...){
 #' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
 pred_matrix = function(model_matrices, 
                        newdata,
+                       what = NULL,
                        exclude = NULL) {
-  gam_setup0 = mgcv::gam(model_matrices$formula, 
-                         data = cbind(dummy = 1, model_matrices$data),
-                         knots = model_matrices$knots)
+  
+  if(is.null(model_matrices$gam0)){
+    gam_setup0 = mgcv::gam(model_matrices$formula,
+                           data = cbind(dummy = 1, model_matrices$data),
+                           knots = model_matrices$knots)
+  } else {
+    if(inherits(model_matrices$gam0, "gam")){
+      gam_setup0 <- model_matrices$gam0
+    } else{
+      if(is.null(what)){
+        stop("'what' must be specified and be one of the names of your original formulas.")
+      }
+      if(!what %in% names(model_matrices$gam0)){
+        stop("'what' must be one of the names of your original formulas.")
+      }
+      
+      gam_setup0 <- model_matrices$gam0[[what]]
+    }
+  }
   
   predict.gam(gam_setup0, 
               newdata = cbind(dummy = 1, newdata), 

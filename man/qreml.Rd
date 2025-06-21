@@ -18,7 +18,8 @@ qreml(
   control = list(reltol = 1e-10, maxit = 1000),
   silent = 1,
   joint_unc = TRUE,
-  saveall = FALSE
+  saveall = FALSE,
+  conv_crit = "gradient"
 )
 }
 \arguments{
@@ -67,8 +68,9 @@ We advise against changing the default values of \code{reltol} and \code{maxit} 
 
 \item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 
-\item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
-# @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.}
+\item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
+
+\item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.}
 }
 \value{
 model object of class 'qremlModel'. This is a list containing:

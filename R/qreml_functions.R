@@ -1038,7 +1038,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
-#' # @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than \code{epsilon[1]} but the change to the one before is smaller than \code{epsilon[2]}, the algorithm will average the two last values to prevent cycling.
+#' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.
 #'
 #' @return model object of class 'qremlModel'. This is a list containing:
 #' \item{...}{everything that is reported inside \code{pnll} using \code{RTMB::REPORT()}. When using \code{forward}, \code{tpm_g}, etc., this may involve automatically reported objects.}
@@ -1112,9 +1112,18 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                    # method = "BFGS", # optimization method used by optim
                   silent = 1, # print level
                   joint_unc = TRUE, # should joint object be returned?
-                  saveall = FALSE)# , # save all intermediate models?
+                  saveall = FALSE,# , # save all intermediate models?
+                  conv_crit = "gradient")
                   # cycling_threshold = 100) # cycling detection threshold
 {
+  # checking arguments
+  if(!is.function(pnll)){
+    stop("pnll needs to be a function")
+  }
+  if(!conv_crit %in% c("gradient", "relchange")){
+    stop("'conv_crit' needs to be either 'gradient' or 'relchange'")
+  }
+  
   method <- "BFGS"
   
   # setting the argument name for par because later updated par is returned
@@ -1481,6 +1490,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     
     if(k > 3){ # after 2 iterations, check whether any lambda > 1e5 and exclude from check
       convInd <- which(lambda_mapped <= 1e6)
+      convInd_unmapped <- which(lambda <= 1e6) # indices of unmapped lambdas
     }
     
     mgc <- max(abs(outer_gr[convInd]))
@@ -1501,15 +1511,22 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     }
     
     # convergence check
-    # if(all(abs(lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]])) < tol)){
-    # if(max(abs(
-    #   (lambda - unlist(Lambdas[[k]]))[convInd] / unlist(Lambdas[[k]])[convInd]
-    # )) < tol){
-    if(k >= 5 & (mgc < tol | opt$counts[2] <= 3)){
-      if(silent < 2){
-        cat("Converged\n")
+    if(conv_crit == "gradient"){
+      if(k >= 5 & (mgc < tol | opt$counts[2] <= 3)){
+        if(silent < 2){
+          cat("Converged\n")
+        }
+        break
       }
-      break
+    } else{
+      # relative change of lambda
+      rel_change <- abs((lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]]))
+      if(k >= 2 & all(rel_change[convInd_unmapped] < tol)){
+        if(silent < 2){
+          cat("Converged\n")
+        }
+        break
+      }
     }
     
     if(k == maxiter){

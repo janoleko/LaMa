@@ -1512,7 +1512,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     
     # convergence check
     if(conv_crit == "gradient"){
-      if(k >= 5 & (mgc < tol | opt$counts[2] <= 3)){
+      if(k > 3 & (mgc < tol | opt$counts[2] <= 3)){
         if(silent < 2){
           cat("Converged\n")
         }
@@ -1521,7 +1521,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     } else{
       # relative change of lambda
       rel_change <- abs((lambda - unlist(Lambdas[[k]])) / unlist(Lambdas[[k]]))
-      if(k >= 2 & all(rel_change[convInd_unmapped] < tol)){
+      if(k > 3 & all(rel_change[convInd_unmapped] < tol)){
         if(silent < 2){
           cat("Converged\n")
         }

@@ -79,7 +79,8 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>reltol <span class="op">=</span> <span class="fl">1e-10</span>, maxit <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  joint_unc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  conv_crit <span class="op">=</span> <span class="st">"gradient"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -151,8 +152,11 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 
 <dt id="arg-saveall">saveall<a class="anchor" aria-label="anchor" href="#arg-saveall"></a></dt>
-<dd><p>logical, if <code>TRUE</code>, then all model objects from each iteration are saved in the final model object.
-# @param epsilon vector of two values specifying the cycling detection parameters. If the relative change of the new penalty strength to the previous one is larger than <code>epsilon[1]</code> but the change to the one before is smaller than <code>epsilon[2]</code>, the algorithm will average the two last values to prevent cycling.</p></dd>
+<dd><p>logical, if <code>TRUE</code>, then all model objects from each iteration are saved in the final model object.</p></dd>
+
+
+<dt id="arg-conv-crit">conv_crit<a class="anchor" aria-label="anchor" href="#arg-conv-crit"></a></dt>
+<dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"gradient"</code> (default) or <code>"relchange"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

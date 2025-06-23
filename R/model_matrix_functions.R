@@ -685,7 +685,7 @@ pred_matrix = function(model_matrices,
       }
       gam_setup0 <- model_matrices$gam0
     } else {
-      if(is.list(model_matrices$gam0[[1]])){
+      if(!inherits(model_matrices$gam0[[1]], "gam")){
         if(is.null(what)){
           stop("'what' must be specified and contain a top-level name of the formula list and a name/ response variable from your original formulas.")
         }
@@ -699,7 +699,7 @@ pred_matrix = function(model_matrices,
           stop("'what[2]' must be one of the names/ response variables of your original formulas.")
         }
         gam_setup0 <- model_matrices$gam0[[what[1]]][[what[2]]]
-      } else if(inherits(model_matrices$gam0[[1]], "gam")){
+      } else {
         if(is.null(what)){
           stop("'what' must be specified and be one of the names/ response variables from your original formulas.")
           # what <- names(model_matrices$Z)[1]

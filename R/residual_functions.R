@@ -401,7 +401,7 @@ pseudo_res_discrete <- function(obs,
 #' @returns NULL, plots the pseudo-residuals in a 2- or 3-panel layout
 #' @export
 #'
-#' @importFrom graphics par curve hist
+#' @importFrom graphics par lines hist
 #' @importFrom stats acf na.pass qqnorm qqline
 #' @importFrom RTMB dnorm
 #'
@@ -466,9 +466,15 @@ plot.LaMaResiduals <- function(
   
   # Histogram with normal curve
   if (hist) {
-    hist(res_clean, main = main[2], border = "white", 
+    r <- range(res_clean)
+    dr <- diff(r)
+    xgrid <- seq(r[1] - dr / 4, r[2] + dr / 4, length.out = 200)
+    dens <- dnorm(xgrid)
+    ylim <- c(0, max(dens) * 1.1)
+    hist(res_clean, main = main[2], border = "white", ylim = ylim,
          prob = TRUE, xlab = "pseudo-residuals", ylab = "density")
-    curve(dnorm(x), add = TRUE, col = col, lwd = lwd)
+    # curve(dnorm(x), add = TRUE, col = col, lwd = lwd)
+    lines(xgrid, dens, col = col, lwd = lwd)
   }
   
   # ACF

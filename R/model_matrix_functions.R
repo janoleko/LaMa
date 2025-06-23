@@ -153,7 +153,7 @@ cosinor = function(x = 1:24, period = 24, eval = TRUE){
 #' modmat = make_matrices(~ s(g, bs = "re") + s(x, bs = "ps"), data)
 #' # tensorproduct of x and y
 #' modmat = make_matrices(~ s(x) + s(y) + ti(x,y), data)
-make_matrices = function(formula, 
+make_matrices_old = function(formula, 
                          data, 
                          knots = NULL
                          ){
@@ -174,19 +174,6 @@ make_matrices = function(formula,
 
   ## dealing with the penalty matrices
   term_labels = sapply(gam_setup$smooth, function(x) x$label)
-  
-  # first option: tensorproducts -> save marginal penalty matrices
-  # S2 = lapply(gam_setup$smooth, function(x){
-  #   if(is.null(x$margin)){ # univariate smooth -> one penalty matrix
-  #     return(x$S[[1]])
-  #   } else{ # multivariate smooth -> several penalty matrices
-  #     S_sublist = lapply(x$margin, function(y) y$S[[1]])
-  #     margin_names = sapply(x$margin, function(y) y$term)
-  #     names(S_sublist) = margin_names
-  #     return(S_sublist)
-  #   }
-  # })
-  # names(S2) = term_labels
   
   # second option: tensorproduct -> save blown-up marginal penalty matrices (with constraints baked in)
   S = list()
@@ -263,7 +250,11 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
     
     for (i in seq_along(gam_setup$smooth)) {
       sm <- gam_setup$smooth[[i]]
-      label <- paste0(name, ".", sm$label)
+      if(is.null(name)){
+        label <- sm$label
+      } else {
+        label <- paste0(name, ".", sm$label)
+      }
       
       if (is.null(sm$margin)) {
         # Single-penalty smooth
@@ -296,7 +287,11 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
   }
   
   if (!inherits(formula, "list")) {
-    res <- process_single(formula, "main", knots)
+    name <- get_name(formula, 1)
+    if(name == "par1"){
+      name <- NULL # default name for single formula
+    }
+    res <- process_single(formula, name, knots)
     out <- list(
       Z = res$Z, S = res$S, 
       pardim = res$pardim,
@@ -360,8 +355,51 @@ make_matrices_flat <- function(formula, data, knots = NULL) {
   return(out)
 }
 
-# just call make_matrices_flat() for each entry on the top level and glue them together
-make_matrices2 <- function(formula, data, knots = NULL){
+#' Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set
+#'
+#' @param formula formula as used in \code{mgcv}. Formulas can be right-side only, or contain a response variable, which is just extracted for naming.
+#'
+#' Can also be a list of formulas, which are then processed separately. In that case, both a named list of right-side only formulas or a list of formulas with response variables can be provided.
+#' @param data data frame containing all the variables on the right side of the formula(s)
+#' @param knots optional list containing user specified knot values for each covariate to be used for basis construction.
+#' For most bases the user simply supplies the \code{knots} to be used, which must match up with the \code{k} value supplied (note that the number of knots is not always just \code{k}).
+#' See \code{mgcv} documentation for more details.
+#'
+#' If \code{formula} is a list, this needs to be a named (based on the response variables) list over such lists.
+#' 
+#' @seealso \code{\link{predict.LaMa_matrices}} for prediction design matrix construction based on the model matrices object created by this function.
+#'
+#' @return a list of class \code{LaMa_matrices} containing:
+#' \item{\code{Z}}{design matrix (or list of such matrices if \code{formula} is a list))}
+#' \item{\code{S}}{list of penalty matrices (with names based on the response terms of the formulas as well as the smooth terms and covariates). For tensorproduct smooths, corresponding entries are themselves lists, containing the \eqn{d} marginal penalty matrices if \eqn{d} is the dimension of the tensor product)}
+#' \item{\code{pardim}}{list of parameter dimensions (fixed and penalised separately) for each formula, for ease of setting up initial parameters}
+#' \item{\code{coef}}{list of coefficient vectors filled with zeros of the correct length for each formula, for ease of setting up initial parameters}
+#' \item{\code{data}}{the data frame used for the model(s)}
+#' \item{\code{gam}}{unfitted \code{mgcv::gam} object used for construction of \code{Z} and \code{S} (or list of such objects if \code{formula} is a list)}
+#' \item{\code{gam0}}{fitted \code{mgcv::gam} which is used internally for to create prediction design matrices (or list of such objects if \code{formula} is a list)}
+#' \item{\code{knots}}{knot list used in the basis construction (or named list over such lists if \code{formula} is a list}
+#'
+#' @export
+#' 
+#' @importFrom mgcv gam s
+#' @importFrom stats update
+#'
+#' @examples
+#' data = data.frame(x = runif(100), 
+#'                   y = runif(100),
+#'                   g = factor(rep(1:10, each = 10)))
+#'
+#' # unvariate thin plate regression spline
+#' modmat = make_matrices(~ s(x), data)
+#' # univariate P-spline
+#' modmat = make_matrices(~ s(x, bs = "ps"), data)
+#' # adding random intercept
+#' modmat = make_matrices(~ s(g, bs = "re") + s(x, bs = "ps"), data)
+#' # tensorproduct of x and y
+#' modmat = make_matrices(~ s(x) + s(y) + ti(x,y), data)
+#' # multiple formulas at once
+#' modmat = make_matrices(list(mu ~ s(x) + y, sigma ~ s(g, bs = "re")), data = data)
+make_matrices <- function(formula, data, knots = NULL){
   if(!is.list(formula)){
     # not a list -> check if formula is a single formula
     if(inherits(formula, "formula")){
@@ -515,7 +553,7 @@ process_hid_formulas <- function(formulas,
   
   # Generate transition names and empty formula list
   names_out <- make_tr_names(nStates, ref)
-  formula_list <- setNames(vector("list", length(names_out)), names_out)
+  formula_list <- stats::setNames(vector("list", length(names_out)), names_out)
   
   # Fill from matrix (now that ref is known)
   if(inherits(formulas, "matrix")){
@@ -526,7 +564,7 @@ process_hid_formulas <- function(formulas,
         if (j == ref[i]) next
         
         name <- paste0("tr.", i, j)
-        if (is.character(entry)) entry <- as.formula(entry)
+        if (is.character(entry)) entry <- stats::as.formula(entry)
         formula_list[[name]] <- entry
       }
     }
@@ -575,15 +613,26 @@ process_hid_formulas <- function(formulas,
 #'
 #' @param object model matrices object as returned from \code{\link{make_matrices}}
 #' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
+#' @param what optional character string specifying which formula to use for prediction, if \code{object} contains multiple formulas. If \code{NULL}, the first formula is used.
 #' @param ... needs to be a \code{newdata} data frame containing the variables in the formula and new data for which to evaluate the basis
+#'
+#' @seealso \code{\link{make_matrices}} for creating objects of class \code{LaMa_matrices} which can be used for prediction by this function.
 #'
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
 #' 
 #'
 #' @examples
+#' # single formula
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-#' Z_predict = predict(modmat, data.frame(x = 1:10 - 0.5))
+#' Z_p = predict(modmat, data.frame(x = 1:10 - 0.5))
+#' # with multiple formulas
+#' modmat = make_matrices(list(mu ~ s(x), sigma ~ s(x, bs = "ps")), data = data.frame(x = 1:10))
+#' Z_p = predict(modmat, data.frame(x = 1:10 - 0.5), what = "mu")
+#' # nested formula list
+#' form = list(stream1 = list(mu ~ s(x), sigma ~ s(x, bs = "ps")))
+#' modmat = make_matrices(form, data = data.frame(x = 1:10))
+#' Z_p = predict(modmat, data.frame(x = 1:10 - 0.5), what = c("stream1", "mu"))
 predict.LaMa_matrices <- function(object, newdata, what = NULL, ...){
   # dots <- list(...)
   # if(!is.null(dots$newdata)){
@@ -600,6 +649,7 @@ predict.LaMa_matrices <- function(object, newdata, what = NULL, ...){
 #'
 #' @param model_matrices model_matrices object as returned from \code{\link{make_matrices}}
 #' @param newdata data frame containing the variables in the formula and new data for which to evaluate the basis
+#' @param what optional character string specifying which formula to use for prediction, if \code{object} contains multiple formulas. If \code{NULL}, the first formula is used.
 #' @param exclude optional vector of terms to set to zero in the predicted design matrix. Useful for predicting main effects only when e.g. \code{sd(..., bs = "re")} terms are present. See \code{mgcv::predict.gam} for more details.
 #' @return prediction design matrix for \code{newdata} with the same basis as used for \code{model_matrices}
 #' @export
@@ -609,8 +659,16 @@ predict.LaMa_matrices <- function(object, newdata, what = NULL, ...){
 #' @importFrom mgcv predict.gam
 #'
 #' @examples
+#' # single formula
 #' modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-#' Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+#' Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+#' # with multiple formulas
+#' modmat = make_matrices(list(mu ~ s(x), sigma ~ s(x, bs = "ps")), data = data.frame(x = 1:10))
+#' Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5), what = "mu")
+#' # nested formula list
+#' form = list(stream1 = list(mu ~ s(x), sigma ~ s(x, bs = "ps")))
+#' modmat = make_matrices(form, data = data.frame(x = 1:10))
+#' Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5), what = c("stream1", "mu"))
 pred_matrix = function(model_matrices, 
                        newdata,
                        what = NULL,
@@ -622,13 +680,33 @@ pred_matrix = function(model_matrices,
                            knots = model_matrices$knots)
   } else {
     if(inherits(model_matrices$gam0, "gam")){
-      gam_setup0 <- model_matrices$gam0
-    } else{
-      if(is.null(what)){
-        stop("'what' must be specified and be one of the names of your original formulas.")
+      if(!is.null(what)){
+        message("'model_matrics' only contains a single gam object, 'what' is not used.")
       }
-      if(!what %in% names(model_matrices$gam0)){
-        stop("'what' must be one of the names of your original formulas.")
+      gam_setup0 <- model_matrices$gam0
+    } else {
+      if(is.list(model_matrices$gam0[[1]])){
+        if(is.null(what)){
+          stop("'what' must be specified and contain a top-level name of the formula list and a name/ response variable from your original formulas.")
+        }
+        if(length(what) != 2 | !is.character(what)){
+          stop("'what' must be a character vector of length 2, containing the top-level name of the formula list and a name/ response variable from your original formulas.")
+        }
+        if(!what[1] %in% names(model_matrices$gam0)){
+          stop("'what[1]' must be a top-level name of your formula list.")
+        }
+        if(!what[2] %in% names(model_matrices$gam0[[what[1]]])){
+          stop("'what[2]' must be one of the names/ response variables of your original formulas.")
+        }
+        gam_setup0 <- model_matrices$gam0[[what[1]]][[what[2]]]
+      } else if(inherits(model_matrices$gam0[[1]], "gam")){
+        if(is.null(what)){
+          stop("'what' must be specified and be one of the names/ response variables from your original formulas.")
+          # what <- names(model_matrices$Z)[1]
+        }
+        if(!what %in% names(model_matrices$gam0)){
+          stop("'what' must be one of the names of your original formulas.")
+        }
       }
       
       gam_setup0 <- model_matrices$gam0[[what]]

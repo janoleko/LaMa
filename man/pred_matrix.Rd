@@ -11,6 +11,8 @@ pred_matrix(model_matrices, newdata, what = NULL, exclude = NULL)
 
 \item{newdata}{data frame containing the variables in the formula and new data for which to evaluate the basis}
 
+\item{what}{optional character string specifying which formula to use for prediction, if \code{object} contains multiple formulas. If \code{NULL}, the first formula is used.}
+
 \item{exclude}{optional vector of terms to set to zero in the predicted design matrix. Useful for predicting main effects only when e.g. \code{sd(..., bs = "re")} terms are present. See \code{mgcv::predict.gam} for more details.}
 }
 \value{
@@ -20,6 +22,14 @@ prediction design matrix for \code{newdata} with the same basis as used for \cod
 Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 }
 \examples{
+# single formula
 modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-Z_predict = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5))
+# with multiple formulas
+modmat = make_matrices(list(mu ~ s(x), sigma ~ s(x, bs = "ps")), data = data.frame(x = 1:10))
+Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5), what = "mu")
+# nested formula list
+form = list(stream1 = list(mu ~ s(x), sigma ~ s(x, bs = "ps")))
+modmat = make_matrices(form, data = data.frame(x = 1:10))
+Z_p = pred_matrix(modmat, data.frame(x = 1:10 - 0.5), what = c("stream1", "mu"))
 }

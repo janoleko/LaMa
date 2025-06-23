@@ -7,18 +7,28 @@
 make_matrices(formula, data, knots = NULL)
 }
 \arguments{
-\item{formula}{right side of a formula as used in \code{mgcv}}
+\item{formula}{formula as used in \code{mgcv}. Formulas can be right-side only, or contain a response variable, which is just extracted for naming.
 
-\item{data}{data frame containing the variables in the formula}
+Can also be a list of formulas, which are then processed separately. In that case, both a named list of right-side only formulas or a list of formulas with response variables can be provided.}
 
-\item{knots}{optional list containing user specified knot values to be used for basis construction
+\item{data}{data frame containing all the variables on the right side of the formula(s)}
 
+\item{knots}{optional list containing user specified knot values for each covariate to be used for basis construction.
 For most bases the user simply supplies the \code{knots} to be used, which must match up with the \code{k} value supplied (note that the number of knots is not always just \code{k}).
-See \code{mgcv} documentation for more details.}
+See \code{mgcv} documentation for more details.
+
+If \code{formula} is a list, this needs to be a named (based on the response variables) list over such lists.}
 }
 \value{
-a list containing the design matrix \code{Z}, a (potentially nested) list of penalty matrices \code{S}, the \code{formula}, the \code{data}, the \code{knots}, and the original \code{mod} object returned by \code{mgcv}.
-Note that for tensorproduct smooths, the corresponding list entry is itself a list, containing the d marginal penalty matrices if d is the dimension of the tensor product.
+a list of class \code{LaMa_matrices} containing:
+\item{\code{Z}}{design matrix (or list of such matrices if \code{formula} is a list))}
+\item{\code{S}}{list of penalty matrices (with names based on the response terms of the formulas as well as the smooth terms and covariates). For tensorproduct smooths, corresponding entries are themselves lists, containing the \eqn{d} marginal penalty matrices if \eqn{d} is the dimension of the tensor product)}
+\item{\code{pardim}}{list of parameter dimensions (fixed and penalised separately) for each formula, for ease of setting up initial parameters}
+\item{\code{coef}}{list of coefficient vectors filled with zeros of the correct length for each formula, for ease of setting up initial parameters}
+\item{\code{data}}{the data frame used for the model(s)}
+\item{\code{gam}}{unfitted \code{mgcv::gam} object used for construction of \code{Z} and \code{S} (or list of such objects if \code{formula} is a list)}
+\item{\code{gam0}}{fitted \code{mgcv::gam} which is used internally for to create prediction design matrices (or list of such objects if \code{formula} is a list)}
+\item{\code{knots}}{knot list used in the basis construction (or named list over such lists if \code{formula} is a list}
 }
 \description{
 Build the design and the penalty matrix for models involving penalised splines based on a formula and a data set
@@ -36,4 +46,9 @@ modmat = make_matrices(~ s(x, bs = "ps"), data)
 modmat = make_matrices(~ s(g, bs = "re") + s(x, bs = "ps"), data)
 # tensorproduct of x and y
 modmat = make_matrices(~ s(x) + s(y) + ti(x,y), data)
+# multiple formulas at once
+modmat = make_matrices(list(mu ~ s(x) + y, sigma ~ s(g, bs = "re")), data = data)
+}
+\seealso{
+\code{\link{predict.LaMa_matrices}} for prediction design matrix construction based on the model matrices object created by this function.
 }

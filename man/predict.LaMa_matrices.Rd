@@ -11,6 +11,8 @@
 
 \item{newdata}{data frame containing the variables in the formula and new data for which to evaluate the basis}
 
+\item{what}{optional character string specifying which formula to use for prediction, if \code{object} contains multiple formulas. If \code{NULL}, the first formula is used.}
+
 \item{...}{needs to be a \code{newdata} data frame containing the variables in the formula and new data for which to evaluate the basis}
 }
 \value{
@@ -20,6 +22,17 @@ prediction design matrix for \code{newdata} with the same basis as used for \cod
 Build the prediction design matrix based on new data and model_matrices object created by \code{\link{make_matrices}}
 }
 \examples{
+# single formula
 modmat = make_matrices(~ s(x), data.frame(x = 1:10))
-Z_predict = predict(modmat, data.frame(x = 1:10 - 0.5))
+Z_p = predict(modmat, data.frame(x = 1:10 - 0.5))
+# with multiple formulas
+modmat = make_matrices(list(mu ~ s(x), sigma ~ s(x, bs = "ps")), data = data.frame(x = 1:10))
+Z_p = predict(modmat, data.frame(x = 1:10 - 0.5), what = "mu")
+# nested formula list
+form = list(stream1 = list(mu ~ s(x), sigma ~ s(x, bs = "ps")))
+modmat = make_matrices(form, data = data.frame(x = 1:10))
+Z_p = predict(modmat, data.frame(x = 1:10 - 0.5), what = c("stream1", "mu"))
+}
+\seealso{
+\code{\link{make_matrices}} for creating objects of class \code{LaMa_matrices} which can be used for prediction by this function.
 }

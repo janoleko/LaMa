@@ -265,7 +265,7 @@ call using the <code>psname</code> argument.</li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.111</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  17.231   0.102  17.336</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.566   0.086  17.654</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -468,7 +468,7 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 1.025 1.01 1.744</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  24.838   6.049  23.873</span></span></code></pre></div>
+<span><span class="co">#&gt;  25.094   6.064  24.136</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
@@ -600,7 +600,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.575 7.213 8.266 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   9.056   5.969   8.123</span></span></code></pre></div>
+<span><span class="co">#&gt;   9.153   5.942   8.191</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the
@@ -613,10 +613,8 @@ interpolating design matrix.</p>
 <span></span>
 <span><span class="va">energy</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span>mod <span class="op">=</span> <span class="va">mod3</span><span class="op">)</span> <span class="co"># decoding most probable state sequence</span></span>
 <span></span>
-<span><span class="va">Mu_plot</span> <span class="op">=</span> <span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'Z_pred' not found</span></span>
-<span><span class="va">Sigma_plot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">Z_pred</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: object 'Z_pred' not found</span></span>
+<span><span class="va">Mu_plot</span> <span class="op">=</span> <span class="va">Z_p</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span></span>
+<span><span class="va">Sigma_plot</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">Z_p</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod3</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org" class="external-link">scales</a></span><span class="op">)</span> <span class="co"># to make colors semi-transparent</span></span>
 <span></span>
@@ -626,13 +624,11 @@ interpolating design matrix.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span>, <span class="va">energy</span><span class="op">$</span><span class="va">Price</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/alpha.html" class="external-link">alpha</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">energy</span><span class="op">$</span><span class="va">states</span><span class="op">]</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"oil price"</span>, ylab <span class="op">=</span> <span class="st">"energy price"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="co"># means</span></span>
-<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
 <span><span class="va">qseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.95</span>, length <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span> <span class="co"># sequence of quantiles</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">qseq</span><span class="op">)</span><span class="op">{</span> <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">+</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/alpha.html" class="external-link">alpha</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">Mu_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span> <span class="op">-</span> <span class="va">i</span> <span class="op">*</span> <span class="va">Sigma_plot</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/alpha.html" class="external-link">alpha</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="fl">0.7</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">}</span></span>
-<span><span class="co">#&gt; Error: object 'Mu_plot' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"state"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># decoded time series</span></span>

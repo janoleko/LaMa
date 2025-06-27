@@ -365,8 +365,8 @@ Z_p = predict(modmat, newdata = data.frame(Oil = xseq)) # prediction design matr
 
 energy$states = viterbi(mod = mod3) # decoding most probable state sequence
 
-Mu_plot = Z_pred %*% t(mod3$beta)
-Sigma_plot = exp(Z_pred %*% t(mod3$alpha))
+Mu_plot = Z_p %*% t(mod3$beta)
+Sigma_plot = exp(Z_p %*% t(mod3$alpha))
 
 library(scales) # to make colors semi-transparent
 

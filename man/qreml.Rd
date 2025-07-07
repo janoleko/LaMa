@@ -15,7 +15,8 @@ qreml(
   smoothing = 1,
   maxiter = 100,
   tol = 1e-04,
-  control = list(reltol = 1e-10, maxit = 1000),
+  method = "BFGS",
+  control = list(),
   silent = 1,
   joint_unc = TRUE,
   saveall = FALSE,
@@ -58,6 +59,8 @@ Increasing this beyond one will lead to a smoother final model. Can be an intege
 \item{maxiter}{maximum number of iterations in the outer optimisation over the penalty strength parameters.}
 
 \item{tol}{Convergence tolerance for the penalty strength parameters.}
+
+\item{method}{optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.}
 
 \item{control}{list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 

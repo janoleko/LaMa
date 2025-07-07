@@ -1338,7 +1338,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     if(silent == 0) cat("final inner mgc:", max(abs(gr)), "\n")
     
     # evaluating current penalised Hessian
-    if(silent == 0) cat("Evaluating Hessian...\n")
+    if(silent == 0) cat("evaluating Hessian...\n")
     J <- stats::optimHess(opt$par, obj$fn, newgrad)
     
     # build big penalty matrix from current lambdas

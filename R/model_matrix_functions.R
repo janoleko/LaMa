@@ -1037,20 +1037,20 @@ make_splinecoef = function(model_matrices,
   
   if(type == "real"){ # if density has support on the reals -> use normal distribution to initialize
     beta = sapply(basis_pos, dnorm, mean = par$mean, sd = par$sd, log = TRUE)
+    if(is.vector(beta)) beta = matrix(beta, nrow = 1)
     # rescaling to account for non-equidistant knot spacing
     beta = t(t(beta) - log(apply(model_matrices$Z_predict, 2, max)))
   } else if(type == "positive") { # if density has support on positive continuous -> use gamma distribution
     # transformation to scale and shape
     beta = sapply(basis_pos, dgamma2, mean = par$mean, sd = par$sd, log = TRUE)
+    if(is.vector(beta)) beta = matrix(beta, nrow = 1)
     # rescaling to account for non-equidistant knot spacing
     beta = t(t(beta) - log(apply(model_matrices$Z_predict, 2, max)))
   } else if(type == "circular") {
     beta = sapply(basis_pos, LaMa::dvm, mu = par$mean, kappa = par$concentration, log = TRUE)
+    if(is.vector(beta)) beta = matrix(beta, nrow = 1)
   }
-  
-  if(is.vector(beta)){
-    beta = matrix(beta, nrow = 1, ncol = length(beta))
-  }
+
   beta = beta - beta[,k]
   # beta = beta - beta[,k-1]
   cat("Parameter matrix excludes the last column. Fix this column at zero!\n")

@@ -76,7 +76,8 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  smoothing <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  maxiter <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  tol <span class="op">=</span> <span class="fl">1e-04</span>,</span>
-<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>reltol <span class="op">=</span> <span class="fl">1e-10</span>, maxit <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"BFGS"</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  joint_unc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  saveall <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -135,6 +136,10 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
 <dd><p>Convergence tolerance for the penalty strength parameters.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>optimisation method to be used by <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code>. Defaults to <code>"BFGS"</code>, but might be changed to <code>"L-BFGS-B"</code> for high-dimensional settings.</p></dd>
 
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>

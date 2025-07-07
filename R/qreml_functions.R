@@ -1334,6 +1334,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                         method = method,
                         control = ctl)
     
+    gr <- obj$gr(opt$par)
+    if(silent == 0) cat("final inner mgc:", max(abs(gr)), "\n")
+    
     # evaluating current penalised Hessian
     if(silent == 0) cat("Evaluating Hessian...\n")
     J <- stats::optimHess(opt$par, obj$fn, newgrad)
@@ -1357,9 +1360,6 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     # inverting current Hessian - ginv is more stable
     J_inv <- tryCatch(solve(J_pd), error = function(e) NULL)
     if(is.null(J_inv)) J_inv <- MASS::ginv(J_pd) # if problem, pseudo-inverse
-    
-    gr <- obj$gr(opt$par)
-    if(silent == 0) cat("final inner mgc:", max(abs(gr)), "\n")
     
     # setting new optimum par for next iteration
     newpar <- opt$par 

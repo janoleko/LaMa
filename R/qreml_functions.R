@@ -1993,3 +1993,59 @@ sdreport_outer <- function(mod, invert = FALSE){
 #   return(any(cycling_flags))
 # }
 
+
+#' Penalty approximation of unimodality constraints for univariates smooths
+#'
+#' @param coef coefficient vector of matrix on which to apply the unimodality penalty
+#' @param m vector of indices for the position of the coefficient mode. 
+#' If \code{coef} is a vector, must be of length 1. Otherwise, must be of length equal to nrow(coef)
+#' @param kappa global scaling factor for the penalty
+#' @param concave logical; if \code{TRUE} (default), the penalty enforces increasing until the mode then decreasing. If the coefficients should decrease until the mode, then increase, set \code{concave = FALSE}.
+#' @param rho control parameter for smooth approximation to \code{min(x, 0)} used internally. 
+#' For large values, gets closer to true minimum function but less stable. 
+#'
+#' @returns a numeric value of the penalty for the given coefficients
+#' @export
+#'
+#' @examples
+#' ## coefficient vector
+#' coef <- c(1, 2, 3, 2, 1)
+#' # mode at position 3
+#' penalty_uni(coef, m = 3) # basically zero
+#' #' # mode at position 2
+#' penalty_uni(coef, m = 2) # large positive penalty
+#' 
+#' ## coefficient matrix
+#' coef <- rbind(coef, coef)
+#' m <- c(1, 4)
+#' penalty_uni(coef, m)
+penalty_uni <- function(coef, 
+                        m, 
+                        kappa = 1e3, 
+                        concave = TRUE,
+                        rho = 20) {
+  
+  N <- length(m) # number of states
+  if(is.null(dim(coef))){
+    coef <- matrix(coef, nrow = 1, ncol = length(coef))
+  }
+  
+  if(nrow(coef) != N) {
+    stop("Coefficient matrix must have as many rows as there are states.")
+  }
+  k <- ncol(coef) + 1 # number of coefficients
+  
+  if(!concave) coef <- -coef # if concave == FALSE, flip coefficients to get convexity penalty
+  
+  # set up constraint matrices
+  C <- construct_C(m, k, exclude_last = TRUE)
+  
+  # compute penalty by summing over states
+  pen <- 0
+  for(i in 1:N) {
+    pen <- pen - sum(min0_smooth(C[[i]] %*% coef[i,], rho = rho))
+  }
+  
+  # return result scaled by kappa
+  kappa * pen
+}

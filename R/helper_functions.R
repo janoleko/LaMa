@@ -121,10 +121,38 @@ gdeterminant <- function(x, eps = NULL, log = TRUE) {
   }
 }
 
-
+## log(sum(exp(x))) # with numerical stability
 logspace_add <- function(x){
   # Computes the log of the sum of exponentials of the input vector x
   # This is useful for numerical stability when dealing with large numbers
   max_x <- max(x)
   max_x + log(sum(exp(x - max_x)))
+}
+
+
+## function to construct unimodality constraint matrix (list)
+construct_C <- function(m, # beta mode index (vector of length N)
+                        k, # basis dimension
+                        exclude_last = TRUE)
+{
+  # construct constraint matrices
+  m <- as.numeric(m)
+  N <- length(m) # states
+  if(any(m > k)) stop("'m' must be less than or equal to 'k'")
+  D <- diff(diag(k)) # first-order difference matrix
+  C <- list() # initialise list
+  for(i in 1:N) {
+    Ci <- D # initialise with first-order difference matrix
+    if(m[i] < k){ # if there is a block that needs to be flipped, do that
+      Ci[m[i]:(k-1), ] <- -Ci[m[i]:(k-1),]
+    }
+    if(exclude_last) Ci <- Ci[,-k] # maybe exclude last column because multiplied by zero
+    C[[i]] <- Ci
+  }
+  return(C)
+}
+
+## smooth approximation of min(x, 0)
+min0_smooth <- function(x, rho = 20, eps = 0){
+  (-1 / rho) * log(1 + exp(-rho * (x + eps)))
 }

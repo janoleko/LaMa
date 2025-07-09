@@ -93,7 +93,7 @@ unmap_lambda = function(lambda_mapped, map, lambda0){
 
 #' Computes generalised determinant
 #'
-#' @param x square matrix
+#' @param x symmetric matrix
 #' @param eps eigenvalues smaller than this will be treated as zero
 #' @param log logical. If \code{TRUE}, the log-determinant is returned. If \code{FALSE}, the determinant is returned.
 #'
@@ -152,7 +152,29 @@ construct_C <- function(m, # beta mode index (vector of length N)
   return(C)
 }
 
-## smooth approximation of min(x, 0)
-min0_smooth <- function(x, rho = 20, eps = 0){
-  (-1 / rho) * log(1 + exp(-rho * (x + eps)))
+#' Smooth approximations to max(x, 0) and min(x, 0)
+#'
+#' @param x a vector of values
+#' @param rho smoothing parameter, larger values lead to closer approximation
+#'
+#' @returns the approximate maximum or minimum of x and 0
+#'
+#' @examples
+#' x <- seq(-1, 1, by = 0.1)
+#' min0_smooth(x)
+#' max0_smooth(x)
+#' @name minmax0_smooth
+NULL
+
+#' @rdname minmax0_smooth
+#' @export
+max0_smooth <- function(x, rho = 20){
+  (1 / rho) * log1p(exp(rho * x))
+}
+
+#' @rdname minmax0_smooth
+#' @export
+min0_smooth <- function(x, rho = 20){
+  # (-1 / rho) * log(1 + exp(-rho * x))
+  (-1 / rho) * log1p(exp(-rho * x))
 }

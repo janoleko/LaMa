@@ -7,7 +7,7 @@
 gdeterminant(x, eps = NULL, log = TRUE)
 }
 \arguments{
-\item{x}{square matrix}
+\item{x}{symmetric matrix}
 
 \item{eps}{eigenvalues smaller than this will be treated as zero}
 

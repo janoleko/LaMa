@@ -744,6 +744,11 @@ pred_matrix = function(model_matrices,
     }
   }
   
+  # if pi in formula, mgcv requires pi column in data
+  if("pi" %in% all.names(gam_setup0$formula)){
+    newdata = cbind(newdata, pi)
+  }
+  
   predict.gam(gam_setup0, 
               newdata = cbind(dummy = 1, newdata), 
               type = "lpmatrix",

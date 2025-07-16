@@ -199,7 +199,7 @@ min0_smooth <- function(x, rho = 20){
   A <- as.matrix(A)
   B <- as.matrix(B)
   
-  n <- nrow(A)
+  # n <- nrow(A)
   p <- ncol(A)
   q <- nrow(B)
   m <- ncol(B)

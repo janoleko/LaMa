@@ -1221,7 +1221,27 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                    map = map) # silent and replacing with own prints
   
   newpar <- obj$par # saving initial parameter value as vector to initialize optimization in loop
-  newgrad <- obj$gr
+  
+  # gradient printing
+  counter_env <- new.env() # create environment to hold a counter
+  counter_env$count <- 0 # initialise with zero
+  if(silent == 0){
+    ctREPORT <- 10 # by default, report every 10 calls
+    if(!is.null(control$REPORT)){
+      ctREPORT <- control$REPORT # if report is changed, use that
+      control$REPORT <- NULL # remove REPORT from control to avoid problems with optim
+    }
+    
+    newgrad <- function(par){
+      counter_env$count <- counter_env$count + 1
+      ct <- counter_env$count
+      gr <- obj$gr(par)
+      if(ct %% ctREPORT == 0) cat("iter", ct, "- inner mgc:", round(max(abs(gr)), 5), "\n")
+      gr
+    }
+  } else{
+    newgrad <- obj$gr
+  }
   
   # prepwork -> running reporting to get necessary quantities
   mod0 <- obj$report() # getting all necessary information from penalty report
@@ -1320,13 +1340,16 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   # controlling optim printing
   ctl <- list(maxit = 1000)
   ctl[names(control)] <- control # overwriting with user-provided control parameters
-  if(silent == 0) ctl$trace = 1 else ctl$trace = 0 # setting trace to 1 if silent == 0, otherwise 0
+  # if(silent == 0) ctl$trace = 1 else ctl$trace = 0 # setting trace to 1 if silent == 0, otherwise 0
   if(method == "BFGS") ctl$reltol <- 1e-10
   if(method == "L-BFGS-B") ctl$maxit <- 5000 # L-BFGS-B takes smaller steps
   
   ### updating algorithm
   # loop over outer iterations until convergence or maxiter
   for(k in seq_len(maxiter)){
+    
+    # set inner gradient counter to zero
+    counter_env$count <- 0
     
     # fitting the model conditional on lambda: current local lambda will be pulled by f
     if(silent == 0) cat("\nInner optimisation:", "\n")
@@ -1335,11 +1358,13 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                         control = ctl)
     
     gr <- obj$gr(opt$par)
-    if(silent == 0) cat("final inner mgc:", max(abs(gr)), "\n")
+    if(silent == 0){
+      cat("iter", counter_env$count, "- inner mgc:", round(max(abs(gr)), 5), "\n")
+    }
     
     # evaluating current penalised Hessian
     if(silent == 0) cat("evaluating Hessian...\n")
-    J <- stats::optimHess(opt$par, obj$fn, newgrad)
+    J <- stats::optimHess(opt$par, obj$fn, obj$gr)
     
     # build big penalty matrix from current lambdas
     bigS <- build_bigS(Lambdas[[k]])
@@ -1533,12 +1558,14 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   # fitting the model conditional on final lambda
   opt <- stats::optim(newpar, obj$fn, newgrad, 
-                      method = method, hessian = TRUE, # return hessian in the end
+                      method = method, hessian = FALSE, # return hessian in the end
                       control = control)
+  
+  J <- stats::optimHess(opt$par, obj$fn, obj$gr)
   
   if(silent == 0){
     gr = obj$gr(opt$par)
-    cat("final inner mgc:", max(abs(gr)), "\n")
+    cat("final inner maximum gradient component:", round(max(abs(gr)), 5), "\n")
   }
   
   # reporting to extract penalties
@@ -1549,7 +1576,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   llk <- pllk + mod$pen
   
   # evaluating current Hessian
-  J <- opt$hessian
+  # J <- opt$hessian
   
   # computing inverse Hessian
   J_inv <- MASS::ginv(J) 

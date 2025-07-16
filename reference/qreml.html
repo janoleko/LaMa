@@ -71,6 +71,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  <span class="va">dat</span>,</span>
 <span>  <span class="va">random</span>,</span>
 <span>  map <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  silent <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  psname <span class="op">=</span> <span class="st">"lambda"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  smoothing <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -78,10 +79,9 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  tol <span class="op">=</span> <span class="fl">1e-04</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"BFGS"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  silent <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  conv_crit <span class="op">=</span> <span class="st">"gradient"</span>,</span>
 <span>  joint_unc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  conv_crit <span class="op">=</span> <span class="st">"gradient"</span></span>
+<span>  saveall <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,6 +116,10 @@ Its length needs to match the to the total number of random effects.</p></dd>
 For example, if the model has four penalty strength parameters, <code>map[[psname]]</code> could be <code>factor(c(NA, 1, 1, 2))</code> to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.</p></dd>
 
 
+<dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
+<dd><p>integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.</p></dd>
+
+
 <dt id="arg-psname">psname<a class="anchor" aria-label="anchor" href="#arg-psname"></a></dt>
 <dd><p>optional name given to the penalty strength parameter in <code>dat</code>. Defaults to <code>"lambda"</code>.</p></dd>
 
@@ -144,12 +148,11 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 <dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
 <dd><p>list of control parameters for <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code> to use in the inner optimisation. Here, <code>optim</code> uses the <code>BFGS</code> method which cannot be changed.</p>
-<p>We advise against changing the default values of <code>reltol</code> and <code>maxit</code> as this can decrease the accuracy of the Laplace approximation.
-# @param method optimisation method to be used by <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">optim</a></code>. Defaults to <code>"BFGS"</code>, but might be changed to <code>"L-BFGS-B"</code> for high-dimensional settings.</p></dd>
+<p>We advise against changing the default values of <code>reltol</code> and <code>maxit</code> as this can decrease the accuracy of the Laplace approximation.</p></dd>
 
 
-<dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
-<dd><p>integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.</p></dd>
+<dt id="arg-conv-crit">conv_crit<a class="anchor" aria-label="anchor" href="#arg-conv-crit"></a></dt>
+<dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"gradient"</code> (default) or <code>"relchange"</code>.</p></dd>
 
 
 <dt id="arg-joint-unc">joint_unc<a class="anchor" aria-label="anchor" href="#arg-joint-unc"></a></dt>
@@ -158,10 +161,6 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 <dt id="arg-saveall">saveall<a class="anchor" aria-label="anchor" href="#arg-saveall"></a></dt>
 <dd><p>logical, if <code>TRUE</code>, then all model objects from each iteration are saved in the final model object.</p></dd>
-
-
-<dt id="arg-conv-crit">conv_crit<a class="anchor" aria-label="anchor" href="#arg-conv-crit"></a></dt>
-<dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"gradient"</code> (default) or <code>"relchange"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

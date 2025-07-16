@@ -1022,6 +1022,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' 
 #' Needs to be a named list for a subset of fixed effect parameters or penalty strength parameters. 
 #' For example, if the model has four penalty strength parameters, \code{map[[psname]]} could be \code{factor(c(NA, 1, 1, 2))} to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.
+#' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
 #' @param psname optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.
 #' @param alpha optional hyperparamater for exponential smoothing of the penalty strengths.
 #'
@@ -1035,11 +1036,10 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param control list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
-#' # @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
-#' @param silent integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.
+#' @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
+#' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
-#' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.
 #'
 #' @return model object of class 'qremlModel'. This is a list containing:
 #' \item{...}{everything that is reported inside \code{pnll} using \code{RTMB::REPORT()}. When using \code{forward}, \code{tpm_g}, etc., this may involve automatically reported objects.}
@@ -1106,6 +1106,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                   dat, # initial dat object, currently needs to be called dat!
                   random, # names of parameters in par that are random effects/ penalized
                   map = NULL, # map for fixed effects
+                  silent = 1, # print level
                   psname = "lambda", # name given to the psname parameter in dat
                   alpha = 0.3, # exponential smoothing parameter
                   smoothing = 1,
@@ -1113,11 +1114,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                   tol = 1e-4, # tolerance for convergence
                   method = "BFGS", # optimization method used by optim
                   control = list(), # control list for inner optimization
-                  silent = 1, # print level
+                  conv_crit = "gradient",
                   joint_unc = TRUE, # should joint object be returned?
-                  saveall = FALSE,# , # save all intermediate models?
-                  conv_crit = "gradient"# ,
-                  # hessian_approx = FALSE
+                  saveall = FALSE # save all intermediate models?
                   )
 {
   ### input checking arguments

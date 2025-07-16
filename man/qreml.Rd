@@ -10,6 +10,7 @@ qreml(
   dat,
   random,
   map = NULL,
+  silent = 1,
   psname = "lambda",
   alpha = 0.3,
   smoothing = 1,
@@ -17,10 +18,9 @@ qreml(
   tol = 1e-04,
   method = "BFGS",
   control = list(),
-  silent = 1,
+  conv_crit = "gradient",
   joint_unc = TRUE,
-  saveall = FALSE,
-  conv_crit = "gradient"
+  saveall = FALSE
 )
 }
 \arguments{
@@ -46,6 +46,8 @@ Its length needs to match the to the total number of random effects.}
 Needs to be a named list for a subset of fixed effect parameters or penalty strength parameters. 
 For example, if the model has four penalty strength parameters, \code{map[[psname]]} could be \code{factor(c(NA, 1, 1, 2))} to fix the first penalty strength parameter, estimate the second and third jointly, and estimate the fourth separately.}
 
+\item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
+
 \item{psname}{optional name given to the penalty strength parameter in \code{dat}. Defaults to \code{"lambda"}.}
 
 \item{alpha}{optional hyperparamater for exponential smoothing of the penalty strengths.
@@ -64,16 +66,13 @@ Increasing this beyond one will lead to a smoother final model. Can be an intege
 
 \item{control}{list of control parameters for \code{\link[stats:optim]{optim}} to use in the inner optimisation. Here, \code{optim} uses the \code{BFGS} method which cannot be changed.
 
-We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
-# @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.}
+We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
 
-\item{silent}{integer silencing level: 0 corresponds to full printing of inner and outer iterations, 1 to printing of outer iterations only, and 2 to no printing.}
+\item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.}
 
 \item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 
 \item{saveall}{logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.}
-
-\item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.}
 }
 \value{
 model object of class 'qremlModel'. This is a list containing:

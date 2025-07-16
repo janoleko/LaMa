@@ -157,7 +157,7 @@ construct_C <- function(m, # beta mode index (vector of length N)
 #' @param x a vector of values
 #' @param rho smoothing parameter, larger values lead to closer approximation
 #'
-#' @returns the approximate maximum or minimum of x and 0
+#' @return the approximate maximum or minimum of x and 0
 #'
 #' @examples
 #' x <- seq(-1, 1, by = 0.1)
@@ -177,4 +177,37 @@ max0_smooth <- function(x, rho = 20){
 min0_smooth <- function(x, rho = 20){
   # (-1 / rho) * log(1 + exp(-rho * x))
   (-1 / rho) * log1p(exp(-rho * x))
+}
+
+
+#' Sparsity-retaining matrix multiplication
+#' 
+#' Currently, standard matrix multiplication destroys automatic sparsity detection by \code{RTMB} which is essential for models with high-dimensional random effects.
+#' This version retains said sparsity. It may be slightly slower when constructing the AD tape.
+#'
+#' @param A matrix of dimension n x p
+#' @param B matrix of dimension p x m
+#'
+#' @return the matrix product of A and B, which is of dimension n x m
+#' @export
+#'
+#' @examples
+#' A <- matrix(1:6, nrow = 2, ncol = 3)
+#' B <- matrix(7:12, nrow = 3, ncol = 2)
+#' A %sp% B
+`%sp%` <- function(A, B) {
+  A <- as.matrix(A)
+  B <- as.matrix(B)
+  
+  n <- nrow(A)
+  p <- ncol(A)
+  q <- nrow(B)
+  m <- ncol(B)
+  
+  if (p != q) {
+    stop("Non-conformable matrices: ncol(A) must equal nrow(B)")
+  }
+  
+  At <- t(A)  # p x n
+  sapply(1:m, function(j) colSums(At * B[, j])) # sums of element-wise multiplication retain sparsity
 }

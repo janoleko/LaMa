@@ -1784,6 +1784,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     }
   } 
 
+  # clean up - may not be necessary
+  gc()
+  
   class(mod) = "qremlModel"
   return(mod)
 }

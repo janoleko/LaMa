@@ -27,7 +27,7 @@ library(LaMa)
 
 The `R` package `LaMa` provides convenient functions for fitting a variety of **latent Markov models** [@mews2024build], including **hidden Markov models** (HMMs), **hidden semi-Markov models** (HSMMs), **state space models** (SSMs) and **continuous-time** variants via **direct numerical maximum likelihood estimation**. The core idea is that the user defines their own negative log-likelihood function for numerical optimisation, but can rely on package functions for convenience and speed. 
 
-The main families of functions are `forward`, `tpm` and `stationary` and we showcasse the simplest versions in the following introductory example.
+The main families of functions are `forward`, `tpm` and `stationary` and we showcase the simplest versions in the following introductory example.
 
 ## Introductory example: Homogeneous HMM
 

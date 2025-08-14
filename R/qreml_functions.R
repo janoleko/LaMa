@@ -1037,7 +1037,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' 
 #' We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.
 #' @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
-#' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.
+#' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"relchange"} (default) or \code{"gradient"}.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #'
@@ -1114,8 +1114,8 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                   tol = 1e-4, # tolerance for convergence
                   method = "BFGS", # optimization method used by optim
                   control = list(), # control list for inner optimization
-                  conv_crit = "gradient",
-                  joint_unc = TRUE, # should joint object be returned?
+                  conv_crit = "relchange",
+                  joint_unc = FALSE, # should joint object be returned?
                   saveall = FALSE # save all intermediate models?
                   )
 {

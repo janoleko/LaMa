@@ -18,8 +18,8 @@ qreml(
   tol = 1e-04,
   method = "BFGS",
   control = list(),
-  conv_crit = "gradient",
-  joint_unc = TRUE,
+  conv_crit = "relchange",
+  joint_unc = FALSE,
   saveall = FALSE
 )
 }
@@ -68,7 +68,7 @@ Increasing this beyond one will lead to a smoother final model. Can be an intege
 
 We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
 
-\item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"gradient"} (default) or \code{"relchange"}.}
+\item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"relchange"} (default) or \code{"gradient"}.}
 
 \item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 

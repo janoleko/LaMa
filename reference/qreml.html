@@ -79,8 +79,8 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  tol <span class="op">=</span> <span class="fl">1e-04</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"BFGS"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  conv_crit <span class="op">=</span> <span class="st">"gradient"</span>,</span>
-<span>  joint_unc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  conv_crit <span class="op">=</span> <span class="st">"relchange"</span>,</span>
+<span>  joint_unc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  saveall <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -152,7 +152,7 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 
 <dt id="arg-conv-crit">conv_crit<a class="anchor" aria-label="anchor" href="#arg-conv-crit"></a></dt>
-<dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"gradient"</code> (default) or <code>"relchange"</code>.</p></dd>
+<dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"relchange"</code> (default) or <code>"gradient"</code>.</p></dd>
 
 
 <dt id="arg-joint-unc">joint_unc<a class="anchor" aria-label="anchor" href="#arg-joint-unc"></a></dt>
@@ -297,6 +297,8 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 <span class="r-out co"><span class="r-pr">#&gt;</span> outer 38 - lambda: 0.49 0.093 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> outer 39 - lambda: 0.49 0.093 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> outer 40 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 41 - lambda: 0.49 0.092 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> outer 42 - lambda: 0.49 0.092 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Converged</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Final model fit with lambda: 0.49 0.092 </span>
 </code></pre></div>

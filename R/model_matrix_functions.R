@@ -1040,6 +1040,10 @@ make_splinecoef = function(model_matrices,
   basis_pos = model_matrices$basis$basis_pos
   k = length(basis_pos)
   
+  # scaling
+  dens1 = rowSums(model_matrices$Z_predict)
+  scaling = sapply(1:k, function(i) dens1[which.min(abs(basis_pos[i] - model_matrices$xseq))])
+  
   if(type == "real"){ # if density has support on the reals -> use normal distribution to initialize
     beta = sapply(basis_pos, dnorm, mean = par$mean, sd = par$sd, log = TRUE)
     if(is.vector(beta)) beta = matrix(beta, nrow = 1)
@@ -1058,7 +1062,7 @@ make_splinecoef = function(model_matrices,
 
   beta = beta - beta[,k]
   # beta = beta - beta[,k-1]
-  cat("Parameter matrix excludes the last column. Fix this column at zero!\n")
+  cat("Parameter matrix excludes the last column. Add a (fixed) zero column using 'cbind(coef, 0)' in your loss function!\n")
   return(beta[,-k])
 }
 

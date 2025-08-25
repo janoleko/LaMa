@@ -1059,8 +1059,6 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @export
 #'
 #' @import RTMB
-#' @importFrom matrixcalc is.positive.definite
-#' @importFrom Matrix nearPD
 #'
 #' @examples
 #' data = trex[1:1000,] # subset
@@ -1332,6 +1330,12 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     bigS
   }
   
+  # define restricted likelihood function
+  restr_llk <- function(lp_opt, bigS, J) {
+    lp_opt + gdeterminant(bigS) / 2 - gdeterminant(J) / 2
+  }
+  llk_r <- numeric(maxiter) # restricted likelihood vector
+  
   # initialising convergence check index (initially for all lambdas)
   convInd <- seq_along(lambda_mapped)
   convInd_unmapped <- seq_along(lambda) # for unmapped lambdas
@@ -1364,26 +1368,49 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     # evaluating current penalised Hessian
     if(silent == 0) cat("evaluating Hessian...\n")
     J <- stats::optimHess(opt$par, obj$fn, obj$gr)
+    J <- (J + t(J))/2 # force symmetric
     
     # build big penalty matrix from current lambdas
     bigS <- build_bigS(Lambdas[[k]])
     bigS <- (bigS + t(bigS)) / 2 # force symmetric 
     
     H <- J + bigS # Hessian = J + S_lambda
-    H <- (H + t(H)) / 2 # force symmetric Hessian
+    # H <- (H + t(H)) / 2 # force symmetric Hessian
     
-    # check if positive definite
-    if(!is.positive.definite(H)) {
-      if(silent == 0) cat("replacing Hessian with nearest PD\n")
-      H <- nearPD(H)$mat # if not, find nearest PD matrix
-    }
+    # R <- tryCatch(chol(H), error = function(e) NULL)
+    # if (is.null(R)) {
+    #   if(silent == 0) cat("stabilising Hessian for inversion\n")
+    #   eps <- 1e-8 * mean(diag(H))
+    #   H <- H + diag(eps, nrow(H))
+    #   R <- chol(H)
+    # }
+    H_inv <- safe_chol_inv(H) # chol2inv(R)
     
     # rebuild penalised Hessin pd for inversion
     J_pd <- H - bigS
+    
+    # # check if positive definite
+    # if(!is.positive.definite(H)) {
+    #   if(silent == 0) cat("replacing Hessian with nearest PD\n")
+    #   H <- nearPD(H)$mat # if not, find nearest PD matrix
+    # }
+    
+    # inverting current Hessian
+    # try Cholesky
+    # R <- tryCatch(chol(J_pd), error = function(e) NULL)
+    # 
+    # if (is.null(R)) {
+    #   # not PD -> jitter
+    #   eps <- 1e-8 * mean(diag(J_pd))
+    #   J_pd <- J_pd + diag(eps, nrow(J_pd))
+    #   R <- chol(J_pd)  # now must succeed
+    # }
+    
+    # compute inverse
+    J_inv <- safe_chol_inv(J_pd) # chol2inv(R)
 
-    # inverting current Hessian - ginv is more stable
-    J_inv <- tryCatch(solve(J_pd), error = function(e) NULL)
-    if(is.null(J_inv)) J_inv <- MASS::ginv(J_pd) # if problem, pseudo-inverse
+    # J_inv <- tryCatch(solve(J_pd), error = function(e) NULL)
+    # if(is.null(J_inv)) J_inv <- MASS::ginv(J_pd) # if problem, pseudo-inverse
     
     # setting new optimum par for next iteration
     newpar <- opt$par 
@@ -1395,6 +1422,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     if(saveall){
       allmods[[k]] <- mod
     }
+    
+    ## calculating restricted likelihood
+    llk_r[k] <- restr_llk(-opt$value, bigS, J)
     
     ### Updating all lambdas ###
     
@@ -1720,6 +1750,9 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   # assing conditinoal Hessian
   mod$Hessian_conditional <- J
+  
+  # assigning restriced likelihood
+  mod$llk_restricted <- llk_r[1:k]
   
   # removing unnecessary elements that are only reported for qreml
   mod <- mod[!names(mod) %in% c("Pen", "pen", "S")] 

@@ -211,3 +211,32 @@ min0_smooth <- function(x, rho = 20){
   At <- t(A)  # p x n
   sapply(1:m, function(j) colSums(At * B[, j])) # sums of element-wise multiplication retain sparsity
 }
+
+
+# Safe Cholesky-based inverse with adaptive jitter
+safe_chol_inv <- function(M, silent = 1, max_attempts = 20) {
+  # Ensure symmetry
+  M <- (M + t(M)) / 2
+  
+  # Initial Cholesky attempt
+  R <- tryCatch(chol(M), error = function(e) NULL)
+  
+  # Adaptive jitter loop
+  if (is.null(R)) {
+    if (silent == 0) cat("Matrix not PD, adding jitter...\n")
+    eps <- 1e-8 * mean(diag(M))  # initial jitter
+    attempts <- 0
+    
+    while (is.null(R) && attempts < max_attempts) {
+      M <- M + diag(eps, nrow(M))
+      R <- tryCatch(chol(M), error = function(e) NULL)
+      eps <- eps * 2
+      attempts <- attempts + 1
+    }
+    
+    if (is.null(R)) stop("matrix still not PD after jitter attempts")
+  }
+  
+  # Compute inverse from Cholesky factor
+  chol2inv(R)
+}

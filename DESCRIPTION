@@ -22,7 +22,6 @@ Imports:
     Rcpp,
     mgcv,
     Matrix,
-    matrixcalc,
     stats,
     utils,
     MASS,

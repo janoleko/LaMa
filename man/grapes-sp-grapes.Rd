@@ -15,8 +15,9 @@ A \%sp\% B
 the matrix product of A and B, which is of dimension n x m
 }
 \description{
-Currently, standard matrix multiplication destroys automatic sparsity detection by \code{RTMB} which is essential for models with high-dimensional random effects.
-This version retains said sparsity. It may be slightly slower when constructing the AD tape.
+Standard matrix multiplication destroys automatic sparsity detection by \code{RTMB} which is essential for models with high-dimensional random effects.
+This can be mitigated by changing to "plain" with \code{TapeConfig}, but this can make AD tape construction very slow.
+Here, we provide a different version that retains sparsity. It may be slightly slower than the standard method when constructing the AD tape.
 }
 \examples{
 A <- matrix(1:6, nrow = 2, ncol = 3)

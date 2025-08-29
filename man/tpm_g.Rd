@@ -4,7 +4,7 @@
 \alias{tpm_g}
 \title{Build all transition probability matrices of an inhomogeneous HMM}
 \usage{
-tpm_g(Z, beta, byrow = FALSE, ad = NULL, report = TRUE)
+tpm_g(Z, beta, byrow = FALSE, ad = NULL, report = TRUE, sparse = FALSE)
 }
 \arguments{
 \item{Z}{covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
@@ -22,6 +22,8 @@ Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
 
 \item{report}{logical, indicating whether the coefficient matrix \code{beta} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.}
+
+\item{sparse}{logical, indicating whether sparsity in the rows of \code{Z} should be exploited.}
 }
 \value{
 array of transition probability matrices of dimension c(N,N,n)

@@ -182,8 +182,9 @@ min0_smooth <- function(x, rho = 20){
 
 #' Sparsity-retaining matrix multiplication
 #' 
-#' Currently, standard matrix multiplication destroys automatic sparsity detection by \code{RTMB} which is essential for models with high-dimensional random effects.
-#' This version retains said sparsity. It may be slightly slower when constructing the AD tape.
+#' Standard matrix multiplication destroys automatic sparsity detection by \code{RTMB} which is essential for models with high-dimensional random effects.
+#' This can be mitigated by changing to "plain" with \code{TapeConfig}, but this can make AD tape construction very slow.
+#' Here, we provide a different version that retains sparsity. It may be slightly slower than the standard method when constructing the AD tape.
 #'
 #' @param A matrix of dimension n x p
 #' @param B matrix of dimension p x m
@@ -214,7 +215,7 @@ min0_smooth <- function(x, rho = 20){
 
 
 # Safe Cholesky-based inverse with adaptive jitter
-safe_chol_inv <- function(M, silent = 1, max_attempts = 20) {
+safe_chol_inv <- function(M, silent = 1, max_attempts = 50) {
   # Ensure symmetry
   M <- (M + t(M)) / 2
   

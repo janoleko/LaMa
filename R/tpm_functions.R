@@ -76,6 +76,7 @@ tpm = function(param, byrow = FALSE) {
 #' Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
 #' @param report logical, indicating whether the coefficient matrix \code{beta} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
+#' @param sparse logical, indicating whether sparsity in the rows of \code{Z} should be exploited.
 #'
 #' @return array of transition probability matrices of dimension c(N,N,n)
 #' @export
@@ -86,7 +87,7 @@ tpm = function(param, byrow = FALSE) {
 #' Z = matrix(runif(200), ncol = 2)
 #' beta = matrix(c(-1, 1, 2, -2, 1, -2), nrow = 2, byrow = TRUE)
 #' Gamma = tpm_g(Z, beta)
-tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
+tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE, sparse = FALSE){
   
   K = nrow(beta)
   p = ncol(beta) - 1
@@ -139,7 +140,12 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE){
     #   RTMB::REPORT(beta) # reporting coefficient matrix
     # }
     
-    expEta = exp(Z %*% t(beta))
+    if(sparse) {
+      expEta <- exp(Z %sp% t(beta))
+    } else{
+      expEta <- exp(Z %*% t(beta))
+    }
+    
     Gamma = array(1, dim = c(N, N, nrow(expEta)))
 
     ## Loop over entries (stuff over time happens vectorised which speeds up the tape)

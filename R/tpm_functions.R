@@ -35,16 +35,21 @@ tpm = function(param, byrow = FALSE) {
   "c" <- ADoverload("c")
   "diag<-" <- ADoverload("diag<-")
   
-  K = length(param)
+  K <- length(param)
   # for N > 1: N*(N-1) is bijective with solution
-  N = as.integer(0.5 + sqrt(0.25 + K), 0)
+  N <- 0.5 + sqrt(0.25 + K)
+  int_N <- abs(N - round(N)) < .Machine$double.eps^0.5
+  if (!int_N) {
+    stop("The length of param is not compatible with a transition probability matrix (N*(N-1) for integer N).")
+  }
+  N <- as.integer(round(N))
   
-  Gamma = diag(N)
-  Gamma[!Gamma] = exp(param[1:(N*(N-1))])
+  Gamma <- diag(N)
+  Gamma[!Gamma] <- exp(param[1:(N*(N-1))])
   
-  if(byrow) Gamma = t(Gamma)
+  if(byrow) Gamma <- t(Gamma)
   
-  Gamma = Gamma / rowSums(Gamma)
+  Gamma <- Gamma / rowSums(Gamma)
   
   # naming
   statenames <- paste0("S", 1:N)
@@ -89,9 +94,14 @@ tpm = function(param, byrow = FALSE) {
 #' Gamma = tpm_g(Z, beta)
 tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE, sparse = FALSE){
   
-  K = nrow(beta)
-  p = ncol(beta) - 1
-  N = as.integer(0.5 + sqrt(0.25 + K), 0)
+  K <- nrow(beta)
+  p <- ncol(beta) - 1
+  N <- 0.5 + sqrt(0.25 + K)
+  int_N <- abs(N - round(N)) < .Machine$double.eps^0.5
+  if (!int_N) {
+    stop("The number of rows of beta is not compatible with a transition probability matrix (N*(N-1) for integer N).")
+  }
+  N <- as.integer(round(N))
   
   Z = as.matrix(Z)
   

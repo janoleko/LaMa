@@ -121,8 +121,8 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL,
     
     # if suitable model object is provided, overwrite inputs with model object
     delta = mod$delta
-    # Gamma = mod$Gamma
-    Gamma = mod$Gamma[,, -1] # ignoring first slice
+    Gamma = mod$Gamma
+    # Gamma = mod$Gamma[,, -1] # ignoring first slice
     allprobs = mod$allprobs
     trackID = mod$trackID
   }
@@ -405,8 +405,8 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL,
     
     # if suitable model object is provided, overwrite inputs with model object
     delta = mod$delta
-    # Gamma = mod$Gamma
-    Gamma = mod$Gamma[,, -1] # ignoring first slice
+    Gamma = mod$Gamma
+    # Gamma = mod$Gamma[,, -1] # ignoring first slice
     allprobs = mod$allprobs
     trackID = mod$trackID
   }

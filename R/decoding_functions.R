@@ -188,7 +188,7 @@ viterbi_g = function(delta, Gamma, allprobs, trackID = NULL,
     }
     
     if(dim(Gamma)[3]==n){
-      warning("Igoring the first slice of Gamma, as there are only n-1 transitions in a time series of length n.")
+      message("Igoring the first slice of Gamma, as there are only n-1 transitions in a time series of length n.")
       # not using the first slice of Gamma, if n slices are provided
       Gamma = Gamma[,,-1]
     }
@@ -489,7 +489,7 @@ stateprobs_g = function(delta, Gamma, allprobs, trackID = NULL,
     }
     
     if(dim(Gamma)[3] == n){
-      warning("Igoring the first slice of Gamma, as there are only n-1 transitions in a time series of length n.")
+      message("Igoring the first slice of Gamma, as there are only n-1 transitions in a time series of length n.")
       # not using the first slice of Gamma, if n slices are provided
       Gamma = Gamma[,,-1]
     }

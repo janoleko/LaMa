@@ -38,6 +38,7 @@ dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
   #   log(RTMB::besselI(kappa, 0)) + 
   #   kappa * cos(x - mu)
   
+  
   if(log){
     return(logdens)
   } else{

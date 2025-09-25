@@ -1,4 +1,5 @@
 url: https://janoleko.github.io
 template:
   bootstrap: 5
+  math-rendering: katex
 

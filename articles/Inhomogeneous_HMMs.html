@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Inhomogeneous HMMs • LaMa</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -91,61 +92,38 @@ process</p>
 </h2>
 <p>If covariates affect the transition probabilities, this implies that
 we model the transition probability matrix as a function of said
-covariates. Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mi>t</mi></msub><annotation encoding="application/x-tex">z_t</annotation></semantics></math>
-be a vector of covariates of length
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p+1</annotation></semantics></math>
-for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">t = 1, \dots, T</annotation></semantics></math>,
-where the first entry is always equal to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
-to include an intercept. Moreover, let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\beta_{ij}</annotation></semantics></math>
-be a vector of regression parameters, also of length
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p+1</annotation></semantics></math>
-for each off-diagonal element
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i \neq j</annotation></semantics></math>)
-of the transition probability matrix. First, consider linear predictors
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>η</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><msubsup><mi>β</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>′</mi></msubsup><msub><mi>z</mi><mi>t</mi></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
+covariates. Let <span class="math inline">z_t</span> be a vector of
+covariates of length <span class="math inline">p+1</span> for <span class="math inline">t = 1, \dots, T</span>, where the first entry is
+always equal to <span class="math inline">1</span> to include an
+intercept. Moreover, let <span class="math inline">\beta_{ij}</span> be
+a vector of regression parameters, also of length <span class="math inline">p+1</span> for each off-diagonal element (<span class="math inline">i \neq j</span>) of the transition probability
+matrix. First, consider linear predictors <span class="math display">
 \eta_{ij}^{(t)} = \beta_{ij}^{'} z_t,
-</annotation></semantics></math> for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">t = 1, \dots, T</annotation></semantics></math>.
-As the transition probabilities need to be in lie in the interval
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,1)</annotation></semantics></math>
-and each row of the transition matrix needs to sum to one, we obtain the
-transition probabilities via the inverse multinomial logistic link as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><mi>j</mi><mo>∣</mo><msub><mi>S</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>η</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>η</mi><mrow><mi>i</mi><mi>k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
-\gamma_{ij}^{(t)} = \Pr(S_t = j \mid S_{t-1} = i) = \frac{\exp(\eta_{ij}^{(t)})}{\sum_{k=1}^N \exp(\eta_{ik}^{(t)})},
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>η</mi><mrow><mi>i</mi><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">\eta_{ii}</annotation></semantics></math>
-is set to zero for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>N</mi></mrow><annotation encoding="application/x-tex">i = 1, \dots, N</annotation></semantics></math>
-for identifiability and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-is the number of hidden states. The function <code><a href="../reference/tpm_g.html">tpm_g()</a></code>
-conducts this calculation for all elements of the t.p.m. and all time
-points efficiently in C++.</p>
+</span> for <span class="math inline">t = 1, \dots, T</span>. As the
+transition probabilities need to be in lie in the interval <span class="math inline">(0,1)</span> and each row of the transition matrix
+needs to sum to one, we obtain the transition probabilities via the
+inverse multinomial logistic link as <span class="math display">
+\gamma_{ij}^{(t)} = \Pr(S_t = j \mid S_{t-1} = i) =
+\frac{\exp(\eta_{ij}^{(t)})}{\sum_{k=1}^N \exp(\eta_{ik}^{(t)})},
+</span> where <span class="math inline">\eta_{ii}</span> is set to zero
+for <span class="math inline">i = 1, \dots, N</span> for identifiability
+and <span class="math inline">N</span> is the number of hidden states.
+The function <code><a href="../reference/tpm_g.html">tpm_g()</a></code> conducts this calculation for all
+elements of the t.p.m. and all time points efficiently in C++.</p>
 <p>At this point we want to point out that the definition of the
 transition probabilities is not necessarily unique. Indeed for data
-points at times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">1, \dots, T</annotation></semantics></math>
-we only need
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">T-1</annotation></semantics></math>
-transition probability matrices. The definition above means that the
-transition probability between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t-1</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-depends on the covariate values at time point
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
-but we could also have defined
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>γ</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mo>Pr</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>S</mi><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>j</mi><mo>∣</mo><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+points at times <span class="math inline">1, \dots, T</span> we only
+need <span class="math inline">T-1</span> transition probability
+matrices. The definition above means that the transition probability
+between <span class="math inline">t-1</span> and <span class="math inline">t</span> depends on the covariate values at time
+point <span class="math inline">t</span>, but we could also have defined
+<span class="math display">
 \gamma_{ij}^{(t)} = \Pr(S_{t+1} = j \mid S_t = i).
-</annotation></semantics></math> We want to point out that these two
-specifications are <strong>not</strong> equivalent. For HMMs there is no
-established convention, so this choice needs to be made by users and can
-be important when the exact timing of the covariate effect is relevant.
-In <code>LaMa</code> this comes down to either passing the design matrix
+</span> We want to point out that these two specifications are
+<strong>not</strong> equivalent. For HMMs there is no established
+convention, so this choice needs to be made by users and can be
+important when the exact timing of the covariate effect is relevant. In
+<code>LaMa</code> this comes down to either passing the design matrix
 excluding its first or last row to <code><a href="../reference/tpm_g.html">tpm_g()</a></code>, where we use
 the first option in this vignette. If you forget to exclude the first or
 the last row of the design matrix when calculating all transition
@@ -222,9 +200,8 @@ effect for each off-diagonal element of the t.p.m.</p>
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
 </h3>
 <p>Here we specify the likelihood function and pretend we know the
-polynomial degree of the effect of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>
-on the transition probabilities.</p>
+polynomial degree of the effect of <span class="math inline">z</span> on
+the transition probabilities.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">x</span>, <span class="va">Z</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">beta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># matrix of coefficients</span></span>
@@ -253,7 +230,7 @@ on the transition probabilities.</p>
 <span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.985   0.033   1.130</span></span></code></pre></div>
+<span><span class="co">#&gt;   4.018   0.032   1.144</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -379,9 +356,10 @@ state-dependent distribution, while the state switching is controlled by
 a homogeneous Markov chain. This is often called
 <strong>Markov-switching regression</strong>. Assuming the observation
 process to be conditionally normally distributed, this means</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mi>t</mi></msub><mo>∣</mo><msub><mi>S</mi><mi>t</mi></msub><mo>=</mo><mi>j</mi><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>β</mi><mi>j</mi><mi>′</mi></msubsup><msub><mi>z</mi><mi>t</mi></msub><mo>,</mo><mspace width="0.222em"></mspace><msubsup><mi>σ</mi><mi>j</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>N</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
-X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j = 1, \dots, N.
-</annotation></semantics></math></p>
+<p><span class="math display">
+X_t \mid S_t = j \sim N(\beta_j^{'} z_t, \: \sigma_j^2), \quad j =
+1, \dots, N.
+</span></p>
 <div class="section level3">
 <h3 id="simulation-example-1">Simulation example<a class="anchor" aria-label="anchor" href="#simulation-example-1"></a>
 </h3>
@@ -439,9 +417,7 @@ anymore, but changes accoring to the covariate values in
 <p>In the likelihood function, we also add the state-dependent
 regression in the loop calculating the state-dependent probabilities.
 The code <code>cbind(1,Z) %*% beta[j,]</code> computes the linear
-predictor for the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>-th
-state.</p>
+predictor for the <span class="math inline">j</span>-th state.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nllMSR</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">x</span>, <span class="va">Z</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="co"># homogeneous tpm</span></span>
@@ -467,7 +443,7 @@ state.</p>
 <span>  <span class="va">mod_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMSR</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.255   0.000   0.255</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.258   0.002   0.260</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results-1">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results-1"></a>

@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Markov-modulated (marked) Poisson processes • LaMa</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -164,28 +165,21 @@ second state.</p>
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
 </h3>
-<p>The likelihood of a stationary MMPP for waiting times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">x_1, \dots, x_n</annotation></semantics></math>
-is (<span class="citation">Meier-Hellstern (<a href="#ref-meier1987fitting">1987</a>)</span>, <span class="citation">Langrock, Borchers, and Skaug (<a href="#ref-langrock2013markov">2013</a>)</span>) <span class="math display">$$
+<p>The likelihood of a stationary MMPP for waiting times <span class="math inline">x_1, \dots, x_n</span> is (<span class="citation">Meier-Hellstern (<a href="#ref-meier1987fitting">1987</a>)</span>, <span class="citation">Langrock, Borchers, and Skaug (<a href="#ref-langrock2013markov">2013</a>)</span>) <span class="math display">
 L(\theta) = \pi \Bigl(\prod_{i=1}^n
 \exp\bigl((Q-\Lambda)x_i\bigr)\Lambda \Bigr)1,
-$$</span> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-is the generator matrix of the continuous-time Markov chain,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>
-is a diagonal matrix of state-dependent Poisson intensities,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
-is the stationary distribution of the continuous-time Markov chain, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
-is a column vector of ones. For more details on continuous-time Markov
+</span> where <span class="math inline">Q</span> is the generator matrix
+of the continuous-time Markov chain, <span class="math inline">\Lambda</span> is a diagonal matrix of
+state-dependent Poisson intensities, <span class="math inline">\pi</span> is the stationary distribution of the
+continuous-time Markov chain, and <span class="math inline">1</span> is
+a column vector of ones. For more details on continuous-time Markov
 chains, see the vignette <em>continuous-time HMMs</em> or also <span class="citation">Dobrow (<a href="#ref-dobrow2016introduction">2016</a>)</span>.</p>
 <p>We can easily calculate the log of the above expression using the
 standard implementation of the general forward algorithm
 <code><a href="../reference/forward_g.html">forward_g()</a></code> when choosing the first matrix of
 state-dependent densities to be the identity (i.e.) the first row of the
 <code>allprobs</code> matrix to be one and all other matrices of
-state-dependent density matrices to be
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>.</p>
+state-dependent density matrices to be <span class="math inline">\Lambda</span>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span>, <span class="va">timediff</span>, <span class="va">N</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">par</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">]</span><span class="op">)</span> <span class="co"># state specific rates</span></span>
@@ -210,7 +204,7 @@ state-dependent density matrices to be
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">2</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.271   0.278   0.280</span></span>
+<span><span class="co">#&gt;   0.286   0.271   0.284</span></span>
 <span><span class="co"># we often need the stepmax, as the matrix exponential can be numerically unstable</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -307,28 +301,17 @@ generalise to more than two hidden states.</p>
 <h3 id="writing-the-negative-log-likelihood-function-1">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function-1"></a>
 </h3>
 <p>The likelihood of a stationary MM<strong>M</strong>PP for waiting
-times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">x_1, \dots, x_n</annotation></semantics></math>
-between marks
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>y</mi><mn>0</mn></msub><mo>,</mo><msub><mi>y</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>y</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">y_0, y_1, \dotsc, y_n</annotation></semantics></math>
-only changes slightly from the MMPP likelihood, as we include the matrix
-of state-specific densities (<span class="citation">Lu (<a href="#ref-lu2012markov">2012</a>)</span>, <span class="citation">Mews
-et al. (<a href="#ref-mews2023markov">2023</a>)</span>): <span class="math display">$$
+times <span class="math inline">x_1, \dots, x_n</span> between marks
+<span class="math inline">y_0, y_1, \dotsc, y_n</span> only changes
+slightly from the MMPP likelihood, as we include the matrix of
+state-specific densities (<span class="citation">Lu (<a href="#ref-lu2012markov">2012</a>)</span>, <span class="citation">Mews
+et al. (<a href="#ref-mews2023markov">2023</a>)</span>): <span class="math display">
 L(\theta) = \pi P(y_0) \Bigl(\prod_{i=1}^n \exp\bigl((Q-\Lambda)
 x_i\bigr)\Lambda P(y_i) \Bigr)1,
-$$</span> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Λ</mi><annotation encoding="application/x-tex">\Lambda</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>π</mi><annotation encoding="application/x-tex">\pi</annotation></semantics></math>
-are as above and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(y_i)</annotation></semantics></math>
-is a diagonal matrix with state-dependent densites for the observation
-at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mi>i</mi></msub><annotation encoding="application/x-tex">t_i</annotation></semantics></math>.
-We can again easily calculate the log of the above expression using the
-standard implementation of the general forward algorithm
-<code><a href="../reference/forward_g.html">forward_g()</a></code> when first calculating the
+</span> where <span class="math inline">Q</span>, <span class="math inline">\Lambda</span> and <span class="math inline">\pi</span> are as above and <span class="math inline">P(y_i)</span> is a diagonal matrix with
+state-dependent densites for the observation at time <span class="math inline">t_i</span>. We can again easily calculate the log of
+the above expression using the standard implementation of the general
+forward algorithm <code><a href="../reference/forward_g.html">forward_g()</a></code> when first calculating the
 <code>allprobs</code> matrix with state-dependent densities for the
 marks (as usual for HMMs) and then multiplying each row except the first
 one element-wise with the state-dependent rates.</p>
@@ -360,7 +343,7 @@ one element-wise with the state-dependent rates.</p>
 <span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMark</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">marks</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.988   5.278   3.161</span></span></code></pre></div>
+<span><span class="co">#&gt;   4.057   5.541   3.280</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>

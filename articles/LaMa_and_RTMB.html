@@ -225,12 +225,12 @@ and <em>bakes</em> it into the objective function. Therefore, changes to
 optimisation result. We set <code>silent = TRUE</code> to suppress
 printing of the optimisation process.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span>
+<span><span class="co">#&gt; Error in RTMB::besselI(kappa, 0, expon.scaled = TRUE): non-numeric argument to mathematical function</span></span></code></pre></div>
 <p>Let’s check out <code>obj</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "par"      "fn"       "gr"       "he"       "hessian"  "method"  </span></span>
-<span><span class="co">#&gt;  [7] "retape"   "env"      "report"   "simulate"</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span></code></pre></div>
 <p>It contains the initial parameter <code>par</code> (now tranformed to
 a named vector), the objective function <code>fn</code> (which in this
 case just evaluates <code>nll</code> but faster), its gradient
@@ -239,17 +239,11 @@ case just evaluates <code>nll</code> but faster), its gradient
 corresponding values at the initial parameter vector.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="va">par</span></span>
-<span><span class="co">#&gt;      logmu      logmu   logsigma   logsigma   logkappa   logkappa        eta </span></span>
-<span><span class="co">#&gt; -1.2039728  0.0000000 -1.6094379 -0.3566749 -1.6094379 -0.3566749 -2.0000000 </span></span>
-<span><span class="co">#&gt;        eta </span></span>
-<span><span class="co">#&gt; -2.0000000</span></span>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span>
 <span><span class="va">obj</span><span class="op">$</span><span class="fu">fn</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 33293.84</span></span>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span>
 <span><span class="va">obj</span><span class="op">$</span><span class="fu">gr</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          [,1]      [,2]     [,3]      [,4]     [,5]      [,6]     [,7]</span></span>
-<span><span class="co">#&gt; [1,] 573.7198 -2467.274 95.35893 -12045.97 55.92507 -807.9504 134.0732</span></span>
-<span><span class="co">#&gt;           [,8]</span></span>
-<span><span class="co">#&gt; [1,] -181.2148</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span></code></pre></div>
 <p>We are now ready to optimise the objective function. The optimisation
 routine <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code> is very robust and conveniently allows us
 to provide a gradient function. Alternatively, you can also use
@@ -262,16 +256,14 @@ quasi-Newton algorithm that approximates the current Hessian based on
 previous gradient evaluations, compared to using full
 Newton-Raphson.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">opt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimization</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">opt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimization</span></span>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span></code></pre></div>
 <p>We can check out the estimated parameter and function value by</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">opt</span><span class="op">$</span><span class="va">par</span></span>
-<span><span class="co">#&gt;      logmu      logmu   logsigma   logsigma   logkappa   logkappa        eta </span></span>
-<span><span class="co">#&gt; -1.1916144  0.9182131 -1.5995349  0.3999258 -2.2872716  0.4019563 -1.6621910 </span></span>
-<span><span class="co">#&gt;        eta </span></span>
-<span><span class="co">#&gt; -1.5735921</span></span>
+<span><span class="co">#&gt; Error: object 'opt' not found</span></span>
 <span><span class="va">opt</span><span class="op">$</span><span class="va">objective</span></span>
-<span><span class="co">#&gt; [1] 27248.59</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'opt' not found</span></span></code></pre></div>
 <p>Note that the naming here is determined by <code><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb()</a></code>. If
 you use a different optimiser, these may be called differently.</p>
 <p>Much nicer however, is that <code>obj</code> (yes <code>obj</code>
@@ -285,19 +277,17 @@ to do the backtransformation manually. We can just run the
 reporting:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod</span> <span class="op">=</span> <span class="va">obj</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span> <span class="co"># runs the reporting from the negative log-likelihood once</span></span>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span>
 <span><span class="op">(</span><span class="va">delta</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       S1       S2 </span></span>
-<span><span class="co">#&gt; 0.481525 0.518475</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span><span class="op">(</span><span class="va">Gamma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">Gamma</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           S1        S2</span></span>
-<span><span class="co">#&gt; S1 0.8282951 0.1717049</span></span>
-<span><span class="co">#&gt; S2 0.1594681 0.8405319</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span><span class="op">(</span><span class="va">mu</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">mu</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.3037305 2.5048106</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span><span class="op">(</span><span class="va">sigma</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">sigma</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2019904 1.4917139</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span><span class="op">(</span><span class="va">kappa</span> <span class="op">=</span> <span class="va">mod</span><span class="op">$</span><span class="va">kappa</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.1015431 1.4947460</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span></code></pre></div>
 <p>which works because of the <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">REPORT()</a></code> statements in the
 likelihood function. Note that <code>delta</code>, <code>Gamma</code>
 and <code>allprobs</code> are always reported by default when using
@@ -312,15 +302,18 @@ the parameters, we can plot the decoded time series</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># manually</span></span>
 <span><span class="va">mod</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">delta</span>, <span class="va">mod</span><span class="op">$</span><span class="va">Gamma</span>, <span class="va">mod</span><span class="op">$</span><span class="va">allprobs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span></span>
 <span><span class="co"># or simpler</span></span>
 <span><span class="va">mod</span><span class="op">$</span><span class="va">states</span> <span class="op">=</span> <span class="fu"><a href="../reference/viterbi.html">viterbi</a></span><span class="op">(</span>mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span></span>
 <span><span class="co"># defining color vector</span></span>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"h"</span>, xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"step length"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">1</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="LaMa_and_RTMB_files/figure-html/decoding-1.png" width="85%" style="display: block; margin: auto;"></p>
 <p>or the estimated state-dependent distributions.</p>
@@ -330,44 +323,35 @@ the parameters, we can plot the decoded time series</p>
 <span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"step length"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="../reference/gamma2.html">dgamma2</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in eval(expr, envir = ll, enclos = parent.frame()): object 'delta' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/gamma2.html">dgamma2</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="va">delta</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/gamma2.html">dgamma2</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>      lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in eval(expr, envir = ll, enclos = parent.frame()): object 'delta' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">40</span>, </span>
-<span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"turning angle"</span><span class="op">)</span></span>
-<span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
-<span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="va">delta</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, </span>
-<span>      lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span>     bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"turning angle"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="LaMa_and_RTMB_files/figure-html/statedepdist-1.png" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span> <span class="co"># resetting to default</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
+<span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in eval(expr, envir = ll, enclos = parent.frame()): object 'delta' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="va">delta</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, </span>
+<span>      lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in eval(expr, envir = ll, enclos = parent.frame()): object 'delta' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span> <span class="co"># resetting to default</span></span></code></pre></div>
 <p>Moreover, we can also use the <code>sdreport()</code> function to
 directly give us standard errors for our unconstrained parameters and
 everything we <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code>ed. </p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sdr</span> <span class="op">=</span> <span class="fu">sdreport</span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sdr</span> <span class="op">=</span> <span class="fu">sdreport</span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'obj' not found</span></span></code></pre></div>
 <p>We can then get an overview of the estimated parameters and
 <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code>ed quantities as well as their standard errors
 by</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sdr</span><span class="op">)</span></span>
-<span><span class="co">#&gt;            Estimate  Std. Error</span></span>
-<span><span class="co">#&gt; logmu    -1.1916144 0.011067932</span></span>
-<span><span class="co">#&gt; logmu     0.9182131 0.008875692</span></span>
-<span><span class="co">#&gt; logsigma -1.5995349 0.016232361</span></span>
-<span><span class="co">#&gt; logsigma  0.3999258 0.013272894</span></span>
-<span><span class="co">#&gt; logkappa -2.2872716 0.207126330</span></span>
-<span><span class="co">#&gt; logkappa  0.4019563 0.019299344</span></span>
-<span><span class="co">#&gt; eta      -1.6621910 0.041754277</span></span>
-<span><span class="co">#&gt; eta      -1.5735921 0.040795512</span></span>
-<span><span class="co">#&gt; mu        0.3037305 0.003361669</span></span>
-<span><span class="co">#&gt; mu        2.5048106 0.022231928</span></span>
-<span><span class="co">#&gt; sigma     0.2019904 0.003278782</span></span>
-<span><span class="co">#&gt; sigma     1.4917139 0.019799361</span></span>
-<span><span class="co">#&gt; kappa     0.1015431 0.021032256</span></span>
-<span><span class="co">#&gt; kappa     1.4947460 0.028847617</span></span></code></pre></div>
+<span><span class="co">#&gt; Error: object 'sdr' not found</span></span></code></pre></div>
 <p>To get the estimated parameters or their standard errors in list
 format, type</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -387,12 +371,13 @@ format, type</p>
 convenient:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pres_step</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span>, <span class="st">"gamma2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">mu</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_step</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/pres-1.png" width="85%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pres_angle</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="st">"vm"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="va">kappa</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_angle</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/pres-2.png" width="85%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_step</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'pres_step' not found</span></span>
+<span><span class="va">pres_angle</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="st">"vm"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="va">kappa</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'mod' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_angle</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'pres_angle' not found</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="covariate-effects">Covariate effects<a class="anchor" aria-label="anchor" href="#covariate-effects"></a>
@@ -420,7 +405,7 @@ is preferable when dealing with more complicated models. Note that the
 first option does not include an intercept column, while the second
 does. When used with <code><a href="../reference/tpm_g.html">tpm_g()</a></code> this does not matter as it
 automatically checks if an intercept column is included.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Z</span> <span class="op">=</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="../reference/cosinor.html">cosinor</a></span><span class="op">(</span><span class="va">tod</span>, period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span>, </span>
@@ -444,7 +429,7 @@ based on the design and parameter matrix. Another lovely convenience
 that <code>RTMB</code> allows for is that, in our parameter list, we can
 have matrices, making reshaping of vectors to matrices inside the
 likelihood function unnessesary.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logmu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>           logkappa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -458,7 +443,7 @@ transition matrix calculation. This leads to us using
 <code><a href="../reference/stationary_p.html">stationary_p()</a></code> instead of <code><a href="../reference/stationary.html">stationary()</a></code> to
 calculate the initial distribuion and <code><a href="../reference/forward_g.html">forward_g()</a></code> instead
 of <code><a href="../reference/forward.html">forward()</a></code> to calculate the log-likelihood.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span> <span class="co"># makes everything contained available without $</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z</span>, <span class="va">beta</span><span class="op">)</span> <span class="co"># covariate-dependent tpms (in this case only 24 unique)</span></span>
@@ -480,44 +465,58 @@ of <code><a href="../reference/forward.html">forward()</a></code> to calculate t
 <span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_g.html">forward_g</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span><span class="op">[</span>,,<span class="va">tod</span><span class="op">]</span>, <span class="va">allprobs</span><span class="op">)</span> <span class="co"># indexing 24 unique tpms by tod in data</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Having done this, the model fit is then essentially the same:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj2</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll2</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span>
-<span><span class="va">opt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj2</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimisation</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in RTMB::besselI(kappa, 0, expon.scaled = TRUE): non-numeric argument to mathematical function</span></span>
+<span><span class="va">opt2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj2</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj2</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimisation</span></span>
+<span><span class="co">#&gt; Error: object 'obj2' not found</span></span></code></pre></div>
 <p>and we can look at the reported results. In this case, for simplicity
 I get standard errors for <code>Gamma</code> with the delta method
 while, in general, this is not advisable.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mod2</span> <span class="op">=</span> <span class="va">obj2</span><span class="op">$</span><span class="fu">report</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'obj2' not found</span></span>
 <span></span>
 <span><span class="va">sdr</span> <span class="op">=</span> <span class="fu">sdreport</span><span class="op">(</span><span class="va">obj2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'obj2' not found</span></span>
 <span><span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Estimate"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span><span class="va">Gamma</span></span>
+<span><span class="co">#&gt; Error: object 'sdr' not found</span></span>
 <span><span class="va">Gammasd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Std"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span><span class="va">Gamma</span></span>
+<span><span class="co">#&gt; Error: object 'sdr' not found</span></span>
 <span></span>
 <span><span class="va">Delta</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Estimate"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span><span class="va">Delta</span></span>
+<span><span class="co">#&gt; Error: object 'sdr' not found</span></span>
 <span><span class="va">Deltasd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">sdr</span>, <span class="st">"Std"</span>, report <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span><span class="va">Delta</span></span>
+<span><span class="co">#&gt; Error: object 'sdr' not found</span></span>
 <span></span>
 <span><span class="va">tod_seq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="co"># sequence for plotting</span></span>
 <span><span class="va">Z_pred</span> <span class="op">=</span> <span class="fu"><a href="../reference/trigBasisExp.html">trigBasisExp</a></span><span class="op">(</span><span class="va">tod_seq</span>, degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># design matrix for prediction</span></span>
 <span></span>
 <span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_pred</span>, <span class="va">mod2</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># interpolating transition probs</span></span>
+<span><span class="co">#&gt; Error: object 'mod2' not found</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"transition probability"</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'Gamma_plot' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, y0 <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span><span class="op">-</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Gammasd</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span>, </span>
 <span>         y1 <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span><span class="op">+</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Gammasd</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in Gamma[1, 2, ]: object of type 'closure' is not subsettable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, y0 <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span><span class="op">-</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Gammasd</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, </span>
 <span>         y1 <span class="op">=</span> <span class="va">Gamma</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span><span class="op">+</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Gammasd</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in Gamma[2, 1, ]: object of type 'closure' is not subsettable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'Gamma_plot' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
-<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-1.png" width="85%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
+<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL, : plot.new has not been called yet</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
 <span>     col <span class="op">=</span> <span class="st">"deepskyblue"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, xaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'Delta' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, y0 <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">-</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Deltasd</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>         y1 <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Deltasd</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"deepskyblue"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-2.png" width="85%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt; Error: object 'Delta' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in axis(1, at = seq(0, 24, by = 4), labels = seq(0, 24, by = 4)): plot.new has not been called yet</span></span></code></pre></div>
 <!-- ### Penalized splines -->
 <!-- We can go one step further and model the transition probabilities as smooth functions of the time of day using cyclic P-splines, i.e. -->
 <!-- $$ -->
@@ -663,14 +662,14 @@ need to be overloaded to allow for automatic differentiation which
 cannot be done by default. In typical model setups <code>LaMa</code>
 functions do this themselves, but if you go a very individualistic route
 and get an error like</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid argument to 'advector' (lost class attribute?)"</span><span class="op">)</span></span></code></pre></div>
 <p>you might have to overload the operator yourself. To do this put</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"[&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"[&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>as the first line of your likelihood function. If the error still
 prevails also add</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"c"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span></span>
 <span><span class="st">"diag&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"diag&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>which should hopefully fix the error.</p>
@@ -680,12 +679,12 @@ prevails also add</p>
 which screws up the automatic differentiation due to the mismatching
 types. To avoid this, always initiate with <code>numeric</code> or
 <code>NaN</code> values. For example, don’t do</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># which is the same as</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>but rather</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NaN</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -701,7 +700,7 @@ from the one at a different parameter value. Often, you can remedy this
 behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
 differentiable (in code). For example, you can create the differentiable
 <code>max</code> alternative:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">y</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -712,7 +711,7 @@ the optimisation.</p>
 <p>Furthermore, there are some unfortunate side effects of R’s ‘byte
 compiler’ (enabled by default in R). So if you encounter an error not
 matching the previous ones, try disabling the byte compiler with</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">compiler</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/compiler/compile.html" class="external-link">enableJIT</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>and see if the error is resolved.</p>

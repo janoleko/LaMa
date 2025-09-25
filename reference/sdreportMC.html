@@ -146,18 +146,20 @@ It then returns either the sampled parameters or <code><a href="https://rdrr.io/
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## creating AD function</span></span></span>
 <span class="r-in"><span><span class="va">obj</span> <span class="op">=</span> <span class="fu">MakeADFun</span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># creating the objective function</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in RTMB::besselI(kappa, 0, expon.scaled = TRUE):</span> non-numeric argument to mathematical function</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## optimising</span></span></span>
 <span class="r-in"><span><span class="va">opt</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlminb.html" class="external-link">nlminb</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">par</span>, <span class="va">obj</span><span class="op">$</span><span class="va">fn</span>, <span class="va">obj</span><span class="op">$</span><span class="va">gr</span><span class="op">)</span> <span class="co"># optimization</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'obj' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## running sdreportMC</span></span></span>
 <span class="r-in"><span><span class="co"># `mu` has report statement, `delta` is automatically reported by `forward()`</span></span></span>
 <span class="r-in"><span><span class="va">sdrMC</span> <span class="op">=</span> <span class="fu">sdreportMC</span><span class="op">(</span><span class="va">obj</span>, </span></span>
 <span class="r-in"><span>                   what <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mu"</span>, <span class="st">"delta"</span><span class="op">)</span>, </span></span>
 <span class="r-in"><span>                   nSamples <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sampling reported quantities...</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'obj' not found</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">sdrMC</span><span class="op">$</span><span class="va">delta</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50  2</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'sdrMC' not found</span>
 <span class="r-in"><span><span class="co"># now a matrix with 50 samples (rows)</span></span></span>
 </code></pre></div>
     </div>

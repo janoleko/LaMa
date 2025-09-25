@@ -243,22 +243,7 @@ call using the <code>psname</code> argument.</li>
 <span>  <span class="va">mod1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/qreml.html">qreml</a></span><span class="op">(</span><span class="va">pnll</span>, <span class="va">par</span>, <span class="va">dat</span>, random <span class="op">=</span> <span class="st">"betaSpline"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Creating AD function</span></span>
-<span><span class="co">#&gt; Initialising with lambda: 100 100 </span></span>
-<span><span class="co">#&gt; outer 1 - lambda: 32.051 31.828 </span></span>
-<span><span class="co">#&gt; outer 2 - lambda: 10.555 10.748 </span></span>
-<span><span class="co">#&gt; outer 3 - lambda: 3.659 3.977 </span></span>
-<span><span class="co">#&gt; outer 4 - lambda: 1.41 1.589 </span></span>
-<span><span class="co">#&gt; outer 5 - lambda: 0.669 0.693 </span></span>
-<span><span class="co">#&gt; outer 6 - lambda: 0.426 0.347 </span></span>
-<span><span class="co">#&gt; outer 7 - lambda: 0.346 0.21 </span></span>
-<span><span class="co">#&gt; outer 8 - lambda: 0.32 0.153 </span></span>
-<span><span class="co">#&gt; outer 9 - lambda: 0.312 0.129 </span></span>
-<span><span class="co">#&gt; outer 10 - lambda: 0.309 0.119 </span></span>
-<span><span class="co">#&gt; outer 11 - lambda: 0.308 0.116 </span></span>
-<span><span class="co">#&gt; Converged</span></span>
-<span><span class="co">#&gt; Final model fit with lambda: 0.308 0.116</span></span>
-<span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  12.095   3.214  11.690</span></span></code></pre></div>
+<span><span class="co">#&gt; Error in RTMB::besselI(kappa, 0, expon.scaled = TRUE): non-numeric argument to mathematical function</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -270,23 +255,27 @@ of day.
 <!-- Uncertainty quantification can be based on the Hessian of the penalised likelihood function, returned as `Hessian_conditional` in the `mod` object. To easily relist the sampled parameter vector to the original named-list structure, the function `relist_par()` is contained in the `mod` object. --></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Delta</span> <span class="op">=</span> <span class="va">mod1</span><span class="op">$</span><span class="va">Delta</span></span>
+<span><span class="co">#&gt; Error: object 'mod1' not found</span></span>
 <span></span>
 <span><span class="va">tod_seq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">24</span>, length <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">Z_p</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">modmat</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>tod <span class="op">=</span> <span class="va">tod_seq</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">Gamma_plot</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm_g.html">tpm_g</a></span><span class="op">(</span><span class="va">Z_p</span>, <span class="va">mod1</span><span class="op">$</span><span class="va">beta</span><span class="op">)</span> <span class="co"># interpolating transition probs</span></span>
+<span><span class="co">#&gt; Error: object 'mod1' not found</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"transition probability"</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in h(simpleError(msg, call)): error in evaluating the argument 'y' in selecting a method for function 'plot': object 'Gamma_plot' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: object 'Gamma_plot' not found</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
-<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/results%20qreml-1.png" width="85%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
+<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in (function (s, units = "user", cex = NULL, font = NULL, vfont = NULL, : plot.new has not been called yet</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
 <span>     col <span class="op">=</span> <span class="st">"deepskyblue"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, xaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/results%20qreml-2.png" width="85%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt; Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'Delta' not found</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in axis(1, at = seq(0, 24, by = 4), labels = seq(0, 24, by = 4)): plot.new has not been called yet</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="smooth-density-estimation">Smooth density estimation<a class="anchor" aria-label="anchor" href="#smooth-density-estimation"></a>
@@ -298,7 +287,7 @@ acceleration data of the Loch Ness Monster, specifically the
 strictily positive with some very extreme values, making direct analysis
 difficult. Hence, for our analysis we consider the logarithm of ODBA as
 our observed process.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         ODBA   logODBA state</span></span>
 <span><span class="co">#&gt; 1 0.03775025 -3.276763     2</span></span>
@@ -313,7 +302,7 @@ our observed process.</p>
 <p>Clearly, there are at least three behavioural states in the data, and
 we start by fitting a simple 3-state Gaussian HMM with likelihood
 function:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span><span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span></span>
 <span>    <span class="va">sigma</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">logsigma</span><span class="op">)</span> <span class="co"># exp because strictly positive</span></span>
@@ -327,7 +316,7 @@ function:</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>We then fit the model as explained in the vignette <em>LaMa and
 RTMB</em>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># initial parameter list</span></span>
 <span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4.5</span>, <span class="op">-</span><span class="fl">3.5</span>, <span class="op">-</span><span class="fl">2.5</span><span class="op">)</span>,</span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -365,7 +354,7 @@ each data stream as well as a matrix of <strong>initial spline
 coefficients</strong> based on the provided parameters. The basis
 functions are standardised such that they integrate to one, which is
 needed for density estimation.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># providing initial means and sds to initialise spline coefficients</span></span>
 <span><span class="va">par0</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logODBA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">3.3</span>, <span class="op">-</span><span class="fl">2.8</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -403,7 +392,7 @@ matrix are then computed as linear combinations of the columns of
 <code>Z</code> and the weights <code>alpha</code>. Lastly, we penalise
 the unconstrained coefficients <code>beta</code> (not the constrained
 <code>alpha</code>’s) using the <code><a href="../reference/penalty.html">penalty()</a></code> function.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pnll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span></span>
 <span>  <span class="co"># regular stationary HMM stuff</span></span>
@@ -424,7 +413,7 @@ the unconstrained coefficients <code>beta</code> (not the constrained
 In this case, we actually don’t need to add the observations to our
 <code>dat</code> list anymore, as all the information is contained in
 the design matrix <code>Z</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="va">beta</span>, <span class="co"># spline coefficients prepared by smooth_dens_construct()</span></span>
 <span>           eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="co"># initial transition matrix on logit scale</span></span>
 <span></span>
@@ -455,12 +444,12 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 1.033 1.01 1.744</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  18.107   4.448  17.444</span></span></code></pre></div>
+<span><span class="co">#&gt;  17.706   4.421  17.004</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
 reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
 reporting after model fitting.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sDens</span> <span class="op">=</span> <span class="va">Z_p</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span> <span class="co"># all three state-dependent densities on a grid</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
@@ -490,7 +479,7 @@ Specifically, we consider a 2-state MS-GAMLSS defined by
 \mu_t^{(i)} = \beta_{0,\mu}^{(i)} + s_{\mu}^{(i)}(\text{oil}_t), \quad \text{log}(\sigma_t^{(i)}) = \beta_{0, \sigma}^{(i)} + s_{\sigma}^{(i)}(\text{oil}_t), \quad i = 1,2,
 </annotation></semantics></math> not covering other potential
 explanatory covariates for the sake of simplicity.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">energy</span>, package <span class="op">=</span> <span class="st">"MSwM"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      Price      Oil      Gas     Coal   EurDol Ibex35   Demand</span></span>
@@ -502,7 +491,7 @@ explanatory covariates for the sake of simplicity.</p>
 <span><span class="co">#&gt; 6 6.322083 23.60534 15.22485 38.35157 1.122460 8.1866 693.2467</span></span></code></pre></div>
 <p>Similar to the first example, we can prepare the model matrices using
 <code><a href="../reference/make_matrices.html">make_matrices()</a></code>:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modmat</span> <span class="op">=</span> <span class="fu"><a href="../reference/make_matrices.html">make_matrices</a></span><span class="op">(</span><span class="op">~</span> <span class="fu">s</span><span class="op">(</span><span class="va">Oil</span>, k <span class="op">=</span> <span class="fl">12</span>, bs <span class="op">=</span> <span class="st">"ps"</span><span class="op">)</span>, <span class="va">energy</span><span class="op">)</span></span>
 <span><span class="va">Z</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">Z</span> <span class="co"># design matrix</span></span>
 <span><span class="va">S</span> <span class="op">=</span> <span class="va">modmat</span><span class="op">$</span><span class="va">S</span> <span class="co"># penalty matrix (list)</span></span></code></pre></div>
@@ -521,7 +510,7 @@ differently (e.g. by us using a different spline basis). In this case,
 however, they are the same and we only pass the list of length one. It
 does not matter to <code><a href="../reference/penalty.html">penalty()</a></code> if we pass a list of length
 one or just one matrix.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pnll</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">getAll</a></span><span class="op">(</span><span class="va">par</span>, <span class="va">dat</span><span class="op">)</span></span>
 <span>  <span class="va">Gamma</span> <span class="op">=</span> <span class="fu"><a href="../reference/tpm.html">tpm</a></span><span class="op">(</span><span class="va">eta</span><span class="op">)</span> <span class="co"># computing the tpm</span></span>
@@ -544,7 +533,7 @@ one or just one matrix.</p>
 <p>From this point on, the model fit is now basically identical to the
 previous two examples. We specify initial parameters and include an
 inital penalty strength parameter in the <code>dat</code> list.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># initial parameter list</span></span>
 <span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, <span class="co"># state process intercepts</span></span>
 <span>           beta0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, <span class="co"># state-dependent mean intercepts</span></span>
@@ -586,14 +575,14 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.588 7.212 8.277 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   8.202   5.636   7.280</span></span></code></pre></div>
+<span><span class="co">#&gt;   8.220   5.602   7.310</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the
 decoded time series. For the former, we again create a fine grid of oil
 price values and use <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> to build the associated
 interpolating design matrix.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">xseq</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">energy</span><span class="op">$</span><span class="va">Oil</span><span class="op">)</span>, length <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="co"># sequence for prediction</span></span>
 <span><span class="va">Z_p</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">modmat</span>, newdata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Oil <span class="op">=</span> <span class="va">xseq</span><span class="op">)</span><span class="op">)</span> <span class="co"># prediction design matrix</span></span>
 <span></span>

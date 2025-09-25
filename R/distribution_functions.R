@@ -28,9 +28,15 @@ NULL
 #' @rdname vm
 #' @export
 dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
-  logdens <- -log(2 * pi) - 
-    log(RTMB::besselI(kappa, 0)) + 
-    kappa * cos(x - mu)
+  
+  # stable calculation of log(besselI(kappa, 0))
+  logI0 <- log(RTMB::besselI(kappa, 0, expon.scaled = TRUE)) + kappa
+  
+  logdens <- -log(2 * pi) - logI0 + kappa * cos(x - mu)
+  
+  # logdens <- -log(2 * pi) - 
+  #   log(RTMB::besselI(kappa, 0)) + 
+  #   kappa * cos(x - mu)
   
   if(log){
     return(logdens)

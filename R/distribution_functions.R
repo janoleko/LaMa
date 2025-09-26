@@ -27,6 +27,7 @@ NULL
 
 #' @rdname vm
 #' @export
+#' @importFrom RTMB besselI
 dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
   
   # stable calculation of log(besselI(kappa, 0))

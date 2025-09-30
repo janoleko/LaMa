@@ -31,8 +31,9 @@ NULL
 dvm = function(x, mu = 0, kappa = 1, log = FALSE) {
   
   # stable calculation of log(besselI(kappa, 0))
-  logI0 <- log(RTMB::besselI(kappa, 0, expon.scaled = TRUE)) + kappa
-  
+  # logI0 <- log(RTMB::besselI(kappa, 0, expon.scaled = TRUE)) + kappa
+  logI0 <- log(RTMB::besselI(kappa, 0))
+
   logdens <- -log(2 * pi) - logI0 + kappa * cos(x - mu)
   
   # logdens <- -log(2 * pi) - 

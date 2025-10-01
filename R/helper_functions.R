@@ -241,3 +241,6 @@ safe_chol_inv <- function(M, silent = 1, max_attempts = 50) {
   # Compute inverse from Cholesky factor
   chol2inv(R)
 }
+
+# getting ad_context from RTMB (not exported)
+ad_context <- get("ad_context", envir = asNamespace("RTMB"), inherits = FALSE)

@@ -83,7 +83,8 @@ forward <- function(delta,
     }
     
     # if any of the three inputs is advector, run AD version of the function
-    ad = inherits(delta, "advector") | inherits(Gamma, "advector") | inherits(allprobs, "advector")
+    # ad = inherits(delta, "advector") | inherits(Gamma, "advector") | inherits(allprobs, "advector")
+    ad <- ad_context()
   }
   
   # non-ad version in C++
@@ -341,7 +342,8 @@ forward_g = function(delta,
     }
     
     # if any of the three inputs is advector, run AD version of the function
-    ad = inherits(delta, "advector") | inherits(Gamma, "advector") | inherits(allprobs, "advector") 
+    # ad = inherits(delta, "advector") | inherits(Gamma, "advector") | inherits(allprobs, "advector") 
+    ad <- ad_context()
   }
   
   if(!ad) {

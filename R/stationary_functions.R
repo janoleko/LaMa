@@ -102,7 +102,8 @@ stationary_p = function(Gamma, t = NULL, ad = NULL){
     }
     
     # if delta is advector, run ad version of the function
-    ad = inherits(Gamma, "advector")
+    # ad = inherits(Gamma, "advector")
+    ad <- ad_context()
   }
   
   if(!ad) {

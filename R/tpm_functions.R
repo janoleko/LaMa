@@ -134,7 +134,8 @@ tpm_g = function(Z, beta, byrow = FALSE, ad = NULL, report = TRUE, sparse = FALS
     }
     
     # if delta is advector, run ad version of the function
-    ad = inherits(beta, "advector")
+    # ad = inherits(beta, "advector")
+    ad <- ad_context()
   }
   
   if(!ad) {
@@ -320,11 +321,13 @@ tpm_g2 <- function(Z,
   # if ad is not explicitly provided, check if delta is an advector
   if(is.null(ad)){
     
-    if(is.list(beta)){
-      ad <- any(sapply(beta, inherits, what = "advector"))
-    } else{
-      ad <- inherits(beta, "advector")
-    }
+    # if(is.list(beta)){
+    #   ad <- any(sapply(beta, inherits, what = "advector"))
+    # } else{
+    #   ad <- inherits(beta, "advector")
+    # }
+    
+    ad <- ad_context()
   }
   
   if(!ad) {
@@ -527,7 +530,8 @@ tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
     }
     
     # if Q is advector, run ad version of the function
-    ad = inherits(Q, "advector")
+    # ad = inherits(Q, "advector")
+    ad <- ad_context()
   }
   
   if(!ad) {

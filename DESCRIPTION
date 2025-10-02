@@ -36,7 +36,7 @@ LinkingTo:
 Depends: 
     R (>= 3.5.0), 
     RTMB (>= 1.7.0)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: 
     knitr,
     rmarkdown,

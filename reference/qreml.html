@@ -80,6 +80,7 @@ The user has to specify the <strong>penalised negative log-likelihood function</
 <span>  method <span class="op">=</span> <span class="st">"BFGS"</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  conv_crit <span class="op">=</span> <span class="st">"relchange"</span>,</span>
+<span>  spHess <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  joint_unc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  saveall <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -153,6 +154,10 @@ For example, if the model has four penalty strength parameters, <code>map[[psnam
 
 <dt id="arg-conv-crit">conv_crit<a class="anchor" aria-label="anchor" href="#arg-conv-crit"></a></dt>
 <dd><p>character, convergence criterion for the penalty strength parameters. Can be <code>"relchange"</code> (default) or <code>"gradient"</code>.</p></dd>
+
+
+<dt id="arg-sphess">spHess<a class="anchor" aria-label="anchor" href="#arg-sphess"></a></dt>
+<dd><p>logical, if <code>TRUE</code>, sparse AD Hessian is used in each outer iteration. If your Hessian is large and sparse (many cross derivatives are 0), this will speed up the computations a lot. If your Hessian is dense, this will slow down the computations slightly.</p></dd>
 
 
 <dt id="arg-joint-unc">joint_unc<a class="anchor" aria-label="anchor" href="#arg-joint-unc"></a></dt>

@@ -228,8 +228,9 @@ printing of the optimisation process.</p>
 <p>Let’s check out <code>obj</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "par"      "fn"       "gr"       "he"       "hessian"  "method"  </span></span>
-<span><span class="co">#&gt;  [7] "retape"   "env"      "report"   "simulate"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "par"          "fn"           "gr"           "he"           "hessian"     </span></span>
+<span><span class="co">#&gt;  [6] "method"       "retape"       "env"          "report"       "simulate"    </span></span>
+<span><span class="co">#&gt; [11] "force.update"</span></span></code></pre></div>
 <p>It contains the initial parameter <code>par</code> (now tranformed to
 a named vector), the objective function <code>fn</code> (which in this
 case just evaluates <code>nll</code> but faster), its gradient

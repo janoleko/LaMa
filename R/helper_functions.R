@@ -216,6 +216,10 @@ min0_smooth <- function(x, rho = 20){
 
 # Safe Cholesky-based inverse with adaptive jitter
 safe_chol_inv <- function(M, silent = 1, max_attempts = 50) {
+  if(inherits(M, c("dgCMatrix", "dsCMatrix"))){
+    return(safe_chol_inv_sparse(M, silent, max_attempts))
+  }
+  
   # Ensure symmetry
   M <- (M + t(M)) / 2
   
@@ -240,6 +244,37 @@ safe_chol_inv <- function(M, silent = 1, max_attempts = 50) {
   
   # Compute inverse from Cholesky factor
   chol2inv(R)
+}
+
+# Safe sparse Cholesky-based inverse with adaptive jitter
+safe_chol_inv_sparse <- function(M, silent = 1, max_attempts = 50) {
+  # Ensure sparse symmetric dgCMatrix
+  # if (!inherits(M, "dgCMatrix")) M <- as(M, "dgCMatrix")
+  M <- Matrix::forceSymmetric(M)  # ensure symmetry structurally
+  
+  # Attempt sparse Cholesky (returns CHMfactor object)
+  R <- tryCatch(Matrix::Cholesky(M, LDL = FALSE, super = TRUE), error = function(e) NULL)
+  
+  # Adaptive jitter loop if not PD
+  if (is.null(R)) {
+    if (silent == 0) message("Matrix not PD, adding jitter...")
+    eps <- 1e-8 * mean(diag(M))
+    attempts <- 0
+    
+    while (is.null(R) && attempts < max_attempts) {
+      M <- M + Matrix::Diagonal(x = rep(eps, nrow(M)))  # add sparse jitter
+      R <- tryCatch(Matrix::Cholesky(M, LDL = FALSE, super = TRUE), error = function(e) NULL)
+      eps <- eps * 2
+      attempts <- attempts + 1
+    }
+    
+    if (is.null(R)) stop("Matrix still not PD after jitter attempts")
+  }
+  
+  # Compute sparse inverse from Cholesky factorization
+  # The CHMfactor object can be used with `solve(R, system = "A")`
+  Minv <- Matrix::solve(R, system = "A")  # returns sparse inverse
+  return(Minv)
 }
 
 # getting ad_context from RTMB (not exported)

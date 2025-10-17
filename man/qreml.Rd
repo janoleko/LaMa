@@ -19,6 +19,7 @@ qreml(
   method = "BFGS",
   control = list(),
   conv_crit = "relchange",
+  spHess = FALSE,
   joint_unc = FALSE,
   saveall = FALSE
 )
@@ -69,6 +70,8 @@ Increasing this beyond one will lead to a smoother final model. Can be an intege
 We advise against changing the default values of \code{reltol} and \code{maxit} as this can decrease the accuracy of the Laplace approximation.}
 
 \item{conv_crit}{character, convergence criterion for the penalty strength parameters. Can be \code{"relchange"} (default) or \code{"gradient"}.}
+
+\item{spHess}{logical, if \code{TRUE}, sparse AD Hessian is used in each outer iteration. If your Hessian is large and sparse (many cross derivatives are 0), this will speed up the computations a lot. If your Hessian is dense, this will slow down the computations slightly.}
 
 \item{joint_unc}{logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification}
 

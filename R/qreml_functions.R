@@ -1039,6 +1039,7 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
 #' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"relchange"} (default) or \code{"gradient"}.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
+#' @param spHess logical, if \code{TRUE}, sparse AD Hessian is used in each outer iteration. If your Hessian is large and sparse (many cross derivatives are 0), this will speed up the computations a lot. If your Hessian is dense, this will slow down the computations slightly.
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #'
 #' @return model object of class 'qremlModel'. This is a list containing:
@@ -1113,6 +1114,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                   method = "BFGS", # optimization method used by optim
                   control = list(), # control list for inner optimization
                   conv_crit = "relchange",
+                  spHess = FALSE, # use sparse Hessian instead of finite diff gradient
                   joint_unc = FALSE, # should joint object be returned?
                   saveall = FALSE # save all intermediate models?
                   )
@@ -1238,6 +1240,14 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     }
   } else{
     newgrad <- obj$gr
+  }
+  
+  # use sparse Hessian?
+  if(spHess) {
+    Tape <- RTMB::GetTape(obj, name = "ADFun") # get the Tape
+    if(silent < 2) cat("Constructing sparse Hessian\n")
+    obj$spHess <- Tape$jacfun(sparse = TRUE)$jacfun(sparse = TRUE) # construct sparse Hessian function from Tape
+    rm(Tape) # removing Tape to save memory
   }
   
   # prepwork -> running reporting to get necessary quantities
@@ -1367,8 +1377,12 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     
     # evaluating current penalised Hessian
     if(silent == 0) cat("evaluating Hessian...\n")
-    J <- stats::optimHess(opt$par, obj$fn, obj$gr)
-    J <- (J + t(J))/2 # force symmetric
+    if(spHess) {
+      J <- obj$spHess(opt$par)
+    } else{
+      J <- stats::optimHess(opt$par, obj$fn, obj$gr)
+      J <- (J + t(J))/2 # force symmetric
+    }
     
     # build big penalty matrix from current lambdas
     bigS <- build_bigS(Lambdas[[k]])
@@ -1384,6 +1398,7 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     #   H <- H + diag(eps, nrow(H))
     #   R <- chol(H)
     # }
+    
     H_inv <- safe_chol_inv(H) # chol2inv(R)
     
     # rebuild penalised Hessin pd for inversion

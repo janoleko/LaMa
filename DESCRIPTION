@@ -29,7 +29,8 @@ Imports:
     methods, 
     circular,
     sn,
-    numDeriv
+    numDeriv,
+    RTMBdist
 LinkingTo: 
     Rcpp, 
     RcppArmadillo

@@ -1221,6 +1221,15 @@ qreml <- function(pnll, # penalized negative log-likelihood function
   
   newpar <- obj$par # saving initial parameter value as vector to initialize optimization in loop
   
+  # use sparse Hessian?
+  if(spHess) {
+    Tape <- RTMB::GetTape(obj, name = "ADFun") # get the Tape
+    if(silent < 2) cat("Constructing sparse Hessian\n")
+    obj$spHess <- Tape$jacfun(sparse = TRUE)$jacfun(sparse = TRUE) # construct sparse Hessian function from Tape
+    rm(Tape) # removing Tape to save memory
+    # obj$gr <- function(p) as.matrix(spGrad(p))
+  }
+  
   # gradient printing
   counter_env <- new.env() # create environment to hold a counter
   counter_env$count <- 0 # initialise with zero
@@ -1240,14 +1249,6 @@ qreml <- function(pnll, # penalized negative log-likelihood function
     }
   } else{
     newgrad <- obj$gr
-  }
-  
-  # use sparse Hessian?
-  if(spHess) {
-    Tape <- RTMB::GetTape(obj, name = "ADFun") # get the Tape
-    if(silent < 2) cat("Constructing sparse Hessian\n")
-    obj$spHess <- Tape$jacfun(sparse = TRUE)$jacfun(sparse = TRUE) # construct sparse Hessian function from Tape
-    rm(Tape) # removing Tape to save memory
   }
   
   # prepwork -> running reporting to get necessary quantities
@@ -1606,7 +1607,11 @@ qreml <- function(pnll, # penalized negative log-likelihood function
                       method = method, hessian = FALSE, # return hessian in the end
                       control = control)
   
-  J <- stats::optimHess(opt$par, obj$fn, obj$gr)
+  if(spHess) {
+    J <- as.matrix(obj$spHess(opt$par))
+  } else {
+    J <- stats::optimHess(opt$par, obj$fn, obj$gr)
+  }
   
   if(silent == 0){
     gr = obj$gr(opt$par)

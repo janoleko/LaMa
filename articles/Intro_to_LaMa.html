@@ -270,7 +270,7 @@ e.g. <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.099   0.011   0.109</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.099   0.008   0.107</span></span></code></pre></div>
 <p>We see that implementation of the forward algorithm in C++ leads to
 really fast estimation speeds.</p>
 </div>
@@ -326,7 +326,7 @@ is correct.</p>
 <span><span class="co"># use the plotting method for LaMaResiduals</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Intro_to_LaMa_files/figure-html/pseudores-1.png" width="75%" style="display: block; margin: auto;"></p>
-<p>In this case, our model looks really good – as it should as we
+<p>In this case, our model looks really good – as it should because we
 simulated from the exact same model.</p>
 <blockquote>
 <p>Continue reading with <a href="https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html"><strong>LaMa

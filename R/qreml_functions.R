@@ -1039,7 +1039,8 @@ penalty2 = function(re_coef, # coefficient vector/ matrix or list of coefficient
 #' @param method optimisation method to be used by \code{\link[stats:optim]{optim}}. Defaults to \code{"BFGS"}, but might be changed to \code{"L-BFGS-B"} for high-dimensional settings.
 #' @param conv_crit character, convergence criterion for the penalty strength parameters. Can be \code{"relchange"} (default) or \code{"gradient"}.
 #' @param joint_unc logical, if \code{TRUE}, joint \code{RTMB} object is returned allowing for joint uncertainty quantification
-#' @param spHess logical, if \code{TRUE}, sparse AD Hessian is used in each outer iteration. If your Hessian is large and sparse (many cross derivatives are 0), this will speed up the computations a lot. If your Hessian is dense, this will slow down the computations slightly.
+#' @param spHess logical, if \code{TRUE}, sparse AD Hessian is used in each outer iteration. If your Hessian is large and sparse (many cross derivatives are 0), this will speed up the computations a lot. 
+#' If your Hessian is dense, this will slow down the computations slightly and might require significantly more memory.
 #' @param saveall logical, if \code{TRUE}, then all model objects from each iteration are saved in the final model object.
 #'
 #' @return model object of class 'qremlModel'. This is a list containing:

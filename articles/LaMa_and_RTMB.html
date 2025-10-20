@@ -97,8 +97,7 @@ one is not experienced with <code>RTMB</code>.</p>
 start by loading the <code>LaMa</code> package, which automatically
 loads <code>RTMB</code> as well.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/LaMa/">LaMa</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: RTMB</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janoleko.github.io/LaMa/">LaMa</a></span><span class="op">)</span></span></code></pre></div>
 <p>For the purpose of this vignette, we will analyse the
 <code>trex</code> data set contained in the package. It contains hourly
 step lengths of a Tyrannosaurus rex, living 66 million years ago, and we
@@ -645,8 +644,26 @@ legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
 ``` -->
 </div>
 <div class="section level3">
-<h3 id="common-issues-with-rtmb">Common issues with <code>RTMB</code><a class="anchor" aria-label="anchor" href="#common-issues-with-rtmb"></a>
+<h3 id="rtmb-tips-and-issues">
+<code>RTMB</code> tips and issues<a class="anchor" aria-label="anchor" href="#rtmb-tips-and-issues"></a>
 </h3>
+<div class="section level4">
+<h4 id="tips">Tips<a class="anchor" aria-label="anchor" href="#tips"></a>
+</h4>
+<p>When using the forward algorithm, it is usually a good idea to
+run:</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">RTMB</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/Tape.html" class="external-link">TapeConfig</a></span><span class="op">(</span>matmul <span class="op">=</span> <span class="st">"plain"</span><span class="op">)</span></span></code></pre></div>
+<p>This changes how <code>RTMB</code> internally represents matrix
+multiplications and can speed up the forward algorithm considerably.</p>
+<p>If you want to use non-standard probability distributions, check-out
+the <code>R</code> package <a href="https://janoleko.github.io/RTMBdist/"><code>RTMBdist</code></a>
+which provides a library of <code>AD</code>-compatible distributions
+that can be used inside likelihood functions.</p>
+</div>
+<div class="section level4">
+<h4 id="common-issues">Common issues<a class="anchor" aria-label="anchor" href="#common-issues"></a>
+</h4>
 <p>There are some problems with <code>RTMB</code> one has to keep in
 mind. They can be a bit annoying, but in my opinion the benefits of
 automatic differentiation far outweigh the drawbacks. I list the main
@@ -657,14 +674,14 @@ need to be overloaded to allow for automatic differentiation which
 cannot be done by default. In typical model setups <code>LaMa</code>
 functions do this themselves, but if you go a very individualistic route
 and get an error like</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid argument to 'advector' (lost class attribute?)"</span><span class="op">)</span></span></code></pre></div>
 <p>you might have to overload the operator yourself. To do this put</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"[&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"[&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>as the first line of your likelihood function. If the error still
 prevails also add</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="st">"c"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span></span>
 <span><span class="st">"diag&lt;-"</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/ADoverload.html" class="external-link">ADoverload</a></span><span class="op">(</span><span class="st">"diag&lt;-"</span><span class="op">)</span></span></code></pre></div>
 <p>which should hopefully fix the error.</p>
@@ -674,16 +691,25 @@ prevails also add</p>
 which screws up the automatic differentiation due to the mismatching
 types. To avoid this, always initiate with <code>numeric</code> or
 <code>NaN</code> values. For example, don’t do</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span>dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># which is the same as</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>but rather</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NaN</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
 <span><span class="va">X</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fl">0</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>to avoid the error.</p>
+<p>If you create and array and fill with something parameter-dependent,
+you should also do:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/RTMB/man/AD.html" class="external-link">AD</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>This makes sure that <code>X</code> is an AD object from the
+beginning and classes are compatible.</p>
+<p>Wrapping things in <code><a href="https://rdrr.io/pkg/RTMB/man/AD.html" class="external-link">AD()</a></code> is generally a good idea to fix
+the above error, as it does not introduce considerable overhead when not
+necessary.</p>
 <p>Importantly, you cannot use <code>if</code> or <code>max</code>/
 <code>min</code> statements <strong>on the parameter itself</strong> as
 these are not differentiable. If you do so, <code>RTMB</code> will fail
@@ -695,7 +721,7 @@ from the one at a different parameter value. Often, you can remedy this
 behaviour by exploiting the fact that <code><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs()</a></code> is
 differentiable (in code). For example, you can create the differentiable
 <code>max</code> alternative:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">max2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="op">(</span><span class="va">x</span> <span class="op">+</span> <span class="va">y</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -706,7 +732,7 @@ the optimisation.</p>
 <p>Furthermore, there are some unfortunate side effects of R’s ‘byte
 compiler’ (enabled by default in R). So if you encounter an error not
 matching the previous ones, try disabling the byte compiler with</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">compiler</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/compiler/compile.html" class="external-link">enableJIT</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3</span></span></code></pre></div>
 <p>and see if the error is resolved.</p>
@@ -730,6 +756,7 @@ group</a>.</p>
 <p>Continue reading with <a href="https://janoleko.github.io/LaMa/articles/Penalised_splines.html"><strong>Penalised
 splines</strong></a>.</p>
 </blockquote>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

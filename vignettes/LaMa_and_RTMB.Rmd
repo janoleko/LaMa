@@ -26,7 +26,7 @@ The recently introduced `R` package `RTMB` conveniently allows for automatic dif
 
 Here we demonstrate how to use `LaMa` and `RTMB` to fit hidden Markov models and their extensions. We start by loading the `LaMa` package, which automatically loads `RTMB` as well.
 
-```{r setup}
+```{r setup, message = FALSE}
 library(LaMa)
 ```
 
@@ -103,7 +103,12 @@ but a few points should be made here:
 
 Having defined the negative log-likelihood, we can now create the autmatically differentiable objective function and fit the model. This needs a little explanation: At this point, `RTMB` takes the negative log-likelihood function and generates its own (very fast) version of it, including a gradient. `MakeADFun()` now also grabs whatever is saved as `dat` in the global environment and *bakes* it into the objective function. Therefore, changes to `dat` after this point will have no effect on the optimisation result. We set `silent = TRUE` to suppress printing of the optimisation process.
 
-```{r ADfunction}
+```{r TapeConfig, include=FALSE}
+old <- RTMB::TapeConfig()
+RTMB::TapeConfig(matmul = "plain") # speeds up forward algorithm
+```
+
+```{r ADfunction, message = FALSE}
 obj = MakeADFun(nll, par, silent = TRUE) # creating the objective function
 ```
 
@@ -319,6 +324,10 @@ segments(x0 = 1:24, y0 = Delta[,2]-1.96*Deltasd[,2], lwd = 2,
 axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 ```
 
+```{r restore_tapeConfig, include = FALSE}
+RTMB::TapeConfig(old) # restoring old config
+```
+
 <!-- ### Penalized splines -->
 
 <!-- We can go one step further and model the transition probabilities as smooth functions of the time of day using cyclic P-splines, i.e. -->
@@ -481,7 +490,20 @@ legend("topleft", lwd = 2, lty = c(1,3), bty = "n",
        legend = c(expression(gamma[12]^(t)), expression(gamma[21]^(t))))
 ``` -->
 
-### Common issues with `RTMB`
+### `RTMB` tips and issues
+
+#### Tips
+
+When using the forward algorithm, it is usually a good idea to run:
+```{r TapeConfigPrint, eval = FALSE}
+RTMB::TapeConfig(matmul = "plain")
+```
+This changes how `RTMB` internally represents matrix multiplications and can speed up the forward algorithm considerably.
+
+If you want to use non-standard probability distributions, check-out the `R` package [`RTMBdist`](https://janoleko.github.io/RTMBdist/) which provides a library of `AD`-compatible distributions that can be used inside likelihood functions. 
+
+
+#### Common issues
 
 There are some problems with `RTMB` one has to keep in mind. They can be a bit annoying, but in my opinion the benefits of automatic differentiation far outweigh the drawbacks. I list the main ones I have encountered here, but please tell me if you encounter more, such that they can be added.
 
@@ -513,6 +535,14 @@ X = array(NaN, dim = c(1,2,3))
 X = array(0, dim = c(1,2,3))
 ```
 to avoid the error.
+
+If you create and array and fill with something parameter-dependent, you should also do:
+```{r arrayfill, eval = FALSE}
+X <- AD(array(...))
+```
+This makes sure that `X` is an AD object from the beginning and classes are compatible.
+
+Wrapping things in `AD()` is generally a good idea to fix the above error, as it does not introduce considerable overhead when not necessary.
 
 Importantly, you cannot use `if` or `max`/ `min` statements **on the parameter itself** as these are not differentiable. If you do so, `RTMB` will fail and probably does not produce a helpful error message. The problem here results from `RTMB` building the *tape* (computational graph) of the function at the initial parameter value. When you have `if` statements, the resulting gradient will be different from the one at a different parameter value. Often, you can remedy this behaviour by exploiting the fact that `abs()` is differentiable (in code). For example, you can create the differentiable `max` alternative:
 ```{r max2, eval = FALSE}

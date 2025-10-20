@@ -4,7 +4,7 @@
 \alias{plot.LaMaResiduals}
 \title{Plot pseudo-residuals}
 \usage{
-\method{plot}{LaMaResiduals}(x, hist = FALSE, col = "darkblue", lwd = 1.5, main = NULL, ...)
+\method{plot}{LaMaResiduals}(x, hist = TRUE, col = "darkblue", lwd = 1.5, main = NULL, ...)
 }
 \arguments{
 \item{x}{pseudo-residuals as returned by \code{\link{pseudo_res}}}

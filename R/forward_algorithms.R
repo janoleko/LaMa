@@ -118,6 +118,11 @@ forward <- function(delta,
     
   } else if(ad) { # ad version
     
+    cfg <- RTMB::TapeConfig()
+    if(cfg$matmul != "plain") {
+      cat("Performance tip: Consider running `TapeConfig(matmul = 'plain')` before `MakeADFun()` to speed up the forward algorithm.\n")
+    }
+    
     "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
@@ -373,6 +378,12 @@ forward_g = function(delta,
     }
     
   } else if(ad) {
+    
+    # Nice message telling the user to set matmul to plain for better performance
+    cfg <- RTMB::TapeConfig()
+    if(cfg$matmul != "plain") {
+      cat("Performance tip: Consider running `TapeConfig(matmul = 'plain')` before `MakeADFun()` to speed up the forward algorithm.\n")
+    }
     
     "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
     "c" <- ADoverload("c")

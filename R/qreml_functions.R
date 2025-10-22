@@ -1966,7 +1966,8 @@ summary.qremlModel <- function(object, ...) {
                 paste0("all_", object$psname), "parname", object$parname, paste0("relist_", object$parname), 
                 paste0("map_", object$psname), "psname", paste0(object$parname, "_vec"), 
                 "edf", "Hessian_conditional", "obj_joint",
-                "beta", "delta", "Gamma", "lambda", "llk", "n_fixpar", "df", "nobs")
+                "beta", "delta", "Gamma", "lambda", "llk", "n_fixpar", "df", "nobs",
+                "llk_restricted", "allmods")
   
   remaining_names <- setdiff(names(object), excluded)
   

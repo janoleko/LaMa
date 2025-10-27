@@ -4,7 +4,16 @@
 \alias{tpm_g}
 \title{Build all transition probability matrices of an inhomogeneous HMM}
 \usage{
-tpm_g(Z, beta, byrow = FALSE, ad = NULL, report = TRUE, sparse = FALSE)
+tpm_g(
+  Z,
+  beta,
+  Eta = NULL,
+  byrow = FALSE,
+  ref = NULL,
+  ad = NULL,
+  report = TRUE,
+  sparse = FALSE
+)
 }
 \arguments{
 \item{Z}{covariate design matrix with or without intercept column, i.e. of dimension c(n, p) or c(n, p+1)
@@ -15,9 +24,16 @@ If \code{Z} has only p columns, an intercept column of ones will be added automa
 
 Needs to be of dimension c(N*(N-1), p+1), where the first column contains the intercepts.}
 
+\item{Eta}{optional pre-calculated linear predictor matrix of dimension c(n, N*(N-1)). 
+
+Usually, \code{Eta} is calculated as \code{Z \%*\% t(beta)}. If provided, no \code{Z} and \code{beta} are necessary and will be ignored.}
+
 \item{byrow}{logical indicating if each transition probability matrix should be filled by row
  
 Defaults to \code{FALSE}, but should be set to \code{TRUE} if one wants to work with a matrix of beta parameters returned by popular HMM packages like \code{moveHMM}, \code{momentuHMM}, or \code{hmmTMB}.}
+
+\item{ref}{Optional integer vector of length N giving, for each row, the column index of the reference state 
+(its predictor is fixed to 0). Defaults to the diagonal (\code{ref = 1:N}).}
 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
 

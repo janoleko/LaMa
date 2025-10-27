@@ -434,7 +434,6 @@ pseudo_res_discrete <- function(obs,
 #'                   mod = mod)
 #'                   
 #' plot(pres)
-#' plot(pres, hist = TRUE)
 plot.LaMaResiduals <- function(
     x, 
     hist = TRUE,

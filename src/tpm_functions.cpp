@@ -94,6 +94,47 @@ arma::cube tpm_g2_cpp(const arma::mat& Eta,
 }
 
 // [[Rcpp::export]]
+arma::cube tpm_g3_cpp(const arma::mat& Eta,
+                      const arma::uword N,
+                      const arma::uvec& ref,   // 1-based from R
+                      const bool byrow = false)
+{
+  const arma::uword n = Eta.n_rows;
+  // if (ref.n_elem != N) Rcpp::stop("ref must have length N");
+  // const arma::uword n_trans = N * (N - 1);
+  // if (Eta.n_cols != n_trans) Rcpp::stop("Eta must have N*(N-1) columns");
+  
+  arma::uvec ref0 = ref - 1; // convert to 0-based indexing
+  if (arma::any(ref0 >= N)) Rcpp::stop("ref values must be in 1:N");
+  
+  arma::cube Gamma(N, N, n);
+  const arma::mat expEta = arma::exp(Eta);
+  
+  for (arma::uword t = 0; t < n; ++t) {
+    arma::mat G(N, N, arma::fill::ones); // temp slice
+    arma::uword col_ind = 0;
+    
+    for (arma::uword i = 0; i < N; ++i) {
+      for (arma::uword j = 0; j < N; ++j) {
+        if (!byrow) {
+          if (i != ref0[j]) G(j, i) = expEta(t, col_ind++);
+        } else {
+          if (j != ref0[i]) G(i, j) = expEta(t, col_ind++);
+        }
+      }
+    }
+    
+    // normalize rows
+    G = arma::normalise(G, 1, 1);
+    Gamma.slice(t) = G;
+  }
+  
+  return Gamma;
+}
+
+
+
+// [[Rcpp::export]]
 arma::cube semigroup_cpp(const arma::mat& Q, const std::vector<double>& times) {
   int N = Q.n_cols;
   int n = times.size();

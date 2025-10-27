@@ -462,7 +462,8 @@ plot.LaMaResiduals <- function(
   qqnorm(res_clean, main = main[1], 
          xlab = "theoretical quantiles", ylab = "sample quantiles",
          bty = "n", pch = 16, col = "#00000070")
-  qqline(res_clean, col = col, lwd = lwd)
+  # qqline(res_clean, col = col, lwd = lwd)
+  abline(a = 0, b = 1, col = col, lwd = lwd)
   
   # Histogram with normal curve
   if (hist) {

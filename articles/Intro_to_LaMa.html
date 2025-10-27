@@ -122,7 +122,7 @@ typically summarised in the so-called <strong>transition probability
 matrix</strong> (t.p.m.) <span class="math display">\Gamma =
 (\gamma_{ij})_{i,j = 1, \dots, N}</span> where row <span class="math inline">i</span> is the conditional one-step ahead
 distribution of the state process given that the current state is <span class="math inline">i</span>. Such a matrix is most-conveniently
-parametrised by an unconstrained parameter vector for the <span class="math inline">N (N-1)</span> off-diagonal elements. Each row can
+parameterised by an unconstrained parameter vector for the <span class="math inline">N (N-1)</span> off-diagonal elements. Each row can
 then be computed via the inverse multinomial logistic link (also known
 as softmax). This can be done using the function <code><a href="../reference/tpm.html">tpm()</a></code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -270,7 +270,7 @@ e.g. <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.117   0.014   0.131</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.116   0.015   0.132</span></span></code></pre></div>
 <p>We see that implementation of the forward algorithm in C++ leads to
 really fast estimation speeds.</p>
 </div>

@@ -401,8 +401,8 @@ pseudo_res_discrete <- function(obs,
 #' @returns NULL, plots the pseudo-residuals in a 2- or 3-panel layout
 #' @export
 #'
-#' @importFrom graphics par lines hist
-#' @importFrom stats acf na.pass qqnorm qqline
+#' @importFrom graphics par lines hist abline
+#' @importFrom stats acf na.pass qqnorm
 #' @importFrom RTMB dnorm
 #'
 #' @examples

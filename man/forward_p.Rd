@@ -83,6 +83,7 @@ Other forward algorithms:
 \code{\link{forward}()},
 \code{\link{forward2}()},
 \code{\link{forward_g}()},
+\code{\link{forward_g2}()},
 \code{\link{forward_hsmm}()},
 \code{\link{forward_ihsmm}()},
 \code{\link{forward_phsmm}()}

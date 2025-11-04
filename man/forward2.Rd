@@ -69,6 +69,7 @@ mod = nlm(nll, par, step = trex$step[1:1000])
 Other forward algorithms: 
 \code{\link{forward}()},
 \code{\link{forward_g}()},
+\code{\link{forward_g2}()},
 \code{\link{forward_hsmm}()},
 \code{\link{forward_ihsmm}()},
 \code{\link{forward_p}()},

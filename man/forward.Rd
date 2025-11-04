@@ -9,10 +9,10 @@ forward(
   Gamma,
   allprobs,
   trackID = NULL,
+  logspace = FALSE,
   ad = NULL,
   bw = NULL,
-  report = TRUE,
-  logspace = FALSE
+  report = TRUE
 )
 }
 \arguments{
@@ -28,6 +28,10 @@ If provided, the total log-likelihood will be the sum of each track's likelihood
 In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension \code{c(N,N,k)}, with one (homogeneous) transition probability matrix for each track.
 Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension \code{c(k,N)}, can be provided, such that each track starts with it's own initial distribution.}
 
+\item{logspace}{logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. 
+If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+Note that this is only supported when used in AD mode with \code{RTMB}.}
+
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
 
 \item{bw}{optional integer, indicating the bandwidth for a banded approximation of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.}
@@ -37,10 +41,6 @@ Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \cod
 
 When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
 \code{forward} should only be called \strong{once} with a \code{trackID} argument.}
-
-\item{logspace}{logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. 
-If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
-Note that this is only supported when used in AD mode with \code{RTMB}.}
 }
 \value{
 log-likelihood for given data and parameters
@@ -74,6 +74,7 @@ mod = nlm(nll, par, step = trex$step[1:1000])
 Other forward algorithms: 
 \code{\link{forward2}()},
 \code{\link{forward_g}()},
+\code{\link{forward_g2}()},
 \code{\link{forward_hsmm}()},
 \code{\link{forward_ihsmm}()},
 \code{\link{forward_p}()},

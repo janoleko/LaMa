@@ -305,6 +305,24 @@ forward <- function(delta,
   nObs <- nrow(allprobs)
   nStates <- ncol(allprobs)
   
+  # exit if only one state
+  if (nStates == 1) return(sum(log(allprobs)))
+  
+  # check trackID
+  if (!is.null(trackID)) {
+    if (length(trackID) != nObs) {
+      stop("Length of trackID must equal number of rows in allprobs.")
+    }
+    # coerce to integer track indices
+    trackID <- as.integer(as.factor(trackID))
+    uID <- unique(trackID)
+    nTracks <- length(uID)
+    trackID <- match(trackID, uID) # ensure trackID is 1, 2, ..., nTracks
+  } else {
+    uID <- 1L
+    nTracks <- 1L
+  }
+  
   # if allprobs on log-scale, report exp(allprobs)
   if(logspace){
     logallprobs <- allprobs
@@ -326,80 +344,61 @@ forward <- function(delta,
     ad <- ad_context()
   }
   
-  # handle potential trackID
-  if(is.null(trackID)) {
-    uID <- c(1)
-    nTracks <- 1
-  } else {
-    uID <- unique(trackID)
-    nTracks <- length(uID)
-  }
-  
   
   ##### Dimension matching for input arguments #####
   
-  if(is.null(dim(delta))) { # delta is vector -> is.vector doesn't work if delta is advector
-    delta <- AD(matrix(delta, nrow = 1, ncol = length(delta), byrow = TRUE))
+  ## handle delta
+  delta <- AD(as.matrix(delta))
+  d <- dim(delta)
+  
+  # allow N x 1 and transpose
+  if (d[1] == nStates && d[2] == 1) {
+    delta <- t(delta)
+    d <- dim(delta)
+  }
+  
+  # check dimensions depending on trackID
+  if (is.null(trackID)) {
+    # single track: must be 1 x N
+    if (!(d[1] == 1 && d[2] == nStates)) {
+      stop("delta must be a vector of length N or a matrix of size (1, N) or (N, 1) when no trackID is provided.")
+    }
+  } else {
+    # multiple tracks: allow vector, 1xN, or kxN
+    if (d[1] == 1 && d[2] == nStates) {
+      delta <- delta[rep(1, nTracks), , drop = FALSE]
+    } else if (!(d[1] == nTracks && d[2] == nStates)) {
+      stop("delta must have dimensions (k, N), (1, N), or be a vector of length N when trackID is provided.")
+    }
   }
 
-  # different input handling depending on whether trackID is provided
-  if(is.null(trackID)) {
-    # Initial distribution: Result is matrix of dimension c(1, nStates)
-    if (!all(dim(delta) == c(1, nStates))) {
-      if (all(dim(delta) == c(nStates, 1))) {
-        delta <- t(delta)  # transpose to (1, nStates)
-      } else {
-        stop("delta must be a vector of length N or a matrix of dimension (1, N) or (N, 1)")
-      }
+  # handle Gamma
+  
+  Gamma <- AD(as.array(Gamma))
+  dG <- dim(Gamma)
+  
+  # allow matrix input -> convert to 3D array
+  if (length(dG) == 2) {
+    Gamma <- AD(array(Gamma, dim = c(dG, 1)))
+    dG <- dim(Gamma)
+  }
+  
+  # basic square check
+  if (!all(dG[1:2] == nStates)) {
+    stop("Gamma must be square with dimensions (N, N).")
+  }
+  
+  # expand across tracks if necessary
+  if (is.null(trackID)) {
+    if (dG[3] != 1) {
+      stop("Gamma must have third dimension 1 when no trackID is provided.")
     }
-    # Check Gamma
-    if(is.array(Gamma)) {
-      dG <- dim(Gamma)
-      if(dG[1] != nStates | dG[2] != nStates) {
-        stop("Gamma must be a matrix of dimension (N, N)")
-      }
-      if(length(dG) == 2) {
-        Gamma <- AD(array(Gamma, dim = c(dG, 1)))
-      } else if(length(dG) == 3) {
-        if(dG[3] != 1) {
-          stop("Gamma must be a matrix of dimension (N, N) or an array of dimension c(N, N, 1)")
-        }
-      } else{
-        stop("Gamma has wrong dimensions.")
-      }
-    } 
   } else {
-    # Initial distribution: Result is matrix of dimension c(1, nStates)
-    if (!all(dim(delta) == c(nTracks, nStates))) {
-      if (all(dim(delta) == c(nStates, 1))) {
-        delta <- t(delta)
-      }
-      if (all(dim(delta) == c(1, nStates))) {
-        delta <- delta[rep(1, nTracks), , drop = FALSE]  # replicate to (nTracks, nStates)
-      } else {
-        stop("delta must be a vector of length N or a matrix of dimension (k, N) or (N, k)")
-      }
+    if (dG[3] == 1 && nTracks > 1) {
+      Gamma <- AD(array(Gamma, dim = c(nStates, nStates, nTracks)))
+    } else if (dG[3] != nTracks) {
+      stop("Gamma must have third dimension equal to number of tracks.")
     }
-    # Check Gamma
-    if(is.array(Gamma)) {
-      dG <- dim(Gamma)
-      if(dG[1] != nStates | dG[2] != nStates) {
-        stop("Gamma must be a matrix of dimension (N, N)")
-      }
-      if(length(dG) == 2) {
-        Gamma <- AD(array(Gamma, dim = c(dG, nTracks)))
-      } else if(length(dG) == 3) {
-        if(dG[3] != nTracks) {
-          if(dG[3] == 1){
-            Gamma <- AD(array(Gamma, dim = c(dG[1], dG[2], nTracks)))
-          } else{
-            stop("Gamma must be a matrix of dimension (N, N) or an array of dimension c(N, N, k), matching the number tracks.")
-          }
-        } 
-      } else{
-        stop("Gamma has wrong dimensions.")
-      }
-    } 
   }
   
   ### Inputs are cleaned up now: 
@@ -484,13 +483,13 @@ forward <- function(delta,
         #   - compute likelihood of block from t to t + bw using this approximation
         #   - this way, blocks are independent after a time lag of 2 * bw (at most)
         
-        # If banded, run this baned version below for remaining blocks
+        # If banded, run this banded version below for remaining blocks
         if(!is.null(bw) & (k < length(ind))) {
           # State distribution needs to be computed to initialise blocks
           stateDist <- AD(matrix(NaN, nrow = length(ind), ncol = nStates))
           stateDist[1, ] <- as.numeric(delta_i)
-          for(i in 2:length(ind)) {
-            stateDist[i, ] <- stateDist[i-1, ] %*% Gamma_i
+          for(l in 2:length(ind)) {
+            stateDist[l, ] <- stateDist[l-1, ] %*% Gamma_i
           }
           
           startInd <- k + 1

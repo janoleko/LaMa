@@ -1224,7 +1224,7 @@ forward_g <- function(delta,
         # If banded, run this baned version below for remaining blocks
         if(!is.null(bw) & (k < length(ind))) {
           # state distribution needs to be computed to initialise blocks
-          stateDist <- stateDist_banded(delta_i, Gamma_i, bw = bw)
+          stateDist <- stateDist_banded(exp(logdelta_i), Gamma_i, bw = bw)
           
           startInd <- k + 1
           endInd <- 2 * k

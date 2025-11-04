@@ -55,10 +55,10 @@
 <span>  <span class="va">Gamma</span>,</span>
 <span>  <span class="va">allprobs</span>,</span>
 <span>  trackID <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  logspace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ad <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  logspace <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  report <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -85,6 +85,12 @@ In this case, <code>Gamma</code> can be a matrix, leading to the same transition
 Furthermore, instead of a single vector <code>delta</code> corresponding to the initial distribution, a <code>delta</code> matrix of initial distributions, of dimension <code>c(k,N)</code>, can be provided, such that each track starts with it's own initial distribution.</p></dd>
 
 
+<dt id="arg-logspace">logspace<a class="anchor" aria-label="anchor" href="#arg-logspace"></a></dt>
+<dd><p>logical, indicating whether the probabilities/ densities in the <code>allprobs</code> matrix are on log-scale.
+If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+Note that this is only supported when used in AD mode with <code>RTMB</code>.</p></dd>
+
+
 <dt id="arg-ad">ad<a class="anchor" aria-label="anchor" href="#arg-ad"></a></dt>
 <dd><p>optional logical, indicating whether automatic differentiation with <code>RTMB</code> should be used. By default, the function determines this itself.</p></dd>
 
@@ -99,12 +105,6 @@ Defaults to <code>TRUE</code>, but only works if <code>ad = TRUE</code>, as it u
 <p>When there are multiple tracks, for compatibility with downstream functions like <code><a href="viterbi.html">viterbi</a></code>, <code><a href="stateprobs.html">stateprobs</a></code> or <code><a href="pseudo_res.html">pseudo_res</a></code>,
 <code>forward</code> should only be called <strong>once</strong> with a <code>trackID</code> argument.</p></dd>
 
-
-<dt id="arg-logspace">logspace<a class="anchor" aria-label="anchor" href="#arg-logspace"></a></dt>
-<dd><p>logical, indicating whether the probabilities/ densities in the <code>allprobs</code> matrix are on log-scale.
-If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
-Note that this is only supported when used in AD mode with <code>RTMB</code>.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -115,6 +115,7 @@ Note that this is only supported when used in AD mode with <code>RTMB</code>.</p
     <div class="dont-index"><p>Other forward algorithms:
 <code><a href="forward2.html">forward2</a>()</code>,
 <code><a href="forward_g.html">forward_g</a>()</code>,
+<code><a href="forward_g2.html">forward_g2</a>()</code>,
 <code><a href="forward_hsmm.html">forward_hsmm</a>()</code>,
 <code><a href="forward_ihsmm.html">forward_ihsmm</a>()</code>,
 <code><a href="forward_p.html">forward_p</a>()</code>,

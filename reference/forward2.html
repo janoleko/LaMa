@@ -56,7 +56,6 @@
 <span>  <span class="va">allprobs</span>,</span>
 <span>  trackID <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ad <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  logspace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -87,10 +86,6 @@ Furthermore, instead of a single vector <code>delta</code> corresponding to the 
 
 <dt id="arg-ad">ad<a class="anchor" aria-label="anchor" href="#arg-ad"></a></dt>
 <dd><p>optional logical, indicating whether automatic differentiation with <code>RTMB</code> should be used. By default, the function determines this itself.</p></dd>
-
-
-<dt id="arg-bw">bw<a class="anchor" aria-label="anchor" href="#arg-bw"></a></dt>
-<dd><p>optional integer, indicating the bandwith for a banded version of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.</p></dd>
 
 
 <dt id="arg-report">report<a class="anchor" aria-label="anchor" href="#arg-report"></a></dt>

@@ -56,6 +56,7 @@
 <span>  <span class="va">allprobs</span>,</span>
 <span>  trackID <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ad <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bw <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  report <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  logspace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -66,37 +67,43 @@
 
 
 <dl><dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
-<dd><p>initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if <code>trackID</code> is provided</p></dd>
+<dd><p>initial or stationary distribution of length <code>N</code>, or matrix of dimension <code>c(k,N)</code> for <code>k</code> independent tracks, if <code>trackID</code> is provided</p></dd>
 
 
 <dt id="arg-gamma">Gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p>transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if <code>trackID</code> is provided</p></dd>
+<dd><p>transition probability matrix of dimension <code>c(N,N)</code>, or array of <code>k</code> transition probability matrices of dimension <code>c(N,N,k)</code>, if <code>trackID</code> is provided</p></dd>
 
 
 <dt id="arg-allprobs">allprobs<a class="anchor" aria-label="anchor" href="#arg-allprobs"></a></dt>
-<dd><p>matrix of state-dependent probabilities/ density values of dimension c(n, N)</p></dd>
+<dd><p>matrix of state-dependent probabilities/ density values of dimension <code>c(n, N)</code></p></dd>
 
 
 <dt id="arg-trackid">trackID<a class="anchor" aria-label="anchor" href="#arg-trackid"></a></dt>
-<dd><p>optional vector of length n containing IDs</p>
+<dd><p>optional vector of length <code>n</code> containing IDs that separate tracks.</p>
 <p>If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
-In this case, <code>Gamma</code> can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
-Furthermore, instead of a single vector <code>delta</code> corresponding to the initial distribution, a <code>delta</code> matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.</p></dd>
+In this case, <code>Gamma</code> can be a matrix, leading to the same transition probabilities for each track, or an array of dimension <code>c(N,N,k)</code>, with one (homogeneous) transition probability matrix for each track.
+Furthermore, instead of a single vector <code>delta</code> corresponding to the initial distribution, a <code>delta</code> matrix of initial distributions, of dimension <code>c(k,N)</code>, can be provided, such that each track starts with it's own initial distribution.</p></dd>
 
 
 <dt id="arg-ad">ad<a class="anchor" aria-label="anchor" href="#arg-ad"></a></dt>
 <dd><p>optional logical, indicating whether automatic differentiation with <code>RTMB</code> should be used. By default, the function determines this itself.</p></dd>
 
 
+<dt id="arg-bw">bw<a class="anchor" aria-label="anchor" href="#arg-bw"></a></dt>
+<dd><p>optional integer, indicating the bandwidth for a banded approximation of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.</p></dd>
+
+
 <dt id="arg-report">report<a class="anchor" aria-label="anchor" href="#arg-report"></a></dt>
 <dd><p>logical, indicating whether <code>delta</code>, <code>Gamma</code>, <code>allprobs</code>, and potentially <code>trackID</code> should be reported from the fitted model.
 Defaults to <code>TRUE</code>, but only works if <code>ad = TRUE</code>, as it uses the <code>RTMB</code> package.</p>
-<p><strong>Caution:</strong> When there are multiple tracks, for compatibility with downstream functions like <code><a href="viterbi.html">viterbi</a></code>, <code><a href="stateprobs.html">stateprobs</a></code> or <code><a href="pseudo_res.html">pseudo_res</a></code>,
+<p>When there are multiple tracks, for compatibility with downstream functions like <code><a href="viterbi.html">viterbi</a></code>, <code><a href="stateprobs.html">stateprobs</a></code> or <code><a href="pseudo_res.html">pseudo_res</a></code>,
 <code>forward</code> should only be called <strong>once</strong> with a <code>trackID</code> argument.</p></dd>
 
 
 <dt id="arg-logspace">logspace<a class="anchor" aria-label="anchor" href="#arg-logspace"></a></dt>
-<dd><p>logical, indicating whether the probabilities/ densities in the <code>allprobs</code> matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.</p></dd>
+<dd><p>logical, indicating whether the probabilities/ densities in the <code>allprobs</code> matrix are on log-scale.
+If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+Note that this is only supported when used in AD mode with <code>RTMB</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

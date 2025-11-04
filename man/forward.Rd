@@ -10,32 +10,37 @@ forward(
   allprobs,
   trackID = NULL,
   ad = NULL,
+  bw = NULL,
   report = TRUE,
   logspace = FALSE
 )
 }
 \arguments{
-\item{delta}{initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided}
+\item{delta}{initial or stationary distribution of length \code{N}, or matrix of dimension \code{c(k,N)} for \code{k} independent tracks, if \code{trackID} is provided}
 
-\item{Gamma}{transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided}
+\item{Gamma}{transition probability matrix of dimension \code{c(N,N)}, or array of \code{k} transition probability matrices of dimension \code{c(N,N,k)}, if \code{trackID} is provided}
 
-\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension c(n, N)}
+\item{allprobs}{matrix of state-dependent probabilities/ density values of dimension \code{c(n, N)}}
 
-\item{trackID}{optional vector of length n containing IDs
+\item{trackID}{optional vector of length \code{n} containing IDs that separate tracks.
 
 If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
-In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
-Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
+In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension \code{c(N,N,k)}, with one (homogeneous) transition probability matrix for each track.
+Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension \code{c(k,N)}, can be provided, such that each track starts with it's own initial distribution.}
 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
+
+\item{bw}{optional integer, indicating the bandwidth for a banded approximation of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.}
 
 \item{report}{logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
 Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 
 
-\strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
+When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
 \code{forward} should only be called \strong{once} with a \code{trackID} argument.}
 
-\item{logspace}{logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.}
+\item{logspace}{logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. 
+If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+Note that this is only supported when used in AD mode with \code{RTMB}.}
 }
 \value{
 log-likelihood for given data and parameters

@@ -50,7 +50,7 @@
 #'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
 #'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
 #' mod = nlm(nll, par, step = trex$step[1:1000])
-forward <- function(delta, 
+forward2 <- function(delta, 
                     Gamma, 
                     allprobs, 
                     trackID = NULL, 
@@ -245,22 +245,24 @@ forward <- function(delta,
 #' 
 #' @family forward algorithms
 #'
-#' @param delta initial or stationary distribution of length N, or matrix of dimension c(k,N) for k independent tracks, if \code{trackID} is provided
-#' @param Gamma transition probability matrix of dimension c(N,N), or array of k transition probability matrices of dimension c(N,N,k), if \code{trackID} is provided
-#' @param allprobs matrix of state-dependent probabilities/ density values of dimension c(n, N)
-#' @param trackID optional vector of length n containing IDs
+#' @param delta initial or stationary distribution of length \code{N}, or matrix of dimension \code{c(k,N)} for \code{k} independent tracks, if \code{trackID} is provided
+#' @param Gamma transition probability matrix of dimension \code{c(N,N)}, or array of \code{k} transition probability matrices of dimension \code{c(N,N,k)}, if \code{trackID} is provided
+#' @param allprobs matrix of state-dependent probabilities/ density values of dimension \code{c(n, N)}
+#' @param trackID optional vector of length \code{n} containing IDs that separate tracks.
 #' 
 #' If provided, the total log-likelihood will be the sum of each track's likelihood contribution.
-#' In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension c(N,N,k), with one (homogeneous) transition probability matrix for each track.
-#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.
+#' In this case, \code{Gamma} can be a matrix, leading to the same transition probabilities for each track, or an array of dimension \code{c(N,N,k)}, with one (homogeneous) transition probability matrix for each track.
+#' Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension \code{c(k,N)}, can be provided, such that each track starts with it's own initial distribution.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
-#' @param bw optional integer, indicating the bandwith for a banded version of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.
+#' @param bw optional integer, indicating the bandwidth for a banded approximation of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.
 #' @param report logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
 #' Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 
 #' 
-#' \strong{Caution:} When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
+#' When there are multiple tracks, for compatibility with downstream functions like \code{\link{viterbi}}, \code{\link{stateprobs}} or \code{\link{pseudo_res}}, 
 #' \code{forward} should only be called \strong{once} with a \code{trackID} argument.
-#' @param logspace logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+#' @param logspace logical, indicating whether the probabilities/ densities in the \code{allprobs} matrix are on log-scale. 
+#' If so, internal computations are also done on log-scale which is numerically more robust when the entries are very small.
+#' Note that this is only supported when used in AD mode with \code{RTMB}.
 #'
 #' @return log-likelihood for given data and parameters
 #' @export
@@ -287,7 +289,7 @@ forward <- function(delta,
 #'         log(c(0.3, 2.5)), # initial means for step length (log-transformed)
 #'         log(c(0.2, 1.5))) # initial sds for step length (log-transformed)
 #' mod = nlm(nll, par, step = trex$step[1:1000])
-forward2 <- function(delta, 
+forward <- function(delta, 
                     Gamma, 
                     allprobs, 
                     trackID = NULL, 
@@ -296,6 +298,14 @@ forward2 <- function(delta,
                     report = TRUE,
                     logspace = FALSE){
   
+  # Check allprobs 
+  if(!is.matrix(allprobs)) {
+    stop("allprobs needs to be a matrix of dimension c(n, N).")
+  } 
+  nObs <- nrow(allprobs)
+  nStates <- ncol(allprobs)
+  
+  # if allprobs on log-scale, report exp(allprobs)
   if(logspace){
     logallprobs <- allprobs
     allprobs <- exp(logallprobs)
@@ -311,17 +321,12 @@ forward2 <- function(delta,
     REPORT(type)
   }
   
-  # if ad is not explicitly provided, check if delta is an advector
+  # if ad is not explicitly provided, check via RTMB:::ad_context()
   if(is.null(ad)){
     ad <- ad_context()
   }
   
-  if(!is.matrix(allprobs)) {
-    stop("allprobs needs to be a matrix of dimension c(n, N).")
-  } 
-  nObs <- nrow(allprobs)
-  nStates <- ncol(allprobs)
-  
+  # handle potential trackID
   if(is.null(trackID)) {
     uID <- c(1)
     nTracks <- 1
@@ -330,11 +335,14 @@ forward2 <- function(delta,
     nTracks <- length(uID)
   }
   
+  
+  ##### Dimension matching for input arguments #####
+  
   if(is.null(dim(delta))) { # delta is vector -> is.vector doesn't work if delta is advector
     delta <- AD(matrix(delta, nrow = 1, ncol = length(delta), byrow = TRUE))
   }
 
-  ### Dimension matching for input arguments ###
+  # different input handling depending on whether trackID is provided
   if(is.null(trackID)) {
     # Initial distribution: Result is matrix of dimension c(1, nStates)
     if (!all(dim(delta) == c(1, nStates))) {
@@ -394,11 +402,19 @@ forward2 <- function(delta,
     } 
   }
   
-  # now delta is matrix of dimension c(nTracks, nStates)
-  # and Gamma is array of dimension c(nStates, nStates, nTracks)
+  ### Inputs are cleaned up now: 
+  # - now delta is matrix of dimension c(nTracks, nStates)
+  # - and Gamma is array of dimension c(nStates, nStates, nTracks)
 
-  # non-ad version in C++
-  if(!ad) {
+  ### Now run forward algorithm: 
+  # - if ad == FALSE, use C++ version for speed
+  # - if ad == TRUE, use R version which is converted into diff'able C++ code via RTMB
+  
+  if(!ad) { # non-AD version in C++
+    
+    if(logspace) {
+      stop("Logspace computations are not supported in the non-AD version.")
+    }
     
     if(is.null(trackID)) {
       l <- forward_cpp_h(allprobs, delta[1, ], Gamma[,, 1])
@@ -406,24 +422,30 @@ forward2 <- function(delta,
       l <- forward_cpp_h_tracks(allprobs, delta, Gamma, calc_trackInd(trackID))
     }
     
-  } else if(ad) { # AD version
+  } else if(ad) { # AD version -> R code
     
+    # printing suggestion to change TapeConfig
     cfg <- RTMB::TapeConfig()
     if(cfg$matmul != "plain" & nStates <= 5) {
       cat("Performance tip: Consider running `TapeConfig(matmul = 'plain')` before `MakeADFun()` to speed up the forward algorithm.\n")
     }
     
-    "[<-" <- ADoverload("[<-") # overloading assignment operators, currently necessary
+    # AD overloading to avoid trouble 
+    "[<-" <- ADoverload("[<-")
     "c" <- ADoverload("c")
     "diag<-" <- ADoverload("diag<-")
     
     # Initialising log-likelihood at 0
     l <- 0 
     
-    if(is.null(trackID)) trackID <- rep(1, nObs) # if no trackID, only one track
+    if(is.null(trackID)) {
+      trackID <- rep(1, nObs) # if no trackID, only one track
+    }
     # outer loop only has one iteration in this case
     
-    ## forward algorithm
+    ### forward algorithm code:
+    # - if logspace == FALSE, regular computations
+    # - if logspace == TRUE, computations on log-scale for numerical precision
     if(!logspace) { # regular, non-logspace computations
       for(i in seq_len(nTracks)) {
         ind <- which(trackID == uID[i]) # indices of track i
@@ -453,9 +475,18 @@ forward2 <- function(delta,
           l <- l + log(sumfoo)
         }
         
+        # If banded, the approximation is as follows:
+        # - compute state distribution of the chain at each time point, independent of the observations
+        # - separate the log likelihood into blocks of size bw
+        # - for each block, starting at time t
+        #   - initialise with statedist_{t-bw}
+        #   - use observations from t-bw to t-1 to update (scaled) forward variable to get close approx to true one
+        #   - compute likelihood of block from t to t + bw using this approximation
+        #   - this way, blocks are independent after a time lag of 2 * bw (at most)
+        
         # If banded, run this baned version below for remaining blocks
         if(!is.null(bw) & (k < length(ind))) {
-          # state distribution needs to be computed to initialise blocks
+          # State distribution needs to be computed to initialise blocks
           stateDist <- AD(matrix(NaN, nrow = length(ind), ncol = nStates))
           stateDist[1, ] <- as.numeric(delta_i)
           for(i in 2:length(ind)) {
@@ -523,6 +554,8 @@ forward2 <- function(delta,
           l <- l + logsumfoo
           logfoo <- logfoo - logsumfoo
         }
+        
+        # For explanation of the banded approximation, see above (non-logspace version)
         
         # If banded, run this baned version below for remaining blocks
         if(!is.null(bw) & (k < length(ind))) {

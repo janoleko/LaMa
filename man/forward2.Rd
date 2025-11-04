@@ -10,7 +10,6 @@ forward2(
   allprobs,
   trackID = NULL,
   ad = NULL,
-  bw = NULL,
   report = TRUE,
   logspace = FALSE
 )
@@ -29,8 +28,6 @@ In this case, \code{Gamma} can be a matrix, leading to the same transition proba
 Furthermore, instead of a single vector \code{delta} corresponding to the initial distribution, a \code{delta} matrix of initial distributions, of dimension c(k,N), can be provided, such that each track starts with it's own initial distribution.}
 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
-
-\item{bw}{optional integer, indicating the bandwith for a banded version of the forward algorithm. This is for expert users only, if sparsity in the Hessian matrix w.r.t. observations is required.}
 
 \item{report}{logical, indicating whether \code{delta}, \code{Gamma}, \code{allprobs}, and potentially \code{trackID} should be reported from the fitted model. 
 Defaults to \code{TRUE}, but only works if \code{ad = TRUE}, as it uses the \code{RTMB} package. 

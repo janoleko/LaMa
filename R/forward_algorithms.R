@@ -412,9 +412,9 @@ forward <- function(delta,
   
   if(!ad) { # non-AD version in C++
     
-    if(logspace) {
-      stop("Logspace computations are not supported in the non-AD version.")
-    }
+    # if(logspace) {
+    #   stop("Logspace computations are not supported in the non-AD version.")
+    # }
     
     if(is.null(trackID)) {
       l <- forward_cpp_h(allprobs, delta[1, ], Gamma[,, 1])
@@ -1080,9 +1080,9 @@ forward_g <- function(delta,
   
   if(!ad) { # non-AD version in C++
     
-    if(logspace) {
-      stop("Logspace computations are not supported in the non-AD version.")
-    }
+    # if(logspace) {
+    #   stop("Logspace computations are not supported in the non-AD version.")
+    # }
     
     if(is.null(trackID)) {
       l <- forward_cpp_g(allprobs, delta[1, ], Gamma[,,-1])

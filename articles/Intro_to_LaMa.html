@@ -184,7 +184,7 @@ distribution.</p>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/data-1.png" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/data-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="inference-by-direct-numerical-maximum-likelihood-estimation">Inference by direct numerical maximum likelihood estimation<a class="anchor" aria-label="anchor" href="#inference-by-direct-numerical-maximum-likelihood-estimation"></a>
@@ -270,7 +270,7 @@ e.g. <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.128   0.012   0.140</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.106   0.010   0.115</span></span></code></pre></div>
 <p>We see that implementation of the forward algorithm in C++ leads to
 really fast estimation speeds.</p>
 </div>
@@ -293,7 +293,7 @@ parameters according to the code inside the likelihood:</p>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="st">"dashed"</span>, n<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span>, <span class="st">"black"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span>, <span class="st">"marginal"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/visualization-1.png" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/visualization-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
 <p>We can also decode the most probable state sequence with the
 <code><a href="../reference/viterbi.html">viterbi()</a></code> function, when first computing the
 <code>allprobs</code> matrix:</p>
@@ -306,7 +306,7 @@ parameters according to the code inside the likelihood:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">states</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, pch <span class="op">=</span> <span class="fl">20</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="va">color</span>, box.lwd <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/states-1.png" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/states-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
 <p>Lastly, we can do some model checking using
 <strong>pseudo-residuals</strong>. First, we need to compute the local
 state probabilities of our observations:</p>
@@ -325,7 +325,7 @@ is correct.</p>
 <span></span>
 <span><span class="co"># use the plotting method for LaMaResiduals</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/pseudores-1.png" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/pseudores-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
 <p>In this case, our model looks really good – as it should because we
 simulated from the exact same model.</p>
 <blockquote>
@@ -369,7 +369,7 @@ Hall/CRC.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

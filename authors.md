@@ -1,0 +1,20 @@
+# Authors and Citation
+
+## Authors
+
+- **Jan-Ole Koslik**. Author, maintainer.
+  [](https://orcid.org/0009-0004-1556-9053)
+
+## Citation
+
+Koslik J (2025). *LaMa: Fast Numerical Maximum Likelihood Estimation for
+Latent Markov Models*. R package version 2.0.6,
+<https://janoleko.github.io/LaMa/>.
+
+    @Manual{,
+      title = {LaMa: Fast Numerical Maximum Likelihood Estimation for Latent Markov Models},
+      author = {Jan-Ole Koslik},
+      year = {2025},
+      note = {R package version 2.0.6},
+      url = {https://janoleko.github.io/LaMa/},
+    }

@@ -181,7 +181,7 @@ the MM(M)PP vignette.</p>
 <span>         y0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>,<span class="fl">50</span><span class="op">)</span>, y1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>,<span class="fl">50</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">49</span><span class="op">]</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span>, </span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, box.lwd <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Continuous_time_HMMs_files/figure-html/vis_ctHMM-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Continuous_time_HMMs_files/figure-html/vis_ctHMM-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
@@ -229,7 +229,7 @@ exponentials.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.284   0.272   0.284</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.338   0.239   0.295</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -307,7 +307,7 @@ state to transition to, as explained in the beginning.</p>
 <span>  <span class="va">mod2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, timediff <span class="op">=</span> <span class="va">timediff</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, stepmax <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.475   2.164   1.214</span></span>
+<span><span class="co">#&gt;   1.861   2.007   1.290</span></span>
 <span><span class="co"># without restricting stepmax, we run into numerical problems</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -360,7 +360,7 @@ and Evolution</em> 14 (1): 43–56.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

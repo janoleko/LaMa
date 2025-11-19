@@ -1,0 +1,232 @@
+# Longitudinal data
+
+> Before diving into this vignette, we recommend reading the vignettes
+> [**Introduction to
+> LaMa**](https://janoleko.github.io/LaMa/articles/Intro_to_LaMa.html)
+> and [**Inhomogeneous
+> HMMs**](https://janoleko.github.io/LaMa/articles/Inhomogeneous_HMMs.html).
+
+In real-data applications, one will often be faced by a data set
+consisting of several measurement tracks, that can reasonably be assumed
+to be mutually independent. Examples for such a longitudinal structure
+include GPS tracks of several individuals (or several tracks (e.g. days)
+of one individual), or when analysing sports data, one will often be
+faced by time series for separate games. In such settings, the
+researcher of course has to decide whether to pool parameters across
+tracks or not. Here, we will provide brief examples for complete and
+partial pooling.
+
+In the situations above, the likelihood function will look slightly
+different. In case of K independent tracks, we have L(\theta) =
+\prod\_{k=1}^K L_k(\theta), where L_k(\theta) is the usual HMM
+likelihood for the k-th track. Thus the log-likelihood becomes a sum
+over K tracks, which we can calculate in a loop. When K is even
+moderately large, performing this loop in `R` already leads to severe
+slowdowns in likelihood evaluation times. Thus, the forward algorithms
+in `LaMa` allow for the likelihood formulation above, when the indices
+at which separate tracks begin are specified. Here, we shortly
+demonstrate how to use this option.
+
+## Complete pooling
+
+### Generating data
+
+We generate K separate tracks, all from the exact same model:
+
+``` r
+# loading the package
+library(LaMa)
+#> Loading required package: RTMB
+```
+
+``` r
+# parameters are shared across individuals
+mu = c(15, 60) # state-dependent means
+sigma = c(10, 40) # state-dependent standard deviations
+Gamma = matrix(c(0.95, 0.05, 0.15, 0.85), nrow = 2, byrow = TRUE) # t.p.m.
+delta = stationary(Gamma) # stationary distribution
+
+# simulation of all tracks
+set.seed(123)
+K = 200 # number of individuals, for example different animals
+n = 50 # observations per animal only (but many animals)
+
+s = x = rep(NA, n*K)
+for(k in 1:K){
+  sk = xk = rep(NA, n)
+  sk[1] = sample(1:2, 1, prob = delta)
+  xk[1] = rnorm(1, mu[sk[1]], sigma[sk[1]])
+  for(t in 2:n){
+    sk[t] = sample(1:2, 1, prob = Gamma[sk[t-1],]) 
+    xk[t] = rnorm(1, mu[sk[t]], sigma[sk[t]])
+  }
+  s[(k-1)*n + 1:n] = sk
+  x[(k-1)*n + 1:n] = xk
+}
+
+trackID = rep(1:K, each = n)
+```
+
+### Writing the negative log-likelihood function
+
+To calculate the joint log-likelihood of the independent tracks, we
+slightly modify the standard negative log-likelihood function by adding
+the additional argument `trackID`.
+[`forward()`](https://janoleko.github.io/reference/forward.md) now
+calculates the sum of indivual likelihood contributions, each starting
+in the respective initial distribution (which we pool here).
+
+``` r
+# fast version using trackInd in forward()
+nll_pool = function(par, x, trackID){
+  Gamma = tpm(par[1:2])
+  delta = stationary(Gamma)
+  mu = par[3:4]
+  sigma = exp(par[5:6])
+  allprobs = matrix(1, length(x), 2)
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
+  
+  # here we add trackInd as an argument to forward()
+  -forward(delta, Gamma, allprobs, trackID)
+}
+
+# slow alternative looping over individuals in R
+nll_pool_slow = function(par, x, K){
+  n = length(x) / K
+  Gamma = tpm(par[1:2])
+  delta = stationary(Gamma)
+  mu = par[3:4]
+  sigma = exp(par[5:6])
+  allprobs = matrix(1, length(x), 2)
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
+  
+  # here we just loop over individuals in R
+  l = 0
+  for(k in 1:K){
+    l = l + forward(delta, Gamma, allprobs[(k-1)*n + 1:n,])
+  }
+  -l
+}
+```
+
+### Estimating the model
+
+Now we estimate the model with complete pooling. We compare the fast
+version using
+[`forward()`](https://janoleko.github.io/reference/forward.md) with
+`trackID` with the slow version also using
+[`forward()`](https://janoleko.github.io/reference/forward.md) but
+looping over individuals in `R`.
+
+``` r
+# initial parameter vector
+par = c(logitgamma = c(-1,-1), # off-diagonals of Gamma (on logit scale)
+        mu = c(15, 60), # state-dependent means
+        logsigma = c(log(10),log(40))) # state-dependent sds
+
+# fast version:
+system.time(
+  mod <- nlm(nll_pool, par, x = x, trackID = trackID)
+)
+#>    user  system elapsed 
+#>   0.370   0.018   0.388
+
+# slow version
+system.time(
+  mod <- nlm(nll_pool_slow, par, x = x, K = K)
+)
+#>    user  system elapsed 
+#>   2.885   0.024   2.909
+```
+
+In this example, looping over individuals in `R` already leads to five
+times longer the estimation time, but this can be much more severe for
+more complicated models.
+
+## Partial pooling
+
+If some parameters of our model are individual-specific, while the rest
+is shared, we speak of partial pooling. We demonstrate this here for 5
+individuals with their own transition probability matrices. We could
+estimate a separate transition probability matrix for each individual,
+but here we opt for a more parsimonious approach, where the transition
+probabilities depend on an external, individual-specific covariate. We
+will estimate the effect of this covariate on the transition
+probabilities.
+
+### Generating data
+
+``` r
+K = 5 # number of individuals, for example different animals
+
+# state-dependent parameters are shared across individuals
+mu = c(15, 60)
+sigma = c(10, 40)
+
+# but we define a tpm for each individual depending on covariates
+set.seed(123)
+z = rnorm(K) # covariate (e.g. age)
+beta = matrix(c(-2,-2, 1, -1), nrow = 2)
+# we calculate 5 tpms depending on individual-specific covariates:
+Gamma = tpm_g(z, beta)
+# each individual starts in its stationary distribution:
+Delta = matrix(NA, K, 2)
+for(k in 1:K){ Delta[k,] = stationary(Gamma[,,k]) }
+
+# simulation of all tracks
+set.seed(123)
+n = 200 # observations per animal only (but many animals)
+s = x = rep(NA, n*K)
+for(k in 1:K){
+  sk = xk = rep(NA, n)
+  sk[1] = sample(1:2, 1, prob = Delta[k, ])
+  xk[1] = rnorm(1, mu[sk[1]], sigma[sk[1]])
+  for(t in 2:n){
+    sk[t] = sample(1:2, 1, prob = Gamma[sk[t-1],,k]) 
+    xk[t] = rnorm(1, mu[sk[t]], sigma[sk[t]])
+  }
+  s[(k-1)*n + 1:n] = sk
+  x[(k-1)*n + 1:n] = xk
+}
+```
+
+### Writing the negative log-likelihood function
+
+Now we write the corresponding negative log-likehood function that
+incorporates the above structure. As each track has a fixed t.p.m., we
+can assume stationarity and compute the stationary initial distribution
+for each track respectively.
+
+``` r
+# fast version using trackInd in forward()
+nll_partial = function(par, x, z, trackID){
+  # individual-specific tpms
+  beta = matrix(par[1:4], nrow = 2)
+  Gamma = tpm_g(z, beta)
+  Delta = t(sapply(1:k, function(k) stationary(Gamma[,,k])))
+  mu = par[5:6]
+  sigma = exp(par[7:8])
+  allprobs = matrix(1, length(x), 2)
+  for(j in 1:2) allprobs[,j] = dnorm(x, mu[j], sigma[j])
+  # just handing a Delta matrix and Gamma array for all individuals to forward()
+  -forward(Delta, Gamma, allprobs, trackID)
+}
+```
+
+### Estimating the model
+
+``` r
+# again defining all the indices where a new track begins
+trackID = rep(1:K, each = n)
+
+# initial parameter vector
+par = c(beta = c(-2, -2, 0, 0), # beta
+        mu = c(15, 60), # state-dependent means
+        log(10), log(40)) # state-dependent sds
+
+system.time(
+  mod_partial <- nlm(nll_partial, par, x = x, z = z, trackID = trackID)
+)
+#>    user  system elapsed 
+#>   0.383   0.002   0.385
+```

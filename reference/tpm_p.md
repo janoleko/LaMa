@@ -1,0 +1,137 @@
+# Build all transition probability matrices of a periodically inhomogeneous HMM
+
+Given a periodically varying variable such as time of day or day of year
+and the associated cycle length, this function calculates the transition
+probability matrices by applying the inverse multinomial logistic link
+(also known as softmax) to linear predictors of the form \$\$
+\eta^{(t)}\_{ij} = \beta_0^{(ij)} + \sum\_{k=1}^K \bigl(
+\beta\_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta\_{2k}^{(ij)}
+\cos(\frac{2 \pi k t}{L}) \bigr) \$\$ for the off-diagonal elements (\\i
+\neq j\\) of the transition probability matrix. This is relevant for
+modeling e.g. diurnal variation and the flexibility can be increased by
+adding smaller frequencies (i.e. increasing \\K\\).
+
+## Usage
+
+``` r
+tpm_p(
+  tod = 1:24,
+  L = 24,
+  beta,
+  degree = 1,
+  Z = NULL,
+  byrow = FALSE,
+  ad = NULL,
+  report = TRUE
+)
+```
+
+## Arguments
+
+- tod:
+
+  equidistant sequence of a cyclic variable
+
+  For time of day and e.g. half-hourly data, this could be 1, ..., L and
+  L = 48, or 0.5, 1, 1.5, ..., 24 and L = 24.
+
+- L:
+
+  length of one full cycle, on the scale of tod
+
+- beta:
+
+  matrix of coefficients for the off-diagonal elements of the transition
+  probability matrix
+
+  Needs to be of dimension c(N \*(N-1), 2\*degree+1), where the first
+  column contains the intercepts.
+
+- degree:
+
+  degree of the trigonometric link function
+
+  For each additional degree, one sine and one cosine frequency are
+  added.
+
+- Z:
+
+  pre-calculated design matrix (excluding intercept column)
+
+  Defaults to `NULL` if trigonometric link should be calculated. From an
+  efficiency perspective, `Z` should be pre-calculated within the
+  likelihood function, as the basis expansion should not be redundantly
+  calculated. This can be done by using
+  [`trigBasisExp`](https://janoleko.github.io/reference/trigBasisExp.md).
+
+- byrow:
+
+  logical indicating if each transition probability matrix should be
+  filled by row
+
+  Defaults to `FALSE`, but should be set to `TRUE` if one wants to work
+  with a matrix of `beta` parameters returned by popular HMM packages
+  like `moveHMM`, `momentuHMM`, or `hmmTMB`.
+
+- ad:
+
+  optional logical, indicating whether automatic differentiation with
+  RTMB should be used. By default, the function determines this itself.
+
+- report:
+
+  logical, indicating whether the coefficient matrix `beta` should be
+  reported from the fitted model. Defaults to `TRUE`, but only works if
+  `ad = TRUE`.
+
+## Value
+
+array of transition probability matrices of dimension c(N,N,length(tod))
+
+## Details
+
+Note that using this function inside the negative log-likelihood
+function is convenient, but it performs the basis expansion into sine
+and cosine terms each time it is called. As these do not change during
+the optimisation, using
+[`tpm_g`](https://janoleko.github.io/reference/tpm_g.md) with a
+pre-calculated (by
+[`trigBasisExp`](https://janoleko.github.io/reference/trigBasisExp.md))
+design matrix would be more efficient.
+
+## See also
+
+Other transition probability matrix functions:
+[`generator()`](https://janoleko.github.io/reference/generator.md),
+[`tpm()`](https://janoleko.github.io/reference/tpm.md),
+[`tpm_cont()`](https://janoleko.github.io/reference/tpm_cont.md),
+[`tpm_emb()`](https://janoleko.github.io/reference/tpm_emb.md),
+[`tpm_emb_g()`](https://janoleko.github.io/reference/tpm_emb_g.md),
+[`tpm_g()`](https://janoleko.github.io/reference/tpm_g.md),
+[`tpm_g2()`](https://janoleko.github.io/reference/tpm_g2.md)
+
+## Examples
+
+``` r
+# hourly data 
+tod = seq(1, 24, by = 1)
+L = 24
+beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+Gamma = tpm_p(tod, L, beta, degree = 1)
+
+# half-hourly data
+## integer tod sequence
+tod = seq(1, 48, by = 1)
+L = 48
+beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+Gamma1 = tpm_p(tod, L, beta, degree = 1)
+
+## equivalent specification
+tod = seq(0.5, 24, by = 0.5)
+L = 24
+beta = matrix(c(-1, 2, -1, -2, 1, -1), nrow = 2, byrow = TRUE)
+Gamma2 = tpm_p(tod, L, beta, degree = 1)
+
+all(Gamma1 == Gamma2) # same result
+#> [1] TRUE
+```

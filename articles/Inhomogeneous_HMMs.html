@@ -175,7 +175,7 @@ parameter matrix such that the t.p.m. needs to be filled by row.</p>
 <span>     xlab <span class="op">=</span> <span class="st">"z"</span>, ylab <span class="op">=</span> <span class="st">"gamma_12"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">zseq</span>, <span class="va">Gamma_seq</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"z"</span>, ylab <span class="op">=</span> <span class="st">"gamma_21"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/parameters-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/parameters-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s now simulate synthetic data from the above specified model.</p>
@@ -191,7 +191,7 @@ parameter matrix such that the t.p.m. needs to be filled by row.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/data-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/data-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <p>We now model the transition probabilities parametrically, where we
 have a paramter for the intercept, the linear effect and the quadratic
 effect for each off-diagonal element of the t.p.m.</p>
@@ -230,7 +230,7 @@ the transition probabilities.</p>
 <span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.743   0.026   0.769</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.788   0.018   0.806</span></span></code></pre></div>
 <p>Really fast!</p>
 </div>
 <div class="section level3">
@@ -264,7 +264,7 @@ tranform the parameters.</p>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">3</span>, lty <span class="op">=</span> <span class="st">"dashed"</span>, n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="st">"black"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">3</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span>, <span class="st">"marginal"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
@@ -272,12 +272,12 @@ tranform the parameters.</p>
 <span>     xlab <span class="op">=</span> <span class="st">"z"</span>, ylab <span class="op">=</span> <span class="st">"gamma_12_hat"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">zseq</span>, <span class="va">Gamma_seq</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"z"</span>, ylab <span class="op">=</span> <span class="st">"gamma_21_hat"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-2.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-2.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">zseq</span>, <span class="va">Prob</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, xlab <span class="op">=</span> <span class="st">"z"</span>, </span>
 <span>     ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-3.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization-3.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 <!-- ### Non-parametric modelling of the transition probalities -->
@@ -407,7 +407,7 @@ anymore, but changes accoring to the covariate values in
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">s</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span>, <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">s</span><span class="op">==</span><span class="fl">1</span><span class="op">)</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>     ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">15</span><span class="op">)</span>, xlab <span class="op">=</span> <span class="st">"z"</span>, ylab <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">z</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">s</span><span class="op">==</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span>, <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">s</span><span class="op">==</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/data2-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/data2-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -443,7 +443,7 @@ predictor for the <span class="math inline">j</span>-th state.</p>
 <span>  <span class="va">mod_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nllMSR</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, Z <span class="op">=</span> <span class="va">Z</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.319   0.025   0.344</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.275   0.024   0.299</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results-1">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results-1"></a>
@@ -464,7 +464,7 @@ scatter plot.</p>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">4</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">x</span> <span class="op">+</span> <span class="va">beta_hat_reg</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">]</span><span class="op">*</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span>, </span>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">4</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization3-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Inhomogeneous_HMMs_files/figure-html/visualization3-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <blockquote>
 <p>Continue reading with <a href="https://janoleko.github.io/LaMa/articles/Periodic_HMMs.html"><strong>Periodic
 HMMs</strong></a>, <a href="https://janoleko.github.io/LaMa/articles/LaMa_and_RTMB.html"><strong>LaMa
@@ -538,7 +538,7 @@ splines</strong></a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

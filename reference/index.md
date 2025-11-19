@@ -1,0 +1,294 @@
+# Package index
+
+## All functions
+
+- [`calc_trackInd()`](https://janoleko.github.io/reference/calc_trackInd.md)
+  : Calculate the index of the first observation of each track based on
+  an ID variable
+
+- [`cosinor()`](https://janoleko.github.io/reference/cosinor.md) :
+  Evaluate trigonometric basis expansion
+
+- [`ddwell()`](https://janoleko.github.io/reference/ddwell.md) : State
+  dwell-time distributions of periodically inhomogeneous Markov chains
+
+- [`dgmrf2()`](https://janoleko.github.io/reference/dgmrf2.md) :
+  Reparametrised multivariate Gaussian distribution
+
+- [`forward()`](https://janoleko.github.io/reference/forward.md) :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  with homogeneous transition probability matrix
+
+- [`forward2()`](https://janoleko.github.io/reference/forward2.md) :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  with homogeneous transition probability matrix
+
+- [`forward_g()`](https://janoleko.github.io/reference/forward_g.md) :
+
+  General [forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  with time-varying transition probability matrix
+
+- [`forward_g2()`](https://janoleko.github.io/reference/forward_g2.md) :
+
+  General [forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  with time-varying transition probability matrix
+
+- [`forward_hsmm()`](https://janoleko.github.io/reference/forward_hsmm.md)
+  :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  for homogeneous hidden semi-Markov models
+
+- [`forward_ihsmm()`](https://janoleko.github.io/reference/forward_ihsmm.md)
+  :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  for hidden semi-Markov models with inhomogeneous state durations and/
+  or conditional transition probabilities
+
+- [`forward_p()`](https://janoleko.github.io/reference/forward_p.md) :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  with for periodically varying transition probability matrices
+
+- [`forward_phsmm()`](https://janoleko.github.io/reference/forward_phsmm.md)
+  :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  for hidden semi-Markov models with periodically inhomogeneous state
+  durations and/ or conditional transition probabilities
+
+- [`forward_s()`](https://janoleko.github.io/reference/forward_s.md) :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  for hidden semi-Markov models with homogeneous transition probability
+  matrix
+
+- [`forward_sp()`](https://janoleko.github.io/reference/forward_sp.md) :
+
+  [Forward
+  algorithm](https://www.taylorfrancis.com/books/mono/10.1201/b20790/hidden-markov-models-time-series-walter-zucchini-iain-macdonald-roland-langrock)
+  for hidden semi-Markov models with periodically varying transition
+  probability matrices
+
+- [`dgamma2()`](https://janoleko.github.io/reference/gamma2.md)
+  [`pgamma2()`](https://janoleko.github.io/reference/gamma2.md)
+  [`qgamma2()`](https://janoleko.github.io/reference/gamma2.md)
+  [`rgamma2()`](https://janoleko.github.io/reference/gamma2.md) :
+  Reparametrised gamma distribution
+
+- [`gdeterminant()`](https://janoleko.github.io/reference/gdeterminant.md)
+  : Computes generalised determinant
+
+- [`generator()`](https://janoleko.github.io/reference/generator.md) :
+  Build the generator matrix of a continuous-time Markov chain
+
+- [`` `%sp%` ``](https://janoleko.github.io/reference/grapes-sp-grapes.md)
+  : Sparsity-retaining matrix multiplication
+
+- [`logLik(`*`<qremlModel>`*`)`](https://janoleko.github.io/reference/logLik.qremlModel.md)
+  : Extract log-likelihood from qremlModel object
+
+- [`make_matrices()`](https://janoleko.github.io/reference/make_matrices.md)
+  : Build the design and the penalty matrix for models involving
+  penalised splines based on a formula and a data set
+
+- [`make_matrices_dens()`](https://janoleko.github.io/reference/make_matrices_dens.md)
+  : Build a standardised P-Spline design matrix and the associated
+  P-Spline penalty matrix
+
+- [`make_matrices_old()`](https://janoleko.github.io/reference/make_matrices_old.md)
+  : Build the design and the penalty matrix for models involving
+  penalised splines based on a formula and a data set
+
+- [`min2()`](https://janoleko.github.io/reference/minmax.md)
+  [`max2()`](https://janoleko.github.io/reference/minmax.md) :
+  AD-compatible minimum and maximum functions
+
+- [`max0_smooth()`](https://janoleko.github.io/reference/minmax0_smooth.md)
+  [`min0_smooth()`](https://janoleko.github.io/reference/minmax0_smooth.md)
+  : Smooth approximations to max(x, 0) and min(x, 0)
+
+- [`nessi`](https://janoleko.github.io/reference/nessi.md) : Loch Ness
+  Monster Acceleration Data
+
+- [`penalty()`](https://janoleko.github.io/reference/penalty.md) :
+  Computes penalty based on quadratic form
+
+- [`penalty2()`](https://janoleko.github.io/reference/penalty2.md) :
+  Computes generalised quadratic-form penalties
+
+- [`penalty_uni()`](https://janoleko.github.io/reference/penalty_uni.md)
+  : Penalty approximation of unimodality constraints for univariates
+  smooths
+
+- [`plot(`*`<LaMaResiduals>`*`)`](https://janoleko.github.io/reference/plot.LaMaResiduals.md)
+  : Plot pseudo-residuals
+
+- [`pred_matrix()`](https://janoleko.github.io/reference/pred_matrix.md)
+  :
+
+  Build the prediction design matrix based on new data and
+  model_matrices object created by `make_matrices`
+
+- [`predict(`*`<LaMa_matrices>`*`)`](https://janoleko.github.io/reference/predict.LaMa_matrices.md)
+  :
+
+  Build the prediction design matrix based on new data and
+  model_matrices object created by `make_matrices`
+
+- [`process_hid_formulas()`](https://janoleko.github.io/reference/process_hid_formulas.md)
+  : Process and standardise formulas for the state process of hidden
+  Markov models
+
+- [`pseudo_res()`](https://janoleko.github.io/reference/pseudo_res.md) :
+  Calculate pseudo-residuals
+
+- [`pseudo_res_discrete()`](https://janoleko.github.io/reference/pseudo_res_discrete.md)
+  : Calculate pseudo-residuals for discrete-valued observations
+
+- [`qreml()`](https://janoleko.github.io/reference/qreml.md) : Quasi
+  restricted maximum likelihood (qREML) algorithm for models with
+  penalised splines or simple i.i.d. random effects
+
+- [`qreml_old()`](https://janoleko.github.io/reference/qreml_old.md) :
+  Quasi restricted maximum likelihood (qREML) algorithm for models with
+  penalised splines or simple i.i.d. random effects
+
+- [`sdreportMC()`](https://janoleko.github.io/reference/sdreportMC.md) :
+
+  Monte Carlo version of `sdreport`
+
+- [`sdreport_outer()`](https://janoleko.github.io/reference/sdreport_outer.md)
+  : Report uncertainty of the estimated smoothing parameters or
+  variances
+
+- [`dskewnorm()`](https://janoleko.github.io/reference/skewnorm.md)
+  [`pskewnorm()`](https://janoleko.github.io/reference/skewnorm.md)
+  [`qskewnorm()`](https://janoleko.github.io/reference/skewnorm.md)
+  [`rskewnorm()`](https://janoleko.github.io/reference/skewnorm.md) :
+  Skew normal distribution
+
+- [`smooth_dens_construct()`](https://janoleko.github.io/reference/smooth_dens_construct.md)
+  : Build the design and penalty matrices for smooth density estimation
+
+- [`stateprobs()`](https://janoleko.github.io/reference/stateprobs.md) :
+  Calculate conditional local state probabilities for homogeneous HMMs
+
+- [`stateprobs_g()`](https://janoleko.github.io/reference/stateprobs_g.md)
+  : Calculate conditional local state probabilities for inhomogeneous
+  HMMs
+
+- [`stateprobs_p()`](https://janoleko.github.io/reference/stateprobs_p.md)
+  : Calculate conditional local state probabilities for periodically
+  inhomogeneous HMMs
+
+- [`stationary()`](https://janoleko.github.io/reference/stationary.md) :
+  Compute the stationary distribution of a homogeneous Markov chain
+
+- [`stationary_cont()`](https://janoleko.github.io/reference/stationary_cont.md)
+  : Compute the stationary distribution of a continuous-time Markov
+  chain
+
+- [`stationary_p()`](https://janoleko.github.io/reference/stationary_p.md)
+  : Periodically stationary distribution of a periodically inhomogeneous
+  Markov chain
+
+- [`stationary_p_sparse()`](https://janoleko.github.io/reference/stationary_p_sparse.md)
+  :
+
+  Sparse version of `stationary_p`
+
+- [`stationary_sparse()`](https://janoleko.github.io/reference/stationary_sparse.md)
+  :
+
+  Sparse version of `stationary`
+
+- [`summary(`*`<qremlModel>`*`)`](https://janoleko.github.io/reference/summary.qremlModel.md)
+  :
+
+  Summary method for `qremlModel` objects
+
+- [`tpm()`](https://janoleko.github.io/reference/tpm.md) : Build the
+  transition probability matrix from unconstrained parameter vector
+
+- [`tpm_cont()`](https://janoleko.github.io/reference/tpm_cont.md) :
+  Calculate continuous time transition probabilities
+
+- [`tpm_emb()`](https://janoleko.github.io/reference/tpm_emb.md) : Build
+  the embedded transition probability matrix of an HSMM from
+  unconstrained parameter vector
+
+- [`tpm_emb_g()`](https://janoleko.github.io/reference/tpm_emb_g.md) :
+  Build all embedded transition probability matrices of an inhomogeneous
+  HSMM
+
+- [`tpm_g()`](https://janoleko.github.io/reference/tpm_g.md) : Build all
+  transition probability matrices of an inhomogeneous HMM
+
+- [`tpm_g2()`](https://janoleko.github.io/reference/tpm_g2.md) : Build
+  all transition probability matrices of an inhomogeneous HMM
+
+- [`tpm_hsmm()`](https://janoleko.github.io/reference/tpm_hsmm.md) :
+  Builds the transition probability matrix of an HSMM-approximating HMM
+
+- [`tpm_hsmm2()`](https://janoleko.github.io/reference/tpm_hsmm2.md) :
+  Build the transition probability matrix of an HSMM-approximating HMM
+
+- [`tpm_ihsmm()`](https://janoleko.github.io/reference/tpm_ihsmm.md) :
+  Builds all transition probability matrices of an
+  inhomogeneous-HSMM-approximating HMM
+
+- [`tpm_p()`](https://janoleko.github.io/reference/tpm_p.md) : Build all
+  transition probability matrices of a periodically inhomogeneous HMM
+
+- [`tpm_phsmm()`](https://janoleko.github.io/reference/tpm_phsmm.md) :
+  Builds all transition probability matrices of an
+  periodic-HSMM-approximating HMM
+
+- [`tpm_phsmm2()`](https://janoleko.github.io/reference/tpm_phsmm2.md) :
+  Build all transition probability matrices of an
+  periodic-HSMM-approximating HMM
+
+- [`tpm_thinned()`](https://janoleko.github.io/reference/tpm_thinned.md)
+  : Compute the transition probability matrix of a thinned periodically
+  inhomogeneous Markov chain.
+
+- [`trex`](https://janoleko.github.io/reference/trex.md) : T-Rex
+  Movement Data
+
+- [`trigBasisExp()`](https://janoleko.github.io/reference/trigBasisExp.md)
+  : Compute the design matrix for a trigonometric basis expansion
+
+- [`viterbi()`](https://janoleko.github.io/reference/viterbi.md) :
+  Viterbi algorithm for state decoding in homogeneous HMMs
+
+- [`viterbi_g()`](https://janoleko.github.io/reference/viterbi_g.md) :
+  Viterbi algorithm for state decoding in inhomogeneous HMMs
+
+- [`viterbi_p()`](https://janoleko.github.io/reference/viterbi_p.md) :
+  Viterbi algorithm for state decoding in periodically inhomogeneous
+  HMMs
+
+- [`dvm()`](https://janoleko.github.io/reference/vm.md)
+  [`pvm()`](https://janoleko.github.io/reference/vm.md)
+  [`rvm()`](https://janoleko.github.io/reference/vm.md) : von Mises
+  distribution
+
+- [`dwrpcauchy()`](https://janoleko.github.io/reference/wrpcauchy.md)
+  [`rwrpcauchy()`](https://janoleko.github.io/reference/wrpcauchy.md) :
+  wrapped Cauchy distribution
+
+- [`zero_inflate()`](https://janoleko.github.io/reference/zero_inflate.md)
+  : Zero-inflated density constructer

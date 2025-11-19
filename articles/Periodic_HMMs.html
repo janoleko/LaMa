@@ -131,7 +131,7 @@ can compute this distribution using <code><a href="../reference/stationary_p.htm
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/parameters-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/parameters-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># only plotting one state, as the other probability is just 1-delta</span></span></code></pre></div>
 </div>
@@ -156,7 +156,7 @@ can compute this distribution using <code><a href="../reference/stationary_p.htm
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">tod</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/data-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/data-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># we see a periodic pattern in the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
@@ -197,7 +197,7 @@ that specifies which time point to compute.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.919   0.019   0.938</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.966   0.022   0.988</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>
@@ -228,7 +228,7 @@ tranform the parameters.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/visualization-1.png" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/visualization-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -372,7 +372,7 @@ Behavior.”</span> <em>arXiv Preprint arXiv:2312.14583</em>.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -566,6 +566,8 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad
 #'
 #' @param Q infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)
 #' @param timediff time differences between observations of length n-1 when based on n observations
+#' @param rates optional vector of state-dependent rates for MM(M)PP fitting. 
+#' For the MM(M)PP likelihood, the matrices needed in the forward algorithm are \eqn{\exp((Q - \Lambda) \Delta t)}, where \eqn{\Lambda} is a diagonal matrix with the state-dependent rates on the diagonal.
 #' @param ad optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.
 #' @param report logical, indicating whether \code{Q} should be reported from the fitted model. Defaults to \code{TRUE}, but only works if \code{ad = TRUE}.
 #'
@@ -582,11 +584,25 @@ tpm_p = function(tod = 1:24, L=24, beta, degree = 1, Z = NULL, byrow = FALSE, ad
 #'
 #' # compute all transition matrices
 #' Gamma = tpm_cont(Q, timediff)
-tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
+tpm_cont <- function(Q, timediff, rates = NULL, ad = NULL, report = TRUE){
   
   # report quantities for easy use later
   if(report) {
-    RTMB::REPORT(Q)
+    if(!ad_context()) {
+      if(all(rowSums(Q) == 0)) {
+        # only report if proper generator matrix. Q is probably Q - diag(rates)
+        RTMB::REPORT(Q)
+      }
+    }
+  }
+  
+  if(!is.null(rates)) {
+    if(length(rates) != nrow(Q)) {
+      stop("Length of rates needs to be equal to the number of states.")
+    }
+    
+    "diag<-" <- ADoverload("diag<-")
+    Q <- Q - diag(rates)
   }
   
   # if ad is not explicitly provided, check if delta is an advector
@@ -624,6 +640,7 @@ tpm_cont = function(Q, timediff, ad = NULL, report = TRUE){
   rownames(Qube) <- statenames
   colnames(Qube) <- statenames
   
+  attr(Qube, "time") <- "continuous"
   Qube
 }
 

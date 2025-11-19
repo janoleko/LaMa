@@ -4,12 +4,15 @@
 \alias{tpm_cont}
 \title{Calculate continuous time transition probabilities}
 \usage{
-tpm_cont(Q, timediff, ad = NULL, report = TRUE)
+tpm_cont(Q, timediff, rates = NULL, ad = NULL, report = TRUE)
 }
 \arguments{
 \item{Q}{infinitesimal generator matrix of the continuous-time Markov chain of dimension c(N,N)}
 
 \item{timediff}{time differences between observations of length n-1 when based on n observations}
+
+\item{rates}{optional vector of state-dependent rates for MM(M)PP fitting. 
+For the MM(M)PP likelihood, the matrices needed in the forward algorithm are \eqn{\exp((Q - \Lambda) \Delta t)}, where \eqn{\Lambda} is a diagonal matrix with the state-dependent rates on the diagonal.}
 
 \item{ad}{optional logical, indicating whether automatic differentiation with \code{RTMB} should be used. By default, the function determines this itself.}
 

@@ -310,7 +310,6 @@ mod = qreml_old(pnll, par, dat, random = "betaspline")
 #> outer 39 - lambda: 0.49 0.092 
 #> outer 40 - lambda: 0.49 0.092 
 #> outer 41 - lambda: 0.49 0.092 
-#> outer 42 - lambda: 0.49 0.092 
 #> Converged
 #> Final model fit with lambda: 0.49 0.092 
 #> Performance tip: Consider running `TapeConfig(matmul = 'plain')` before `MakeADFun()` to speed up the forward algorithm.

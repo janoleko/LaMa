@@ -101,7 +101,7 @@ loads <code>RTMB</code> as well.</p>
 <p>For the purpose of this vignette, we will analyse the
 <code>trex</code> data set contained in the package. It contains hourly
 step lengths of a Tyrannosaurus rex, living 66 million years ago, and we
-aim to understand its behavoural process using HMMs.</p>
+aim to understand its behavioural process using HMMs.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">trex</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   tod      step     angle state</span></span>
@@ -205,7 +205,7 @@ really convenient as any quantities calculated in the likelihood
 function (for which you have written the code anyway), if reported, will
 be available after optimisation, while the report statements are ignored
 during optimisation. So no annoying backtransformations anymore,
-wohoo!</li>
+woohoo!</li>
 <li>for simple parameter transformations, <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code> is
 also great, because it calculates standard deviations for
 <code><a href="https://rdrr.io/pkg/RTMB/man/TMB-interface.html" class="external-link">ADREPORT()</a></code>ed quantities, based on the delta method. Just
@@ -213,7 +213,7 @@ note that the delta method is not advisable for complex non-linear and
 multivariate transformations.</li>
 </ul>
 <p>Having defined the negative log-likelihood, we can now create the
-autmatically differentiable objective function and fit the model. This
+automatically differentiable objective function and fit the model. This
 needs a little explanation: At this point, <code>RTMB</code> takes the
 negative log-likelihood function and generates its own (very fast)
 version of it, including a gradient. <code>MakeADFun()</code> now also
@@ -230,9 +230,9 @@ printing of the optimisation process.</p>
 <span><span class="co">#&gt;  [1] "par"          "fn"           "gr"           "he"           "hessian"     </span></span>
 <span><span class="co">#&gt;  [6] "method"       "retape"       "env"          "report"       "simulate"    </span></span>
 <span><span class="co">#&gt; [11] "force.update"</span></span></code></pre></div>
-<p>It contains the initial parameter <code>par</code> (now tranformed to
-a named vector), the objective function <code>fn</code> (which in this
-case just evaluates <code>nll</code> but faster), its gradient
+<p>It contains the initial parameter <code>par</code> (now transformed
+to a named vector), the objective function <code>fn</code> (which in
+this case just evaluates <code>nll</code> but faster), its gradient
 <code>gr</code> and Hessian <code>he</code>.</p>
 <p>If we now call these functions without any argument, we get the
 corresponding values at the initial parameter vector.</p>
@@ -321,7 +321,7 @@ the parameters, we can plot the decoded time series</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"h"</span>, xlab <span class="op">=</span> <span class="st">"time"</span>, ylab <span class="op">=</span> <span class="st">"step length"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">mod</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="va">color</span>, lwd <span class="op">=</span> <span class="fl">1</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/decoding-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/decoding-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>or the estimated state-dependent distributions.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
@@ -339,7 +339,7 @@ the parameters, we can plot the decoded time series</p>
 <span>                    lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="va">delta</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="../reference/vm.html">dvm</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, <span class="va">kappa</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>      lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/statedepdist-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/statedepdist-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span> <span class="co"># resetting to default</span></span></code></pre></div>
 <p>Moreover, we can also use the <code>sdreport()</code> function to
@@ -387,11 +387,11 @@ convenient:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pres_step</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">step</span>, <span class="st">"gamma2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">mu</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_step</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/pres-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/pres-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pres_angle</span> <span class="op">=</span> <span class="fu"><a href="../reference/pseudo_res.html">pseudo_res</a></span><span class="op">(</span><span class="va">trex</span><span class="op">$</span><span class="va">angle</span>, <span class="st">"vm"</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mu <span class="op">=</span> <span class="fl">0</span>, kappa <span class="op">=</span> <span class="va">kappa</span><span class="op">)</span>, mod <span class="op">=</span> <span class="va">mod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres_angle</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/pres-2.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/pres-2.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="covariate-effects">Covariate effects<a class="anchor" aria-label="anchor" href="#covariate-effects"></a>
@@ -436,7 +436,7 @@ is also expected by <code><a href="../reference/tpm_g.html">tpm_g()</a></code> w
 transition matrices based on the design and parameter matrix. Another
 lovely convenience that <code>RTMB</code> allows for is that, in our
 parameter list, we can have matrices, making reshaping of vectors to
-matrices inside the likelihood function unnessesary.</p>
+matrices inside the likelihood function unnecessary.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logmu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>           logsigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -449,7 +449,7 @@ difference being the use of <code><a href="../reference/tpm_g.html">tpm_g()</a><
 <code><a href="../reference/tpm.html">tpm()</a></code> and the inclusion of the time of day in the
 transition matrix calculation. This leads to us using
 <code><a href="../reference/stationary_p.html">stationary_p()</a></code> instead of <code><a href="../reference/stationary.html">stationary()</a></code> to
-calculate the initial distribuion and <code><a href="../reference/forward_g.html">forward_g()</a></code> instead
+calculate the initial distribution and <code><a href="../reference/forward_g.html">forward_g()</a></code> instead
 of <code><a href="../reference/forward.html">forward()</a></code> to calculate the log-likelihood.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nll2</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">par</span><span class="op">)</span> <span class="op">{</span></span>
@@ -503,14 +503,14 @@ while, in general, this is not advisable.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
 <span>     col <span class="op">=</span> <span class="st">"deepskyblue"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, xaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">24</span>, y0 <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">-</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Deltasd</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>         y1 <span class="op">=</span> <span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">+</span><span class="fl">1.96</span><span class="op">*</span><span class="va">Deltasd</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-2.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="LaMa_and_RTMB_files/figure-html/MLE2-2.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <!-- ### Penalized splines -->
 <!-- We can go one step further and model the transition probabilities as smooth functions of the time of day using cyclic P-splines, i.e. -->
 <!-- $$ -->
@@ -588,8 +588,8 @@ while, in general, this is not advisable.</p>
 <!-- We see that by allowing for a more flexible relationship, the estimated time of day effect becomes stronger with even sharper peaks than we would have concluded using the trigonometric approach. -->
 <!-- ### Full Laplace method -->
 <!-- Lastly, we could have achieved a similar fit as above using the slightly more accurate full Laplace approximation method, which can be used to fit models via marginal maximum likelihood estimation by integrating out the random effects. This is natively supported by `RTMB` -- and actually one of its core selling points -- and the standard way we can now deal with all kinds of random effects.  -->
-<!-- Indeed, the **qREML** algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yiedling a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects. -->
-<!-- We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihoot that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as -->
+<!-- Indeed, the **qREML** algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yielding a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects. -->
+<!-- We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihood that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as -->
 <!-- $$ -->
 <!-- f(x, b) = f(x \mid b) f_{\lambda}(b) -->
 <!-- $$ -->

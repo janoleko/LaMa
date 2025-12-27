@@ -5,9 +5,9 @@
 > and **LaMa and RTMB**.
 
 This vignette explores how `LaMa` can be used to fit models involving
-nonparameteric components, represented by **penalised splines**. The
-main idea here is that it may be useful to represent some relationships
-in our model by smooth functions for which the functional form is not
+nonparametric components, represented by **penalised splines**. The main
+idea here is that it may be useful to represent some relationships in
+our model by smooth functions for which the functional form is not
 pre-specified, but flexibly estimated from the data. For HMM-like
 models, this is particularly valuable, as the latent nature of the state
 process makes modelling choices more difficult. For example, choosing an
@@ -30,7 +30,7 @@ allow for **automatic differentiation (AD)**. For more information on
 information on penalised splines, we recommend Wood
 ([2017](#ref-wood2017generalized)).
 
-### Smooth transition probabilites
+### Smooth transition probabilities
 
 We will start by investigating a 2-state HMM for the `trex` data set,
 containing hourly step lengths and turning angles of a Tyrannosaurus rex
@@ -201,7 +201,7 @@ system.time(
 #> Converged
 #> Final model fit with lambda: 0.308 0.112
 #>    user  system elapsed 
-#>   8.193   3.736   7.655
+#>   8.083   3.793   7.609
 ```
 
 The `mod` object is now a list that contains everything that is reported
@@ -243,7 +243,7 @@ axis(1, at = seq(0,24,by=4), labels = seq(0,24,by=4))
 To demonstrate nonparametric estimation of the state-dependent
 densities, we will consider the `nessi` data set. It contains
 acceleration data of the Loch Ness Monster, specifically the **overall
-dynamic body acceleration (ODBA)**. ODBA is strictily positive with some
+dynamic body acceleration (ODBA)**. ODBA is strictly positive with some
 very extreme values, making direct analysis difficult. Hence, for our
 analysis we consider the logarithm of ODBA as our observed process.
 
@@ -357,7 +357,7 @@ is because the last column, i.e. the last coefficient for each state,
 needs to be fixed to zero for **identifiability** which we do by using
 `cbind(beta, 0)`. Then, we transform the unconstrained parameter matrix
 to non-negative weights that sum to one (called `alpha`) for each state
-using the inverse multinomial logistic link (softmax). The columnns of
+using the inverse multinomial logistic link (softmax). The columns of
 the `allprobs` matrix are then computed as linear combinations of the
 columns of `Z` and the weights `alpha`. Lastly, we penalise the
 unconstrained coefficients `beta` (not the constrained `alpha`’s) using
@@ -419,12 +419,12 @@ system.time(
 #> Converged
 #> Final model fit with lambda: 1.033 1.01 1.744
 #>    user  system elapsed 
-#>  15.774   4.411  15.054
+#>  16.359   4.426  15.681
 ```
 
 After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
-reported quanitites because
+reported quantities because
 [`qreml()`](https://janoleko.github.io/reference/qreml.md) automatically
 runs the reporting after model fitting.
 
@@ -439,7 +439,7 @@ lines(xseq, colSums(mod2$delta * t(sDens)), col = "black", lwd = 2, lty = 2)
 ![](Penalised_splines_files/figure-html/shark_smooth_results-1.png)
 
 The P-Spline model results in a very good fit to the empirical
-distribution. This is beause the first state has a skewed distribution,
+distribution. This is because the first state has a skewed distribution,
 the second state has a high kurtosis and the third state has a funny
 right tail. The P-Spline model can capture all of these features where
 the parametric model failed to do so.
@@ -523,7 +523,7 @@ pnll = function(par) {
 
 From this point on, the model fit is now basically identical to the
 previous two examples. We specify initial parameters and include an
-inital penalty strength parameter in the `dat` list.
+intial penalty strength parameter in the `dat` list.
 
 ``` r
 # initial parameter list
@@ -567,7 +567,7 @@ system.time(
 #> Converged
 #> Final model fit with lambda: 22.588 7.212 8.278 4.169
 #>    user  system elapsed 
-#>  15.261   5.643  14.343
+#>   15.15    5.70   14.28
 ```
 
 Having fitted the model, we can visualise the results. We first decode

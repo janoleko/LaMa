@@ -9,11 +9,11 @@ interpreted as generalisation of HMMs to continuous state spaces.
 Several approaches exist to fitting such models, but Langrock
 ([2011](#ref-langrock2011some)) showed that very **general state-space
 models** can be fitted via approximate maximum likelihood estimation,
-when the continous state space is **finely discretised**. This is
+when the continuous state space is **finely discretised**. This is
 equivalent to numerical integration over the state process using
 midpoint quadrature.
 
-Here, we will showcase this approach for a basic **stochastic volatily
+Here, we will showcase this approach for a basic **stochastic volatility
 model** which, while being very simple, captures most of the stylised
 facts of financial time series. In this model the unobserved marked
 volatility is described by an AR(1) process:
@@ -106,7 +106,7 @@ system.time(
   mod <- nlm(nll, par, y = y, bm = bm, m = m)
 )
 #>    user  system elapsed 
-#>   1.384   2.412   0.972
+#>   1.361   2.434   0.976
 ```
 
 ### Results
@@ -135,7 +135,7 @@ states = viterbi(delta, Gamma, allprobs) # global/ hard decoding
 
 oldpar = par(mar = c(5,4,3,4.5)+0.1)
 plot(y, type = "l", bty = "n", ylim = c(-50,20), yaxt = "n")
-# when there are so many states it is not too sensable to only plot the most probable state,
+# when there are so many states it is not too sensible to only plot the most probable state,
 # as its probability might still be very small. Generally, we are approximating continuous 
 # distributions, thus it makes sense to plot the entire conditional distribution.
 maxprobs = apply(probs, 1, max)

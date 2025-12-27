@@ -107,7 +107,7 @@ activity pattern. All <span class="math inline">L</span> transition
 probability matrices can conveniently be calculated using
 <code><a href="../reference/tpm_p.html">tpm_p()</a></code>. Under the hood, this performs a basis expansion
 using <code><a href="../reference/trigBasisExp.html">trigBasisExp()</a></code> into sine and cosine terms and uses
-linear predictos of the form <span class="math display">
+linear predictors of the form <span class="math display">
 \eta^{(t)}_{ij} = \beta_0^{(ij)} + \sum_{k=1}^K \bigl( \beta_{1k}^{(ij)}
 \sin(\frac{2 \pi k t}{L}) + \beta_{2k}^{(ij)} \cos(\frac{2 \pi k t}{L})
 \bigr)
@@ -131,7 +131,7 @@ can compute this distribution using <code><a href="../reference/stationary_p.htm
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/parameters-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/parameters-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># only plotting one state, as the other probability is just 1-delta</span></span></code></pre></div>
 </div>
@@ -156,13 +156,13 @@ can compute this distribution using <code><a href="../reference/stationary_p.htm
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">400</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">tod</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/data-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/data-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># we see a periodic pattern in the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="trigonometric-modeling-of-the-transition-probalities">Trigonometric modeling of the transition probalities<a class="anchor" aria-label="anchor" href="#trigonometric-modeling-of-the-transition-probalities"></a>
+<h2 id="trigonometric-modeling-of-the-transition-probabilities">Trigonometric modeling of the transition probabilities<a class="anchor" aria-label="anchor" href="#trigonometric-modeling-of-the-transition-probabilities"></a>
 </h2>
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
@@ -197,13 +197,13 @@ that specifies which time point to compute.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, tod <span class="op">=</span> <span class="va">tod</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.920   0.015   0.936</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.886   0.020   0.906</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="visualising-results">Visualising results<a class="anchor" aria-label="anchor" href="#visualising-results"></a>
 </h3>
 <p>Again, we use <code><a href="../reference/tpm_p.html">tpm_p()</a></code> and <code><a href="../reference/stationary_p.html">stationary_p()</a></code> to
-tranform the parameters.</p>
+transform the parameters.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># transform parameters to working</span></span>
 <span><span class="va">beta_hat</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">estimate</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -228,13 +228,13 @@ tranform the parameters.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta_hat</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, </span>
 <span>     xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(state 1)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Periodic_HMMs_files/figure-html/visualization-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Periodic_HMMs_files/figure-html/visualization-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="efficieny-and-convenience">Efficieny and convenience<a class="anchor" aria-label="anchor" href="#efficieny-and-convenience"></a>
+<h2 id="efficiency-and-convenience">Efficiency and convenience<a class="anchor" aria-label="anchor" href="#efficiency-and-convenience"></a>
 </h2>
 <p>While it is convenient to use <code><a href="../reference/tpm_p.html">tpm_p()</a></code>, it performs the
 basis expansion into sine and cosine terms each time it is evaluated.
@@ -289,7 +289,7 @@ calculated using <code><a href="../reference/tpm_g.html">tpm_g()</a></code> or <
 and RTMB</strong></a> or <a href="https://janoleko.github.io/LaMa/articles/Penalised_splines.html"><strong>Penalised
 splines</strong></a>.</p>
 </blockquote>
-<!-- ## Nonparametric modeling of the transition probalities -->
+<!-- ## Nonparametric modeling of the transition probabilities -->
 <!-- `Lcpp` also makes non-parametric modeling trivially easy. Here we model the transition probabilities using cyclic P-splines similar to @feldmann2023. We do so in first calculating the design matrix using `mgcv` which we can easily be handled by `tpm_p()`. -->
 <!-- ### Building the cyclic spline design matrix -->
 <!-- ```{r cSpline} -->
@@ -336,7 +336,7 @@ splines</strong></a>.</p>
 <!-- ``` -->
 <!-- The model fit is still quite fast for non-parametric modeling. -->
 <!-- ### Visualizing results -->
-<!-- Again, we use `tpm_p()` and `stationary_p()` to tranform the unconstraint parameters to working parameters. -->
+<!-- Again, we use `tpm_p()` and `stationary_p()` to transform the unconstrained parameters to working parameters. -->
 <!-- ```{r visualization2} -->
 <!-- # transform parameters to working -->
 <!-- beta_hat_np = matrix(mod_np$estimate[1:(2+2*nk)], nrow = 2) -->

@@ -14,11 +14,11 @@ of calls in a call center, or patients in the hospital. The main
 difference compared to continuous-time HMMs is the arrival or
 observation **times** themselves **carry information** on the **latent
 state process**. To capture this information, we need to model them
-explicitely as random-variables.
+explicitly as random-variables.
 
 A homogeneous Poisson process is mainly characterised by the fact that
 the **number of arrivals** within a fixed time interval is **Poisson
-distributed** with a mean that is proporional to the length of the
+distributed** with a mean that is proportional to the length of the
 interval. The **waiting times** between arrivals are **exponentially
 distributed**. While the latter is not true for non-homogeneous Poisson
 processes in general, we can interpret a Markov modulated Poisson
@@ -55,7 +55,7 @@ set.seed(123)
 
 k = 200 # number of state switches
 trans_times = s = rep(NA, k) # time points where the chain transitions
-s[1] = sample(1:2, 1) # initial distribuion c(0.5, 0.5)
+s[1] = sample(1:2, 1) # initial distribution c(0.5, 0.5)
 # exponentially distributed waiting times
 trans_times[1] = rexp(1, -Q[s[1],s[1]])
 # in a fixed interval, the number of arrivals is Pois(lambda * interval_length)
@@ -63,7 +63,7 @@ n_arrivals = rpois(1, lambda[s[1]]*trans_times[1])
 # arrival times within fixed interval are uniformly distributed
 arrival_times = runif(n_arrivals, 0, trans_times[1])
 for(t in 2:k){
-  s[t] = c(1,2)[-s[t-1]] # for 2-states, always a state swith when transitioning
+  s[t] = c(1,2)[-s[t-1]] # for 2-states, always a state switch when transitioning
   # exponentially distributed waiting times
   trans_times[t] = trans_times[t-1] + rexp(1, -Q[s[t], s[t]])
   # in a fixed interval, the number of arrivals is Pois(lambda * interval_length)
@@ -135,7 +135,7 @@ system.time(
   mod <- nlm(nll, par, timediff = timediff, N = 2, stepmax = 10)
 )
 #>    user  system elapsed 
-#>   0.275   0.270   0.278
+#>   0.293   0.256   0.280
 # we often need the stepmax, as the matrix exponential can be numerically unstable
 ```
 
@@ -171,7 +171,7 @@ lambda = c(1, 5, 20)
 Q = matrix(c(-0.5, 0.3, 0.2,
              0.7, -1, 0.3,
              1, 1, -2), nrow = 3, byrow = TRUE)
-# parmeters for distributions of state-dependent marks
+# parameters for distributions of state-dependent marks
 # (here normally distributed)
 mu = c(-5, 0, 5)
 sigma = c(2, 1, 2)
@@ -194,7 +194,7 @@ to more than two hidden states.
 set.seed(123)
 k = 200 # number of state switches
 trans_times = s = rep(NA, k) # time points where the chain transitions
-s[1] = sample(1:3, 1) # initial distribuion uniformly
+s[1] = sample(1:3, 1) # initial distribution uniformly
 # exponentially distributed waiting times
 trans_times[1] = rexp(1, -Q[s[1],s[1]])
 # in a fixed interval, the number of arrivals is Pois(lambda * interval_length)
@@ -206,7 +206,7 @@ marks = rnorm(n_arrivals, mu[s[1]], sigma[s[1]])
 
 for(t in 2:k){
   # off-diagonal elements of the s[t-1] row of Q divided by the diagonal element
-  # give the probabilites of the next state
+  # give the probabilities of the next state
   s[t] = sample(c(1:3)[-s[t-1]], 1, prob = Q[s[t-1],-s[t-1]]/-Q[s[t-1],s[t-1]])
   # exponentially distributed waiting times
   trans_times[t] = trans_times[t-1] + rexp(1, -Q[s[t],s[t]])
@@ -244,8 +244,8 @@ MMPP likelihood, as we include the matrix of state-specific densities
 ([2023](#ref-mews2023markov))): L(\theta) = \pi P(y_0)
 \Bigl(\prod\_{i=1}^n \exp\bigl((Q-\Lambda) x_i\bigr)\Lambda P(y_i)
 \Bigr)1, where Q, \Lambda and \pi are as above and P(y_i) is a diagonal
-matrix with state-dependent densites for the observation at time t_i. We
-can again easily calculate the log of the above expression using the
+matrix with state-dependent densities for the observation at time t_i.
+We can again easily calculate the log of the above expression using the
 standard implementation of the general forward algorithm
 [`forward_g()`](https://janoleko.github.io/reference/forward_g.md) when
 first calculating the `allprobs` matrix with state-dependent densities
@@ -280,7 +280,7 @@ system.time(
   mod2 <- nlm(nllMark, par, y = marks, timediff = timediff, N = 3, stepmax = 5)
 )
 #>    user  system elapsed 
-#>   2.654   3.772   2.152
+#>   2.484   3.509   2.006
 ```
 
 ### Results

@@ -6,9 +6,9 @@
 
 The regular HMM formulation needs a key assumption to be applicable,
 namely the data need to be observed at regular, equidistant time-points
-such that the transition probabilties can be interpreted meaningfully
+such that the transition probabilities can be interpreted meaningfully
 w.r.t. a specific time unit. If this is not the case, the model used
-should acocunt for this by building on a mathematical formulation in
+should account for this by building on a mathematical formulation in
 continuous time. The obvious choice here is to retain most of the HMM
 model formulation, but replace the unobserved **discrete-time** Markov
 chain with a **continuous-time** Markov chain. However, here it is
@@ -33,7 +33,7 @@ introduction see Dobrow ([2016](#ref-dobrow2016introduction)) (pp. 265
 f.). For observation times t_1 and t_2, we can then obtain the
 transition probability matrix between these points via the identity
 \Gamma(t_1, t_2) = \exp(Q (t_2 - t_1)), where \exp() is the matrix
-expoential. This follows from the so-called **Kolmogorov forward
+exponential. This follows from the so-called **Kolmogorov forward
 equations**, but for more details see Dobrow
 ([2016](#ref-dobrow2016introduction)).
 
@@ -76,14 +76,14 @@ set.seed(123)
 
 k = 200 # number of state switches
 trans_times = s = rep(NA, k) # time points where the chain transitions
-s[1] = sample(1:2, 1) # initial distribuion c(0.5, 0.5)
+s[1] = sample(1:2, 1) # initial distribution c(0.5, 0.5)
 # exponentially distributed waiting times
 trans_times[1] = rexp(1, -Q[s[1],s[1]])
 n_arrivals = rpois(1, trans_times[1])
 obs_times = sort(runif(n_arrivals, 0, trans_times[1]))
 x = rnorm(n_arrivals, mu[s[1]], sigma[s[1]])
 for(t in 2:k){
-  s[t] = c(1,2)[-s[t-1]] # for 2-states, always a state swith when transitioning
+  s[t] = c(1,2)[-s[t-1]] # for 2-states, always a state switch when transitioning
   # exponentially distributed waiting times
   trans_times[t] = trans_times[t-1] + rexp(1, -Q[s[t], s[t]])
   n_arrivals = rpois(1, trans_times[t]-trans_times[t-1])
@@ -111,9 +111,9 @@ legend("topright", lwd = 2, col = color,
 
 ### Writing the negative log-likelihood function
 
-The likelhood of a continuous-time HMM for observations x\_{t_1}, \dots,
-x\_{t_T} at irregular time points t_1, \dots, t_T has the exact same
-structure as the regular HMM likelihood: L(\theta) = \delta^{(1)}
+The likelihood of a continuous-time HMM for observations x\_{t_1},
+\dots, x\_{t_T} at irregular time points t_1, \dots, t_T has the exact
+same structure as the regular HMM likelihood: L(\theta) = \delta^{(1)}
 \Gamma(t_1, t_2) P(x\_{t_2}) \Gamma(t_2, t_3) P(x\_{t_3}) \dots
 \Gamma(t\_{T-1}, t_T) P(x\_{t_T}) 1^t, where \delta^{(1)}, P and 1^t are
 as usual and \Gamma(t_k, t\_{k+1}) is computed as explained above. Thus
@@ -156,7 +156,7 @@ system.time(
   mod <- nlm(nll, par, timediff = timediff, x = x, N = 2)
 )
 #>    user  system elapsed 
-#>   0.293   0.270   0.289
+#>   0.294   0.276   0.292
 ```
 
 ### Results
@@ -201,7 +201,7 @@ set.seed(123)
 
 k = 200 # number of state switches
 trans_times = s = rep(NA, k) # time points where the chain transitions
-s[1] = sample(1:3, 1) # uniform initial distribuion
+s[1] = sample(1:3, 1) # uniform initial distribution
 # exponentially distributed waiting times
 trans_times[1] = rexp(1, -Q[s[1],s[1]])
 n_arrivals = rpois(1, trans_times[1])
@@ -209,7 +209,7 @@ obs_times = sort(runif(n_arrivals, 0, trans_times[1]))
 x = rnorm(n_arrivals, mu[s[1]], sigma[s[1]])
 for(t in 2:k){
   # off-diagonal elements of the s[t-1] row of Q divided by the diagonal element
-  # give the probabilites of the next state
+  # give the probabilities of the next state
   s[t] = sample(c(1:3)[-s[t-1]], 1, prob = Q[s[t-1],-s[t-1]]/-Q[s[t-1],s[t-1]])
   # exponentially distributed waiting times
   trans_times[t] = trans_times[t-1] + rexp(1, -Q[s[t], s[t]])
@@ -233,7 +233,7 @@ system.time(
   mod2 <- nlm(nll, par, timediff = timediff, x = x, N = 3, stepmax = 10)
 )
 #>    user  system elapsed 
-#>   1.723   2.328   1.353
+#>   1.780   2.550   1.446
 # without restricting stepmax, we run into numerical problems
 ```
 

@@ -107,7 +107,7 @@ constructs a transition probability matrix via the inverse multinomial
 logit link (softmax), where the diagonal entries are forced to equal
 zero.
 
-The transition probability matrix of the approxmiating HMM can then be
+The transition probability matrix of the approximating HMM can then be
 computed by the function
 [`tpm_hsmm()`](https://janoleko.github.io/reference/tpm_hsmm.md) where
 the exact procedure is detailed by Langrock and Zucchini
@@ -135,10 +135,10 @@ nll = function(par, x, N, agsizes){
 }
 ```
 
-### Fitting an HSMM (as an approxiating HMM) to the data
+### Fitting an HSMM (as an approximating HMM) to the data
 
 ``` r
-# intial values
+# initial values
 par = c(10, 40, 100, log(c(5, 20, 50)), # state-dependent
                log(c(7,4,4)), # dwell time means
                rep(0, 3)) # omega
@@ -149,7 +149,7 @@ system.time(
   mod <- nlm(nll, par, x = x, N = 3, agsizes = agsizes, stepmax = 2)
 )
 #>    user  system elapsed 
-#>   0.911   0.066   0.976
+#>   0.935   0.044   0.978
 ```
 
 Fitting HSMMs is rather slow (even using C++) as we translate the
@@ -178,7 +178,7 @@ N = 3
 We now want to briefly show the analysis of a real data set using hidden
 semi-Markov models. For this purpose we use the movement track of an
 Arctic muskox contained in the `R` package `PHSMM`. Originally these
-data where collected by Beumer et al.
+data were collected by Beumer et al.
 ([2020](#ref-beumer2020application)) and have already been analysed by
 Pohle, Adam, and Beumer ([2022](#ref-pohle2022flexible)).
 
@@ -195,8 +195,8 @@ head(data)
 #> 88278 2013-10-11 22:00:00   20 513386.7 8265629  10.797127
 ```
 
-As these data have already been preprossed, we can immediately write the
-negative log-likelihood function. When modeling the dwell-time
+As these data have already been preprocessed, we can immediately write
+the negative log-likelihood function. When modeling the dwell-time
 distribution of real processes, it is typically advisable to use a more
 flexible distribution than the shifted Poisson distribution, as the
 latter cannot account for overdispersion. Here, we will employ the
@@ -229,7 +229,7 @@ nll_muskox = function(par, step, N, agsizes){
 }
 ```
 
-### Fitting an HSMM (as an approxiating HMM) to the muskox data
+### Fitting an HSMM (as an approximating HMM) to the muskox data
 
 ``` r
 # intial values
@@ -245,7 +245,7 @@ system.time(
                     agsizes = agsizes, iterlim = 500)
 )
 #>    user  system elapsed 
-#>   3.849   0.010   3.859
+#>   3.836   0.012   3.849
 ```
 
 ### Results

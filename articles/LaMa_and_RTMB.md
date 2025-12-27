@@ -32,7 +32,7 @@ library(LaMa)
 For the purpose of this vignette, we will analyse the `trex` data set
 contained in the package. It contains hourly step lengths of a
 Tyrannosaurus rex, living 66 million years ago, and we aim to understand
-its behavoural process using HMMs.
+its behavioural process using HMMs.
 
 ``` r
 head(trex, 5)
@@ -145,7 +145,7 @@ but a few points should be made here:
   calculated in the likelihood function (for which you have written the
   code anyway), if reported, will be available after optimisation, while
   the report statements are ignored during optimisation. So no annoying
-  backtransformations anymore, wohoo!
+  backtransformations anymore, woohoo!
 - for simple parameter transformations,
   [`ADREPORT()`](https://rdrr.io/pkg/RTMB/man/TMB-interface.html) is
   also great, because it calculates standard deviations for
@@ -155,7 +155,7 @@ but a few points should be made here:
   transformations.
 
 Having defined the negative log-likelihood, we can now create the
-autmatically differentiable objective function and fit the model. This
+automatically differentiable objective function and fit the model. This
 needs a little explanation: At this point, `RTMB` takes the negative
 log-likelihood function and generates its own (very fast) version of it,
 including a gradient. `MakeADFun()` now also grabs whatever is saved as
@@ -177,7 +177,7 @@ names(obj)
 #> [11] "force.update"
 ```
 
-It contains the initial parameter `par` (now tranformed to a named
+It contains the initial parameter `par` (now transformed to a named
 vector), the objective function `fn` (which in this case just evaluates
 `nll` but faster), its gradient `gr` and Hessian `he`.
 
@@ -433,7 +433,7 @@ regressors – this format is also expected by
 computes the array of transition matrices based on the design and
 parameter matrix. Another lovely convenience that `RTMB` allows for is
 that, in our parameter list, we can have matrices, making reshaping of
-vectors to matrices inside the likelihood function unnessesary.
+vectors to matrices inside the likelihood function unnecessary.
 
 ``` r
 par = list(logmu = log(c(0.3, 1)), 
@@ -453,7 +453,7 @@ us using
 [`stationary_p()`](https://janoleko.github.io/reference/stationary_p.md)
 instead of
 [`stationary()`](https://janoleko.github.io/reference/stationary.md) to
-calculate the initial distribuion and
+calculate the initial distribution and
 [`forward_g()`](https://janoleko.github.io/reference/forward_g.md)
 instead of
 [`forward()`](https://janoleko.github.io/reference/forward.md) to

@@ -32,7 +32,7 @@ All L transition probability matrices can conveniently be calculated
 using [`tpm_p()`](https://janoleko.github.io/reference/tpm_p.md). Under
 the hood, this performs a basis expansion using
 [`trigBasisExp()`](https://janoleko.github.io/reference/trigBasisExp.md)
-into sine and cosine terms and uses linear predictos of the form
+into sine and cosine terms and uses linear predictors of the form
 \eta^{(t)}\_{ij} = \beta_0^{(ij)} + \sum\_{k=1}^K \bigl(
 \beta\_{1k}^{(ij)} \sin(\frac{2 \pi k t}{L}) + \beta\_{2k}^{(ij)}
 \cos(\frac{2 \pi k t}{L}) \bigr) for the off-diagonal entries of the
@@ -95,7 +95,7 @@ boxplot(x ~ tod, xlab = "time of day")
 par(oldpar)
 ```
 
-## Trigonometric modeling of the transition probalities
+## Trigonometric modeling of the transition probabilities
 
 ### Writing the negative log-likelihood function
 
@@ -131,7 +131,7 @@ system.time(
   mod <- nlm(nll, par, x = x, tod = tod)
 )
 #>    user  system elapsed 
-#>   0.920   0.015   0.936
+#>   0.886   0.020   0.906
 ```
 
 ### Visualising results
@@ -139,7 +139,7 @@ system.time(
 Again, we use [`tpm_p()`](https://janoleko.github.io/reference/tpm_p.md)
 and
 [`stationary_p()`](https://janoleko.github.io/reference/stationary_p.md)
-to tranform the parameters.
+to transform the parameters.
 
 ``` r
 # transform parameters to working
@@ -173,7 +173,7 @@ plot(Delta_hat[,1], type = "b", lwd = 2, pch = 16, col = color[1], bty = "n",
 par(oldpar)
 ```
 
-## Efficieny and convenience
+## Efficiency and convenience
 
 While it is convenient to use
 [`tpm_p()`](https://janoleko.github.io/reference/tpm_p.md), it performs

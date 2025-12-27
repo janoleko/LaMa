@@ -84,13 +84,13 @@ to LaMa</strong></a>.</p>
 interpreted as generalisation of HMMs to continuous state spaces.
 Several approaches exist to fitting such models, but <span class="citation">Langrock (<a href="#ref-langrock2011some">2011</a>)</span> showed that very
 <strong>general state-space models</strong> can be fitted via
-approximate maximum likelihood estimation, when the continous state
+approximate maximum likelihood estimation, when the continuous state
 space is <strong>finely discretised</strong>. This is equivalent to
 numerical integration over the state process using midpoint
 quadrature.</p>
 <p>Here, we will showcase this approach for a basic <strong>stochastic
-volatily model</strong> which, while being very simple, captures most of
-the stylised facts of financial time series. In this model the
+volatility model</strong> which, while being very simple, captures most
+of the stylised facts of financial time series. In this model the
 unobserved marked volatility is described by an AR(1) process:</p>
 <p><span class="math display">
 g_t = \phi g_{t-1} + \sigma \eta_t, \qquad \eta_t \sim N(0,1),
@@ -134,7 +134,7 @@ y_t \mid g_t \sim N(0, (\beta e^{g_t / 2})^2).
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span>side<span class="op">=</span><span class="fl">2</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span>,by<span class="op">=</span><span class="fl">5</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span>,by<span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span>side<span class="op">=</span><span class="fl">4</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">150</span>,by<span class="op">=</span><span class="fl">75</span><span class="op">)</span><span class="op">/</span><span class="fl">7</span><span class="op">-</span><span class="fl">40</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">150</span>,by<span class="op">=</span><span class="fl">75</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"standard deviation"</span>, side<span class="op">=</span><span class="fl">4</span>, line<span class="op">=</span><span class="fl">3</span>, at <span class="op">=</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
-<p><img src="State_space_models_files/figure-html/data-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="State_space_models_files/figure-html/data-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -177,7 +177,7 @@ likelihood with a large number of states.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, y <span class="op">=</span> <span class="va">y</span>, bm <span class="op">=</span> <span class="va">bm</span>, m <span class="op">=</span> <span class="va">m</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.384   2.412   0.972</span></span></code></pre></div>
+<span><span class="co">#&gt;   1.361   2.434   0.976</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -206,7 +206,7 @@ likelihood with a large number of states.</p>
 <span></span>
 <span><span class="va">oldpar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">4</span>,<span class="fl">3</span>,<span class="fl">4.5</span><span class="op">)</span><span class="op">+</span><span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">y</span>, type <span class="op">=</span> <span class="st">"l"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">50</span>,<span class="fl">20</span><span class="op">)</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
-<span><span class="co"># when there are so many states it is not too sensable to only plot the most probable state,</span></span>
+<span><span class="co"># when there are so many states it is not too sensible to only plot the most probable state,</span></span>
 <span><span class="co"># as its probability might still be very small. Generally, we are approximating continuous </span></span>
 <span><span class="co"># distributions, thus it makes sense to plot the entire conditional distribution.</span></span>
 <span><span class="va">maxprobs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">probs</span>, <span class="fl">1</span>, <span class="va">max</span><span class="op">)</span></span>
@@ -221,11 +221,11 @@ likelihood with a large number of states.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span>side<span class="op">=</span><span class="fl">2</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span>,by<span class="op">=</span><span class="fl">5</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>,<span class="fl">20</span>,by<span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span>side<span class="op">=</span><span class="fl">4</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>,<span class="fl">5</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">*</span><span class="fl">4</span><span class="op">-</span><span class="fl">35</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>,<span class="fl">5</span>, by <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"g"</span>, side<span class="op">=</span><span class="fl">4</span>, line<span class="op">=</span><span class="fl">3</span>, at <span class="op">=</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span></span></code></pre></div>
-<p><img src="State_space_models_files/figure-html/results-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="State_space_models_files/figure-html/results-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 <!-- Lastly, we can check if this model is adequate by computing pseudo-residuals using the `pseudo_res()` function. We just have to pass the observations, the decoded state probabilities, the distribution to use and the state-dependent parameters. In this case, the state-dependent mean is fixed at zero while the standard deviation is $\beta \exp(g_t / 2)$. If the model is correctly specified, these residuals should be standard normally distributed. -->
-<!-- ```{r resiudals} -->
+<!-- ```{r residuals} -->
 <!-- pres = pseudo_res(y, probs, "norm", -->
 <!--                   list(mean = 0, sd = beta * exp(bstar / 2))) -->
 <!-- oldpar = par(mfrow = c(1,2)) -->

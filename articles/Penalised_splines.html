@@ -81,7 +81,7 @@ HMMs</strong>, <strong>Periodic HMMs</strong> and <strong>LaMa and
 RTMB</strong>.</p>
 </blockquote>
 <p>This vignette explores how <code>LaMa</code> can be used to fit
-models involving nonparameteric components, represented by
+models involving nonparametric components, represented by
 <strong>penalised splines</strong>. The main idea here is that it may be
 useful to represent some relationships in our model by smooth functions
 for which the functional form is not pre-specified, but flexibly
@@ -106,7 +106,7 @@ log-likelihood</strong> needs to be compatible with the R package
 vignette <em>LaMa and RTMB</em> or check out its <a href="https://CRAN.R-project.org/package=RTMB" class="external-link">documentation</a>. For
 more information on penalised splines, we recommend <span class="citation">Wood (<a href="#ref-wood2017generalized">2017</a>)</span>.</p>
 <div class="section level3">
-<h3 id="smooth-transition-probabilites">Smooth transition probabilites<a class="anchor" aria-label="anchor" href="#smooth-transition-probabilites"></a>
+<h3 id="smooth-transition-probabilities">Smooth transition probabilities<a class="anchor" aria-label="anchor" href="#smooth-transition-probabilities"></a>
 </h3>
 <p>We will start by investigating a 2-state HMM for the
 <code>trex</code> data set, containing hourly step lengths and turning
@@ -260,7 +260,7 @@ call using the <code>psname</code> argument.</li>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 0.308 0.112</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   8.193   3.736   7.655</span></span></code></pre></div>
+<span><span class="co">#&gt;   8.083   3.793   7.609</span></span></code></pre></div>
 <p>The <code>mod</code> object is now a list that contains everything
 that is reported by the likelihood function, but also the
 <code>RTMB</code> object created in the process. After fitting the
@@ -283,12 +283,12 @@ of day.
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">tod_seq</span>, <span class="va">Gamma_plot</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span>,<span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">gamma</span><span class="op">[</span><span class="fl">21</span><span class="op">]</span><span class="op">^</span><span class="op">(</span><span class="va">t</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/results%20qreml-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/results%20qreml-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Delta</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, pch <span class="op">=</span> <span class="fl">16</span>, xlab <span class="op">=</span> <span class="st">"time of day"</span>, ylab <span class="op">=</span> <span class="st">"Pr(active)"</span>, </span>
 <span>     col <span class="op">=</span> <span class="st">"deepskyblue"</span>, bty <span class="op">=</span> <span class="st">"n"</span>, xaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">24</span>,by<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/results%20qreml-2.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/results%20qreml-2.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="smooth-density-estimation">Smooth density estimation<a class="anchor" aria-label="anchor" href="#smooth-density-estimation"></a>
@@ -297,7 +297,7 @@ of day.
 densities, we will consider the <code>nessi</code> data set. It contains
 acceleration data of the Loch Ness Monster, specifically the
 <strong>overall dynamic body acceleration (ODBA)</strong>. ODBA is
-strictily positive with some very extreme values, making direct analysis
+strictly positive with some very extreme values, making direct analysis
 difficult. Hence, for our analysis we consider the logarithm of ODBA as
 our observed process.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -311,7 +311,7 @@ our observed process.</p>
 <span><span class="co">#&gt; 6 0.06133794 -2.791357     3</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/shark_data-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/shark_data-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>Clearly, there are at least three behavioural states in the data, and
 we start by fitting a simple 3-state Gaussian HMM with likelihood
 function:</p>
@@ -353,7 +353,7 @@ RTMB</em>.</p>
 <span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="va">mod</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mod</span><span class="op">$</span><span class="va">mu</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, <span class="va">mod</span><span class="op">$</span><span class="va">sigma</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span>, </span>
 <span>                    add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/Gaussian%20fit-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/Gaussian%20fit-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>We see a clear lack-of-fit due to the inflexibility of the Gaussian
 state-dependent densities. Thus, we now fit a model with state-dependent
 densities based on P-Splines.</p>
@@ -400,8 +400,8 @@ i.e. the last coefficient for each state, needs to be fixed to zero for
 <code>cbind(beta, 0)</code>. Then, we transform the unconstrained
 parameter matrix to non-negative weights that sum to one (called
 <code>alpha</code>) for each state using the inverse multinomial
-logistic link (softmax). The columnns of the <code>allprobs</code>
-matrix are then computed as linear combinations of the columns of
+logistic link (softmax). The columns of the <code>allprobs</code> matrix
+are then computed as linear combinations of the columns of
 <code>Z</code> and the weights <code>alpha</code>. Lastly, we penalise
 the unconstrained coefficients <code>beta</code> (not the constrained
 <code>alpha</code>’s) using the <code><a href="../reference/penalty.html">penalty()</a></code> function.</p>
@@ -457,10 +457,10 @@ the design matrix <code>Z</code>.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 1.033 1.01 1.744</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  15.774   4.411  15.054</span></span></code></pre></div>
+<span><span class="co">#&gt;  16.359   4.426  15.681</span></span></code></pre></div>
 <p>After fitting the model, we can easily visualise the smooth densities
 using the prepared prediction objects. We already have access to all
-reported quanitites because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
+reported quantities because <code><a href="../reference/qreml.html">qreml()</a></code> automatically runs the
 reporting after model fitting.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sDens</span> <span class="op">=</span> <span class="va">Z_p</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">alpha</span><span class="op">)</span> <span class="co"># all three state-dependent densities on a grid</span></span>
@@ -468,9 +468,9 @@ reporting after model fitting.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">nessi</span><span class="op">$</span><span class="va">logODBA</span>, prob <span class="op">=</span> <span class="cn">TRUE</span>, breaks <span class="op">=</span> <span class="fl">50</span>, bor <span class="op">=</span> <span class="st">"white"</span>, main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"log(ODBA)"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="va">mod2</span><span class="op">$</span><span class="va">delta</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">*</span> <span class="va">sDens</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">xseq</span>, <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="va">mod2</span><span class="op">$</span><span class="va">delta</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">sDens</span><span class="op">)</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/shark_smooth_results-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/shark_smooth_results-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <p>The P-Spline model results in a very good fit to the empirical
-distribution. This is beause the first state has a skewed distribution,
+distribution. This is because the first state has a skewed distribution,
 the second state has a high kurtosis and the third state has a funny
 right tail. The P-Spline model can capture all of these features where
 the parametric model failed to do so.</p>
@@ -547,7 +547,7 @@ one or just one matrix.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>From this point on, the model fit is now basically identical to the
 previous two examples. We specify initial parameters and include an
-inital penalty strength parameter in the <code>dat</code> list.</p>
+intial penalty strength parameter in the <code>dat</code> list.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># initial parameter list</span></span>
 <span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, <span class="co"># state process intercepts</span></span>
@@ -590,7 +590,7 @@ inital penalty strength parameter in the <code>dat</code> list.</p>
 <span><span class="co">#&gt; Converged</span></span>
 <span><span class="co">#&gt; Final model fit with lambda: 22.588 7.212 8.278 4.169</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  15.261   5.643  14.343</span></span></code></pre></div>
+<span><span class="co">#&gt;   15.15    5.70   14.28</span></span></code></pre></div>
 <p>Having fitted the model, we can visualise the results. We first
 decode the most probable state sequence and then plot the estimated
 state-dependent densities as a function of the oil price, as well as the
@@ -627,15 +627,15 @@ interpolating design matrix.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>, x1 <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span>,</span>
 <span>         y0 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">energy</span><span class="op">)</span><span class="op">]</span>, y1 <span class="op">=</span> <span class="va">energy</span><span class="op">$</span><span class="va">Price</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, </span>
 <span>         col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">energy</span><span class="op">$</span><span class="va">states</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Penalised_splines_files/figure-html/energy_results-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="Penalised_splines_files/figure-html/energy_results-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <!-- ### Full Laplace method -->
 <!-- Lastly, we could have achieved a similar fit as above using the slightly more accurate full Laplace approximation method, which can be used to fit models via marginal maximum likelihood estimation by integrating out the random effects. This is natively supported by `RTMB` -- and actually one of its core selling points -- and the standard way we can now deal with all kinds of random effects.  -->
-<!-- Indeed, the **qREML** algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yiedling a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects. -->
-<!-- We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihoot that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as -->
+<!-- Indeed, the **qREML** algorithm above treats the spline coefficients as Gaussian random effects but exploits their relatively simple structure yielding a more efficient fitting method. The full Laplace method is much more general, allowing for very flexible random effects, but here, estimation slower because it does not exploit the simple structure of splines treated as random effects. -->
+<!-- We have to alter our likelihood function slightly, because for the Laplace method, we need to implement the joint likelihood of the data and the random effect, the latter having a multivariate normal distribution. Specifically, if $b$ is our random effect for a spline, $b \sim N(0, \lambda^{-1} S^-)$. The likelihood of the data given $b$ (just our regular likelihood that treats $b$ as a parameter) is $f(x \mid b)$ and the density of $b$ is $f_{\lambda}(b)$. Hence the joint likelihood can be computed as -->
 <!-- $$ -->
 <!-- f(x, b) = f(x \mid b) f_{\lambda}(b) -->
 <!-- $$ -->

@@ -83,7 +83,7 @@ beta = matrix(c(-2, -2,       # intercepts
 n = 1000 # number of observations
 set.seed(123)
 z = rnorm(n) # in practice there will be n covariate values.
-# However, we only have n-1 transitions, thererfore we only need n-1 values:
+# However, we only have n-1 transitions, therefore we only need n-1 values:
 Z = cbind(z, z^2) # quadratic effect of z
 Gamma = tpm_g(Z = Z[-1,], beta) # of dimension c(2, 2, n-1)
 delta = c(0.5, 0.5) # non-stationary initial distribution
@@ -124,8 +124,8 @@ plot(x[1:200], bty = "n", pch = 20, ylab = "x",
 ![](Inhomogeneous_HMMs_files/figure-html/data-1.png)
 
 We now model the transition probabilities parametrically, where we have
-a paramter for the intercept, the linear effect and the quadratic effect
-for each off-diagonal element of the t.p.m.
+a parameter for the intercept, the linear effect and the quadratic
+effect for each off-diagonal element of the t.p.m.
 
 ### Writing the negative log-likelihood function
 
@@ -160,7 +160,7 @@ system.time(
 
 )
 #>    user  system elapsed 
-#>   0.772   0.021   0.794
+#>   0.746   0.015   0.761
 ```
 
 Really fast!
@@ -169,7 +169,7 @@ Really fast!
 
 Again, we use [`tpm_g()`](https://janoleko.github.io/reference/tpm_g.md)
 and [`stationary()`](https://janoleko.github.io/reference/stationary.md)
-to tranform the parameters.
+to transform the parameters.
 
 ``` r
 # transform parameters to working
@@ -262,7 +262,7 @@ delta = stationary(Gamma) # stationary Markov chain
 ### Simulation
 
 In the simulation code, the state-dependent mean now is not fixed
-anymore, but changes accoring to the covariate values in `Z`.
+anymore, but changes according to the covariate values in `Z`.
 
 ``` r
 s = x = rep(NA, n)
@@ -322,7 +322,7 @@ system.time(
   mod_reg <- nlm(nllMSR, par, x = x, Z = Z)
 )
 #>    user  system elapsed 
-#>   0.320   0.025   0.346
+#>   0.313   0.026   0.340
 ```
 
 ### Visualising results

@@ -99,7 +99,7 @@ of <span class="math inline">N</span> possible distributions <span class="math i
 \dots N</span> with an unobserved <strong><span class="math inline">N</span>-state Markov chain</strong> selecting which
 distribution is active at any given time point. Hence, HMMs can be
 interpreted as temporally dependent mixture models and are very popular
-accross a wide range of disciplines like ecology, sports and finance
+across a wide range of disciplines like ecology, sports and finance
 where time-series data with underlying sequential dependencies are to be
 analysed. They statements above already hint at the two main assumptions
 in such a model, namely</p>
@@ -133,7 +133,7 @@ as softmax). This can be done using the function <code><a href="../reference/tpm
 <p>For HMMs with such homogeneous transition probabilities, we often
 assume <strong>stationarity</strong> of the underlying Markov chain, as
 well-behaved Markov chains converge to a unique stationary distribution.
-When we e.g. observe an animial and model its behavioral states by a
+When we e.g. observe an animal and model its behavioral states by a
 Markov chain, it is reasonable to assume that the chain has been running
 for a long time prior to our observation and thus already converged to
 its stationary distribution. This distribution (which we call <span class="math inline">\delta</span>) can be computed by solving the system
@@ -184,7 +184,7 @@ distribution.</p>
 <span><span class="va">color</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orange"</span>, <span class="st">"deepskyblue"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pch <span class="op">=</span> <span class="fl">20</span>, ylab <span class="op">=</span> <span class="st">"x"</span>, </span>
 <span>     col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">s</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">200</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/data-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/data-1.png" class="r-plt" alt="" width="75%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="inference-by-direct-numerical-maximum-likelihood-estimation">Inference by direct numerical maximum likelihood estimation<a class="anchor" aria-label="anchor" href="#inference-by-direct-numerical-maximum-likelihood-estimation"></a>
@@ -220,10 +220,10 @@ implemented in <code>LaMa</code> and written in C++.</p>
 <p>Additionally, for HMMs we often need to constrain the domains of
 several of the model parameters in <span class="math inline">\theta</span> (i.e. positive standard deviations or
 a transition probability matrix with elements between 0 and 1 and rows
-that sum to one). One could now resort to contrained numerical
+that sum to one). One could now resort to constrained numerical
 optimisation but in practice the better option is to maximise the
 likelihood w.r.t. a transformed version (to the real number line) of the
-model parameters by using suitable invertible and differenentiable link
+model parameters by using suitable invertible and differentiable link
 functions (denoted by <code>par</code> in the code). For example we use
 the log-link for parameters that need to be strictly positive and the
 multinomial logistic link for the transition probability matrix. While
@@ -270,7 +270,7 @@ e.g. <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;    0.13    0.01    0.14</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.125   0.010   0.134</span></span></code></pre></div>
 <p>We see that implementation of the forward algorithm in C++ leads to
 really fast estimation speeds.</p>
 </div>
@@ -293,7 +293,7 @@ parameters according to the code inside the likelihood:</p>
 <span>      add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="st">"dashed"</span>, n<span class="op">=</span><span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">color</span>, <span class="st">"black"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
 <span>       lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span>, <span class="st">"marginal"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/visualization-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/visualization-1.png" class="r-plt" alt="" width="75%" style="display: block; margin: auto;"></p>
 <p>We can also decode the most probable state sequence with the
 <code><a href="../reference/viterbi.html">viterbi()</a></code> function, when first computing the
 <code>allprobs</code> matrix:</p>
@@ -306,7 +306,7 @@ parameters according to the code inside the likelihood:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, pch <span class="op">=</span> <span class="fl">20</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">states</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, pch <span class="op">=</span> <span class="fl">20</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"state 1"</span>, <span class="st">"state 2"</span><span class="op">)</span>, </span>
 <span>       col <span class="op">=</span> <span class="va">color</span>, box.lwd <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/states-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/states-1.png" class="r-plt" alt="" width="75%" style="display: block; margin: auto;"></p>
 <p>Lastly, we can do some model checking using
 <strong>pseudo-residuals</strong>. First, we need to compute the local
 state probabilities of our observations:</p>
@@ -325,7 +325,7 @@ is correct.</p>
 <span></span>
 <span><span class="co"># use the plotting method for LaMaResiduals</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pres</span>, hist <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Intro_to_LaMa_files/figure-html/pseudores-1.png" class="r-plt" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="Intro_to_LaMa_files/figure-html/pseudores-1.png" class="r-plt" alt="" width="75%" style="display: block; margin: auto;"></p>
 <p>In this case, our model looks really good – as it should because we
 simulated from the exact same model.</p>
 <blockquote>

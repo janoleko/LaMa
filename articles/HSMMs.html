@@ -131,7 +131,7 @@ of the state-dependent process.</p>
 <span>      xlab <span class="op">=</span> <span class="st">"x"</span>, ylab <span class="op">=</span> <span class="st">"density"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">150</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html" class="external-link">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="va">sigma</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HSMMs_files/figure-html/parameters-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="HSMMs_files/figure-html/parameters-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="simulating-data">Simulating data<a class="anchor" aria-label="anchor" href="#simulating-data"></a>
@@ -162,7 +162,7 @@ drawn conditional on the current state.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">C</span><span class="op">]</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, col <span class="op">=</span> <span class="va">color</span>, pch <span class="op">=</span> <span class="fl">20</span>, </span>
 <span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"state"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>, box.lwd <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HSMMs_files/figure-html/simulation-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="HSMMs_files/figure-html/simulation-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="writing-the-negative-log-likelihood-function">Writing the negative log-likelihood function<a class="anchor" aria-label="anchor" href="#writing-the-negative-log-likelihood-function"></a>
@@ -175,7 +175,7 @@ both (here called <code>dm</code> and <code>omega</code>). For the
 latter, we can use the function <code><a href="../reference/tpm_emb.html">tpm_emb()</a></code> that constructs a
 transition probability matrix via the inverse multinomial logit link
 (softmax), where the diagonal entries are forced to equal zero.</p>
-<p>The transition probability matrix of the approxmiating HMM can then
+<p>The transition probability matrix of the approximating HMM can then
 be computed by the function <code><a href="../reference/tpm_hsmm.html">tpm_hsmm()</a></code> where the exact
 procedure is detailed by <span class="citation">Langrock and Zucchini
 (<a href="#ref-langrock2011hidden">2011</a>)</span>. We need the extra
@@ -202,10 +202,10 @@ distributions is covered.</p>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="fitting-an-hsmm-as-an-approxiating-hmm-to-the-data">Fitting an HSMM (as an approxiating HMM) to the data<a class="anchor" aria-label="anchor" href="#fitting-an-hsmm-as-an-approxiating-hmm-to-the-data"></a>
+<h3 id="fitting-an-hsmm-as-an-approximating-hmm-to-the-data">Fitting an HSMM (as an approximating HMM) to the data<a class="anchor" aria-label="anchor" href="#fitting-an-hsmm-as-an-approximating-hmm-to-the-data"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># intial values</span></span>
+<code class="sourceCode R"><span><span class="co"># initial values</span></span>
 <span><span class="va">par</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">40</span>, <span class="fl">100</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">20</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span>, <span class="co"># state-dependent</span></span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>,<span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span>, <span class="co"># dwell time means</span></span>
 <span>               <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co"># omega</span></span>
@@ -216,7 +216,7 @@ distributions is covered.</p>
 <span>  <span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">nlm</a></span><span class="op">(</span><span class="va">nll</span>, <span class="va">par</span>, x <span class="op">=</span> <span class="va">x</span>, N <span class="op">=</span> <span class="fl">3</span>, agsizes <span class="op">=</span> <span class="va">agsizes</span>, stepmax <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.911   0.066   0.976</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.935   0.044   0.978</span></span></code></pre></div>
 <p>Fitting HSMMs is rather slow (even using C++) as we translate the
 additional model complexity into a higher computational overhead (31
 states here).</p>
@@ -245,7 +245,7 @@ states here).</p>
 <p>We now want to briefly show the analysis of a real data set using
 hidden semi-Markov models. For this purpose we use the movement track of
 an Arctic muskox contained in the <code>R</code> package
-<code>PHSMM</code>. Originally these data where collected by <span class="citation">Beumer et al. (<a href="#ref-beumer2020application">2020</a>)</span> and have already been
+<code>PHSMM</code>. Originally these data were collected by <span class="citation">Beumer et al. (<a href="#ref-beumer2020application">2020</a>)</span> and have already been
 analysed by <span class="citation">Pohle, Adam, and Beumer (<a href="#ref-pohle2022flexible">2022</a>)</span>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">PHSMM</span><span class="op">)</span></span>
@@ -258,8 +258,8 @@ analysed by <span class="citation">Pohle, Adam, and Beumer (<a href="#ref-pohle2
 <span><span class="co">#&gt; 88276 2013-10-11 22:00:00   18 513280.4 8264877  53.378332</span></span>
 <span><span class="co">#&gt; 88277 2013-10-11 22:00:00   19 513252.0 8264922 719.242687</span></span>
 <span><span class="co">#&gt; 88278 2013-10-11 22:00:00   20 513386.7 8265629  10.797127</span></span></code></pre></div>
-<p>As these data have already been preprossed, we can immediately write
-the negative log-likelihood function. When modeling the dwell-time
+<p>As these data have already been preprocessed, we can immediately
+write the negative log-likelihood function. When modeling the dwell-time
 distribution of real processes, it is typically advisable to use a more
 flexible distribution than the shifted Poisson distribution, as the
 latter cannot account for overdispersion. Here, we will employ the
@@ -289,7 +289,7 @@ interpretability using <code><a href="../reference/gamma2.html">dgamma2()</a></c
 <span>  <span class="op">-</span><span class="fu"><a href="../reference/forward_s.html">forward_s</a></span><span class="op">(</span><span class="va">delta</span>, <span class="va">Gamma</span>, <span class="va">allprobs</span>, <span class="va">agsizes</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="fitting-an-hsmm-as-an-approxiating-hmm-to-the-muskox-data">Fitting an HSMM (as an approxiating HMM) to the muskox data<a class="anchor" aria-label="anchor" href="#fitting-an-hsmm-as-an-approxiating-hmm-to-the-muskox-data"></a>
+<h3 id="fitting-an-hsmm-as-an-approximating-hmm-to-the-muskox-data">Fitting an HSMM (as an approximating HMM) to the muskox data<a class="anchor" aria-label="anchor" href="#fitting-an-hsmm-as-an-approximating-hmm-to-the-muskox-data"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># intial values</span></span>
@@ -305,7 +305,7 @@ interpretability using <code><a href="../reference/gamma2.html">dgamma2()</a></c
 <span>                    agsizes <span class="op">=</span> <span class="va">agsizes</span>, iterlim <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   3.849   0.010   3.859</span></span></code></pre></div>
+<span><span class="co">#&gt;   3.836   0.012   3.849</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results-1">Results<a class="anchor" aria-label="anchor" href="#results-1"></a>
@@ -337,7 +337,7 @@ distributions:</p>
 <span>       type <span class="op">=</span> <span class="st">"h"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">color</span><span class="op">[</span><span class="va">j</span><span class="op">]</span>, xlab <span class="op">=</span> <span class="st">"dwell time (hours)"</span>,</span>
 <span>       ylab <span class="op">=</span> <span class="st">"probabilities"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"state"</span>,<span class="va">j</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p><img src="HSMMs_files/figure-html/dwell_muskox-1.png" class="r-plt" width="85%" style="display: block; margin: auto;"></p>
+<p><img src="HSMMs_files/figure-html/dwell_muskox-1.png" class="r-plt" alt="" width="85%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
 </div>
